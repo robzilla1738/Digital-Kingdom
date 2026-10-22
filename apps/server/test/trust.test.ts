@@ -73,7 +73,7 @@ describe("fix 2: unresolved targets never receive a favorable assessment", () =>
   const assess = async (ctx: Awaited<ReturnType<typeof setup>>, body: Record<string, unknown>, project = "demo-castle") => (await ctx.app.inject({ method: "POST", url: `/api/projects/${project}/assess-change`, headers: ctx.h(ctx.viewer), payload: body })).json();
   it("unknown asset -> not_assessed", async () => {
     const r = await assess(await setup(), { asset_ids: ["ordres-api"] });
-    expect(r).toMatchObject({ posture: "not_assessed", assessment_complete: false, targets_requested: 1, targets_resolved: 0, targets_unresolved: 1 });
+    expect(r).toMatchObject({ posture: "not_assessed", target_resolution: { complete: false }, targets_requested: 1, targets_resolved: 0, targets_unresolved: 1 });
     expect(r.unresolved[0].reason).toBe("unknown_target");
   });
   it("unknown route -> not_assessed", async () => {
@@ -92,7 +92,7 @@ describe("fix 2: unresolved targets never receive a favorable assessment", () =>
     const clean = await assess(ctx, { asset_ids: ["storefront-web"] });
     expect(clean.posture).toBe("no_recorded_concerns");
     const mixed = await assess(ctx, { asset_ids: ["storefront-web", "ghost-service"] });
-    expect(mixed).toMatchObject({ posture: "insufficient_context", targets_resolved: 1, targets_unresolved: 1, assessment_complete: false });
+    expect(mixed).toMatchObject({ posture: "insufficient_context", targets_resolved: 1, targets_unresolved: 1, target_resolution: { complete: false } });
     expect(mixed.recommendations[0]).toMatch(/ghost-service/);
   });
   it("a severe finding still holds even when another target is unknown", async () => {

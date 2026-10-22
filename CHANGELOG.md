@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased (branch `improve/investigation-honesty`): event investigation, honest assessments, import validation
+
+- **Event-level investigation.** New read-only, viewer-role `GET /api/projects/:p/events/search` and `GET /api/projects/:p/events/:id`, exposed as the MCP tools `dk_search_events` and `dk_get_event`.
+  - Search covers normalized, redacted events in a declared interval of at most 31 days, using exact-match filters only (identity, session, run, request, trace, address, route, rule, source, asset, action, outcome).
+  - Pagination is keyset-based and pinned to a snapshot. Cursors are HMAC-signed and bound to the project and filters. Project authorization is checked on every page.
+  - Query completeness, source coverage and finding-bundle completeness are reported separately.
+  - Correlation namespaces and trust limits are documented and returned with results. A shared IP address never establishes identity.
+  - Contracts: `schemas/agent/event-search.v1`, `event-detail.v1`.
+- **Change assessment v2 (breaking).** Target resolution and evidence sufficiency are now separate. Missing, offline or stale telemetry on a target yields `insufficient_context` (v1 returned `proceed_with_care` with `assessment_complete: true`). `hold` is kept for severe findings, with gaps still exposed. Unrelated stale sources don't block a target. `assessment_complete` is removed; use `target_resolution.complete`, `evidence_sufficiency.sufficient` and `favorable`. Contract: `schemas/agent/change-assessment.v2`.
+- **Fix:** a manifest with an unsupported asset kind returned HTTP 500. Manifest and compose imports now return 422 with field-level details (`/assets/1/kind: ...`), validate everything before building, and leave the graph and scene untouched on failure. Unexpected errors remain a generic 500.
+- **MCP profiles:** `DK_MCP_TOOLS=investigation` now includes event search. `investigation-v1` reproduces the v1 evaluation tool set.
+- **Evaluation:** v1 records and judgments are unchanged. Added: a review note, a read-only citation audit (identifier existence vs. evidence availability vs. claim support), a pending human-review packet, and the predefined v2 plan (`docs/AGENT_EVAL_V2_PLAN.md`).
+
 ## Unreleased (branch `pilot/browser-pilot`): controlled browser pilot
 
 - **Browser pilot** (`e2e/`, Playwright, CI job `browser-pilot`). Runs the real server and worker on a fresh temp DB, the reference app through the real SDK, the built UI in Chromium, and a stdio MCP client. It covers source-to-screen evidence, human/MCP parity, 3D/2D parity, failed evidence fetches, WebGL fallback, staleness and unknown targets, crash-restart durability and reconnect, proposal-only containment, and untrusted evidence text.

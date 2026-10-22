@@ -1,5 +1,5 @@
 import { parse as parseYaml } from "yaml";
-import { ASSET_KINDS, type Asset, type AssetKind, type Graph, type Relationship, type ZoneId } from "@dk/contracts";
+import { ASSET_KINDS, RELATIONSHIP_KINDS, type Asset, type AssetKind, type Graph, type Relationship, type ZoneId } from "@dk/contracts";
 
 /**
  * Local, allowlist-based metadata importers. They never execute repository code, never resolve
@@ -23,6 +23,20 @@ const IMAGE_HINTS: [RegExp, AssetKind][] = [
   [/(minio|localstack|azurite)/i, "storage"],
 ];
 
+/**
+ * A user-correctable problem with an imported file. Carries one field-level message per problem (JSON-pointer
+ * style path first) so the server can answer with its usual 422 validation response. Anything else thrown by
+ * an importer is an unexpected internal error.
+ */
+export class ImportValidationError extends Error {
+  constructor(message: string, readonly issues: string[]) { super(message); this.name = "ImportValidationError"; }
+}
+
+function parseDoc(text: string, what: string): unknown {
+  try { return parseYaml(text, { maxAliasCount: 50 }); }
+  catch (e) { throw new ImportValidationError(`${what} is not valid YAML`, [`/: ${(e as Error).message.split("\n")[0]!.slice(0, 200)}`]); }
+}
+
 export interface ImportResult {
   graph: Graph;
   unresolved: string[];
@@ -31,11 +45,11 @@ export interface ImportResult {
 
 /** Import a Docker Compose file. Reads only: services.*.{image,labels,depends_on,ports}. */
 export function importCompose(yamlText: string, opts: { projectId: string; environment: string; revision: string; sourceRef?: string }): ImportResult {
-  if (yamlText.length > 512_000) throw new Error("compose file too large (limit 512 KB)");
-  const doc = parseYaml(yamlText, { maxAliasCount: 50, prettyErrors: true }) as Record<string, unknown> | null;
-  if (!doc || typeof doc !== "object") throw new Error("compose file is empty or not a mapping");
+  if (yamlText.length > 512_000) throw new ImportValidationError("compose file too large", ["/: compose file larger than 512 KB"]);
+  const doc = parseDoc(yamlText, "compose file") as Record<string, unknown> | null;
+  if (!doc || typeof doc !== "object") throw new ImportValidationError("compose file rejected", ["/: compose file is empty or not a mapping"]);
   const services = (doc.services ?? {}) as Record<string, Record<string, unknown>>;
-  if (typeof services !== "object") throw new Error("compose services must be a mapping");
+  if (typeof services !== "object") throw new ImportValidationError("compose file rejected", ["/services: must be a mapping"]);
   const sourceRef = opts.sourceRef ?? "import:compose";
   const assets: Asset[] = [];
   const relationships: Relationship[] = [];
@@ -93,16 +107,34 @@ function normalizeLabels(labels: unknown): Record<string, string> {
 
 /** Explicit manifest (dk-manifest.yaml): the most trustworthy declared inventory. */
 export function importManifest(text: string, opts: { revision: string; sourceRef?: string }): ImportResult {
-  if (text.length > 512_000) throw new Error("manifest too large (limit 512 KB)");
-  const doc = parseYaml(text, { maxAliasCount: 50 }) as { project?: string; environment?: string; assets?: unknown[]; relationships?: unknown[] };
-  if (!doc || !Array.isArray(doc.assets)) throw new Error("manifest must contain an assets list");
+  if (text.length > 512_000) throw new ImportValidationError("manifest too large", ["/: manifest larger than 512 KB"]);
+  const doc = parseDoc(text, "manifest") as { project?: string; environment?: string; assets?: unknown[]; relationships?: unknown[] } | null;
+  if (!doc || typeof doc !== "object" || Array.isArray(doc)) throw new ImportValidationError("manifest rejected", ["/: manifest must be a mapping with an assets list"]);
+  if (!Array.isArray(doc.assets)) throw new ImportValidationError("manifest rejected", ["/assets: required list of assets"]);
+  if (doc.relationships !== undefined && !Array.isArray(doc.relationships)) throw new ImportValidationError("manifest rejected", ["/relationships: must be a list"]);
+  if (doc.assets.length > 1000) throw new ImportValidationError("manifest rejected", ["/assets: at most 1000 assets"]);
+  if ((doc.relationships ?? []).length > 5000) throw new ImportValidationError("manifest rejected", ["/relationships: at most 5000 relationships"]);
   const sourceRef = opts.sourceRef ?? "import:manifest";
   const env = sanitizeId(doc.environment ?? "default");
   const unresolved: string[] = [];
-  const assets: Asset[] = doc.assets.slice(0, 1000).map((raw) => {
+  const issues: string[] = [];
+  // Validate every entry before building anything, so one response lists all problems and nothing partial is produced.
+  doc.assets.forEach((raw, i) => {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) { issues.push(`/assets/${i}: must be a mapping`); return; }
     const a = raw as Record<string, unknown>;
-    const kind = String(a.kind) as AssetKind;
-    if (!ASSET_KINDS.includes(kind)) throw new Error(`asset ${String(a.id)}: unsupported kind ${kind}`);
+    if (typeof a.id !== "string" || !a.id.trim()) issues.push(`/assets/${i}/id: required string`);
+    if (typeof a.kind !== "string" || !ASSET_KINDS.includes(a.kind as AssetKind)) issues.push(`/assets/${i}/kind: unsupported asset kind ${JSON.stringify(typeof a.kind === "string" ? a.kind.slice(0, 60) : a.kind ?? null)}; allowed: ${ASSET_KINDS.join(", ")}`);
+  });
+  (doc.relationships ?? []).forEach((raw, i) => {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) { issues.push(`/relationships/${i}: must be a mapping`); return; }
+    const r = raw as Record<string, unknown>;
+    if (typeof r.from !== "string" || typeof r.to !== "string") issues.push(`/relationships/${i}: from and to are required strings`);
+    if (r.kind !== undefined && !RELATIONSHIP_KINDS.includes(r.kind as Relationship["kind"])) issues.push(`/relationships/${i}/kind: unsupported relationship kind ${JSON.stringify(String(r.kind).slice(0, 60))}; allowed: ${RELATIONSHIP_KINDS.join(", ")}`);
+  });
+  if (issues.length) throw new ImportValidationError("manifest rejected", issues.slice(0, 50));
+  const assets: Asset[] = doc.assets.map((raw) => {
+    const a = raw as Record<string, unknown>;
+    const kind = a.kind as AssetKind;
     const out: Asset = { id: sanitizeId(String(a.id)), name: String(a.name ?? a.id).slice(0, 200), kind, environment: env, allowed_zone_ids: [ZONE_BY_KIND[kind]], source_refs: [sourceRef], lifecycle: "active" };
     if (typeof a.owner === "string") out.owner = a.owner.slice(0, 200);
     if (Array.isArray(a.aliases)) out.aliases = a.aliases.map(String).slice(0, 32);
@@ -112,7 +144,7 @@ export function importManifest(text: string, opts: { revision: string; sourceRef
   });
   const ids = new Set(assets.map((a) => a.id));
   const relationships: Relationship[] = [];
-  for (const raw of (doc.relationships ?? []).slice(0, 5000)) {
+  for (const raw of doc.relationships ?? []) {
     const r = raw as Record<string, unknown>;
     const s = sanitizeId(String(r.from)), t = sanitizeId(String(r.to));
     if (!ids.has(s) || !ids.has(t)) { unresolved.push(`relationship ${s} -> ${t} references an undeclared asset`); continue; }

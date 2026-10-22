@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://digital-kingdom.dev/schemas/agent/validation-error.schema.json",
+  "title": "Validation error response (HTTP 400/422)",
+  "description": "details holds one message per problem, starting with a JSON-pointer style path when one applies (/assets/1/kind: ...). Unexpected internal errors are HTTP 500 with error: \"internal error\" and no details.",
+  "type": "object",
+  "required": ["error", "details"],
+  "properties": { "error": { "type": "string" }, "details": { "type": "array", "items": { "type": "string" } } }
+}

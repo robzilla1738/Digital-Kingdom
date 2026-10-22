@@ -52,7 +52,7 @@ const manifest = {
   repository_commit: commit, working_tree_dirty: dirty, scenario_version: SCENARIO_VERSION,
   prompt_version: PROMPT_VERSION, system_prompt_sha: sha(mode === "dk" ? SYSTEM_DK : SYSTEM_BASELINE),
   model, gateway: cfg.gatewayUrl, limits,
-  agent_permissions: mode === "dk" ? { credential: "service-typed viewer token scoped to the case project only", mcp_profile: "DK_MCP_TOOLS=investigation (no dk_propose_containment)", other: "no shell, filesystem, network, other projects, approval rights or executor" } : { credential: "none given to the model; the harness fetched the bundle with the same viewer token", tools: "none" },
+  agent_permissions: mode === "dk" ? { credential: "service-typed viewer token scoped to the case project only", mcp_profile: "DK_MCP_TOOLS=investigation-v1 (the v1 tool set; no dk_propose_containment, no event search)", other: "no shell, filesystem, network, other projects, approval rights or executor" } : { credential: "none given to the model; the harness fetched the bundle with the same viewer token", tools: "none" },
   started_at: new Date().toISOString(),
   model_execution: apiKey ? "enabled" : "BLOCKED: no approved model credential (AI_GATEWAY_API_KEY unset); no model calls made",
 };

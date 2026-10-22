@@ -48,11 +48,15 @@ export interface CreateServerOptions {
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
-export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
+export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_containment_options"] as const;
+
+/** The exact tool set used by Real-Agent Evaluation v1 (before event search). Kept so v1 runs stay reproducible. */
+export const INVESTIGATION_TOOLS_V1 = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
 
 export function parseToolAllowlist(v: string | undefined): string[] | undefined {
   if (!v || !v.trim()) return undefined;
   if (v.trim() === "investigation") return [...INVESTIGATION_TOOLS];
+  if (v.trim() === "investigation-v1") return [...INVESTIGATION_TOOLS_V1];
   return v.split(",").map((x) => x.trim()).filter(Boolean);
 }
 
@@ -90,7 +94,7 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
 
   server.registerTool("dk_assess_change", {
     title: "Assess a planned change",
-    description: "Before changing code or config, get a posture for the assets or routes you will touch: hold, proceed_with_care, insufficient_context (some targets unknown), not_assessed (nothing resolved: NOT a clean result), or no_recorded_concerns (all targets resolved, nothing recorded; still not proof of safety). Check targets_unresolved.",
+    description: "Before changing code or config, get a posture (schema dk.change_assessment.v2) for the assets or routes you will touch: hold (severe finding; still check evidence_sufficiency), proceed_with_care (all targets resolved and reporting; findings touch it), insufficient_context (a target is unknown OR its telemetry is missing, offline or stale: unknown, not safe), not_assessed (nothing resolved: NOT a clean result), or no_recorded_concerns (resolved, reporting, nothing recorded; still not proof of safety). target_resolution and evidence_sufficiency are reported separately; only favorable=true postures are favorable.",
     inputSchema: { asset_ids: z.array(z.string().max(200)).max(20).optional(), routes: z.array(z.string().max(300)).max(20).optional(), summary: z.string().max(500).optional().describe("One line describing the change"), project }, annotations: RO,
   }, async ({ asset_ids, routes, summary, project: p }) => out(await client.req("POST", client.p("/assess-change", p), { asset_ids, routes, summary })));
 
@@ -144,6 +148,38 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
       evidence: { untrusted: true, records: evidence },
     }, UNTRUSTED);
   });
+
+  server.registerTool("dk_search_events", {
+    title: "Search events (read-only)",
+    description: "Search normalized, redacted events in a declared interval (max 31 days), whether or not any finding references them. Exact-match filters only: actor_ref, session_ref, run_id, request_id, trace_id, client_ip, route, rule_ref, source_id, asset_id, action, outcome. " +
+      "Results are a pinned snapshot ordered by time; follow next_cursor (same filters) until query_completeness.complete is true before concluding anything from absence. query_completeness (did you get every stored match) is separate from source_coverage (were the sources that could record it reporting). " +
+      "An empty result never means the activity did not occur. Correlation limits: actor_ref/session_ref are per source; client_ip is a network locator, never identity, so events sharing an address must not be attributed to the same person.",
+    inputSchema: {
+      after: z.string().max(40).describe("Interval start, ISO 8601 with offset"),
+      before: z.string().max(40).describe("Interval end, ISO 8601 with offset"),
+      actor_ref: z.string().max(200).optional(), session_ref: z.string().max(200).optional(), run_id: z.string().max(200).optional(),
+      request_id: z.string().max(200).optional(), trace_id: z.string().max(200).optional(), client_ip: z.string().max(200).optional(),
+      route: z.string().max(200).optional(), rule_ref: z.string().max(200).optional(), source_id: z.string().max(200).optional(), asset_id: z.string().max(200).optional(),
+      action: z.array(z.string().max(40)).max(10).optional(), outcome: z.array(z.string().max(40)).max(10).optional(),
+      limit: z.number().int().min(1).max(100).optional(), cursor: z.string().max(1024).optional().describe("next_cursor from the previous page of the SAME search"),
+      project,
+    }, annotations: RO,
+  }, async ({ project: p, action, outcome, limit, ...rest }) => {
+    const q = new URLSearchParams();
+    for (const [k, v] of Object.entries(rest)) if (typeof v === "string" && v) q.set(k, v);
+    if (action?.length) q.set("action", action.join(","));
+    if (outcome?.length) q.set("outcome", outcome.join(","));
+    if (limit) q.set("limit", String(limit));
+    const r = await client.req<Record<string, unknown> & { events: unknown[] }>("GET", client.p(`/events/search?${q}`, p));
+    const { events, ...meta } = r;
+    return out({ ...meta, events: { untrusted: true, records: events } }, UNTRUSTED);
+  });
+
+  server.registerTool("dk_get_event", {
+    title: "Get one event with its evidence",
+    description: "One normalized, redacted event by id, with its stored evidence records (or explicit missing references), its source, and the findings (if any) that reference it.",
+    inputSchema: { id: z.string().max(200), project }, annotations: RO,
+  }, async ({ id, project: p }) => out(await client.req("GET", client.p(`/events/${encodeURIComponent(id)}`, p)), UNTRUSTED));
 
   server.registerTool("dk_coverage", {
     title: "Telemetry coverage",

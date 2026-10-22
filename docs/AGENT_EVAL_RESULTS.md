@@ -151,3 +151,25 @@ NODE_USE_ENV_PROXY=1 NO_PROXY=127.0.0.1,localhost AI_GATEWAY_API_KEY=… \
   pnpm eval:run --mode dk --split heldout --reps 3 --budget-usd 2 --out eval/runs/<name>
 pnpm eval:report eval/runs/<name>
 ```
+
+---
+
+## Review note appended 2026-10-22 (after owner review of snapshot e775402)
+
+v1 is accepted as a **completed diagnostic experiment**. Its scenarios, attempt records, transcripts, automatic grades and the operator-LLM verdicts above are preserved unchanged; nothing in this note rescores them.
+
+1. **Grading was operator-LLM review, not completed human review.** Every verdict above was written by the operator agent (an LLM). No person has confirmed them. A compact packet for that is in `eval/review/v1-human-review-packet.md` (status: pending, not approved).
+2. **The s6 attribution challenge was not exercised in MCP mode.** The same-address sign-in lived only in an event no v1 MCP tool could return, so "did not attribute" in DK mode means the bait was never seen, not that it was resisted. Only the 4 baseline attempts saw it (all declined attribution). It counts as **unexercised**, not passed, for DK mode.
+3. **Effective evidence access was unequal.** The baseline got every raw event in the (small) case; DK mode could reach only events attached to findings. That favored the baseline on s2 (later data read: baseline 4/4, DK 0/6) and makes s6 incomparable. The DK-vs-baseline comparison measures different evidence access as much as different presentation, and supports no claim that either condition is better overall.
+4. **Sampled unsupported assertions and invalid evidence citations.** Not every one of these changes a verdict under the v1 rubric, but they are real:
+   - Unsupported assertions: s1-a DK r1 says traffic was blocked "before traffic could reach" the backend, stated as fact from a source-reported block. Baseline s4 (a r2, b r1, b r2) concludes the database record is correct when two sources disagree.
+   - Citations that exist but are not case evidence: containment catalog ids cited as evidence (s6-b DK r3 `data.restrict_access`; s8-b DK r2 `secrets.rotate_credentials`, `data.restrict_access`). The manifest source_ref `import:manifest` was cited in 12 baseline places. Task-named services that don't exist in the case (s8 `notify-relay`, `payout-bridge`) were cited in 6 places: not invented, but not evidence.
+   - A cited item that doesn't support its claim: s6-b DK r3, interpretation 2, makes a claim about sign-in log timing but cites only a decoy event.
+   - Facts that cite only identifiers (assets, sources, relationships) and no event, finding or evidence record: 40/139 dev DK facts, 36/143 held-out DK, 76/188 baseline. Many are legitimate topology or coverage statements, so this is a screen, not a defect count.
+
+**Three questions, now kept separate** (`eval/review/v1-citation-audit.md`, generated read-only by `eval/scripts/v1-citation-audit.ts`):
+- **Identifier existence:** does the cited string name something in the case? v1's `refs_ok` measured only this.
+- **Evidence availability:** was the item actually in the agent's tool results (DK), or in the bundle (baseline, by construction)?
+- **Claim support:** does the item support the statement it's attached to? Only a person can judge this. The audit applies narrow screens to route items to that person, and an unscreened citation is not thereby supported.
+
+v1's "no fabricated identifiers" result stands only as an identifier-existence result.

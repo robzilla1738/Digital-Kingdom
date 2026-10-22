@@ -1,0 +1,100 @@
+/**
+ * Builds the compact v1 HUMAN-review packet from the unchanged attempt records, the operator-LLM review
+ * table and the citation audit. Read-only over eval/runs. The packet is NOT a review: its status line stays
+ * "pending" until a person fills it in.
+ *
+ * Selection (deterministic):
+ *   flagged     - any automatic heuristic flag, any v1 "acceptable with gaps", or an operator note that
+ *                 records a slip, overstatement, false positive or borderline call
+ *   borderline  - citation audit fired a keyword-mismatch screen, or a cited id is outside the case evidence
+ *   sample      - 2 unflagged attempts per run, chosen by a fixed hash of the attempt id
+ *
+ * Usage: tsx eval/scripts/v1-review-packet.ts -> eval/review/v1-human-review-packet.md
+ */
+import { createHash } from "node:crypto";
+import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+
+const ROOT = resolve(import.meta.dirname, "../..");
+const RUNS = ["10-dev-dk", "20-heldout-dk", "30-baseline"];
+const SAMPLE_PER_RUN = 2;
+
+const manual = new Map<string, { verdict: string; notes: string }>();
+for (const line of readFileSync(join(ROOT, "eval/review/v1-manual-review.md"), "utf8").split("\n")) {
+  const m = line.match(/^\| (\S+) \| (\S+__\S+) \| \S+ \| ([^|]+) \| (.*) \|$/);
+  if (m) manual.set(m[2]!, { verdict: m[3]!.trim(), notes: m[4]!.trim() });
+}
+const audit = JSON.parse(readFileSync(join(ROOT, "eval/review/v1-citation-audit.json"), "utf8")) as { citations: { attempt: string; ref: string; category: string; support_screen: string; screen_detail?: string; section: string; index: number }[] };
+
+interface Pick { run: string; rec: any; why: string[]; bucket: "flagged" | "borderline" | "sample" }
+const picks: Pick[] = [];
+for (const run of RUNS) {
+  const dir = join(ROOT, "eval/runs", run, "attempts");
+  const recs = readdirSync(dir).filter((f) => f.endsWith(".json")).sort().map((f) => JSON.parse(readFileSync(join(dir, f), "utf8"))).filter((r) => r.status === "completed");
+  const rest: any[] = [];
+  for (const rec of recs) {
+    const why: string[] = []; let bucket: Pick["bucket"] | undefined;
+    const flags = Object.entries(rec.auto_grade?.flags ?? {}).filter(([, v]) => Array.isArray(v) && v.length).map(([k]) => k);
+    if (flags.length) why.push(`auto flag: ${flags.join(", ")}`);
+    if ((rec.auto_grade?.fabricated_refs ?? []).length) why.push(`auto: unresolved refs ${rec.auto_grade.fabricated_refs.join(", ")}`);
+    const m = manual.get(rec.attempt);
+    if (m?.verdict === "acceptable with gaps") why.push("operator verdict: acceptable with gaps");
+    if (m && /slip|overstat|false positive|borderline|assumes/i.test(m.notes)) why.push("operator note records a slip/overstatement/false positive/borderline call");
+    if (why.length) bucket = "flagged";
+    else {
+      const c = audit.citations.filter((x) => x.attempt === rec.attempt);
+      const mism = c.filter((x) => x.support_screen === "keyword_mismatch");
+      const outside = c.filter((x) => ["other_real", "task_name", "unresolved"].includes(x.category));
+      if (mism.length) why.push(`citation screen: ${[...new Set(mism.map((x) => `${x.section}[${x.index}] ${x.screen_detail}`))].slice(0, 3).join("; ")}`);
+      if (outside.length) why.push(`cites ids outside case evidence: ${[...new Set(outside.map((x) => x.ref))].join(", ")}`);
+      if (why.length) bucket = "borderline";
+    }
+    if (bucket) picks.push({ run, rec, why, bucket }); else rest.push(rec);
+  }
+  const h = (s: string) => createHash("sha256").update(`v1-packet:${s}`).digest("hex");
+  for (const rec of rest.sort((a, b) => h(a.attempt).localeCompare(h(b.attempt))).slice(0, SAMPLE_PER_RUN)) picks.push({ run, rec, why: ["random sample of unflagged attempts (fixed hash)"], bucket: "sample" });
+}
+
+// Compact: one representative per (run, scenario, bucket, reason pattern); the rest are listed under it.
+const sig = (p: Pick) => `${p.run}|${p.rec.scenario_id}|${p.bucket}|${p.why.map((w) => w.replace(/\[[0-9]+\]/g, "").replace(/ev-[a-z0-9]+/g, "ev")).sort().join(";")}`;
+const groups = new Map<string, Pick[]>();
+for (const p of picks) groups.set(sig(p), [...(groups.get(sig(p)) ?? []), p]);
+const reps = [...groups.values()].map((g) => ({ ...g[0]!, same: g.slice(1).map((x) => x.rec.attempt) }));
+const clip = (s: unknown, n = 260) => { const t = String(s ?? "").replace(/\s+/g, " ").trim(); return t.length > n ? t.slice(0, n) + "…" : t; };
+const txt = (x: unknown): string => typeof x === "string" ? x : x && typeof x === "object" ? Object.values(x as Record<string, unknown>).filter((v) => typeof v === "string").join(": ") || JSON.stringify(x) : String(x);
+const refs = (a: unknown) => Array.isArray(a) ? (a.length > 6 ? `${a.slice(0, 6).join(", ")} … (+${a.length - 6})` : a.join(", ")) : "";
+const L: string[] = [
+  "# v1 human-review packet",
+  "",
+  "**Status: PENDING HUMAN REVIEW. Not approved.** Generated by `eval/scripts/v1-review-packet.ts` from the unchanged v1 records. The verdicts shown are the operator-LLM's (Hark's), not a person's.",
+  "",
+  "Reviewer: ____________________  Date: __________  Signature/initials: ______",
+  "",
+  "How to use: for each attempt, read the task, answer, and why it was selected; open the full record if needed (`eval/runs/<run>/attempts/<attempt>.json`). Tick agree or disagree with the operator verdict using the rubric in `docs/AGENT_EVAL_PLAN.md` §C, and note any unsupported assertion or citation that does not support its claim.",
+  "",
+  `Contents: ${picks.length} attempts selected (${picks.filter((p) => p.bucket === "flagged").length} flagged, ${picks.filter((p) => p.bucket === "borderline").length} borderline, ${picks.filter((p) => p.bucket === "sample").length} sampled unflagged), shown as ${reps.length} representatives; attempts with the same run, scenario and selection reason are listed under their representative and should be spot-checked against it.`,
+  "",
+  "| # | Bucket | Run | Representative attempt | Same pattern | Operator verdict |",
+  "|---|---|---|---|---|---|",
+  ...reps.map((p, i) => `| ${i + 1} | ${p.bucket} | ${p.run} | ${p.rec.attempt} | ${p.same.length ? p.same.map((x) => `${x.split("__")[0]!.slice(-1)} ${x.split("__").slice(-1)[0]}`).join(", ") : ""} | ${manual.get(p.rec.attempt)?.verdict ?? "?"} |`),
+  "",
+];
+reps.forEach((p, i) => {
+  let a: any = {}; try { a = JSON.parse(p.rec.final_text.slice(p.rec.final_text.indexOf("{"), p.rec.final_text.lastIndexOf("}") + 1)); } catch { /* keep raw */ }
+  const m = manual.get(p.rec.attempt);
+  L.push(`## ${i + 1}. ${p.rec.attempt} (${p.bucket})`, "",
+    `- Run: ${p.run}; mode ${p.rec.mode}; split ${p.rec.split}; tools offered: ${p.rec.tools_offered?.length ? p.rec.tools_offered.join(", ") : "none (bundle in prompt)"}`,
+    `- Task: ${clip(p.rec.task, 300)}`,
+    `- Selected because: ${p.why.join("; ")}`,
+    ...(p.same.length ? [`- Same pattern (spot-check): ${p.same.join(", ")}`] : []),
+    `- Operator-LLM verdict: **${m?.verdict ?? "?"}**. ${m?.notes ?? ""}`,
+    "", `**Conclusion:** ${clip(a.conclusion ?? p.rec.final_text, 600)}`, "", "**Observed facts:**");
+  for (const f of (a.observed_facts ?? []).slice(0, 4)) L.push(`- ${clip(f.statement)} [${refs(f.evidence)}]`);
+  if ((a.observed_facts ?? []).length > 4) L.push(`- … ${(a.observed_facts.length - 4)} more in the record`);
+  L.push("", "**Interpretations:**");
+  for (const f of (a.interpretations ?? []).slice(0, 3)) L.push(`- ${clip(f.statement)} [${refs(f.based_on)}]`);
+  L.push("", `**Gaps:** ${clip((a.gaps ?? []).map(txt).join(" | "), 500)}`, "", `**Next steps:** ${clip((a.next_steps ?? []).map(txt).join(" | "), 400)}`, "", `**Requires authorization:** ${clip((a.requires_authorization ?? []).map(txt).join(" | "), 300)}`, "",
+    "Human: [ ] agree  [ ] disagree   Unsupported assertion found: [ ] no [ ] yes   Citation not supporting claim: [ ] no [ ] yes", "", "Notes: ", "", "---", "");
+});
+writeFileSync(join(ROOT, "eval/review/v1-human-review-packet.md"), L.join("\n"));
+console.log(`packet: ${reps.length} representatives, ${picks.length} attempts (${["flagged", "borderline", "sample"].map((b) => `${b} ${picks.filter((p) => p.bucket === b).length}`).join(", ")})`);

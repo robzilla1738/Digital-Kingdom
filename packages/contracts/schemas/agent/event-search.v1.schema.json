@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://digital-kingdom.dev/schemas/agent/event-search.v1.schema.json",
+  "title": "dk.event_search.v1 — read-only event search response",
+  "description": "query_completeness (were all stored matches returned), source_coverage (could the sources have recorded it) and finding-bundle completeness (findings/:id/evidence) are distinct. An empty complete result never means the activity did not occur.",
+  "type": "object",
+  "required": ["schema", "project_id", "interval", "filters", "snapshot_seq", "events", "page", "query_completeness", "source_coverage", "correlation", "limits"],
+  "properties": {
+    "schema": { "const": "dk.event_search.v1" },
+    "project_id": { "type": "string" },
+    "interval": { "type": "object", "required": ["after", "before", "max_days"], "properties": { "after": { "type": "string" }, "before": { "type": "string" }, "max_days": { "type": "integer" } } },
+    "filters": { "type": "object" },
+    "snapshot_seq": { "type": "integer", "minimum": 0 },
+    "events": { "type": "array", "maxItems": 100, "items": { "type": "object", "required": ["id", "project_id", "source_id", "occurred_at", "action", "outcome", "asset_ids", "evidence_refs"] } },
+    "page": {
+      "type": "object", "required": ["limit", "returned", "has_more", "next_cursor", "position_start", "position_end"],
+      "properties": { "limit": { "type": "integer", "minimum": 1, "maximum": 100 }, "returned": { "type": "integer" }, "has_more": { "type": "boolean" }, "next_cursor": { "type": ["string", "null"] }, "position_start": { "type": "integer" }, "position_end": { "type": "integer" } }
+    },
+    "query_completeness": {
+      "type": "object", "required": ["matching_in_snapshot", "returned_through_this_page", "complete", "truncated", "later_arrivals_not_included", "note"],
+      "properties": { "matching_in_snapshot": { "type": "integer" }, "returned_through_this_page": { "type": "integer" }, "complete": { "type": "boolean" }, "truncated": { "type": "boolean" }, "later_arrivals_not_included": { "type": "integer" }, "note": { "type": "string" } }
+    },
+    "source_coverage": {
+      "type": "object", "required": ["sources", "unobserved_asset_ids", "gaps"],
+      "properties": {
+        "sources": { "type": "array", "items": { "type": "object", "required": ["source_id", "current_state", "events_in_interval"], "properties": { "current_state": { "enum": ["healthy", "degraded", "offline", "not_assessed"] } } } },
+        "unobserved_asset_ids": { "type": "array", "items": { "type": "string" } },
+        "gaps": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "correlation": { "type": "array", "items": { "type": "object", "required": ["filter", "namespace", "trust"] } },
+    "limits": { "type": "array", "items": { "type": "string" } }
+  }
+}

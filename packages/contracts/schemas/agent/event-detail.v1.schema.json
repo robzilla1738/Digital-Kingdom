@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://digital-kingdom.dev/schemas/agent/event-detail.v1.schema.json",
+  "title": "dk.event_detail.v1 — one event with its stored evidence",
+  "type": "object",
+  "required": ["schema", "project_id", "event", "source", "evidence", "evidence_completeness", "referenced_by_findings", "correlation", "limits"],
+  "properties": {
+    "schema": { "const": "dk.event_detail.v1" },
+    "event": { "type": "object", "required": ["id", "project_id", "source_id", "occurred_at", "evidence_refs"] },
+    "evidence": { "type": "object", "required": ["untrusted", "records"], "properties": { "untrusted": { "const": true }, "records": { "type": "object" } } },
+    "evidence_completeness": {
+      "type": "object", "required": ["expected_records", "returned_records", "missing_evidence_refs", "reference_only_refs", "complete"],
+      "properties": { "complete": { "type": "boolean" }, "missing_evidence_refs": { "type": "array", "items": { "type": "string" } } }
+    },
+    "referenced_by_findings": { "type": "array", "items": { "type": "object", "required": ["id", "kind", "role"], "properties": { "role": { "enum": ["supporting", "counterevidence"] } } } }
+  }
+}

@@ -2,9 +2,10 @@ import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest }
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Graph } from "@dk/contracts";
-import { importCompose, importManifest } from "@dk/graph-core";
+import { ImportValidationError, importCompose, importManifest } from "@dk/graph-core";
 import { planScene, type ModelCall } from "@dk/scene-compiler";
 import { HttpError, Store, type Principal } from "./store.ts";
+import { eventDetail, parseSearchQuery, searchEvents } from "./investigate.ts";
 import { checkShape, atLeast, type Role } from "./security.ts";
 import { exportCase, verifyCase } from "./export.ts";
 import { falcoToIngest } from "./adapters/falco.ts";
@@ -185,6 +186,16 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const q = req.query as { asset?: string; after?: string; before?: string; limit?: string };
     return store.listEvents(proj.id, { ...q, limit: q.limit ? Number(q.limit) : 1000 });
   });
+  // Event-level investigation: read-only, viewer role, project authorization re-checked on every page.
+  app.get("/api/projects/:p/events/search", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const { query, cursor } = parseSearchQuery((req.query ?? {}) as Record<string, unknown>);
+    return searchEvents(store, proj.id, query, cfg.secret, cursor);
+  });
+  app.get("/api/projects/:p/events/:id", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    return eventDetail(store, proj.id, (req.params as { id: string }).id);
+  });
   app.get("/api/projects/:p/evidence/:ref", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
     const e = store.getEvidence(proj.id, (req.params as { ref: string }).ref);
@@ -224,7 +235,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (q.format === "compose" || q.format === "manifest") {
       if (typeof req.body !== "string") throw new HttpError(400, "send the file as text/plain or application/yaml");
       const revision = q.revision ?? `r-${Date.now()}`;
-      const r = q.format === "compose" ? importCompose(req.body, { projectId: proj.id, environment: q.environment ?? "default", revision }) : importManifest(req.body, { revision });
+      let r: ReturnType<typeof importManifest>;
+      try { r = q.format === "compose" ? importCompose(req.body, { projectId: proj.id, environment: q.environment ?? "default", revision }) : importManifest(req.body, { revision }); }
+      catch (e) { if (e instanceof ImportValidationError) throw new HttpError(422, e.message, e.issues); throw e; }
       graph = { ...r.graph, project_id: proj.id, dataset_kind: proj.dataset_kind };
       unresolved = r.unresolved;
     } else graph = req.body as Graph;

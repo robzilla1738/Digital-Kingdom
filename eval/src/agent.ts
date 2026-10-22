@@ -78,7 +78,7 @@ async function chat(cfg: AgentConfig, messages: Msg[], tools: unknown[] | undefi
 
 export const redactAll = (s: string, secrets: string[]) => secrets.reduce((a, x) => (x && x.length > 6 ? a.split(x).join("[redacted]") : a), s);
 
-export async function runAgent(opts: { mode: "dk" | "baseline"; cfg: AgentConfig; task: string; dk?: { url: string; token: string; project: string }; bundle?: unknown; secrets: string[] }): Promise<AgentResult> {
+export async function runAgent(opts: { mode: "dk" | "baseline"; cfg: AgentConfig; task: string; dk?: { url: string; token: string; project: string; mcpProfile?: string }; bundle?: unknown; secrets: string[] }): Promise<AgentResult> {
   const { cfg, mode } = opts;
   const t0 = Date.now();
   const transcript: TranscriptEntry[] = [];
@@ -93,7 +93,7 @@ export async function runAgent(opts: { mode: "dk" | "baseline"; cfg: AgentConfig
     if (mode === "dk") {
       const transport = new StdioClientTransport({
         command: process.execPath, args: ["--import", "tsx", join(ROOT, "apps/mcp/src/main.ts")], cwd: ROOT, stderr: "pipe",
-        env: { PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "", NODE_NO_WARNINGS: "1", DK_URL: opts.dk!.url, DK_TOKEN: opts.dk!.token, DK_PROJECT: opts.dk!.project, DK_MCP_TOOLS: "investigation" },
+        env: { PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "", NODE_NO_WARNINGS: "1", DK_URL: opts.dk!.url, DK_TOKEN: opts.dk!.token, DK_PROJECT: opts.dk!.project, DK_MCP_TOOLS: opts.dk!.mcpProfile ?? "investigation-v1" },
       });
       mcp = new Client({ name: "dk-agent-eval", version: "1" });
       await mcp.connect(transport);

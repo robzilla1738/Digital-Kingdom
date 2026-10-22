@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeAll, afterAll } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { createServer, DkClient, INVESTIGATION_TOOLS, parseToolAllowlist } from "../src/server.ts";
+import { createServer, DkClient, INVESTIGATION_TOOLS, INVESTIGATION_TOOLS_V1, parseToolAllowlist } from "../src/server.ts";
 import { setup } from "../../server/test/helpers.ts";
 
 /**
@@ -36,6 +36,9 @@ describe("read-only investigation profile", () => {
   it("parses the allowlist", () => {
     expect(parseToolAllowlist(undefined)).toBeUndefined();
     expect(parseToolAllowlist("investigation")).toEqual([...INVESTIGATION_TOOLS]);
+    expect(parseToolAllowlist("investigation-v1")).toEqual([...INVESTIGATION_TOOLS_V1]);
+    expect(INVESTIGATION_TOOLS_V1).not.toContain("dk_search_events");
+    expect(INVESTIGATION_TOOLS).toEqual(expect.arrayContaining(["dk_search_events", "dk_get_event"]));
     expect(parseToolAllowlist("dk_overview, dk_coverage")).toEqual(["dk_overview", "dk_coverage"]);
   });
   it("does not expose the proposal tool", async () => {
@@ -64,5 +67,34 @@ describe("read-only investigation profile", () => {
     expect(r.text).toMatch(/404/);
     const list = await (await fetch(base + "/api/projects", { headers: { authorization: `Bearer ${svcViewer}` } })).json();
     expect(list.map((p: { id: string }) => p.id)).toEqual(["demo-castle"]);
+  });
+  it("event search and event detail work in the read-only profile and stay project-scoped", async () => {
+    const c = await connect(svcViewer, INVESTIGATION_TOOLS);
+    const evs = ctx.store.listEvents("demo-castle", { limit: 50_000 });
+    const t = evs.map((e) => Date.parse(e.occurred_at));
+    const after = new Date(Math.min(...t) - 1000).toISOString();
+    const before = new Date(Math.min(Math.max(...t) + 1000, Math.min(...t) + 30 * 86_400_000)).toISOString();
+    const seen: string[] = []; let cursor: string | undefined; let last: any;
+    do {
+      const r = await call(c, "dk_search_events", { after, before, limit: 25, ...(cursor ? { cursor } : {}) });
+      expect(r.isError, r.text).toBe(false);
+      last = JSON.parse(r.text);
+      expect(last.note).toMatch(/untrusted/);
+      expect(last.events.untrusted).toBe(true);
+      seen.push(...last.events.records.map((e: { id: string }) => e.id));
+      cursor = last.page.next_cursor ?? undefined;
+    } while (cursor);
+    expect(new Set(seen).size).toBe(seen.length);
+    expect(seen.length).toBe(last.query_completeness.matching_in_snapshot);
+    expect(last.query_completeness.complete).toBe(true);
+    const d = await call(c, "dk_get_event", { id: seen[0]! });
+    expect(d.isError).toBe(false);
+    expect(JSON.parse(d.text).event.id).toBe(seen[0]);
+    const x = await call(c, "dk_search_events", { after, before, project: "other-project" });
+    expect(x.isError).toBe(true);
+    expect(x.text).toMatch(/40[34]/);
+    const bad = await call(c, "dk_search_events", { after: "yesterday", before });
+    expect(bad.isError).toBe(true);
+    expect(bad.text).toMatch(/422/);
   });
 });
