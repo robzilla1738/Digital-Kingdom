@@ -1,6 +1,6 @@
 # Controlled non-production pilot: results
 
-**Result: the controlled, isolated, non-production pilot passed (9/9 browser scenarios), after the fixes listed below.** This exercise does **not** establish production readiness. See "What this does not establish".
+**Result: the controlled, isolated, non-production pilot passed (11/11 browser scenarios), after the fixes listed below.** This exercise does **not** establish production readiness. See "What this does not establish".
 
 ## Tested code
 
@@ -25,10 +25,10 @@
 |---|---|
 | `pnpm install --frozen-lockfile` | ok |
 | `pnpm typecheck` | ok, no errors |
-| `pnpm test` (vitest) | baseline at 591289d: 13 files / 141 tests passed. Branch: 15 files / 144 tests passed |
+| `pnpm test` (vitest) | baseline at 591289d: 13 files / 141 tests passed. Branch (after the connection-state patch): 16 files / 145 tests passed |
 | `pnpm validate:fixtures` | all checks PASS |
 | `pnpm build`, and `DK_BASE=/Digital-Kingdom/ VITE_DK_STATIC_DEMO=1 VITE_DK_BUILD=test pnpm build` | ok. Build ID embedded (`dk-build` = `test`) |
-| `pnpm build && pnpm pilot` (Playwright) | 9 passed, 0 skipped, 0 flaky (2.3 min). Repeated on 3 separate clean runs |
+| `pnpm build && pnpm pilot` (Playwright) | Before the connection-state patch: 9 passed on 3 separate clean runs. After it: 11 passed, 0 skipped, 0 flaky (1.9 min) |
 
 ## Browser pilot scenarios (`e2e/pilot.spec.ts`)
 
@@ -41,6 +41,8 @@
 | C3 | WebGL unavailable | PASS (fallback only, **not counted as 3D**) | 3D control disabled, banner, 2D graph, no canvas |
 | D | Stale source, unknown and mixed targets | PASS | Coverage `degraded`, shown as "Stale", never "outage". Unknown asset → `not_assessed`. Known + unknown → `insufficient_context`, `targets_unresolved: 1` |
 | E | Acknowledge, crash before processing, restart | PASS | 202 while the worker was paused. SIGKILL. After restart, processed **exactly once**, and a resend is a `duplicate`. Browser showed "Reconnecting" with a "not live monitoring" banner and "Latest received · not live", then reconnected |
+| E2 | Stream reconnects, but the catch-up snapshot fails (injected 503), then is held (delayed) | PASS | Recorded pill states: live → reconnecting → synchronizing → sync-failed → live. "Live" appears only after the held snapshot is released and applied. The stale banner and "Latest received · not live" stay up until then |
+| E3 | Snapshot refresh fails (injected 500) while the stream stays connected, then recovers | PASS | Recorded states: live → sync-failed → live, never reconnecting or lost (transport stayed up). The bounded retry clears the stale banner, and the timeline returns to Live |
 | F | Containment | PASS | Service proposal via MCP → `pending`. Self-approval 403. Human admin → `approved`. Events, findings, sources and reference-app behavior unchanged (lockout still 429) |
 | G | Instruction-like evidence text | PASS | Rendered literally as text, no `<img>` element, script did not run. MCP returns it as untrusted data. No containment request created, finding level and outcome unchanged |
 
@@ -52,6 +54,7 @@ Structured observations: `docs/img/pilot/pilot-observations.json`. Screenshots: 
 |---|---|---|
 | After a live session, an unreachable server made the UI **silently swap in the offline synthetic demo** | Once in server mode, keep the last data and show a "Connection lost… not live monitoring" banner with the last sync time | pilot E (no synthetic pill, banner visible) |
 | The timeline said **"Live" while the stream was down** | "Live" requires a healthy stream, otherwise "Latest received · not live". A reconnect forces a snapshot refetch | pilot E |
+| After a stream reconnect, the view **went Live before the catch-up snapshot was applied**, and a **failed snapshot with the stream connected** was not shown as stale. The dataset badge also said **"Live"** next to a non-live connection indicator | Transport and snapshot sync are tracked separately (`apps/web/src/lib/connection.ts`). Reconnect shows "Synchronizing" with the stale banner until the snapshot is applied. A failed snapshot shows "Sync failed · retrying" and retries with bounded backoff (1 s → 10 s) while the stream is open. The badge is now "Telemetry" | `connection.test.ts`, pilot E2, E3, A (badge) |
 | Stale-source findings were stamped with the **Unix epoch** (shown 00:00:00, sorted first) and labelled **synthetic in a live project** | Derived stale moment (last receipt + threshold, stable across sweeps), using the project's dataset kind | `packages/detections/test/coverage-finding-time.test.ts`, pilot D |
 | The event inspector **did not show source attributes or stored evidence records**, so the supporting records could not be inspected | Shown as plain text, explicitly labelled untrusted | pilot G |
 | The public static demo requested `/api/me` at the **origin root** (404 outside the base path) | `VITE_DK_STATIC_DEMO=1` in the Pages build never contacts a backend | build check. Needs a Pages redeploy to observe |
@@ -84,6 +87,7 @@ None open from this run.
 
 - Run `39767190443` (branch head `624529e`): `check` passed. `browser-pilot` failed at `npx playwright install --with-deps chromium` before any test ran, which led to the runner pin.
 - Run `39767455892` (branch head `079cc30`, `ubuntu-24.04`): **`check` passed and `browser-pilot` passed** (install, build, `pnpm pilot`, evidence upload). Artifact `browser-pilot-evidence`: https://github.com/robzilla1738/Digital-Kingdom/actions/runs/39767455892
+- After the connection-state patch, the CI results for the final branch head are recorded in the pull request, since adding them here would create a new head.
 - CI runs Chromium on x86_64 Ubuntu 24.04 with software WebGL. The local runs were on aarch64 Debian 13.
 
 ## What this does not establish
