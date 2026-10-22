@@ -1,7 +1,7 @@
 {
   "name": "digital-kingdom",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Self-hosted security evidence console rendered as a navigable castle, with an MCP interface for AI agents.",
   "license": "Apache-2.0",
   "type": "module",

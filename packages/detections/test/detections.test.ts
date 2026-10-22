@@ -7,12 +7,15 @@ import { demoDeliveries, demoGraph, demoSources } from "../../../fixtures/testin
 const T0 = Date.parse("2026-10-20T14:00:00Z");
 const t = (sec: number) => new Date(T0 + sec * 1000).toISOString();
 const SRC: SourceConfig[] = [
-  { id: "edge-src", label: "Edge", asset_ids: ["edge"], trusts_request_ids: true },
-  { id: "auth-src", label: "Auth", asset_ids: ["auth"], trusts_request_ids: true },
-  { id: "app-src", label: "App", asset_ids: ["api"], trusts_request_ids: false },
-  { id: "observer", label: "Observer", asset_ids: ["blob", "tools"], trusts_request_ids: true },
-  { id: "agent-src", label: "Agent wrapper", asset_ids: ["agent", "tools"], trusts_request_ids: true },
-  { id: "db-audit", label: "DB audit", asset_ids: ["db"] },
+  { id: "edge-src", label: "Edge", kind: "waf", asset_ids: ["edge"], trusts_request_ids: true },
+  { id: "auth-src", label: "Auth", kind: "app_auth", asset_ids: ["auth"], trusts_request_ids: true },
+  { id: "app-src", label: "App", kind: "app_security", asset_ids: ["api"], trusts_request_ids: false },
+  { id: "observer", label: "Observer", kind: "effect_observer", asset_ids: ["blob", "tools"], trusts_request_ids: true },
+  { id: "observer-relay", label: "Observer via second collector", kind: "effect_observer", asset_ids: ["blob", "tools"], trusts_request_ids: true, independence_group: "observer" },
+  { id: "edge-relay", label: "Edge via log shipper", kind: "effect_observer", asset_ids: ["blob"], trusts_request_ids: true, independence_group: "edge-src" },
+  { id: "agent-src", label: "Agent wrapper", kind: "agent_observer", asset_ids: ["agent", "tools"], trusts_request_ids: true },
+  { id: "decoy-src", label: "Decoys", kind: "honeytoken", asset_ids: ["agent"] },
+  { id: "db-audit", label: "DB audit", kind: "db_audit", asset_ids: ["db"] },
 ];
 let seq = 0;
 const ev = (source_id: string, sec: number, p: Partial<IngestEvent>, recvDelaySec = 1) => ({
@@ -109,7 +112,7 @@ describe("evidence and correlation acceptance (A)", () => {
     expect(occurred.late_event_ids).toHaveLength(1);
   });
   it("E12: a decoy use confirms the token event without identity or entry-point claims", () => {
-    const r = run([ev("agent-src", 0, { asset_ids: ["agent"], action: "decoy_used", outcome: "success", rule_ref: "canary-1" })]);
+    const r = run([ev("decoy-src", 0, { asset_ids: ["agent"], action: "decoy_used", outcome: "success", rule_ref: "canary-1" })]);
     const f = r.findings.find((x) => x.kind === "decoy_credential_used")!;
     expect(f.not_claimed.join(" ")).toMatch(/not identified/);
     expect(f.coverage_gaps.join(" ")).toMatch(/entry point/);
@@ -119,6 +122,36 @@ describe("evidence and correlation acceptance (A)", () => {
     const a = evaluate(demoGraph(), p.events, { sources: demoSources() });
     const b = evaluate(demoGraph(), [...p.events].reverse(), { sources: demoSources() });
     expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+  });
+});
+
+describe("source capabilities and independence (fix 3)", () => {
+  it("a source restricted to one service cannot report another service's privileged event", () => {
+    const r = run([ev("auth-src", 0, { asset_ids: ["orders-api"], action: "authorization_change", outcome: "success", actor_ref: "x" })]);
+    expect(r.events).toHaveLength(0);
+    expect(r.stats.rejected).toEqual({ asset_not_permitted: 1 });
+  });
+  it("an application producer cannot claim an independently observed effect", () => {
+    const r = run([ev("app-src", 0, { asset_ids: ["api"], action: "side_effect_observed", outcome: "observed" })]);
+    expect(r.stats.rejected).toEqual({ action_not_permitted: 1 });
+  });
+  it("a generic producer has no observation authority by default", () => {
+    const g = demoGraph();
+    const p = processDeliveries(g, [{ id: "gen", label: "generic", asset_ids: ["api"] }], [ev("gen", 0, { asset_ids: ["api"], action: "decoy_used", outcome: "success" })]);
+    expect(p.stats.rejected).toEqual({ action_not_permitted: 1 });
+  });
+  it("two collectors relaying the same observer do not corroborate each other", () => {
+    const r = run([
+      ev("agent-src", 0, { asset_ids: ["tools"], action: "tool_invocation", outcome: "success", run_id: "rx" }),
+      ev("observer", 1, { asset_ids: ["tools"], action: "side_effect_observed", outcome: "observed", run_id: "rx" }),
+      ev("observer-relay", 1, { asset_ids: ["tools"], action: "side_effect_observed", outcome: "observed", run_id: "rx" }),
+    ]);
+    expect(r.findings.find((f) => f.kind === "agent_effect_observed")!.evidence_level).toBe("corroborated"); // agent wrapper vs observer: independent
+    const relayOnly = run([
+      ev("edge-src", 0, { action: "waf_match", outcome: "blocked", request_id: "req-r", rule_ref: "x" }),
+      ev("edge-relay", 1, { asset_ids: ["blob"], action: "side_effect_observed", outcome: "observed", request_id: "req-r" }),
+    ]);
+    expect(relayOnly.findings.map((f) => f.kind)).not.toContain("source_contradiction"); // same origin is not independent
   });
 });
 

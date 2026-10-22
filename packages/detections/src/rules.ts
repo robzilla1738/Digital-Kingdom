@@ -1,3 +1,4 @@
+import { independenceGroups } from "./capabilities.ts";
 import {
   stableId, toMs, byTimeThenId,
   type CoverageRecord, type Finding, type FindingKind, type Graph, type SecurityEvent, type Severity,
@@ -7,6 +8,7 @@ export const RULESET_VERSION = "dk-rules-1.0.0";
 
 export interface SourceDeclaration {
   id: string;
+  independence_group?: string;
   label: string;
   asset_ids: string[];
   /** Silence longer than this (live mode) degrades coverage. */
@@ -43,6 +45,8 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
   const events = [...inputEvents].sort(byTimeThenId);
   const drafts: Draft[] = [];
   const assetName = (id: string) => graph.assets.find((a) => a.id === id)?.name ?? id;
+  // Independence is judged by observation origin, not by source id: relays of one report share a group.
+  const group = independenceGroups(opts.sources);
 
   // ---------- contradictions first (they adjust other findings) ----------
   const trustedByRequest = new Map<string, SecurityEvent[]>();
@@ -52,7 +56,7 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
     const blocked = evs.filter((e) => e.outcome === "denied" || e.outcome === "blocked");
     const effects = evs.filter((e) => (e.action === "side_effect_observed" || e.action === "data_access") && (e.outcome === "observed" || e.outcome === "success"));
     for (const b of blocked) {
-      const independent = effects.filter((x) => x.source_id !== b.source_id);
+      const independent = effects.filter((x) => group(x.source_id) !== group(b.source_id));
       if (!independent.length) continue;
       contradicted.set(b.id, independent);
       drafts.push({
@@ -143,7 +147,7 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
   const decoys = new Map<string, SecurityEvent[]>();
   for (const e of events) if (e.action === "decoy_used") push(decoys, `${e.asset_ids.join(",")}|${e.rule_ref ?? e.actor_ref ?? "decoy"}`, e);
   for (const [k, evs] of decoys) {
-    const srcs = unique(evs.map((e) => e.source_id));
+    const srcs = unique(evs.map((e) => group(e.source_id)));
     drafts.push({
       key: `decoy:${k}`, kind: "decoy_credential_used", title: `Decoy credential used (${assetName(evs[0]!.asset_ids[0]!)})`,
       claim: `A registered decoy credential placed with ${evs[0]!.asset_ids.map(assetName).join(", ")} was used ${evs.length} time(s).`,
@@ -175,7 +179,7 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
       rule_id: "agent.enforcement_denied", rule_version: "1", events: [...denied, ...refused],
     });
     if (observed.length) {
-      const independent = observed.filter((o) => !reported.some((r) => r.source_id === o.source_id));
+      const independent = observed.filter((o) => !reported.some((r) => group(r.source_id) === group(o.source_id)));
       drafts.push({
         key: `agenteffect:${run}`, kind: "agent_effect_observed", title: `Agent action had an observed effect (${run})`,
         claim: `${unique(observed.map((e) => e.source_id)).join(", ")} observed ${observed.length} effect(s) from agent run ${run}${reported.length ? `, matching ${reported.length} tool call(s) the agent runtime reported` : ", with no matching tool call reported by the runtime"}.`,

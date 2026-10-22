@@ -12,7 +12,7 @@ async function liveProject(ctx: Awaited<ReturnType<typeof setup>>) {
   const g = await app.inject({ method: "POST", url: "/api/projects/shop/graph", headers: h(admin), payload: liveGraph() });
   expect(g.statusCode, g.body).toBe(200);
   const s = await app.inject({ method: "POST", url: "/api/projects/shop/sources", headers: h(admin), payload: { id: "waf", label: "Edge WAF", kind: "waf", asset_ids: ["edge"], trusts_request_ids: true } });
-  const o = await app.inject({ method: "POST", url: "/api/projects/shop/sources", headers: h(admin), payload: { id: "observer", label: "Observer", asset_ids: ["db"], trusts_request_ids: true } });
+  const o = await app.inject({ method: "POST", url: "/api/projects/shop/sources", headers: h(admin), payload: { id: "observer", label: "Observer", kind: "effect_observer", asset_ids: ["db"], trusts_request_ids: true } });
   return { wafKey: s.json().key as string, observerKey: o.json().key as string };
 }
 const evt = (id: string, extra: Record<string, unknown> = {}) => ({ source_event_id: id, occurred_at: "2026-10-21T10:00:00Z", asset_ids: ["edge"], action: "waf_match", outcome: "blocked", rule_ref: "942100", ...extra });
@@ -78,7 +78,7 @@ describe("ingestion (TK-013/014)", () => {
   it("S14: synthetic sources cannot be attached to live projects; demo keys only write to demo", async () => {
     const ctx = await setup();
     await liveProject(ctx);
-    const r = await ctx.app.inject({ method: "POST", url: "/api/projects/shop/sources", headers: ctx.h(ctx.admin), payload: { id: "fake", label: "demo", dataset_kind: "synthetic" } });
+    const r = await ctx.app.inject({ method: "POST", url: "/api/projects/shop/sources", headers: ctx.h(ctx.admin), payload: { id: "fake", label: "demo", asset_ids: ["edge"], dataset_kind: "synthetic" } });
     expect(r.statusCode).toBe(422);
     const g = await ctx.app.inject({ method: "POST", url: "/api/projects/shop/graph", headers: ctx.h(ctx.admin), payload: { ...liveGraph(), dataset_kind: "synthetic", graph_revision: "r2" } });
     expect(g.statusCode).toBe(422);
@@ -121,13 +121,14 @@ describe("ingestion (TK-013/014)", () => {
   it("OTLP spans map to sampled context events", async () => {
     const ctx = await setup();
     await liveProject(ctx);
-    const { key } = (await ctx.app.inject({ method: "POST", url: "/api/projects/shop/sources", headers: ctx.h(ctx.admin), payload: { id: "otel", label: "OTel", asset_ids: ["api"] } })).json();
+    const { key } = (await ctx.app.inject({ method: "POST", url: "/api/projects/shop/sources", headers: ctx.h(ctx.admin), payload: { id: "otel", label: "OTel", kind: "otel", asset_ids: ["api"] } })).json();
     const body = { resourceSpans: [{ resource: { attributes: [{ key: "service.name", value: { stringValue: "checkout-api" } }] }, scopeSpans: [{ spans: [
       { traceId: "0af7651916cd43dd8448eb211c80319c", spanId: "b7ad6b7169203331", name: "GET /cart/:id", startTimeUnixNano: "1761040800000000000", attributes: [{ key: "http.route", value: { stringValue: "/cart/:id" } }, { key: "http.response.status_code", value: { intValue: 403 } }] },
       { traceId: "0af7651916cd43dd8448eb211c80319c", spanId: "c7ad6b7169203331", name: "internal", startTimeUnixNano: "1761040800000000000", attributes: [] },
     ] }] }] };
     const r = await ctx.app.inject({ method: "POST", url: "/v1/traces", headers: { authorization: `Bearer ${key}` }, payload: body });
-    expect(r.json()).toMatchObject({ accepted: 1, skipped_spans: 1 });
+    expect(r.statusCode).toBe(200);
+    expect(r.json()).toEqual({}); // ExportTraceServiceResponse with no partial success
     ctx.store.processBatch();
     const e = ctx.store.listEvents("shop")[0]!;
     expect(e).toMatchObject({ sampled: true, outcome: "denied", route: "/cart/:id", asset_ids: ["api"] });

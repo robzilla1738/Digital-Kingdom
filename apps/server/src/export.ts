@@ -18,9 +18,17 @@ export function exportCase(store: Store, projectId: string, findingId: string, a
   const ix = new GraphIndex(graph);
   const assetIds = new Set(detail.finding.affected_asset_ids);
   for (const id of [...assetIds]) for (const r of ix.neighbors(id)) { assetIds.add(r.source_id); assetIds.add(r.target_id); }
-  const ids = new Set([...detail.finding.event_ids, ...detail.finding.counterevidence_event_ids]);
-  const events = store.listEvents(projectId, { limit: 50_000 }).filter((e) => ids.has(e.id));
-  const evidence = store.evidenceFor(projectId, events.flatMap((e) => e.evidence_refs));
+  // exact references, never a recency window: older cases export completely or say what is missing
+  const ids = [...new Set([...detail.finding.event_ids, ...detail.finding.counterevidence_event_ids])];
+  const events = store.eventsByIds(projectId, ids);
+  const found = new Set(events.map((e) => e.id));
+  const storedRefs = [...new Set(events.flatMap((e) => e.evidence_refs))].filter((r) => r.startsWith("evidence:"));
+  const evidence = store.evidenceFor(projectId, storedRefs);
+  const completeness = {
+    expected_events: ids.length, included_events: events.length, missing_event_ids: ids.filter((i) => !found.has(i)),
+    expected_evidence_records: storedRefs.length, included_evidence_records: Object.keys(evidence).length,
+    missing_evidence_refs: storedRefs.filter((r) => !evidence[r]),
+  };
   const scene = store.getScene(projectId);
   const evaluation = store.evaluation(projectId);
   const sections = {
@@ -30,6 +38,7 @@ export function exportCase(store: Store, projectId: string, findingId: string, a
     events,
     evidence,
     topology: { graph_revision: graph.graph_revision, assets: graph.assets.filter((a) => assetIds.has(a.id)), relationships: graph.relationships.filter((r) => assetIds.has(r.source_id) && assetIds.has(r.target_id)) },
+    completeness,
     coverage: evaluation.coverage.filter((c) => c.asset_ids.some((a) => assetIds.has(a))),
     versions: { ruleset: RULESET_VERSION, parser: PARSER_VERSION, compiler: COMPILER_VERSION, catalog: CATALOG_VERSION, scene_digest: scene?.digest ?? null },
   };
@@ -40,6 +49,7 @@ export function exportCase(store: Store, projectId: string, findingId: string, a
     finding_id: findingId,
     exported_at: store.now().toISOString(),
     exported_by: actor,
+    complete: completeness.missing_event_ids.length === 0 && completeness.missing_evidence_refs.length === 0,
     coverage_window: { from: events[0]?.occurred_at ?? null, to: events[events.length - 1]?.occurred_at ?? null },
     section_sha256: Object.fromEntries(Object.entries(sections).map(([k, v]) => [k, sha256(canonicalJson(v))])),
     guarantee: "Tamper detection relative to this server's export record. Not proof of completeness, source truth, or admissibility.",

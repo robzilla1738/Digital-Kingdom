@@ -75,26 +75,56 @@ export function summarize(f: Finding) {
   };
 }
 
-/** Deterministic pre-change review for an agent about to modify assets/routes. */
+export type Posture = "hold" | "proceed_with_care" | "insufficient_context" | "not_assessed" | "no_recorded_concerns";
+
+const POSTURE_MEANING: Record<Posture, string> = {
+  hold: "Open high-severity or contradicted findings touch this change. Pause or get a human review first.",
+  proceed_with_care: "Findings or coverage gaps touch this change. Proceed with the recommendations.",
+  insufficient_context: "Some targets could not be resolved, so this assessment is incomplete. Fix the unresolved targets before relying on it.",
+  not_assessed: "No target could be resolved (unknown asset or route, missing graph, or lookup failure). Nothing was assessed; this is NOT a clean result.",
+  no_recorded_concerns: "Every target resolved and no recorded findings or coverage gaps touch it. This is not proof of safety.",
+};
+
+/**
+ * Deterministic pre-change review for an agent about to modify assets/routes. An unresolved target can
+ * never produce a favorable result: if nothing resolves the posture is not_assessed, and if only some
+ * resolve the best possible posture is insufficient_context.
+ */
 export function assessChange(store: Store, projectId: string, input: { asset_ids?: string[]; routes?: string[]; summary?: string }) {
-  const targets = [...(input.asset_ids ?? []).map((asset) => ({ asset })), ...(input.routes ?? []).map((route) => ({ route }))].slice(0, 20);
+  const targets: { asset?: string; route?: string }[] = [...(input.asset_ids ?? []).map((asset) => ({ asset })), ...(input.routes ?? []).map((route) => ({ route }))];
   if (!targets.length) throw new HttpError(400, "provide asset_ids or routes");
-  const contexts = targets.map((t) => { try { return securityContext(store, projectId, t); } catch (e) { return { error: (e as Error).message, target: t }; } });
-  const ok = contexts.filter((c): c is ReturnType<typeof securityContext> => !("error" in c));
+  if (targets.length > 20) throw new HttpError(400, "at most 20 targets per assessment");
+  type Ctx = ReturnType<typeof securityContext>;
+  const results = targets.map((t) => {
+    try { return { target: t, ok: true as const, ctx: securityContext(store, projectId, t) }; }
+    catch (e) {
+      const reason = e instanceof HttpError ? (/no graph/.test(e.message) ? "missing_graph" : e.status === 404 ? "unknown_target" : "lookup_error") : "lookup_error";
+      return { target: t, ok: false as const, reason, error: (e as Error).message };
+    }
+  });
+  const ok = results.filter((r): r is { target: typeof r.target; ok: true; ctx: Ctx } => r.ok).map((r) => r.ctx);
+  const unresolved = results.filter((r) => !r.ok).map((r) => ({ target: r.target, reason: (r as { reason: string }).reason, error: (r as { error: string }).error }));
   const direct = ok.flatMap((c) => c.findings.direct);
   const severe = direct.filter((f) => f.severity === "high" || f.severity === "critical" || f.evidence_level === "contradicted");
   const gaps = ok.filter((c) => c.coverage.some((x) => x.state !== "healthy"));
-  const posture = severe.length ? "hold" : direct.length || gaps.length ? "proceed_with_care" : "no_recorded_concerns";
+  let posture: Posture;
+  if (!ok.length) posture = "not_assessed";
+  else if (severe.length) posture = "hold";
+  else if (unresolved.length) posture = "insufficient_context";
+  else if (direct.length || gaps.length) posture = "proceed_with_care";
+  else posture = "no_recorded_concerns";
   const recommendations = [...new Set(ok.flatMap((c) => c.guidance))];
-  if (posture !== "no_recorded_concerns") recommendations.push("Ship behind a feature flag or canary and keep the owning team informed.");
+  if (unresolved.length) recommendations.unshift(`Resolve ${unresolved.length} unknown target(s) (${unresolved.map((u) => u.target.asset ?? u.target.route).join(", ")}); check spelling or register the asset in the graph.`);
+  if (posture === "hold" || posture === "proceed_with_care" || posture === "insufficient_context") recommendations.push("Ship behind a feature flag or canary and keep the owning team informed.");
   return {
     posture,
-    posture_meaning: {
-      hold: "Open high-severity or contradicted findings touch this change. Recommend pausing or getting a human review first.",
-      proceed_with_care: "Findings or coverage gaps touch this change. Proceed with the recommendations.",
-      no_recorded_concerns: "No recorded findings touch these targets. This is not proof of safety; check coverage.",
-    }[posture],
-    targets: contexts.map((c) => ("error" in c ? c : { asset: c.asset, direct_findings: c.findings.direct.map((f) => f.id), coverage: c.coverage })),
+    assessment_complete: unresolved.length === 0 && ok.length > 0,
+    posture_meaning: POSTURE_MEANING[posture],
+    targets_requested: targets.length,
+    targets_resolved: ok.length,
+    targets_unresolved: unresolved.length,
+    unresolved,
+    targets: ok.map((c) => ({ asset: c.asset, direct_findings: c.findings.direct.map((f) => f.id), coverage: c.coverage })),
     blocking_findings: severe,
     recommendations,
     summary_echo: input.summary?.slice(0, 500),

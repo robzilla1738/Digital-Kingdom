@@ -3,3 +3,4 @@ export * from "./normalize.ts";
 export * from "./rules.ts";
 export * from "./replay.ts";
 export * from "./pipeline.ts";
+export * from "./capabilities.ts";

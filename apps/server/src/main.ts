@@ -38,7 +38,7 @@ setInterval(() => {
   try { while (store.processBatch(200).processed) { /* drain */ } } catch (e) { console.error("worker batch failed (will retry):", e); } finally { busy = false; }
 }, Number(env.DK_WORKER_INTERVAL_MS ?? 250)).unref();
 setInterval(() => {
-  try { for (const p of store.listProjects({ kind: "token", id: "system", name: "system", role: "admin", projects: "*" })) if (p.dataset_kind === "live") store.evaluateProject(p.id); store.pruneOutbox(); } catch (e) { console.error("coverage sweep failed:", e); }
+  try { for (const p of store.listProjects({ kind: "token", id: "system", name: "system", role: "admin", projects: "*", principalType: "service" })) if (p.dataset_kind === "live") store.evaluateProject(p.id); store.pruneOutbox(); } catch (e) { console.error("coverage sweep failed:", e); }
 }, 30_000).unref();
 
 const port = Number(env.PORT ?? 8787);

@@ -30,12 +30,17 @@ const MIGRATIONS: string[] = [
    CREATE TABLE sessions (id_hash TEXT PRIMARY KEY, token_id TEXT NOT NULL, expires_at TEXT NOT NULL);
    CREATE TABLE audit_log (id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, actor TEXT NOT NULL, action TEXT NOT NULL, project_id TEXT, target TEXT, detail TEXT);
    CREATE TABLE containment_requests (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, finding_id TEXT NOT NULL, action_id TEXT NOT NULL, requested_by TEXT NOT NULL, rationale TEXT NOT NULL, status TEXT NOT NULL CHECK (status IN ('pending','approved','rejected')), decided_by TEXT, created_at TEXT NOT NULL, decided_at TEXT);`,
+  `ALTER TABLE sources ADD COLUMN allowed_actions TEXT;
+   ALTER TABLE sources ADD COLUMN independence_group TEXT;
+   ALTER TABLE api_tokens ADD COLUMN principal_type TEXT NOT NULL DEFAULT 'human' CHECK (principal_type IN ('human','service'));
+   ALTER TABLE containment_requests ADD COLUMN requested_by_type TEXT NOT NULL DEFAULT 'human';
+   CREATE INDEX events_project_seq ON events (project_id, seq);`,
 ];
 
 export function openDb(path: string): DB {
   if (path !== ":memory:") mkdirSync(dirname(path), { recursive: true });
   const db = new DatabaseSync(path);
-  db.exec("PRAGMA journal_mode = WAL; PRAGMA synchronous = FULL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;");
+  db.exec("PRAGMA secure_delete = ON; PRAGMA journal_mode = WAL; PRAGMA synchronous = FULL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;");
   db.exec("CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)");
   const applied = new Set((db.prepare("SELECT version FROM schema_migrations").all() as { version: number }[]).map((r) => r.version));
   MIGRATIONS.forEach((sql, i) => {

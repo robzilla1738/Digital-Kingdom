@@ -1,12 +1,13 @@
 name: demo-pages
-# Publishes the OFFLINE synthetic demo (no server, bundled fixtures, same engine in the browser).
+# Publishes the OFFLINE synthetic demo (no server, bundled fixtures, same engine in the browser) to the
+# gh-pages branch. This does not deploy the backend or the MCP server.
 on:
   push: { branches: [main] }
   workflow_dispatch: {}
-permissions: { contents: read, pages: write, id-token: write }
+permissions: { contents: write }
 concurrency: { group: pages, cancel-in-progress: true }
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,12 +17,14 @@ jobs:
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: DK_BASE=/${{ github.event.repository.name }}/ pnpm --filter @dk/web build
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: apps/web/dist }
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: { name: github-pages, url: "${{ steps.deployment.outputs.page_url }}" }
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Push to gh-pages
+        run: |
+          cd apps/web/dist
+          touch .nojekyll
+          cp index.html 404.html
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Deploy offline demo from ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages

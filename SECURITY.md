@@ -7,10 +7,11 @@ Please report suspected vulnerabilities privately through GitHub's "Report a vul
 Digital Kingdom is a **read-only evidence console**. In this version it:
 
 - holds **no credentials** for monitored production systems and has **no** code path that changes them;
-- records containment only as **proposals** that a different human must approve; it never executes them;
+- records containment only as **proposals** that a different human-typed token must decide (service tokens can request, never decide; this proves distinct tokens, not distinct people); it never executes them;
 - treats every event field, label, alias and model output as **untrusted data** (rendered as text, never as HTML or instructions);
 - authorizes every API route on the server (viewer, analyst, admin), binds each source key to exactly one project and dataset kind, and refuses to mix synthetic and live data;
-- removes or masks credential-like data at ingestion and does not retain raw originals.
+- minimizes and redacts every inbound record **before the first durable write** and never journals raw originals;
+- limits each source to its assigned assets and permitted event categories.
 
 ## Deployment checklist
 - Put TLS in front; set `DK_SECURE_COOKIES=true`.

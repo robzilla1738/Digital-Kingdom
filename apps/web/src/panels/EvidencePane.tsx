@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { MODULE_CATALOG, type Finding, type SecurityEvent } from "@dk/contracts";
 import { useApp } from "../lib/state.tsx";
 import { ACTION_LABEL, COVERAGE_STYLE, EVENT_OUTCOME_COLOR, EVIDENCE_LEVEL_LABEL, KIND_LABEL, OUTCOME_STYLE, RELATIONSHIP_LAYER, LAYER_STYLE, fmtDateTime, fmtTime } from "../lib/vocab.ts";
@@ -9,6 +9,8 @@ export interface ServerActions {
   exportCase(id: string): Promise<void>;
   containment(): Promise<{ catalog: { id: string; title: string; applies_to_kinds: string[]; blast_radius: string; reversible: boolean }[]; requests: Record<string, string>[] }>;
   requestContainment(findingId: string, actionId: string, rationale: string): Promise<void>;
+  /** Complete, paginated evidence for one finding (by its own references, not a recency window). */
+  findingEvidence(id: string): Promise<{ events: SecurityEvent[]; evidence: Record<string, Record<string, unknown>>; expected: number; missingEvents: string[]; missingEvidence: string[]; complete: boolean; error?: string }>;
 }
 export const ActionsCtx = createContext<ServerActions | null>(null);
 
@@ -142,10 +144,21 @@ function FindingView({ id }: { id: string }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [containment, setContainment] = useState<Awaited<ReturnType<ServerActions["containment"]>> | null>(null);
+  const [full, setFull] = useState<Awaited<ReturnType<ServerActions["findingEvidence"]>> | null>(null);
+  const localIds = new Set(vm.data.events.map((e) => e.id));
+  const needsFetch = !!f && !!actions && [...f.event_ids, ...f.counterevidence_event_ids].some((x) => !localIds.has(x));
+  useEffect(() => {
+    setFull(null);
+    if (needsFetch && actions && f) actions.findingEvidence(f.id).then(setFull, (e) => setFull({ events: [], evidence: {}, expected: 0, missingEvents: [], missingEvidence: [], complete: false, error: (e as Error).message }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [f?.id, f?.revision, needsFetch]);
   if (!f) return <p>This finding does not exist yet at this point in the replay.</p>;
   const s = OUTCOME_STYLE[f.outcome_state];
-  const evs = vm.data.events.filter((e) => f.event_ids.includes(e.id));
-  const counter = vm.data.events.filter((e) => f.counterevidence_event_ids.includes(e.id));
+  const pool = full ? [...vm.data.events, ...full.events.filter((e) => !localIds.has(e.id))] : vm.data.events;
+  const evs = pool.filter((e) => f.event_ids.includes(e.id));
+  const counter = pool.filter((e) => f.counterevidence_event_ids.includes(e.id));
+  const expectedCount = new Set([...f.event_ids, ...f.counterevidence_event_ids]).size;
+  const shownCount = evs.length + counter.length;
   const name = (x: string) => vm.data.graph.assets.find((y) => y.id === x)?.name ?? x;
   const canAnalyst = actions && (actions.role === "analyst" || actions.role === "admin");
   const kinds = new Set(f.affected_asset_ids.map((a) => vm.data.graph.assets.find((x) => x.id === a)?.kind));
@@ -170,6 +183,12 @@ function FindingView({ id }: { id: string }) {
       </div>
       {f.not_claimed.length > 0 && <Section title="What this does not claim"><ul className="bullets">{f.not_claimed.map((x, i) => <li key={i}>{x}</li>)}</ul></Section>}
       {f.coverage_gaps.length > 0 && <Section title="Evidence gaps"><ul className="bullets warn">{f.coverage_gaps.map((x, i) => <li key={i}>{x}</li>)}</ul></Section>}
+      {shownCount < expectedCount && (
+        <div className="callout warn" role="status">
+          {needsFetch && !full ? "Loading the older supporting events…" : full?.error ? `Could not load all supporting events: ${full.error}` : `Showing ${shownCount} of ${expectedCount} referenced events.`} This view is incomplete; do not treat it as the full record.
+        </div>
+      )}
+      {full && full.missingEvidence.length > 0 && <div className="callout warn">{full.missingEvidence.length} evidence record(s) referenced by these events could not be retrieved.</div>}
       <Section title={`Supporting events (${evs.length})`}><EventTable events={evs} /></Section>
       {counter.length > 0 && <Section title={`Counterevidence (${counter.length})`}><EventTable events={counter} /></Section>}
       <Section title="Next review steps"><ol className="bullets">{f.next_steps.map((x, i) => <li key={i}>{x}</li>)}</ol></Section>

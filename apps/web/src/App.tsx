@@ -59,6 +59,17 @@ export function App() {
     },
     containment: () => api.get(`/api/projects/${data.project.id}/containment`),
     requestContainment: async (findingId, actionId, rationale) => { await api.send("POST", `/api/projects/${data.project.id}/containment`, { finding_id: findingId, action_id: actionId, rationale }); },
+    findingEvidence: async (id) => {
+      type Page = { expected_event_count: number; events: Dataset["events"]; evidence: Dataset["evidence"]; missing_event_ids: string[]; missing_evidence_refs: string[]; next_offset: number | null };
+      const events: Dataset["events"] = []; const evidence: Dataset["evidence"] = {}; const missingEvents: string[] = []; const missingEvidence: string[] = [];
+      let offset: number | null = 0, expected = 0;
+      while (offset !== null && events.length < 5000) {
+        const p: Page = await api.get<Page>(`/api/projects/${data.project.id}/findings/${encodeURIComponent(id)}/evidence?offset=${offset}&limit=500`);
+        expected = p.expected_event_count; events.push(...p.events); Object.assign(evidence, p.evidence); missingEvents.push(...p.missing_event_ids); missingEvidence.push(...p.missing_evidence_refs); offset = p.next_offset;
+      }
+      Object.assign(data.evidence, evidence);
+      return { events, evidence, expected, missingEvents, missingEvidence, complete: offset === null && !missingEvents.length && !missingEvidence.length };
+    },
   } : null;
 
   if (needsLogin) return <Login api={api} onDone={() => { setNeedsLogin(false); void load(); }} />;

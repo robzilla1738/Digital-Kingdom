@@ -1,6 +1,8 @@
 import type { DatasetKind, Graph, SecurityEvent } from "@dk/contracts";
 import { GraphIndex } from "@dk/graph-core";
 import { normalizeIngest } from "./normalize.ts";
+import { sourceCapabilities } from "./capabilities.ts";
+import type { EventAction } from "@dk/contracts";
 
 export interface SourceConfig {
   id: string;
@@ -9,6 +11,9 @@ export interface SourceConfig {
   asset_ids: string[];
   trusts_request_ids?: boolean;
   stale_after_seconds?: number;
+  allowed_actions?: EventAction[];
+  /** Sources relaying the same underlying observations share a group; they never corroborate each other. */
+  independence_group?: string;
 }
 
 export interface Delivery { source_id: string; received_at: string; payload: unknown; note?: string }
@@ -36,7 +41,7 @@ export function processDeliveries(graph: Graph, sources: SourceConfig[], deliver
     stats.delivered++;
     const src = bySource.get(d.source_id);
     if (!src) { reject(stats, d.source_id, "unknown_source", "source is not registered"); continue; }
-    const r = normalizeIngest(d.payload, { projectId: graph.project_id, sourceId: src.id, datasetKind, receivedAt: d.received_at, trustsRequestIds: !!src.trusts_request_ids, index });
+    const r = normalizeIngest(d.payload, { projectId: graph.project_id, sourceId: src.id, datasetKind, receivedAt: d.received_at, trustsRequestIds: !!src.trusts_request_ids, index, capabilities: sourceCapabilities(src) });
     if (!r.ok) { reject(stats, src.id, r.reason, r.detail); continue; }
     if (seen.has(r.event.id)) { stats.duplicates++; continue; }
     seen.add(r.event.id);

@@ -8,7 +8,7 @@ import { HttpError, Store, type Principal } from "./store.ts";
 import { checkShape, atLeast, type Role } from "./security.ts";
 import { exportCase, verifyCase } from "./export.ts";
 import { falcoToIngest } from "./adapters/falco.ts";
-import { otlpToIngest } from "./adapters/otlp.ts";
+import { otlpToIngest, gunzipCapped } from "./adapters/otlp.ts";
 import { assessChange, securityContext, summarize } from "./context.ts";
 
 export interface AppConfig {
@@ -43,7 +43,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     reply.header("cross-origin-opener-policy", "same-origin");
     reply.header("content-security-policy", "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
     const enc = String(req.headers["content-encoding"] ?? "identity").toLowerCase();
-    if (enc !== "identity") throw new HttpError(415, "compressed request bodies are not accepted");
+    // OTLP/HTTP exporters gzip by default; that route decompresses with a hard output cap (see otlp.ts).
+    const otlpGzip = req.url.split("?")[0] === "/v1/traces" && enc === "gzip";
+    if (enc !== "identity" && !otlpGzip) throw new HttpError(415, "compressed request bodies are not accepted");
   });
   app.addHook("preValidation", async (req) => {
     if (req.body !== undefined && typeof req.body === "object") {
@@ -70,7 +72,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     }
     const sid = parseCookie(req.headers.cookie)[COOKIE];
     if (sid) { const p = store.authenticateSession(sid); if (p) { req.viaCookie = true; return p; } }
-    if (cfg.demoMode) return { kind: "anonymous-demo", id: "anonymous", name: "anonymous (demo)", role: "viewer", projects: [] };
+    if (cfg.demoMode) return { kind: "anonymous-demo", id: "anonymous", name: "anonymous (demo)", role: "viewer", projects: [], principalType: "human" };
     return undefined;
   };
   const authed = (minRole: Role = "viewer") => async (req: FastifyRequest) => {
@@ -113,6 +115,16 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     reply.header("set-cookie", `${COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0`);
     return { ok: true };
   });
+  app.post("/api/tokens", { preHandler: authed("admin") }, async (req) => {
+    const b = req.body as { name?: string; role?: Role; principal_type?: "human" | "service"; projects?: string[] | "*" };
+    if (!b?.name || !b.role || !["viewer", "analyst", "admin"].includes(b.role)) throw new HttpError(400, "name and role (viewer|analyst|admin) are required");
+    const type = b.principal_type ?? "human";
+    if (!["human", "service"].includes(type)) throw new HttpError(400, "principal_type must be human or service");
+    if (type === "service" && b.role === "admin") throw new HttpError(400, "service tokens cannot be admins");
+    const t = store.createToken(b.name, b.role, b.projects === undefined || b.projects === "*" ? "*" : b.projects.map(String), undefined, type);
+    store.audit(who(req), "token.create", null, t.id, { role: b.role, principal_type: type });
+    return { id: t.id, token: t.token, role: b.role, principal_type: type, note: "Shown once; only its hash is stored." };
+  });
   app.get("/api/me", { preHandler: authed() }, async (req) => ({ name: req.principal!.name, role: req.principal!.role, kind: req.principal!.kind, demo_mode: cfg.demoMode }));
 
   // ---- projects ----
@@ -132,7 +144,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, meta: proj.meta },
       graph: store.getGraph(proj.id) ?? null,
       scene: store.getScene(proj.id) ?? null,
-      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled }) => ({ id, label, kind, asset_ids, disabled })),
+      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions })),
       events,
       evidence: store.evidenceFor(proj.id, events.flatMap((e) => e.evidence_refs)),
       findings: store.listFindings(proj.id),
@@ -161,6 +173,11 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const d = store.getFinding(proj.id, (req.params as { id: string }).id);
     if (!d) throw new HttpError(404, "finding not found");
     return d;
+  });
+  app.get("/api/projects/:p/findings/:id/evidence", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const q = req.query as { offset?: string; limit?: string };
+    return store.findingEvidence(proj.id, (req.params as { id: string }).id, Math.max(0, Number(q.offset ?? 0) || 0), Number(q.limit ?? 200) || 200);
   });
   app.post("/api/projects/:p/findings/:id/disposition", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
@@ -212,9 +229,14 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/projects/:p/sources", { preHandler: authed() }, async (req) => store.listSources(store.require(req.principal!, P(req), "viewer").id));
   app.post("/api/projects/:p/sources", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");
-    const b = req.body as { id: string; label: string; kind?: string; asset_ids?: string[]; trusts_request_ids?: boolean; stale_after_seconds?: number; dataset_kind?: "live" | "synthetic" };
+    const b = req.body as { id: string; label: string; kind?: string; asset_ids?: string[]; trusts_request_ids?: boolean; stale_after_seconds?: number; dataset_kind?: "live" | "synthetic"; allowed_actions?: string[]; independence_group?: string };
     if (!b?.id || !b.label) throw new HttpError(400, "id and label are required");
-    const r = store.upsertSource(proj.id, { id: b.id, label: b.label, kind: b.kind ?? "generic", asset_ids: Array.isArray(b.asset_ids) ? b.asset_ids.map(String).slice(0, 200) : [], trusts_request_ids: !!b.trusts_request_ids, ...(b.stale_after_seconds ? { stale_after_seconds: Number(b.stale_after_seconds) } : {}), ...(b.dataset_kind ? { dataset_kind: b.dataset_kind } : {}) }, who(req));
+    const r = store.upsertSource(proj.id, {
+      id: b.id, label: b.label, kind: b.kind ?? "generic", asset_ids: Array.isArray(b.asset_ids) ? b.asset_ids.map(String).slice(0, 200) : [], trusts_request_ids: !!b.trusts_request_ids,
+      ...(b.stale_after_seconds ? { stale_after_seconds: Number(b.stale_after_seconds) } : {}), ...(b.dataset_kind ? { dataset_kind: b.dataset_kind } : {}),
+      ...(Array.isArray(b.allowed_actions) ? { allowed_actions: b.allowed_actions.map(String) as never } : {}),
+      ...(b.independence_group ? { independence_group: String(b.independence_group).slice(0, 64) } : {}),
+    }, who(req));
     return { ...r, note: "Store this key now; it is shown once and only its hash is kept." };
   });
 
@@ -226,13 +248,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.post("/api/projects/:p/containment", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
     const b = req.body as { finding_id: string; action_id: string; rationale?: string };
-    return store.requestContainment(proj.id, String(b.finding_id), String(b.action_id), String(b.rationale ?? ""), who(req));
+    return store.requestContainment(proj.id, String(b.finding_id), String(b.action_id), String(b.rationale ?? ""), who(req), req.principal!.principalType);
   });
   app.post("/api/projects/:p/containment/:id/decision", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");
     const d = (req.body as { decision?: string }).decision;
     if (d !== "approved" && d !== "rejected") throw new HttpError(400, "decision must be approved or rejected");
-    return store.decideContainment(proj.id, (req.params as { id: string }).id, d, who(req), req.principal!.id);
+    return store.decideContainment(proj.id, (req.params as { id: string }).id, d, who(req), req.principal!.id, req.principal!.principalType);
   });
 
   // ---- agent context (shared with the MCP server) ----
@@ -318,11 +340,30 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const body = req.body as Record<string, unknown>;
     return respond(reply, [ingestOne(req as SrcReq, falcoToIngest(body, `falco-${Date.now()}`))]);
   });
-  app.post("/v1/traces", { preHandler: sourceAuth, bodyLimit: 4_194_304 }, async (req, reply) => {
-    const { events, skipped } = otlpToIngest(req.body);
-    const out = respond(reply, events.map((e) => ingestOne(req as SrcReq, e)));
-    if (!events.length) reply.status(200);
-    return { ...out, skipped_spans: skipped, note: "Spans are sampled context, not a complete security ledger." };
+  // OTLP/HTTP (JSON encoding). Success: HTTP 200 + ExportTraceServiceResponse; partial: partialSuccess.
+  // Errors: google.rpc.Status-shaped JSON. Protobuf encoding is not supported (415).
+  const otlpStatus = (reply: FastifyReply, http: number, code: number, message: string) => reply.status(http).type("application/json").send({ code, message });
+  app.post("/v1/traces", {
+    bodyLimit: 4_194_304,
+    preHandler: sourceAuth,
+    preParsing: async (req, _reply, payload) => (String(req.headers["content-encoding"] ?? "").toLowerCase() === "gzip" ? gunzipCapped(payload, 16 * 1_048_576) : payload),
+    errorHandler: (err, _req, reply) => {
+      const status = err instanceof HttpError ? err.status : (err as { statusCode?: number }).statusCode ?? 500;
+      return otlpStatus(reply, status, status === 401 ? 16 : status >= 500 ? 13 : 3, err.message);
+    },
+  }, async (req, reply) => {
+    const ct = String(req.headers["content-type"] ?? "");
+    if (!ct.includes("application/json")) return otlpStatus(reply, 415, 3, "only OTLP/HTTP JSON (application/json) is supported; protobuf is not");
+    if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) return otlpStatus(reply, 400, 3, "request body must be an ExportTraceServiceRequest object");
+    const rs = (req.body as { resourceSpans?: unknown }).resourceSpans;
+    if (rs !== undefined && !Array.isArray(rs)) return otlpStatus(reply, 400, 3, "resourceSpans must be an array");
+    const { events, invalid } = otlpToIngest(req.body);
+    const results = events.map((e) => ingestOne(req as SrcReq, e));
+    const rejected = invalid + results.filter((r) => r.status === "rejected").length;
+    reply.status(200).type("application/json");
+    if (!rejected) return {};
+    const reasons = [...new Set(results.filter((r) => r.status === "rejected").map((r) => (r as { reason: string }).reason))];
+    return { partialSuccess: { rejectedSpans: String(rejected), errorMessage: `${rejected} span(s) rejected${reasons.length ? `: ${reasons.join(", ")}` : " (invalid span structure)"}` } };
   });
 
   // ---- static web app ----

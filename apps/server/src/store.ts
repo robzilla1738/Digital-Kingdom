@@ -1,10 +1,11 @@
 import {
-  canonicalJson, digest, validateIngestEventSchema,
+  canonicalJson, digest,
+  EVENT_ACTIONS, type EventAction, type IngestEvent,
   type CompiledScene, type DatasetKind, type Finding, type Graph, type SceneProposal, type SecurityEvent,
 } from "@dk/contracts";
 import { GraphIndex, validateGraph } from "@dk/graph-core";
 import { compileScene, defaultProposal, validateProposal } from "@dk/scene-compiler";
-import { evaluate, normalizeIngest, type SourceConfig } from "@dk/detections";
+import { checkCapability, evaluate, minimizeIngest, normalizeIngest, sourceCapabilities, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
 import { tx, type DB } from "./db.ts";
 import { atLeast, newToken, sha256, type Role } from "./security.ts";
 import { CONTAINMENT_CATALOG, type ContainmentAction } from "./containment.ts";
@@ -15,6 +16,8 @@ export interface Principal {
   name: string;
   role: Role;
   projects: "*" | string[];
+  /** Whether the token belongs to a person or to an automated caller (agent, CI). */
+  principalType: "human" | "service";
 }
 
 export interface ProjectRow { id: string; name: string; dataset_kind: DatasetKind; created_at: string; meta: Record<string, unknown> }
@@ -131,12 +134,17 @@ export class Store {
 
   upsertSource(projectId: string, cfg: SourceConfig & { kind?: string; dataset_kind?: DatasetKind }, actor: string): { id: string; key: string } {
     const proj = this.mustProject(projectId);
+    if (!cfg.asset_ids?.length) throw new HttpError(400, "a source must be assigned at least one asset (asset_ids)");
+    if (cfg.kind && !SOURCE_KINDS.includes(cfg.kind)) throw new HttpError(400, `unknown source kind ${cfg.kind} (known: ${SOURCE_KINDS.join(", ")})`);
+    if (cfg.allowed_actions?.some((a) => !EVENT_ACTIONS.includes(a))) throw new HttpError(400, "allowed_actions contains an unknown action");
+    const graph = this.getGraph(projectId);
+    if (graph) { const unknown = cfg.asset_ids.filter((a) => !graph.assets.some((x) => x.id === a)); if (unknown.length) throw new HttpError(422, `unknown asset ids: ${unknown.join(", ")}`); }
     if (cfg.dataset_kind && cfg.dataset_kind !== proj.dataset_kind) throw new HttpError(422, `a ${cfg.dataset_kind} source cannot write to a ${proj.dataset_kind} project`);
     if (!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/.test(cfg.id)) throw new HttpError(400, "invalid source id");
     const key = newToken(proj.dataset_kind === "synthetic" ? "dks_demo" : "dks");
-    this.db.prepare(`INSERT INTO sources (id, project_id, label, kind, asset_ids, trusts_request_ids, stale_after_seconds, key_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT (project_id, id) DO UPDATE SET label = excluded.label, kind = excluded.kind, asset_ids = excluded.asset_ids, trusts_request_ids = excluded.trusts_request_ids, stale_after_seconds = excluded.stale_after_seconds, key_hash = excluded.key_hash`)
-      .run(cfg.id, projectId, cfg.label.slice(0, 120), cfg.kind ?? "generic", JSON.stringify(cfg.asset_ids ?? []), cfg.trusts_request_ids ? 1 : 0, cfg.stale_after_seconds ?? null, sha256(key), this.iso());
+    this.db.prepare(`INSERT INTO sources (id, project_id, label, kind, asset_ids, trusts_request_ids, stale_after_seconds, key_hash, created_at, allowed_actions, independence_group) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT (project_id, id) DO UPDATE SET label = excluded.label, kind = excluded.kind, asset_ids = excluded.asset_ids, trusts_request_ids = excluded.trusts_request_ids, stale_after_seconds = excluded.stale_after_seconds, key_hash = excluded.key_hash, allowed_actions = excluded.allowed_actions, independence_group = excluded.independence_group`)
+      .run(cfg.id, projectId, cfg.label.slice(0, 120), cfg.kind ?? "generic", JSON.stringify(cfg.asset_ids), cfg.trusts_request_ids ? 1 : 0, cfg.stale_after_seconds ?? null, sha256(key), this.iso(), cfg.allowed_actions?.length ? JSON.stringify(cfg.allowed_actions) : null, cfg.independence_group ?? null);
     this.audit(actor, "source.key_issued", projectId, cfg.id, { kind: cfg.kind ?? "generic" });
     return { id: cfg.id, key };
   }
@@ -145,7 +153,18 @@ export class Store {
     return (this.db.prepare("SELECT * FROM sources WHERE project_id = ? ORDER BY id").all(projectId) as Record<string, unknown>[]).map((r) => ({
       id: String(r.id), label: String(r.label), kind: String(r.kind), asset_ids: J(String(r.asset_ids), [] as string[]),
       trusts_request_ids: r.trusts_request_ids === 1, ...(r.stale_after_seconds ? { stale_after_seconds: Number(r.stale_after_seconds) } : {}), disabled: r.disabled === 1,
+      ...(r.allowed_actions ? { allowed_actions: J(String(r.allowed_actions), [] as EventAction[]) } : {}),
+      ...(r.independence_group ? { independence_group: String(r.independence_group) } : {}),
     }));
+  }
+
+  /** Receive-time authorization of a source's assertion (assets resolved via the graph; categories by kind/grant). */
+  checkCapability(projectId: string, sourceId: string, e: IngestEvent): { reason: string; detail: string } | null {
+    const src = this.listSources(projectId).find((s) => s.id === sourceId);
+    if (!src) return { reason: "unknown_source", detail: "source is not registered" };
+    const ix = this.index(projectId);
+    const resolved = ix ? e.asset_ids.map((a) => ix.index.resolve(a)).filter((x): x is string => !!x) : [];
+    return checkCapability(sourceCapabilities(src), sourceId, e.action, resolved);
   }
 
   /** Source identity is bound to a project by its key; the payload never chooses the project. */
@@ -162,9 +181,12 @@ export class Store {
    * deliveries (same source + source_event_id) are counted, never re-journaled.
    */
   receive(projectId: string, sourceId: string, payload: unknown, receivedAtOverride?: string): { status: "accepted" | "duplicate"; seq?: number } | { status: "rejected"; reason: string; detail: string } {
-    const v = validateIngestEventSchema(payload);
-    if (!v.ok) { this.reject(projectId, sourceId, "receive", "schema", v.errors.join("; ")); return { status: "rejected", reason: "schema", detail: v.errors.join("; ") }; }
-    const p = payload as { project_id?: string; source_event_id: string };
+    // Minimize + redact BEFORE the first durable write. The raw payload never reaches disk.
+    const m = minimizeIngest(payload);
+    if (!m.ok) { this.reject(projectId, sourceId, "receive", "schema", m.detail); return { status: "rejected", reason: "schema", detail: m.detail }; }
+    const cap = this.checkCapability(projectId, sourceId, m.event);
+    if (cap) { this.reject(projectId, sourceId, "receive", cap.reason, cap.detail); return { status: "rejected", reason: cap.reason, detail: cap.detail }; }
+    const p = m.event;
     if (p.project_id !== undefined && p.project_id !== projectId) {
       const detail = `source is bound to ${projectId}; payload asserted ${p.project_id}`;
       this.reject(projectId, sourceId, "receive", "project_mismatch", detail);
@@ -177,7 +199,7 @@ export class Store {
         this.count(projectId, sourceId, "duplicate");
         return { status: "duplicate" as const, seq: existing.seq };
       }
-      const r = this.db.prepare("INSERT INTO journal (project_id, source_id, source_event_id, payload, received_at) VALUES (?, ?, ?, ?, ?)").run(projectId, sourceId, p.source_event_id, JSON.stringify(payload), receivedAtOverride ?? this.iso());
+      const r = this.db.prepare("INSERT INTO journal (project_id, source_id, source_event_id, payload, received_at) VALUES (?, ?, ?, ?, ?)").run(projectId, sourceId, p.source_event_id, JSON.stringify(p), receivedAtOverride ?? this.iso());
       this.count(projectId, sourceId, "accepted");
       return { status: "accepted" as const, seq: Number(r.lastInsertRowid) };
     });
@@ -221,7 +243,7 @@ export class Store {
         const proj = this.getProject(row.project_id);
         const src = this.listSources(row.project_id).find((s) => s.id === row.source_id);
         if (!ix || !proj || !src) { this.rejectInTx(row.project_id, row.source_id, "unmapped_asset", "project has no graph or source was removed"); continue; }
-        const r = normalizeIngest(JSON.parse(row.payload), { projectId: row.project_id, sourceId: row.source_id, datasetKind: proj.dataset_kind, receivedAt: row.received_at, trustsRequestIds: !!src.trusts_request_ids, index: ix.index });
+        const r = normalizeIngest(JSON.parse(row.payload), { projectId: row.project_id, sourceId: row.source_id, datasetKind: proj.dataset_kind, receivedAt: row.received_at, trustsRequestIds: !!src.trusts_request_ids, index: ix.index, capabilities: sourceCapabilities(src) });
         if (!r.ok) { this.rejectInTx(row.project_id, row.source_id, r.reason, r.detail); continue; }
         const e = r.event;
         const ins = this.db.prepare("INSERT OR IGNORE INTO events (id, seq, project_id, source_id, occurred_at, received_at, action, outcome, asset_ids, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
@@ -279,6 +301,52 @@ export class Store {
     return rows.map((r) => JSON.parse(r.body) as SecurityEvent);
   }
 
+  /** Exact, project-scoped lookup by event id (chunked), independent of any recency window. */
+  eventsByIds(projectId: string, ids: string[]): SecurityEvent[] {
+    const out: SecurityEvent[] = [];
+    for (let i = 0; i < ids.length; i += 500) {
+      const chunk = ids.slice(i, i + 500);
+      const rows = this.db.prepare(`SELECT body FROM events WHERE project_id = ? AND id IN (${chunk.map(() => "?").join(",")})`).all(projectId, ...chunk) as { body: string }[];
+      out.push(...rows.map((r) => JSON.parse(r.body) as SecurityEvent));
+    }
+    return out.sort((a, b) => a.occurred_at.localeCompare(b.occurred_at) || a.id.localeCompare(b.id));
+  }
+
+  /**
+   * A finding's complete supporting record, paginated by its own event references. Always reports what
+   * was expected, what was returned, and what is missing, so a partial bundle can never look complete.
+   */
+  findingEvidence(projectId: string, findingId: string, offset = 0, limit = 200) {
+    const d = this.getFinding(projectId, findingId);
+    if (!d) throw new HttpError(404, "finding not found");
+    const lim = Math.min(Math.max(limit, 1), 500);
+    const counter = new Set(d.finding.counterevidence_event_ids);
+    const allIds = [...new Set([...d.finding.event_ids, ...d.finding.counterevidence_event_ids])];
+    const pageIds = allIds.slice(offset, offset + lim);
+    const events = this.eventsByIds(projectId, pageIds);
+    const found = new Set(events.map((e) => e.id));
+    const refs = [...new Set(events.flatMap((e) => e.evidence_refs))];
+    const storedRefs = refs.filter((r) => r.startsWith("evidence:"));
+    const evidence: Record<string, Record<string, unknown>> = {};
+    const missingEvidence: string[] = [];
+    for (const r of storedRefs) { const e = this.getEvidence(projectId, r); if (e) evidence[r] = e; else missingEvidence.push(r); }
+    const next = offset + lim < allIds.length ? offset + lim : null;
+    return {
+      finding_id: findingId,
+      expected_event_count: allIds.length,
+      offset, limit: lim,
+      returned_event_count: events.length,
+      events: events.map((e) => ({ ...e, role: counter.has(e.id) ? "counterevidence" : "supporting" })),
+      missing_event_ids: pageIds.filter((id) => !found.has(id)),
+      expected_evidence_records: storedRefs.length,
+      evidence,
+      missing_evidence_refs: missingEvidence,
+      reference_only_refs: refs.filter((r) => !r.startsWith("evidence:")),
+      next_offset: next,
+      complete: next === null && events.length === pageIds.length && missingEvidence.length === 0 && offset === 0,
+    };
+  }
+
   getEvidence(projectId: string, ref: string): Record<string, unknown> | undefined {
     const r = this.db.prepare("SELECT body FROM evidence WHERE project_id = ? AND ref = ?").get(projectId, ref) as { body: string } | undefined;
     return r ? JSON.parse(r.body) : undefined;
@@ -286,7 +354,7 @@ export class Store {
 
   evidenceFor(projectId: string, refs: string[]): Record<string, Record<string, unknown>> {
     const out: Record<string, Record<string, unknown>> = {};
-    for (const ref of refs.slice(0, 2000)) { const e = this.getEvidence(projectId, ref); if (e) out[ref] = e; }
+    for (const ref of refs) { if (!ref.startsWith("evidence:")) continue; const e = this.getEvidence(projectId, ref); if (e) out[ref] = e; }
     return out;
   }
 
@@ -363,10 +431,10 @@ export class Store {
 
   // ---------------- tokens / sessions / audit ----------------
 
-  createToken(name: string, role: Role, projects: "*" | string[] = "*", raw?: string): { id: string; token: string } {
-    const token = raw ?? newToken("dku");
+  createToken(name: string, role: Role, projects: "*" | string[] = "*", raw?: string, principalType: "human" | "service" = "human"): { id: string; token: string } {
+    const token = raw ?? newToken(principalType === "service" ? "dks_svc" : "dku");
     const id = "tok_" + sha256(token).slice(0, 12);
-    this.db.prepare("INSERT OR IGNORE INTO api_tokens (id, name, role, token_hash, project_ids, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(id, name.slice(0, 80), role, sha256(token), projects === "*" ? "*" : JSON.stringify(projects), this.iso());
+    this.db.prepare("INSERT OR IGNORE INTO api_tokens (id, name, role, token_hash, project_ids, created_at, principal_type) VALUES (?, ?, ?, ?, ?, ?, ?)").run(id, name.slice(0, 80), role, sha256(token), projects === "*" ? "*" : JSON.stringify(projects), this.iso(), principalType);
     return { id, token };
   }
 
@@ -378,7 +446,7 @@ export class Store {
     if (!raw) return undefined;
     const r = this.db.prepare("SELECT * FROM api_tokens WHERE token_hash = ? AND revoked = 0").get(sha256(raw)) as Record<string, string> | undefined;
     if (!r) return undefined;
-    return { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]) };
+    return { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]), principalType: (r.principal_type as "human" | "service") ?? "human" };
   }
 
   createSession(tokenId: string, ttlHours = 12): string {
@@ -390,7 +458,7 @@ export class Store {
   authenticateSession(sid: string | undefined): Principal | undefined {
     if (!sid) return undefined;
     const r = this.db.prepare("SELECT t.* FROM sessions s JOIN api_tokens t ON t.id = s.token_id WHERE s.id_hash = ? AND s.expires_at > ? AND t.revoked = 0").get(sha256(sid), this.iso()) as Record<string, string> | undefined;
-    return r ? { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]) } : undefined;
+    return r ? { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]), principalType: (r.principal_type as "human" | "service") ?? "human" } : undefined;
   }
 
   deleteSession(sid: string) { this.db.prepare("DELETE FROM sessions WHERE id_hash = ?").run(sha256(sid)); }
@@ -413,7 +481,7 @@ export class Store {
     return CONTAINMENT_CATALOG.filter((a) => !allowed || allowed.includes(a.id));
   }
 
-  requestContainment(projectId: string, findingId: string, actionId: string, rationale: string, actor: string) {
+  requestContainment(projectId: string, findingId: string, actionId: string, rationale: string, actor: string, requesterType: "human" | "service" = "human") {
     const f = this.getFinding(projectId, findingId);
     if (!f) throw new HttpError(404, "finding not found");
     const action = this.containmentCatalog(projectId).find((a) => a.id === actionId);
@@ -423,18 +491,24 @@ export class Store {
     if (!action.applies_to_kinds.some((k) => kinds.has(k))) throw new HttpError(422, `${actionId} does not apply to the assets in this finding`);
     const id = "cr_" + sha256(`${projectId}:${findingId}:${actionId}:${this.iso()}:${Math.random()}`).slice(0, 16);
     tx(this.db, () => {
-      this.db.prepare("INSERT INTO containment_requests (id, project_id, finding_id, action_id, requested_by, rationale, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)").run(id, projectId, findingId, actionId, actor, rationale.slice(0, 2000), this.iso());
+      this.db.prepare("INSERT INTO containment_requests (id, project_id, finding_id, action_id, requested_by, rationale, status, created_at, requested_by_type) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?)").run(id, projectId, findingId, actionId, actor, rationale.slice(0, 2000), this.iso(), requesterType);
       this.audit(actor, "containment.requested", projectId, id, { findingId, actionId });
       this.emit(projectId, "containment", { id, status: "pending" });
     });
     return this.getContainment(projectId, id)!;
   }
 
-  decideContainment(projectId: string, id: string, decision: "approved" | "rejected", actor: string, principalId: string) {
+  /**
+   * Record a decision. What this proves: a different, HUMAN-typed token decided it. It does not prove two
+   * distinct people (one person could hold two tokens); bind tokens to an identity provider before any
+   * executor is ever introduced. Service tokens (agents, CI) can request but never decide.
+   */
+  decideContainment(projectId: string, id: string, decision: "approved" | "rejected", actor: string, principalId: string, principalType: "human" | "service" = "human") {
     const c = this.getContainment(projectId, id);
     if (!c) throw new HttpError(404, "containment request not found");
     if (c.status !== "pending") throw new HttpError(409, "already decided");
-    if (c.requested_by === actor || c.requested_by === principalId) throw new HttpError(403, "the requester cannot approve their own containment request");
+    if (principalType !== "human") throw new HttpError(403, "service tokens cannot decide containment requests");
+    if (c.requested_by === actor || c.requested_by === principalId || String(c.requested_by).endsWith(`(${principalId})`)) throw new HttpError(403, "the requesting token cannot decide its own containment request");
     tx(this.db, () => {
       this.db.prepare("UPDATE containment_requests SET status = ?, decided_by = ?, decided_at = ? WHERE id = ?").run(decision, actor, this.iso(), id);
       this.audit(actor, `containment.${decision}`, projectId, id, {});
