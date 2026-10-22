@@ -8,3 +8,4 @@ dist
 .env
 coverage
 artifacts/tmp
+artifacts/pilot

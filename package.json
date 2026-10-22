@@ -21,9 +21,12 @@
     "check": "pnpm typecheck && pnpm test && pnpm validate:fixtures",
     "generate:validators": "pnpm --filter @dk/contracts generate:validators",
     "mcp": "tsx apps/mcp/src/main.ts",
-    "fixtures:demo": "tsx scripts/build-demo-fixture.ts"
+    "fixtures:demo": "tsx scripts/build-demo-fixture.ts",
+    "pilot": "playwright test",
+    "diagnose:tombstones": "tsx scripts/diagnose-legacy-tombstones.ts"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "@types/node": "^22.10.0",
     "tsx": "^4.20.0",
     "typescript": "~5.9.3",

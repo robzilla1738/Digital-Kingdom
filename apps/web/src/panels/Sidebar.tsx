@@ -69,7 +69,7 @@ export function Sidebar() {
             <p className="list-meta" style={{ padding: "10px 8px 0" }}>Missing telemetry is shown as unknown, never as safe.</p>
             <ul className="list">
               {vm.coverage.map((c) => (
-                <li key={c.source_id} className="cov-row">
+                <li key={c.source_id} className="cov-row" data-source-id={c.source_id} data-state={c.state}>
                   <span className="dot" style={{ background: COVERAGE_STYLE[c.state].color }} aria-hidden />
                   <span className="row-main">
                     <span className="row-title">{c.label}</span>
@@ -108,7 +108,7 @@ function FindingRow({ f, assetName }: { f: Finding; assetName: (id: string) => s
   const revised = Date.parse(f.last_received) - Date.parse(f.last_seen) > 60_000 || f.revision > 1 || f.event_ids.some((id) => vm.lateEventIds.has(id));
   return (
     <li>
-      <button className={`row finding sev-row-${f.severity}${sel ? " selected" : ""}${f.lifecycle === "closed" ? " closed" : ""}`} aria-current={sel || undefined}
+      <button data-finding-id={f.id} data-finding-kind={f.kind} className={`row finding sev-row-${f.severity}${sel ? " selected" : ""}${f.lifecycle === "closed" ? " closed" : ""}`} aria-current={sel || undefined}
         onClick={() => dispatch({ type: "select", selection: { kind: "finding", id: f.id }, announce: `Selected finding ${f.title}` })}>
         <span className="row-icon"><StateIcon state={f.outcome_state} /></span>
         <span className="row-main">

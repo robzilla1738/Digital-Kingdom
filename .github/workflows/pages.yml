@@ -22,6 +22,7 @@ jobs:
         env:
           DK_BASE: /${{ github.event.repository.name }}/
           VITE_DK_BUILD: ${{ github.sha }}
+          VITE_DK_STATIC_DEMO: "1"
       - name: Check build id is embedded
         run: grep -q 'name="dk-build" content="${{ github.sha }}"' apps/web/dist/index.html
       - run: cp apps/web/dist/index.html apps/web/dist/404.html

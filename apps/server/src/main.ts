@@ -31,15 +31,19 @@ if (env.DK_SEED_DEMO !== "false") {
 
 const app = await buildApp({ store, secret, demoMode, planner: plannerFromEnv(), secureCookies: env.DK_SECURE_COOKIES === "true", logger: env.DK_LOG === "true" });
 
-// background worker: drain the journal, re-check coverage staleness, prune outbox
+// background worker: drain the journal, re-check coverage staleness, prune outbox.
+// DK_WORKER_PAUSED=true runs ingest-only: events are acknowledged and journaled but not processed
+// (used by the pilot to prove acknowledged events survive a restart; not a production mode).
+const workerPaused = env.DK_WORKER_PAUSED === "true";
+if (workerPaused) console.log("  Worker PAUSED (DK_WORKER_PAUSED=true): ingestion is journaled but not processed.");
 let busy = false;
 setInterval(() => {
-  if (busy) return; busy = true;
+  if (busy || workerPaused) return; busy = true;
   try { while (store.processBatch(200).processed) { /* drain */ } } catch (e) { console.error("worker batch failed (will retry):", e); } finally { busy = false; }
 }, Number(env.DK_WORKER_INTERVAL_MS ?? 250)).unref();
 setInterval(() => {
   try { for (const p of store.listProjects({ kind: "token", id: "system", name: "system", role: "admin", projects: "*", principalType: "service" })) if (p.dataset_kind === "live") store.evaluateProject(p.id); store.pruneOutbox(); } catch (e) { console.error("coverage sweep failed:", e); }
-}, 30_000).unref();
+}, Number(env.DK_COVERAGE_SWEEP_MS ?? 30_000)).unref();
 
 const port = Number(env.PORT ?? 8787);
 const host = env.HOST ?? "127.0.0.1";

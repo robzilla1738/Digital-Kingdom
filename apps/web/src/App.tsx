@@ -11,6 +11,10 @@ import { webglAvailable } from "./lib/webgl.ts";
 import { Icon } from "./lib/icons.tsx";
 import { BrandMark } from "./panels/TopBar.tsx";
 import { fmtTime } from "./lib/vocab.ts";
+import { ConnectionCtx, type Connection } from "./lib/connection.ts";
+
+/** Set at build time for the public static demo: never contact a backend, always use bundled fixtures. */
+const STATIC_DEMO = (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_DK_STATIC_DEMO === "1";
 
 const Castle3D = lazy(() => import("./castle/Castle3D.tsx").then((m) => ({ default: m.Castle3D })));
 
@@ -19,21 +23,32 @@ export function App() {
   const [data, setData] = useState<Dataset | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [needsLogin, setNeedsLogin] = useState(false);
-  const [connection, setConnection] = useState<string | null>(null);
+  const [connection, setConnection] = useState<Connection | null>(null);
+  // once a server session is established we never silently swap in the offline synthetic demo
+  const serverMode = useRef(false);
+  const lastSync = useRef<string | null>(null);
+  const hadError = useRef(false);
   const [projectId, setProjectId] = useState<string | undefined>(() => new URLSearchParams(location.search).get("project") ?? undefined);
   const reloadTimer = useRef<number | null>(null);
 
   const load = useCallback(async () => {
+    if (STATIC_DEMO) { setData(loadOfflineDemo()); return; }
     const me = await detectServer(api);
-    if (!me) { setData(loadOfflineDemo()); return; }
+    if (!me) {
+      if (serverMode.current) { setConnection({ state: "lost", since: lastSync.current }); return; } // keep the last data, flagged stale
+      setData(loadOfflineDemo()); return;
+    }
     if (me.role === "none") { setNeedsLogin(true); return; }
     try {
       const d = await loadFromServer(api, projectId);
       d.identity = me.kind === "anonymous-demo" ? "anonymous demo" : me.name;
       if (me.kind === "anonymous-demo") d.role = "none";
+      serverMode.current = true; lastSync.current = new Date().toISOString();
       setData(d); setError(null); setNeedsLogin(false);
     } catch (e) {
-      if (e instanceof ApiError && e.status === 401) setNeedsLogin(true); else setError((e as Error).message);
+      if (e instanceof ApiError && e.status === 401) setNeedsLogin(true);
+      else if (serverMode.current) setConnection({ state: "lost", since: lastSync.current });
+      else setError((e as Error).message);
     }
   }, [api, projectId]);
 
@@ -44,10 +59,11 @@ export function App() {
     if (!data || data.mode !== "server") return;
     const es = new EventSource(`/api/projects/${encodeURIComponent(data.project.id)}/stream?cursor=${data.cursor}`);
     const schedule = () => { if (reloadTimer.current) return; reloadTimer.current = window.setTimeout(() => { reloadTimer.current = null; void load(); }, 1200); };
-    es.addEventListener("hello", () => setConnection("live"));
+    // "live" only after the server says hello on this connection; any error is shown as stale data, and a
+    // reconnect always refetches the snapshot (anything missed while disconnected is resynchronized)
+    es.addEventListener("hello", () => { if (hadError.current) { hadError.current = false; schedule(); } setConnection({ state: "live", since: lastSync.current }); });
     for (const t of ["event", "finding", "graph", "scene", "containment", "resync"]) es.addEventListener(t, schedule);
-    es.onerror = () => setConnection("reconnecting");
-    es.onopen = () => setConnection("live");
+    es.onerror = () => { hadError.current = true; setConnection({ state: "reconnecting", since: lastSync.current }); };
     return () => es.close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.project.id, data?.mode]);
@@ -80,6 +96,7 @@ export function App() {
   if (!data) return <div className="fullscreen-msg" aria-busy="true"><div className="spinner" aria-hidden /><p className="small">Loading evidence…</p></div>;
 
   return (
+    <ConnectionCtx.Provider value={connection}>
     <ActionsCtx.Provider value={actions}>
       <AppStateProvider key={data.project.id} data={data}>
         <Shell connection={connection}
@@ -88,10 +105,11 @@ export function App() {
           onProject={(id) => { setProjectId(id); history.replaceState(null, "", `?project=${encodeURIComponent(id)}`); }} />
       </AppStateProvider>
     </ActionsCtx.Provider>
+    </ConnectionCtx.Provider>
   );
 }
 
-function Shell(props: { connection: string | null; onSignIn: () => void; onSignOut: () => void; onProject: (id: string) => void }) {
+function Shell(props: { connection: Connection | null; onSignIn: () => void; onSignOut: () => void; onProject: (id: string) => void }) {
   const { ui, dispatch, vm } = useApp();
   useEffect(() => { const r = webglAvailable(); if (r) dispatch({ type: "webglFailed", reason: r }); }, [dispatch]);
   useEffect(() => {
@@ -116,6 +134,12 @@ function Shell(props: { connection: string | null; onSignIn: () => void; onSignO
       <main id="main" className="stage">
         {ui.webglFailed && ui.view === "graph" && <div className="banner" role="status"><Icon name="alert" size={15} />{ui.webglFailed} The 2D graph and timeline show the same evidence.</div>}
         {ui.view === "castle" && !ui.webglFailed ? <Suspense fallback={<div className="stage-loading"><div className="spinner" aria-hidden /></div>}><Castle3D /></Suspense> : <Graph2D />}
+        {props.connection && props.connection.state !== "live" && (
+          <div className="banner warn" role="alert" data-testid="connection-banner">
+            <Icon name="alert" size={15} />
+            {props.connection.state === "lost" ? "Connection to the server lost." : "Live updates interrupted; reconnecting."} Showing data as of {props.connection.since ? fmtTime(props.connection.since) : "the last sync"}. This is not live monitoring.
+          </div>
+        )}
         {!vm.isLatest && <div className="stage-title"><span className="replay-tag"><span className="pip" aria-hidden />Replay · {fmtTime(vm.at)}</span></div>}
         <Legend />
       </main>
