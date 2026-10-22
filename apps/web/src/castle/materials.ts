@@ -9,32 +9,85 @@ let cache: ReturnType<typeof create> | null = null;
 let contrastCache: ReturnType<typeof create> | null = null;
 
 function std(color: string, o: Partial<THREE.MeshStandardMaterialParameters> = {}) {
-  return new THREE.MeshStandardMaterial({ color, roughness: 0.92, metalness: 0.02, ...o });
+  return new THREE.MeshStandardMaterial({ color, roughness: 0.94, metalness: 0, ...o });
 }
 
+/**
+ * A restrained, matte palette: warm-grey stone, slate roofs, dark unlit windows. Emissive light is
+ * reserved for evidence state (see windowLit), so a glow always means something.
+ */
 function create(highContrast: boolean) {
   return {
-    stone: std(highContrast ? "#c9c6bf" : "#a29d92"),
-    stoneLight: std(highContrast ? "#e3e0d8" : "#bcb6a8"),
-    stoneDark: std(highContrast ? "#7d7a74" : "#77736b"),
-    trim: std("#8c8578"),
-    roof: std(highContrast ? "#2b3a52" : "#3d4b5f", { roughness: 0.8 }),
-    roofWarm: std("#6b4a3a", { roughness: 0.85 }),
-    roofTeal: std("#3e5d5a", { roughness: 0.8 }),
-    wood: std("#5e4532"),
-    metal: std("#8e96a1", { metalness: 0.65, roughness: 0.4 }),
-    door: std("#2a211b"),
-    window: std("#ffd27f", { emissive: new THREE.Color("#ffb347"), emissiveIntensity: 0.9, roughness: 0.5 }),
-    forgeGlow: std("#ff8a3d", { emissive: new THREE.Color("#ff5a1f"), emissiveIntensity: 1.6 }),
-    portal: new THREE.MeshStandardMaterial({ color: "#7fd8ff", emissive: new THREE.Color("#3fb4ff"), emissiveIntensity: 0.9, transparent: true, opacity: 0.55, side: THREE.DoubleSide }),
-    glass: new THREE.MeshStandardMaterial({ color: "#9fd4ff", emissive: new THREE.Color("#5aa9e6"), emissiveIntensity: 0.5, transparent: true, opacity: 0.75 }),
-    banner: std("#8e3b3b", { side: THREE.DoubleSide }),
-    bannerBlue: std("#35507a", { side: THREE.DoubleSide }),
-    grass: std("#2c3a2f", { roughness: 1 }),
-    courtyard: std("#4a4a46", { roughness: 1 }),
-    water: new THREE.MeshStandardMaterial({ color: "#1f4a5e", roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.92 }),
+    stone: std(highContrast ? "#c9c6bf" : "#aaa59c"),
+    stoneLight: std(highContrast ? "#e3e0d8" : "#bfbab0"),
+    stoneDark: std(highContrast ? "#7d7a74" : "#7a766f"),
+    trim: std("#7b766e"),
+    // curtain walls sit back visually so the buildings (the assets) read first
+    wall: std(highContrast ? "#9d9a94" : "#77736c"),
+    wallTop: std(highContrast ? "#b5b2ab" : "#858179"),
+    roof: std(highContrast ? "#2b3a52" : "#4a5566", { roughness: 0.82 }),
+    roofWarm: std("#6e5a4e", { roughness: 0.85 }),
+    roofTeal: std("#4a6062", { roughness: 0.82 }),
+    wood: std("#4a3d33"),
+    metal: std("#6f757d", { metalness: 0.5, roughness: 0.5 }),
+    door: std("#24201d"),
+    window: std("#2a3039", { roughness: 0.35 }),
+    forgeGlow: std("#8a4a2a", { emissive: new THREE.Color("#c2551f"), emissiveIntensity: 0.45 }),
+    portal: new THREE.MeshStandardMaterial({ color: "#6b8ca3", emissive: new THREE.Color("#3d6f92"), emissiveIntensity: 0.35, transparent: true, opacity: 0.5, side: THREE.DoubleSide, roughness: 0.6 }),
+    glass: new THREE.MeshStandardMaterial({ color: "#7d95ab", roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.8 }),
+    banner: std("#6b3a3d", { side: THREE.DoubleSide }),
+    bannerBlue: std("#3a4766", { side: THREE.DoubleSide }),
+    grass: std(highContrast ? "#141619" : "#111418", { roughness: 1 }),
+    courtyard: std(highContrast ? "#2c2f33" : "#3a3d41", { roughness: 1 }),
+    water: new THREE.MeshStandardMaterial({ color: "#1a2731", roughness: 0.2, metalness: 0.25 }),
     proxy: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }),
   };
+}
+
+const litCache = new Map<string, THREE.MeshStandardMaterial>();
+/** Windows lit in an evidence-state colour: the only emissive accent on a building. */
+export function windowLit(color: string): THREE.MeshStandardMaterial {
+  let m = litCache.get(color);
+  if (!m) { m = std(color, { emissive: new THREE.Color(color), emissiveIntensity: 0.9, roughness: 0.4 }); litCache.set(color, m); }
+  return m;
+}
+
+/** Soft radial "contact shadow" texture used as cheap ambient occlusion under every building. */
+let aoTex: THREE.CanvasTexture | null = null;
+export function aoTexture(): THREE.CanvasTexture {
+  if (aoTex) return aoTex;
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createRadialGradient(64, 64, 6, 64, 64, 64);
+  g.addColorStop(0, "rgba(0,0,0,0.75)");
+  g.addColorStop(0.45, "rgba(0,0,0,0.42)");
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 128, 128);
+  aoTex = new THREE.CanvasTexture(c);
+  aoTex.colorSpace = THREE.SRGBColorSpace;
+  return aoTex;
+}
+
+/** Soft radial glow (white, tinted by material colour) for evidence-state halos on the ground. */
+let glowTex: THREE.CanvasTexture | null = null;
+export function glowTexture(): THREE.CanvasTexture {
+  if (glowTex) return glowTex;
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  g.addColorStop(0, "rgba(255,255,255,0.0)");
+  g.addColorStop(0.42, "rgba(255,255,255,0.0)");
+  g.addColorStop(0.55, "rgba(255,255,255,0.55)");
+  g.addColorStop(0.62, "rgba(255,255,255,0.28)");
+  g.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 128, 128);
+  glowTex = new THREE.CanvasTexture(c);
+  glowTex.colorSpace = THREE.SRGBColorSpace;
+  return glowTex;
 }
 
 export type Materials = ReturnType<typeof create>;
@@ -73,9 +126,9 @@ export function hatchTexture(): THREE.CanvasTexture {
   c.width = c.height = 64;
   const ctx = c.getContext("2d")!;
   ctx.clearRect(0, 0, 64, 64);
-  ctx.strokeStyle = "rgba(220,224,232,0.9)";
-  ctx.lineWidth = 6;
-  for (let i = -64; i < 128; i += 18) { ctx.beginPath(); ctx.moveTo(i, 64); ctx.lineTo(i + 64, 0); ctx.stroke(); }
+  ctx.strokeStyle = "rgba(230,232,236,0.95)";
+  ctx.lineWidth = 4;
+  for (let i = -64; i < 128; i += 16) { ctx.beginPath(); ctx.moveTo(i, 64); ctx.lineTo(i + 64, 0); ctx.stroke(); }
   hatchTex = new THREE.CanvasTexture(c);
   hatchTex.wrapS = hatchTex.wrapT = THREE.RepeatWrapping;
   hatchTex.colorSpace = THREE.SRGBColorSpace;

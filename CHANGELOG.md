@@ -7,6 +7,7 @@
 - **Per-record quarantine.** A record that fails deterministically is rolled back to its own savepoint, then quarantined, counted and audited, so later records still progress and restarts don't retry it. Infrastructure errors still roll back the batch and hold the checkpoint.
 - **v0.2 upgrade path.** Legacy raw journal rows are re-minimized in place on first start (same seq and dedup keys), unparseable rows become tombstones, and the WAL is truncated. Tested against a v0.2-schema database holding raw markers. See docs/UPGRADING.md.
 - **Demo publishing.** Back to GitHub's artifact deployment (`deploy-pages`). The build embeds `<meta name="dk-build">`, and the workflow checks the *served* page for this commit's id.
+- **Interface redesign.** A new design system: one dark theme, a 4/8px grid, a type scale, one accent colour and an SVG icon set. A cleaner app shell with collapsible list and inspector, responsive down to one column. In 3D: new lighting and materials, priority-based labels that hide when they would overlap, glow only on active findings, and a framed camera with limits. In 2D: aligned cards, curved edges with arrowheads, clear coverage-gap styling, and pan, zoom and fit. A cleaner evidence pane and timeline.
 - **Non-production trial test.** SDK → finding on the correct asset → identical evidence ids for the human API and MCP → visible source outage → unknown targets stay unknown → acknowledged events survive restart → an approved proposal changes nothing.
 
 ## 0.3.0: trustworthiness release

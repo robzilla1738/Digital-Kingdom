@@ -8,6 +8,9 @@ import { Timeline } from "./panels/Timeline.tsx";
 import { Legend } from "./panels/Legend.tsx";
 import { Graph2D } from "./graph2d/Graph2D.tsx";
 import { webglAvailable } from "./lib/webgl.ts";
+import { Icon } from "./lib/icons.tsx";
+import { BrandMark } from "./panels/TopBar.tsx";
+import { fmtTime } from "./lib/vocab.ts";
 
 const Castle3D = lazy(() => import("./castle/Castle3D.tsx").then((m) => ({ default: m.Castle3D })));
 
@@ -73,8 +76,8 @@ export function App() {
   } : null;
 
   if (needsLogin) return <Login api={api} onDone={() => { setNeedsLogin(false); void load(); }} />;
-  if (error) return <div className="fullscreen-msg"><h1>Digital Kingdom</h1><p>{error}</p><button className="btn" onClick={() => void load()}>Retry</button></div>;
-  if (!data) return <div className="fullscreen-msg"><div className="spinner" aria-hidden /><p>Loading evidence…</p></div>;
+  if (error) return <div className="fullscreen-msg" role="alert"><span className="brand-mark" style={{ width: 32, height: 32 }}><BrandMark size={18} /></span><h1>Digital Kingdom</h1><p>{error}</p><button className="btn" onClick={() => void load()}>Retry</button></div>;
+  if (!data) return <div className="fullscreen-msg" aria-busy="true"><div className="spinner" aria-hidden /><p className="small">Loading evidence…</p></div>;
 
   return (
     <ActionsCtx.Provider value={actions}>
@@ -89,7 +92,7 @@ export function App() {
 }
 
 function Shell(props: { connection: string | null; onSignIn: () => void; onSignOut: () => void; onProject: (id: string) => void }) {
-  const { ui, dispatch } = useApp();
+  const { ui, dispatch, vm } = useApp();
   useEffect(() => { const r = webglAvailable(); if (r) dispatch({ type: "webglFailed", reason: r }); }, [dispatch]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -99,18 +102,21 @@ function Shell(props: { connection: string | null; onSignIn: () => void; onSignO
       if (e.key === "3" && !ui.webglFailed) dispatch({ type: "view", view: "castle" });
       if (e.key === " " && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); dispatch({ type: "playing", playing: !ui.playing }); }
       if (e.key === "r") dispatch({ type: "roofs", roofs: !ui.roofs });
+      if (e.key === "[") dispatch({ type: "panel", panel: "sidebar", open: !ui.sidebar });
+      if (e.key === "]") dispatch({ type: "panel", panel: "inspector", open: !ui.inspector });
       if (e.key === "/") { e.preventDefault(); document.querySelector<HTMLInputElement>(".search")?.focus(); }
     };
     addEventListener("keydown", onKey); return () => removeEventListener("keydown", onKey);
-  }, [dispatch, ui.playing, ui.roofs, ui.webglFailed]);
+  }, [dispatch, ui.playing, ui.roofs, ui.webglFailed, ui.sidebar, ui.inspector]);
   return (
-    <div className={`app${ui.selection ? " has-selection" : ""}`}>
+    <div className={`app${ui.selection ? " has-selection" : ""}${ui.sidebar ? "" : " no-side"}${ui.inspector ? "" : " no-pane"}`}>
       <a href="#main" className="skip">Skip to map</a>
       <TopBar connection={props.connection} onSignIn={props.onSignIn} onSignOut={props.onSignOut} onProject={props.onProject} />
       <Sidebar />
       <main id="main" className="stage">
-        {ui.webglFailed && ui.view === "graph" && <div className="banner">{ui.webglFailed} The 2D graph and timeline show the same evidence.</div>}
-        {ui.view === "castle" && !ui.webglFailed ? <Suspense fallback={<div className="stage-loading">Raising the castle…</div>}><Castle3D /></Suspense> : <Graph2D />}
+        {ui.webglFailed && ui.view === "graph" && <div className="banner" role="status"><Icon name="alert" size={15} />{ui.webglFailed} The 2D graph and timeline show the same evidence.</div>}
+        {ui.view === "castle" && !ui.webglFailed ? <Suspense fallback={<div className="stage-loading"><div className="spinner" aria-hidden /></div>}><Castle3D /></Suspense> : <Graph2D />}
+        {!vm.isLatest && <div className="stage-title"><span className="replay-tag"><span className="pip" aria-hidden />Replay · {fmtTime(vm.at)}</span></div>}
         <Legend />
       </main>
       <EvidencePane />
@@ -125,8 +131,8 @@ function Login({ api, onDone }: { api: Api; onDone: () => void }) {
   const [err, setErr] = useState<string | null>(null);
   return (
     <div className="fullscreen-msg">
-      <form className="login" onSubmit={async (e) => { e.preventDefault(); setErr(null); try { await api.send("POST", "/api/session", { token }); onDone(); } catch (x) { setErr((x as Error).message); } }}>
-        <h1>Digital Kingdom</h1>
+      <form className="login" aria-labelledby="login-title" onSubmit={async (e) => { e.preventDefault(); setErr(null); try { await api.send("POST", "/api/session", { token }); onDone(); } catch (x) { setErr((x as Error).message); } }}>
+        <div className="login-head"><span className="brand-mark" style={{ width: 28, height: 28 }}><BrandMark size={16} /></span><h1 id="login-title" style={{ fontSize: 16 }}>Digital Kingdom</h1></div>
         <p className="muted">Sign in with an API token issued by your administrator. The token is exchanged for an HttpOnly session cookie and never stored in the browser.</p>
         <input type="password" autoComplete="off" value={token} onChange={(e) => setToken(e.target.value)} placeholder="dku_…" aria-label="API token" autoFocus />
         <button className="btn primary" type="submit" disabled={!token}>Sign in</button>

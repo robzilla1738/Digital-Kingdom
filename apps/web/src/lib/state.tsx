@@ -23,6 +23,9 @@ export interface UiState {
   tab: "findings" | "assets" | "coverage";
   webglFailed: string | null;
   announce: string;
+  /** Left list and right inspector visibility (app shell). */
+  sidebar: boolean;
+  inspector: boolean;
 }
 
 export type Action =
@@ -39,12 +42,13 @@ export type Action =
   | { type: "reducedMotion"; on: boolean }
   | { type: "query"; query: string }
   | { type: "tab"; tab: UiState["tab"] }
-  | { type: "webglFailed"; reason: string };
+  | { type: "webglFailed"; reason: string }
+  | { type: "panel"; panel: "sidebar" | "inspector"; open: boolean };
 
 function reducer(s: UiState, a: Action): UiState {
   switch (a.type) {
     case "view": return { ...s, view: a.view };
-    case "select": return { ...s, selection: a.selection, announce: a.announce ?? s.announce };
+    case "select": return { ...s, selection: a.selection, announce: a.announce ?? s.announce, inspector: a.selection ? true : s.inspector };
     case "hover": return s.hover === a.id ? s : { ...s, hover: a.id };
     case "playhead": return { ...s, playhead: a.at };
     case "playing": return { ...s, playing: a.playing };
@@ -57,6 +61,7 @@ function reducer(s: UiState, a: Action): UiState {
     case "query": return { ...s, query: a.query };
     case "tab": return { ...s, tab: a.tab };
     case "webglFailed": return { ...s, webglFailed: a.reason, view: "graph" };
+    case "panel": return { ...s, [a.panel]: a.open };
   }
 }
 
@@ -97,12 +102,15 @@ const Ctx = createContext<{ ui: UiState; dispatch: Dispatch<Action>; vm: ViewMod
 
 export function AppStateProvider({ data, children }: { data: Dataset; children: ReactNode }) {
   const prefersReduced = typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const [ui, dispatch] = useReducer(reducer, undefined, () => ({
+  const wide = typeof matchMedia !== "undefined" && matchMedia("(min-width: 1360px)").matches;
+  const narrow = typeof matchMedia !== "undefined" && matchMedia("(max-width: 820px)").matches;
+  const [ui, dispatch] = useReducer(reducer, undefined, () => { const fromHash = readHash(); return {
     view: "castle", selection: null, hover: null, playhead: null, playing: false, speed: 30, basis: "occurred",
     roofs: true, layers: { runtime: true, identity: false, deployment: false, tools: true }, showHypothetical: false,
     reducedMotion: prefersReduced, query: "", tab: "findings", webglFailed: null, announce: "",
-    ...readHash(),
-  } satisfies UiState));
+    sidebar: !narrow, inspector: wide || !!fromHash.selection,
+    ...fromHash,
+  } satisfies UiState; });
 
   // deep links: the same asset/finding/time view can be shared (authorization still applies on load)
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { ModuleId } from "@dk/contracts";
-import { materials, merlons, type Materials } from "./materials.ts";
+import { materials, merlons, windowLit, type Materials } from "./materials.ts";
 import type * as THREE from "three";
 
 /**
@@ -49,7 +49,7 @@ function Banner({ p, m }: { p: V3; m: THREE.Material }) {
   return (
     <group position={p}>
       <mesh material={m} position={[0.22, -0.3, 0]}><planeGeometry args={[0.42, 0.6]} /></mesh>
-      <mesh position={[0, 0, 0]}><cylinderGeometry args={[0.025, 0.025, 1.1, 6]} /><meshStandardMaterial color="#3a332c" /></mesh>
+      <mesh position={[0, 0, 0]}><cylinderGeometry args={[0.025, 0.025, 1.1, 6]} /><meshStandardMaterial color="#2e2a26" roughness={0.9} /></mesh>
     </group>
   );
 }
@@ -209,8 +209,10 @@ function Portal({ m }: P) {
   );
 }
 
-export function CastleModule({ id, roofs, highContrast }: { id: ModuleId; roofs: boolean; highContrast?: boolean }) {
-  const m = materials(highContrast);
+export function CastleModule({ id, roofs, highContrast, windowColor }: { id: ModuleId; roofs: boolean; highContrast?: boolean; windowColor?: string | null }) {
+  const base = materials(highContrast);
+  // evidence state lights the windows; otherwise they stay dark and matte
+  const m = useMemo<Materials>(() => (windowColor ? { ...base, window: windowLit(windowColor) } : base), [base, windowColor]);
   switch (id) {
     case "gatehouse": return <Gatehouse m={m} roofs={roofs} />;
     case "guardhouse": return <Guardhouse m={m} roofs={roofs} />;

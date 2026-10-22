@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Html } from "@react-three/drei";
+import * as THREE from "three";
 import type { CompiledScene } from "@dk/contracts";
 import { materials, merlons } from "./materials.ts";
 
@@ -25,12 +25,17 @@ export function Environment({ scene, highContrast }: { scene: CompiledScene; hig
 
   const width = east - west, depth = southZ - north;
   const cx = (west + east) / 2, cz = (north + southZ) / 2;
-  const span = Math.max(scene.bounds.maxX - scene.bounds.minX, scene.bounds.maxZ - scene.bounds.minZ) + 60;
+  const span = Math.max(scene.bounds.maxX - scene.bounds.minX, scene.bounds.maxZ - scene.bounds.minZ) + 160;
 
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[cx, -0.06, cz]} material={m.grass} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[cx, -0.08, cz]} material={m.grass} receiveShadow>
         <planeGeometry args={[span, span]} />
+      </mesh>
+      {/* low plinth the castle sits on: gives the diorama a clean edge against the ground */}
+      <mesh position={[cx, -0.2, cz]} receiveShadow>
+        <meshStandardMaterial color="#1f2226" roughness={1} />
+        <boxGeometry args={[width + 2 * (MOAT + WALL_T) + 1.6, 0.3, depth + 2 * (MOAT + WALL_T) + 1.6]} />
       </mesh>
       {/* moat ring */}
       {[
@@ -64,17 +69,15 @@ export function Environment({ scene, highContrast }: { scene: CompiledScene; hig
       {/* zone plates + labels */}
       {scene.zones.map((z) => {
         const zw = z.bounds.maxX - z.bounds.minX, zd = z.bounds.maxZ - z.bounds.minZ;
-        const tint = { public: "#4d4b44", application: "#45494b", data: "#3f4446", automation: "#414552", delivery: "#4a4540", external: "#3a443c" }[z.zone_id];
+        const tint = highContrast ? "#3a3d42" : { public: "#47494c", application: "#45484b", data: "#43474b", automation: "#45474e", delivery: "#48474a", external: "#3c4043" }[z.zone_id];
         return (
           <group key={z.zone_id}>
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[(z.bounds.minX + z.bounds.maxX) / 2, 0.0, (z.bounds.minZ + z.bounds.maxZ) / 2]} receiveShadow>
-              <planeGeometry args={[zw, zd]} />
+            <mesh position={[(z.bounds.minX + z.bounds.maxX) / 2, 0.02, (z.bounds.minZ + z.bounds.maxZ) / 2]} receiveShadow>
+              <boxGeometry args={[zw, 0.08, zd]} />
               <meshStandardMaterial color={tint} roughness={1} />
             </mesh>
             {z.enclosed && <LowWall b={z.bounds} />}
-            <Html position={[z.bounds.minX + 0.3, 0.05, z.bounds.minZ + 0.3]} zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
-              <div className="zone-label">{z.label}</div>
-            </Html>
+            <ZoneLabel label={z.label} x={z.bounds.minX + 0.5} z={z.bounds.maxZ - 0.35} maxW={zw - 0.9} />
           </group>
         );
       })}
@@ -90,9 +93,9 @@ function WallRun({ from, to }: { from: [number, number]; to: [number, number] })
   const geo = merlons(len, 0.36, WALL_T * 0.45, 0.6);
   return (
     <group position={[(from[0] + to[0]) / 2, 0, (from[1] + to[1]) / 2]} rotation={[0, angle, 0]}>
-      <mesh position={[0, WALL_H / 2, 0]} material={m.stone} castShadow receiveShadow><boxGeometry args={[len, WALL_H, WALL_T]} /></mesh>
-      <mesh position={[0, WALL_H, WALL_T * 0.28]} geometry={geo} material={m.stoneLight} castShadow />
-      <mesh position={[0, WALL_H, -WALL_T * 0.28]} geometry={geo} material={m.stoneLight} castShadow />
+      <mesh position={[0, WALL_H / 2, 0]} material={m.wall} castShadow receiveShadow><boxGeometry args={[len, WALL_H, WALL_T]} /></mesh>
+      <mesh position={[0, WALL_H, WALL_T * 0.28]} geometry={geo} material={m.wallTop} castShadow />
+      <mesh position={[0, WALL_H, -WALL_T * 0.28]} geometry={geo} material={m.wallTop} castShadow />
     </group>
   );
 }
@@ -101,7 +104,7 @@ function Tower({ x, z, highContrast }: { x: number; z: number; highContrast: boo
   const m = materials(highContrast);
   return (
     <group position={[x, 0, z]}>
-      <mesh position={[0, 1.4, 0]} material={m.stone} castShadow receiveShadow><cylinderGeometry args={[1.0, 1.15, 2.8, 16]} /></mesh>
+      <mesh position={[0, 1.4, 0]} material={m.wall} castShadow receiveShadow><cylinderGeometry args={[1.0, 1.15, 2.8, 20]} /></mesh>
       <mesh position={[0, 3.25, 0]} material={m.roof} castShadow><coneGeometry args={[1.25, 1.6, 16]} /></mesh>
     </group>
   );
@@ -118,3 +121,41 @@ function LowWall({ b }: { b: { minX: number; maxX: number; minZ: number; maxZ: n
   return <>{segs.map(([x, z, sx, sz], i) => <mesh key={i} position={[x, h / 2, z]} material={m.stoneDark} castShadow receiveShadow><boxGeometry args={[sx, h, sz]} /></mesh>)}</>;
 }
 
+
+/**
+ * Zone names painted onto the ground plates (a canvas texture, no font download). Being part of the
+ * scene, they foreshorten and get occluded like real markings instead of floating over buildings.
+ */
+const zoneTexCache = new Map<string, { tex: THREE.CanvasTexture; aspect: number }>();
+function zoneTexture(label: string) {
+  let hit = zoneTexCache.get(label);
+  if (hit) return hit;
+  const text = label.toUpperCase();
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d")!;
+  const font = '600 56px Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+  ctx.font = font;
+  const spacing = 10;
+  const w = Math.ceil([...text].reduce((s, ch) => s + ctx.measureText(ch).width + spacing, 0)) + 8;
+  c.width = w; c.height = 80;
+  ctx.font = font; ctx.fillStyle = "rgba(226,230,236,0.92)"; ctx.textBaseline = "middle";
+  let x = 4;
+  for (const ch of text) { ctx.fillText(ch, x, 42); x += ctx.measureText(ch).width + spacing; }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  hit = { tex, aspect: c.width / c.height };
+  zoneTexCache.set(label, hit);
+  return hit;
+}
+
+function ZoneLabel({ label, x, z, maxW }: { label: string; x: number; z: number; maxW: number }) {
+  const { tex, aspect } = zoneTexture(label);
+  const h = Math.min(0.9, maxW / aspect);
+  const w = h * aspect;
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[x + w / 2, 0.075, z - h / 2]} renderOrder={1}>
+      <planeGeometry args={[w, h]} />
+      <meshBasicMaterial map={tex} transparent opacity={0.5} depthWrite={false} toneMapped={false} />
+    </mesh>
+  );
+}
