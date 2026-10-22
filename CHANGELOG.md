@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased (branch `pilot/browser-pilot`): controlled browser pilot
+
+- **Browser pilot** (`e2e/`, Playwright, CI job `browser-pilot`). Runs the real server and worker on a fresh temp DB, the reference app through the real SDK, the built UI in Chromium, and a stdio MCP client. It covers source-to-screen evidence, human/MCP parity, 3D/2D parity, failed evidence fetches, WebGL fallback, staleness and unknown targets, crash-restart durability and reconnect, proposal-only containment, and untrusted evidence text.
+- **Fix:** if the server became unreachable after a live session, the UI could silently swap in the offline *synthetic* demo. It now keeps the last data and shows a "not live monitoring" banner with the time of the last sync.
+- **Fix:** the timeline said "Live" whenever a live project was at its latest position, even with the stream down. "Live" now requires a healthy stream, and a reconnect always refetches the snapshot.
+- **Fix:** stale-source findings had no events, so they were stamped with the Unix epoch (shown as 00:00:00 and sorted first) and labelled synthetic in live projects. They now carry the derived moment the source went stale and the project's dataset kind.
+- **Fix:** the event inspector did not show source-reported attributes or stored evidence records. They are now shown as plain, explicitly untrusted text.
+- **Fix:** the public static demo probed `/api/me` at the origin root. Builds with `VITE_DK_STATIC_DEMO=1` (used by Pages) never contact a backend.
+- **Upgrade docs:** prevention vs. recovery for v0.3.1 tombstones, plus a read-only diagnostic (`pnpm diagnose:tombstones <db>`). A new fixture, produced by the genuine v0.3.1 code, backs tests showing that tombstones are never presented as recovered and that a replayed source record is collapsed by dedup.
+- Server test knobs: `DK_WORKER_PAUSED` (ingest-only) and `DK_COVERAGE_SWEEP_MS`. Reference app: input-filter denials record the offending input as the untrusted attribute `input_sample`.
+
 ## 0.3.2: safe upgrade from v0.3
 
 - **Fix:** an in-place upgrade from v0.3 could tombstone *pending* journal rows, because v0.3 stored its redaction report inside the payload as `evidence._dk_redaction` and v0.3.1 rejects reserved keys. Legacy rows now go through a separate, versioned conversion that lifts out and type-checks that report, records its provenance in `journal.meta`, and re-minimizes the rest. Live ingestion is still strict.
