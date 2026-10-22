@@ -1,6 +1,6 @@
 {
   "finding": {
-    "id": "f-1fti6qb1qqu5b",
+    "id": "f-kjsx2l1j8tts1",
     "kind": "repeated_auth_failure",
     "outcome_state": "attempted",
     "evidence_level": "source_reported",
@@ -10,11 +10,11 @@
   },
   "browser": {
     "support": [
-      "ev-12fy4ou1hmm00q",
-      "ev-14szq3y12dh7tu",
-      "ev-1acf4t0ryu6xk",
-      "ev-1f8h15n50huof",
-      "ev-1wg98cz1k1vbkf"
+      "ev-1abui3w13ni83k",
+      "ev-1d3caivbfu5hv",
+      "ev-1ombpd81hu3y2o",
+      "ev-1tlr7mq9izscu",
+      "ev-gxfcc31apqq9z"
     ],
     "counter": [],
     "asset": "checkout",
@@ -23,17 +23,17 @@
   "mcp": {
     "transport": "stdio (node --import tsx apps/mcp/src/main.ts)",
     "events": [
-      "ev-12fy4ou1hmm00q",
-      "ev-14szq3y12dh7tu",
-      "ev-1acf4t0ryu6xk",
-      "ev-1f8h15n50huof",
-      "ev-1wg98cz1k1vbkf"
+      "ev-1abui3w13ni83k",
+      "ev-1d3caivbfu5hv",
+      "ev-1ombpd81hu3y2o",
+      "ev-1tlr7mq9izscu",
+      "ev-gxfcc31apqq9z"
     ],
     "complete": true
   },
   "webgl": {
     "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
-    "frame_png_bytes": 101933,
+    "frame_png_bytes": 101912,
     "note": "software WebGL (SwiftShader); not a GPU benchmark"
   },
   "uncertainty": {
@@ -46,6 +46,24 @@
     "probe_processed_count": 1,
     "duplicate_on_resend": true,
     "browser_reconnected": true
+  },
+  "reconnect_sync": {
+    "states": [
+      "live",
+      "reconnecting",
+      "synchronizing",
+      "sync-failed",
+      "live"
+    ]
+  },
+  "snapshot_retry": {
+    "states": [
+      "live",
+      "sync-failed",
+      "sync-failed",
+      "live",
+      "live"
+    ]
   },
   "containment": {
     "proposed_by": "service via MCP",

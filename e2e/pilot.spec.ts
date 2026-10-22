@@ -96,6 +96,9 @@ test("A. controlled activity in the reference app becomes an evidence-backed fin
   results.finding = { id: auth.id, kind: auth.kind, outcome_state: auth.outcome_state, evidence_level: auth.evidence_level, affected: auth.affected_asset_ids };
 
   ({ context: ctx, page } = await login(browser));
+  // the dataset badge is neutral and separate from the connection indicator
+  await expect(page.locator(".pill.telemetry")).toHaveText("Telemetry");
+  await expect(page.locator(".project-meta .pill", { hasText: /^Live$/ })).toHaveCount(0);
   const row = page.locator(`[data-finding-id="${auth.id}"]`);
   await expect(row).toBeVisible();
   await row.click();
@@ -290,6 +293,85 @@ test("E. an acknowledged-but-unprocessed event survives restart; the browser sho
   await expect(page.getByTestId("connection-banner")).toHaveCount(0);
   results.restart = { probe_processed_count: after, duplicate_on_resend: true, browser_reconnected: true };
   await shot(page, "E-reconnected");
+});
+
+/** Records every data-state the connection pill takes, so a transient "live" cannot slip past an assertion. */
+async function recordConnStates(p: Page) {
+  await p.evaluate(() => {
+    const w = window as any; w.__connStates = [];
+    const el = document.querySelector('[data-testid="connection-pill"]')!;
+    w.__connStates.push(el.getAttribute("data-state"));
+    new MutationObserver(() => w.__connStates.push(el.getAttribute("data-state"))).observe(el, { attributes: true, attributeFilter: ["data-state"] });
+  });
+}
+const connStates = (p: Page) => p.evaluate(() => (window as any).__connStates as string[]);
+const pill = () => page.getByTestId("connection-pill");
+const ingestDb = (id: string) => fetch(`${pilot.url}/ingest/events`, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${dbKey}` }, body: JSON.stringify({ source_event_id: id, occurred_at: new Date().toISOString(), asset_ids: ["checkout-db"], action: "data_access", outcome: "success", actor_ref: "svc-checkout" }) });
+
+test("E2. SSE reconnects but the catch-up snapshot fails, then is delayed: never Live until it is applied", async () => {
+  await expect(pill()).toHaveAttribute("data-state", "live", { timeout: 20_000 });
+  await expect(page.getByTestId("connection-banner")).toHaveCount(0);
+  let mode: "fail" | "hold" = "fail";
+  let release!: () => void; const gate = new Promise<void>((r) => { release = r; });
+  let held = 0;
+  await page.route("**/api/projects/pilot/snapshot", async (route) => {
+    if (mode === "fail") return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "injected snapshot outage" }) });
+    held++; await gate; return route.continue();
+  });
+  try {
+    await recordConnStates(page);
+    await pilot.stop("SIGKILL");
+    await expect(pill()).not.toHaveAttribute("data-state", "live", { timeout: 15_000 });
+    await pilot.start();
+    // the stream is back (hello), but the catch-up snapshot fails: stale, with retry, never live
+    await expect(pill()).toHaveAttribute("data-state", "sync-failed", { timeout: 20_000 });
+    await expect(pill()).toContainText("Sync failed");
+    await expect(page.getByTestId("connection-banner")).toBeVisible();
+    await expect(page.getByTestId("connection-banner")).toContainText("not live monitoring");
+    await expect(page.getByTestId("timeline-mode")).not.toHaveAttribute("data-mode", "live");
+    await shot(page, "E2-reconnected-snapshot-failed");
+    // now the snapshot is merely slow: the next retry is held at the gate
+    mode = "hold";
+    await until("a held catch-up snapshot request", async () => held > 0, 20_000);
+    await expect(pill()).not.toHaveAttribute("data-state", "live");
+    await expect(page.getByTestId("connection-banner")).toBeVisible();
+    release();
+    await expect(pill()).toHaveAttribute("data-state", "live", { timeout: 20_000 });
+    await expect(page.getByTestId("connection-banner")).toHaveCount(0);
+    const states = await connStates(page);
+    // after the interruption began, "live" appears only as the final state, once the snapshot was applied
+    const firstNonLive = states.findIndex((x) => x !== "live");
+    expect(states.slice(firstNonLive, -1)).not.toContain("live");
+    expect(states.at(-1)).toBe("live");
+    expect(states).toContain("sync-failed");
+    results.reconnect_sync = { states };
+  } finally { release(); await page.unroute("**/api/projects/pilot/snapshot"); }
+});
+
+test("E3. snapshot fails while SSE stays connected, then recovers on retry", async () => {
+  await expect(pill()).toHaveAttribute("data-state", "live", { timeout: 20_000 });
+  let fail = true;
+  await page.route("**/api/projects/pilot/snapshot", (route) => fail
+    ? route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ error: "injected snapshot failure" }) })
+    : route.continue());
+  try {
+    await recordConnStates(page);
+    // a new event arrives over the (healthy) stream and triggers a snapshot refresh, which fails
+    expect((await ingestDb(`sync-probe-${Date.now()}`)).status).toBe(202);
+    await expect(pill()).toHaveAttribute("data-state", "sync-failed", { timeout: 20_000 });
+    await expect(page.getByTestId("connection-banner")).toBeVisible();
+    await expect(page.getByTestId("timeline-mode")).not.toHaveAttribute("data-mode", "live");
+    await shot(page, "E3-snapshot-failed-sse-connected");
+    // restore: the bounded retry (stream still connected) succeeds and clears the stale state
+    fail = false;
+    await expect(pill()).toHaveAttribute("data-state", "live", { timeout: 20_000 });
+    await expect(page.getByTestId("connection-banner")).toHaveCount(0);
+    await expect(page.getByTestId("timeline-mode")).toHaveAttribute("data-mode", "live");
+    const states = await connStates(page);
+    expect(states).not.toContain("reconnecting"); // the transport never dropped
+    expect(states).not.toContain("lost");
+    results.snapshot_retry = { states };
+  } finally { await page.unroute("**/api/projects/pilot/snapshot"); }
 });
 
 test("F. containment stays proposal-only: service proposes, cannot approve; human approval executes nothing", async () => {

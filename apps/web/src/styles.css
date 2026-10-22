@@ -102,9 +102,11 @@ code { color: var(--text-2); }
 }
 .pill .pip { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .pill.synthetic { color: var(--warn); border-color: rgba(226, 184, 79, 0.28); background: var(--warn-soft); }
-.pill.live { color: var(--ok); border-color: rgba(79, 191, 138, 0.3); background: var(--ok-soft); }
+.pill.telemetry { color: var(--text-2, #b6bcc8); }
 .pill.conn-live .pip { background: var(--ok); box-shadow: 0 0 0 3px rgba(79, 191, 138, 0.18); }
 .pill.conn-reconnecting .pip { background: var(--warn); }
+.pill.conn-synchronizing .pip, .pill.conn-sync-failed .pip { background: var(--warn); }
+.pill.conn-sync-failed { color: var(--warn); }
 .pill.conn-lost { color: var(--warn); border-color: rgba(226, 184, 79, 0.28); }
 .pill.conn-lost .pip { background: var(--warn); }
 .banner.warn { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 6; }
