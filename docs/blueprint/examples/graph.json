@@ -1,0 +1,166 @@
+{
+  "schema_version": "0.1",
+  "dataset_kind": "synthetic",
+  "project_id": "sample-app",
+  "graph_revision": "demo-r1",
+  "assets": [
+    {
+      "id": "edge",
+      "name": "public-edge",
+      "kind": "edge",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "public"
+      ],
+      "source_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "auth",
+      "name": "identity-service",
+      "kind": "auth",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "api",
+      "name": "orders-api",
+      "kind": "service",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "worker",
+      "name": "order-worker",
+      "kind": "worker",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "db",
+      "name": "orders-db",
+      "kind": "database",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "data"
+      ],
+      "source_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "agent",
+      "name": "support-agent",
+      "kind": "agent",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "automation"
+      ],
+      "source_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "support-tools",
+      "kind": "tool_server",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "automation"
+      ],
+      "source_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "ci",
+      "name": "release-pipeline",
+      "kind": "pipeline",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "delivery"
+      ],
+      "source_refs": [
+        "fixture:inventory-1"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-1",
+      "source_id": "edge",
+      "target_id": "auth",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "rel-2",
+      "source_id": "edge",
+      "target_id": "api",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "rel-3",
+      "source_id": "api",
+      "target_id": "worker",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "rel-4",
+      "source_id": "api",
+      "target_id": "db",
+      "kind": "reads_from",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "rel-5",
+      "source_id": "agent",
+      "target_id": "tools",
+      "kind": "invokes_tool",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-1"
+      ]
+    },
+    {
+      "id": "rel-6",
+      "source_id": "ci",
+      "target_id": "api",
+      "kind": "deploys",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-1"
+      ]
+    }
+  ]
+}

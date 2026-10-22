@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Digital Kingdom proposed normalized example event v0.1",
+  "description": "Narrow illustrative event contract, not the full production event schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "dataset_kind": {
+      "const": "synthetic"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "source_event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "asset_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+      }
+    },
+    "action": {
+      "enum": [
+        "request_received",
+        "authentication",
+        "authorization_change",
+        "decoy_used",
+        "sensor_unavailable"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "allowed",
+        "denied",
+        "success",
+        "failure",
+        "unknown"
+      ]
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+      }
+    },
+    "coverage_note": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  },
+  "required": [
+    "schema_version",
+    "dataset_kind",
+    "id",
+    "project_id",
+    "source_id",
+    "source_event_id",
+    "occurred_at",
+    "received_at",
+    "asset_ids",
+    "action",
+    "outcome",
+    "evidence_refs"
+  ]
+}

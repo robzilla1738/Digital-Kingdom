@@ -1,0 +1,7 @@
+{
+  "title": "Castle Gate: synthetic incident",
+  "description": "A synthetic sequence: blocked SQL-injection probes, repeated sign-in failures and a privilege change, a blocked request contradicted by an observed effect, a decoy credential, an agent run with refusal/denial/observed effect, a lost database audit feed, and a runtime alert.",
+  "dataset_kind": "synthetic",
+  "start": "2026-10-20T13:59:00.000Z",
+  "end": "2026-10-20T14:13:00.000Z"
+}

@@ -1,0 +1,9 @@
+{
+  "catalog_version": "dk-castle-kit-1.0.0",
+  "license": "Apache-2.0",
+  "source": "Original procedural geometry authored in apps/web/src/castle/modules.tsx. No third-party meshes, textures, fonts or runtime downloads.",
+  "units": "metres, Y-up, origin at ground centre",
+  "modules": ["gatehouse", "guardhouse", "hall", "great_hall", "workshop", "vault", "observatory", "tool_annex", "forge", "portal"],
+  "footprints_and_heights": "packages/contracts/src/catalog.ts (MODULE_CATALOG)",
+  "roof_groups": "Every roofed module renders its roof conditionally so the interior can be revealed."
+}

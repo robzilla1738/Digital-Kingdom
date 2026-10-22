@@ -1,0 +1,829 @@
+[
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:00:02.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0001",
+      "occurred_at": "2026-10-20T14:00:00.000Z",
+      "asset_ids": [
+        "public-edge"
+      ],
+      "action": "request_received",
+      "outcome": "allowed",
+      "request_id": "req-1001",
+      "route": "/orders?page=2",
+      "client_ip": "192.0.2.10",
+      "evidence": {
+        "status": 200,
+        "method": "GET",
+        "upstream": "orders-api"
+      }
+    }
+  },
+  {
+    "source_id": "src-app",
+    "received_at": "2026-10-20T14:00:03.000Z",
+    "payload": {
+      "source_event_id": "src-app-0002",
+      "occurred_at": "2026-10-20T14:00:01.000Z",
+      "asset_ids": [
+        "orders-api"
+      ],
+      "action": "request_received",
+      "outcome": "success",
+      "request_id": "req-1001",
+      "route": "/orders",
+      "evidence": {
+        "status": 200,
+        "handler": "listOrders"
+      }
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:00:32.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0003",
+      "occurred_at": "2026-10-20T14:00:30.000Z",
+      "asset_ids": [
+        "identity-service"
+      ],
+      "action": "authentication",
+      "outcome": "success",
+      "actor_ref": "acct-alice",
+      "session_ref": "sess-a1",
+      "evidence": {
+        "method": "password+totp"
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:02.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0004",
+      "occurred_at": "2026-10-20T14:01:00.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1100",
+      "route": "/orders/4100?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:06.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0005",
+      "occurred_at": "2026-10-20T14:01:04.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1101",
+      "route": "/orders/4101?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:10.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0006",
+      "occurred_at": "2026-10-20T14:01:08.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1102",
+      "route": "/orders/4102?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:14.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0007",
+      "occurred_at": "2026-10-20T14:01:12.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1103",
+      "route": "/orders/4103?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:18.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0008",
+      "occurred_at": "2026-10-20T14:01:16.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1104",
+      "route": "/orders/4104?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:22.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0009",
+      "occurred_at": "2026-10-20T14:01:20.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1105",
+      "route": "/orders/4105?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:26.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0010",
+      "occurred_at": "2026-10-20T14:01:24.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1106",
+      "route": "/orders/4106?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:30.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0011",
+      "occurred_at": "2026-10-20T14:01:28.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1107",
+      "route": "/orders/4107?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:34.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0012",
+      "occurred_at": "2026-10-20T14:01:32.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1108",
+      "route": "/orders/4108?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:38.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0013",
+      "occurred_at": "2026-10-20T14:01:36.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1109",
+      "route": "/orders/4109?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:42.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0014",
+      "occurred_at": "2026-10-20T14:01:40.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1110",
+      "route": "/orders/4110?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:01:46.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0015",
+      "occurred_at": "2026-10-20T14:01:44.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1111",
+      "route": "/orders/4111?q=1'+OR+'1'='1",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403,
+        "headers": {
+          "user-agent": "sqlmap/1.8",
+          "authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+        }
+      }
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:02:02.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0017",
+      "occurred_at": "2026-10-20T14:02:00.000Z",
+      "asset_ids": [
+        "auth"
+      ],
+      "action": "authentication",
+      "outcome": "failure",
+      "actor_ref": "acct-ops",
+      "client_ip": "198.51.100.20",
+      "evidence": {
+        "reason": "bad_password",
+        "password": "hunter2-should-never-be-stored"
+      }
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:02:11.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0018",
+      "occurred_at": "2026-10-20T14:02:09.000Z",
+      "asset_ids": [
+        "auth"
+      ],
+      "action": "authentication",
+      "outcome": "failure",
+      "actor_ref": "acct-ops",
+      "client_ip": "198.51.100.20",
+      "evidence": {
+        "reason": "bad_password",
+        "password": "hunter2-should-never-be-stored"
+      }
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:02:20.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0019",
+      "occurred_at": "2026-10-20T14:02:18.000Z",
+      "asset_ids": [
+        "auth"
+      ],
+      "action": "authentication",
+      "outcome": "failure",
+      "actor_ref": "acct-ops",
+      "client_ip": "198.51.100.20",
+      "evidence": {
+        "reason": "bad_password",
+        "password": "hunter2-should-never-be-stored"
+      }
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:02:29.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0020",
+      "occurred_at": "2026-10-20T14:02:27.000Z",
+      "asset_ids": [
+        "auth"
+      ],
+      "action": "authentication",
+      "outcome": "failure",
+      "actor_ref": "acct-ops",
+      "client_ip": "198.51.100.20",
+      "evidence": {
+        "reason": "bad_password",
+        "password": "hunter2-should-never-be-stored"
+      }
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:02:38.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0021",
+      "occurred_at": "2026-10-20T14:02:36.000Z",
+      "asset_ids": [
+        "auth"
+      ],
+      "action": "authentication",
+      "outcome": "failure",
+      "actor_ref": "acct-ops",
+      "client_ip": "198.51.100.20",
+      "evidence": {
+        "reason": "bad_password",
+        "password": "hunter2-should-never-be-stored"
+      }
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:02:47.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0022",
+      "occurred_at": "2026-10-20T14:02:45.000Z",
+      "asset_ids": [
+        "auth"
+      ],
+      "action": "authentication",
+      "outcome": "failure",
+      "actor_ref": "acct-ops",
+      "client_ip": "198.51.100.20",
+      "evidence": {
+        "reason": "bad_password",
+        "password": "hunter2-should-never-be-stored"
+      }
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:03:32.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0023",
+      "occurred_at": "2026-10-20T14:03:30.000Z",
+      "asset_ids": [
+        "auth"
+      ],
+      "action": "authentication",
+      "outcome": "success",
+      "actor_ref": "acct-dana",
+      "session_ref": "sess-d7",
+      "client_ip": "198.51.100.20",
+      "evidence": {
+        "method": "sso"
+      },
+      "coverage_note": "Shares a corporate NAT address with the failures above."
+    }
+  },
+  {
+    "source_id": "src-auth",
+    "received_at": "2026-10-20T14:05:02.000Z",
+    "payload": {
+      "source_event_id": "src-auth-0024",
+      "occurred_at": "2026-10-20T14:05:00.000Z",
+      "asset_ids": [
+        "auth"
+      ],
+      "action": "authentication",
+      "outcome": "success",
+      "actor_ref": "acct-ops",
+      "session_ref": "sess-o2",
+      "request_id": "req-2001",
+      "client_ip": "198.51.100.20",
+      "evidence": {
+        "method": "password"
+      }
+    }
+  },
+  {
+    "source_id": "src-app",
+    "received_at": "2026-10-20T14:06:02.000Z",
+    "payload": {
+      "source_event_id": "src-app-0025",
+      "occurred_at": "2026-10-20T14:06:00.000Z",
+      "asset_ids": [
+        "orders-api"
+      ],
+      "action": "authorization_change",
+      "outcome": "success",
+      "actor_ref": "acct-ops",
+      "session_ref": "sess-o2",
+      "request_id": "req-2002",
+      "severity": "high",
+      "route": "/admin/roles",
+      "evidence": {
+        "change": "grant role billing-admin to acct-ops",
+        "ticket": null
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:06:25.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0016",
+      "occurred_at": "2026-10-20T14:01:55.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "sqli-942100",
+      "severity": "medium",
+      "request_id": "req-1199",
+      "route": "/orders/4199",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "942100 SQL injection",
+        "action": "deny",
+        "status": 403
+      }
+    },
+    "note": "late delivery"
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:07:02.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0026",
+      "occurred_at": "2026-10-20T14:07:00.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "lfi-930100",
+      "severity": "high",
+      "request_id": "req-3001",
+      "route": "/api/export/../../receipts",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "930100 path traversal",
+        "action": "deny"
+      }
+    }
+  },
+  {
+    "source_id": "src-sink",
+    "received_at": "2026-10-20T14:07:05.000Z",
+    "payload": {
+      "source_event_id": "src-sink-0027",
+      "occurred_at": "2026-10-20T14:07:03.000Z",
+      "asset_ids": [
+        "receipts-bucket"
+      ],
+      "action": "side_effect_observed",
+      "outcome": "observed",
+      "request_id": "req-3001",
+      "evidence": {
+        "observed": "object write receipts/export-0007.csv",
+        "bytes": 18211,
+        "via": "orders-api"
+      }
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:07:07.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0026",
+      "occurred_at": "2026-10-20T14:07:00.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "waf_match",
+      "outcome": "blocked",
+      "rule_ref": "lfi-930100",
+      "severity": "high",
+      "request_id": "req-3001",
+      "route": "/api/export/../../receipts",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "rule": "930100 path traversal",
+        "action": "deny"
+      }
+    },
+    "note": "duplicate delivery (retry)"
+  },
+  {
+    "source_id": "src-decoy",
+    "received_at": "2026-10-20T14:08:40.000Z",
+    "payload": {
+      "source_event_id": "src-decoy-0028",
+      "occurred_at": "2026-10-20T14:08:00.000Z",
+      "asset_ids": [
+        "support-agent"
+      ],
+      "action": "decoy_used",
+      "outcome": "success",
+      "rule_ref": "canary-cloud-key-7",
+      "severity": "high",
+      "evidence": {
+        "token_id": "synthetic-canary-7",
+        "registered_placement": "support-agent env file",
+        "caller_ip": "198.18.0.44"
+      },
+      "coverage_note": "Decoy registration maps placement to the agent environment; the original entry point and human identity are unknown."
+    }
+  },
+  {
+    "source_id": "src-agent",
+    "received_at": "2026-10-20T14:09:02.000Z",
+    "payload": {
+      "source_event_id": "src-agent-0029",
+      "occurred_at": "2026-10-20T14:09:00.000Z",
+      "asset_ids": [
+        "support-agent"
+      ],
+      "action": "tool_invocation",
+      "outcome": "refused",
+      "run_id": "run-77",
+      "evidence": {
+        "tool": "db.delete_customer",
+        "decision": "model declined"
+      }
+    }
+  },
+  {
+    "source_id": "src-agent",
+    "received_at": "2026-10-20T14:09:12.000Z",
+    "payload": {
+      "source_event_id": "src-agent-0030",
+      "occurred_at": "2026-10-20T14:09:10.000Z",
+      "asset_ids": [
+        "support-tools-mcp"
+      ],
+      "action": "tool_invocation",
+      "outcome": "denied",
+      "run_id": "run-77",
+      "rule_ref": "policy-no-db-write",
+      "evidence": {
+        "tool": "db.write",
+        "decision": "policy denied",
+        "policy_version": "p-12"
+      }
+    }
+  },
+  {
+    "source_id": "src-agent",
+    "received_at": "2026-10-20T14:09:22.000Z",
+    "payload": {
+      "source_event_id": "src-agent-0031",
+      "occurred_at": "2026-10-20T14:09:20.000Z",
+      "asset_ids": [
+        "support-tools-mcp"
+      ],
+      "action": "tool_invocation",
+      "outcome": "success",
+      "run_id": "run-77",
+      "evidence": {
+        "tool": "email.send",
+        "destination": "sink.test.internal",
+        "policy_version": "p-12"
+      }
+    }
+  },
+  {
+    "source_id": "src-sink",
+    "received_at": "2026-10-20T14:09:24.000Z",
+    "payload": {
+      "source_event_id": "src-sink-0032",
+      "occurred_at": "2026-10-20T14:09:22.000Z",
+      "asset_ids": [
+        "support-tools-mcp"
+      ],
+      "action": "side_effect_observed",
+      "outcome": "observed",
+      "run_id": "run-77",
+      "evidence": {
+        "observed": "SMTP delivery to sink.test.internal",
+        "messages": 1
+      }
+    }
+  },
+  {
+    "source_id": "src-db-audit",
+    "received_at": "2026-10-20T14:10:02.000Z",
+    "payload": {
+      "source_event_id": "src-db-audit-0033",
+      "occurred_at": "2026-10-20T14:10:00.000Z",
+      "asset_ids": [
+        "orders-db"
+      ],
+      "action": "sensor_unavailable",
+      "outcome": "unknown",
+      "evidence": {
+        "sensor": "database-audit",
+        "status": "permission denied reading audit log"
+      },
+      "coverage_note": "Database audit permission was revoked. Data-access conclusions for orders-db are not assessable."
+    }
+  },
+  {
+    "source_id": "src-edge",
+    "received_at": "2026-10-20T14:10:32.000Z",
+    "payload": {
+      "source_event_id": "src-edge-0034",
+      "occurred_at": "2026-10-20T14:10:30.000Z",
+      "asset_ids": [
+        "edge"
+      ],
+      "action": "request_received",
+      "outcome": "allowed",
+      "request_id": "req-4001",
+      "route": "/orders/search?q=%27",
+      "client_ip": "203.0.113.7",
+      "evidence": {
+        "status": 200
+      }
+    }
+  },
+  {
+    "source_id": "src-falco",
+    "received_at": "2026-10-20T14:11:02.000Z",
+    "payload": {
+      "source_event_id": "src-falco-0035",
+      "occurred_at": "2026-10-20T14:11:00.000Z",
+      "asset_ids": [
+        "order-worker-consumer"
+      ],
+      "action": "runtime_alert",
+      "outcome": "unknown",
+      "rule_ref": "Terminal shell in container",
+      "severity": "high",
+      "evidence": {
+        "output": "A shell was spawned in a container (user=root container=order-worker-7f9 shell=sh)",
+        "priority": "Warning"
+      }
+    }
+  },
+  {
+    "source_id": "src-app",
+    "received_at": "2026-10-20T14:12:00.000Z",
+    "payload": {
+      "source_event_id": "src-app-forged",
+      "occurred_at": "2026-10-20T14:12:00.000Z",
+      "project_id": "someone-elses-project",
+      "asset_ids": [
+        "api"
+      ],
+      "action": "request_received",
+      "outcome": "success"
+    },
+    "note": "asserts another project — must be rejected"
+  },
+  {
+    "source_id": "src-app",
+    "received_at": "2026-10-20T14:12:05.000Z",
+    "payload": {
+      "source_event_id": "src-app-unmapped",
+      "occurred_at": "2026-10-20T14:12:05.000Z",
+      "asset_ids": [
+        "mystery-service"
+      ],
+      "action": "request_received",
+      "outcome": "success"
+    },
+    "note": "unknown asset — rejected and counted"
+  }
+]

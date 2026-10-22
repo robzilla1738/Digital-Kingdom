@@ -1,0 +1,37 @@
+{
+  "name": "digital-kingdom",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Self-hosted security evidence console rendered as a navigable castle, with an MCP interface for AI agents.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "packageManager": "pnpm@10.12.1",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @dk/server --filter @dk/web dev",
+    "dev:web": "pnpm --filter @dk/web dev",
+    "dev:server": "tsx watch apps/server/src/main.ts",
+    "build": "pnpm --filter @dk/web build",
+    "start": "tsx apps/server/src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "validate:fixtures": "tsx scripts/validate-fixtures.ts",
+    "check": "pnpm typecheck && pnpm test && pnpm validate:fixtures",
+    "generate:validators": "pnpm --filter @dk/contracts generate:validators",
+    "mcp": "tsx apps/mcp/src/main.ts",
+    "fixtures:demo": "tsx scripts/build-demo-fixture.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.3",
+    "vitest": "~3.2.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

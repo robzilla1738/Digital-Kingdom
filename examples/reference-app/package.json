@@ -1,0 +1,4 @@
+{ "name": "@dk/reference-app", "version": "0.2.0", "private": true, "type": "module", "license": "Apache-2.0",
+  "description": "Isolated local reference app for live end-to-end verification (never expose publicly).",
+  "scripts": { "start": "tsx src/app.ts", "e2e": "tsx src/e2e.ts" },
+  "dependencies": { "@dk/sdk-node": "workspace:*" } }

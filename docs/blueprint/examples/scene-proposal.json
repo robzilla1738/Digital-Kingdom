@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1",
+  "graph_revision": "demo-r1",
+  "seed": 27,
+  "style_profile": "stone-slate-v1",
+  "camera_profile": "isometric-v1",
+  "placements": [
+    {
+      "asset_id": "edge",
+      "zone_id": "public",
+      "module_id": "gatehouse"
+    },
+    {
+      "asset_id": "auth",
+      "zone_id": "application",
+      "module_id": "guardhouse"
+    },
+    {
+      "asset_id": "api",
+      "zone_id": "application",
+      "module_id": "hall"
+    },
+    {
+      "asset_id": "worker",
+      "zone_id": "application",
+      "module_id": "workshop"
+    },
+    {
+      "asset_id": "db",
+      "zone_id": "data",
+      "module_id": "vault"
+    },
+    {
+      "asset_id": "agent",
+      "zone_id": "automation",
+      "module_id": "observatory"
+    },
+    {
+      "asset_id": "tools",
+      "zone_id": "automation",
+      "module_id": "tool_annex"
+    },
+    {
+      "asset_id": "ci",
+      "zone_id": "delivery",
+      "module_id": "forge"
+    }
+  ]
+}

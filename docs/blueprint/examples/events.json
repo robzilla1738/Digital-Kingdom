@@ -1,0 +1,79 @@
+[
+  {
+    "schema_version": "0.1",
+    "dataset_kind": "synthetic",
+    "id": "e-1",
+    "project_id": "sample-app",
+    "source_id": "demo-edge",
+    "source_event_id": "native-1",
+    "occurred_at": "2026-10-21T10:00:00Z",
+    "received_at": "2026-10-21T10:00:01Z",
+    "asset_ids": [
+      "edge"
+    ],
+    "action": "request_received",
+    "outcome": "denied",
+    "request_id": "req-1",
+    "evidence_refs": [
+      "fixture:edge-1"
+    ]
+  },
+  {
+    "schema_version": "0.1",
+    "dataset_kind": "synthetic",
+    "id": "e-2",
+    "project_id": "sample-app",
+    "source_id": "demo-auth",
+    "source_event_id": "native-2",
+    "occurred_at": "2026-10-21T10:00:04Z",
+    "received_at": "2026-10-21T10:00:05Z",
+    "asset_ids": [
+      "auth"
+    ],
+    "action": "authentication",
+    "outcome": "success",
+    "request_id": "req-2",
+    "evidence_refs": [
+      "fixture:auth-1"
+    ],
+    "coverage_note": "No evidence connects this successful login to the earlier blocked request."
+  },
+  {
+    "schema_version": "0.1",
+    "dataset_kind": "synthetic",
+    "id": "e-3",
+    "project_id": "sample-app",
+    "source_id": "demo-decoy",
+    "source_event_id": "native-3",
+    "occurred_at": "2026-10-21T10:00:10Z",
+    "received_at": "2026-10-21T10:02:10Z",
+    "asset_ids": [
+      "agent"
+    ],
+    "action": "decoy_used",
+    "outcome": "success",
+    "evidence_refs": [
+      "fixture:decoy-1"
+    ],
+    "coverage_note": "Decoy registration maps placement to the agent environment; the original entry point and human identity are unknown."
+  },
+  {
+    "schema_version": "0.1",
+    "dataset_kind": "synthetic",
+    "id": "e-4",
+    "project_id": "sample-app",
+    "source_id": "demo-health",
+    "source_event_id": "native-4",
+    "occurred_at": "2026-10-21T10:02:11Z",
+    "received_at": "2026-10-21T10:02:11Z",
+    "asset_ids": [
+      "db"
+    ],
+    "action": "sensor_unavailable",
+    "outcome": "unknown",
+    "evidence_refs": [
+      "fixture:health-1"
+    ],
+    "coverage_note": "Database audit data is not available. Data-access conclusions are not assessable."
+  }
+]

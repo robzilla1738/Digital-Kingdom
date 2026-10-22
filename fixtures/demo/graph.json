@@ -1,0 +1,395 @@
+{
+  "schema_version": "0.2",
+  "dataset_kind": "synthetic",
+  "project_id": "demo-castle",
+  "graph_revision": "demo-r3",
+  "created_at": "2026-10-20T04:00:00.000Z",
+  "assets": [
+    {
+      "id": "edge",
+      "name": "public-edge",
+      "kind": "edge",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "public"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "platform-team",
+      "secondary_label": "The Gatehouse",
+      "aliases": [
+        "nginx-edge"
+      ]
+    },
+    {
+      "id": "auth",
+      "name": "identity-service",
+      "kind": "auth",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "identity-team",
+      "secondary_label": "Guardhouse",
+      "sensitivity": "confidential"
+    },
+    {
+      "id": "web",
+      "name": "storefront-web",
+      "kind": "service",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "web-team",
+      "instance_count": 6
+    },
+    {
+      "id": "api",
+      "name": "orders-api",
+      "kind": "service",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "orders-team",
+      "instance_count": 12,
+      "deployment": "orders-api@2026.10.19-3"
+    },
+    {
+      "id": "pay",
+      "name": "payments-api",
+      "kind": "service",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "payments-team",
+      "sensitivity": "restricted",
+      "instance_count": 4
+    },
+    {
+      "id": "worker",
+      "name": "order-worker",
+      "kind": "worker",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "orders-team",
+      "instance_count": 240,
+      "aliases": [
+        "order-worker-consumer"
+      ]
+    },
+    {
+      "id": "sched",
+      "name": "nightly-scheduler",
+      "kind": "worker",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "application"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "platform-team"
+    },
+    {
+      "id": "db",
+      "name": "orders-db",
+      "kind": "database",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "data"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "data-team",
+      "sensitivity": "restricted",
+      "secondary_label": "The Vault"
+    },
+    {
+      "id": "blob",
+      "name": "receipts-bucket",
+      "kind": "storage",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "data"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "data-team",
+      "sensitivity": "confidential"
+    },
+    {
+      "id": "agent",
+      "name": "support-agent",
+      "kind": "agent",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "automation"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "support-eng",
+      "secondary_label": "Observatory"
+    },
+    {
+      "id": "tools",
+      "name": "support-tools-mcp",
+      "kind": "tool_server",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "automation"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "support-eng"
+    },
+    {
+      "id": "ci",
+      "name": "release-pipeline",
+      "kind": "pipeline",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "delivery"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "platform-team",
+      "secondary_label": "Forge"
+    },
+    {
+      "id": "stripe",
+      "name": "payment-processor",
+      "kind": "third_party",
+      "environment": "demo",
+      "allowed_zone_ids": [
+        "external"
+      ],
+      "source_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "lifecycle": "active",
+      "owner": "vendor (external)"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-edge-web",
+      "source_id": "edge",
+      "target_id": "web",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-edge-api",
+      "source_id": "edge",
+      "target_id": "api",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-edge-auth",
+      "source_id": "edge",
+      "target_id": "auth",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-web-api",
+      "source_id": "web",
+      "target_id": "api",
+      "kind": "calls",
+      "evidence_level": "observed",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-api-auth",
+      "source_id": "api",
+      "target_id": "auth",
+      "kind": "calls",
+      "evidence_level": "observed",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-api-pay",
+      "source_id": "api",
+      "target_id": "pay",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-pay-stripe",
+      "source_id": "pay",
+      "target_id": "stripe",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-api-db",
+      "source_id": "api",
+      "target_id": "db",
+      "kind": "reads_from",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-api-worker",
+      "source_id": "api",
+      "target_id": "worker",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-worker-db",
+      "source_id": "worker",
+      "target_id": "db",
+      "kind": "writes_to",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-worker-blob",
+      "source_id": "worker",
+      "target_id": "blob",
+      "kind": "writes_to",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-sched-worker",
+      "source_id": "sched",
+      "target_id": "worker",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-agent-tools",
+      "source_id": "agent",
+      "target_id": "tools",
+      "kind": "invokes_tool",
+      "evidence_level": "observed",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-tools-api",
+      "source_id": "tools",
+      "target_id": "api",
+      "kind": "calls",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-tools-db",
+      "source_id": "tools",
+      "target_id": "db",
+      "kind": "reads_from",
+      "evidence_level": "inferred",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "assumptions": "Inferred from a shared database role name in the manifest; not observed."
+    },
+    {
+      "id": "rel-agent-db",
+      "source_id": "agent",
+      "target_id": "db",
+      "kind": "may_assume",
+      "evidence_level": "hypothetical",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ],
+      "assumptions": "Hypothetical: if the agent's runtime role can assume the support-tools role, it could read orders-db."
+    },
+    {
+      "id": "rel-ci-api",
+      "source_id": "ci",
+      "target_id": "api",
+      "kind": "deploys",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    },
+    {
+      "id": "rel-ci-web",
+      "source_id": "ci",
+      "target_id": "web",
+      "kind": "deploys",
+      "evidence_level": "declared",
+      "evidence_refs": [
+        "fixture:inventory-manifest"
+      ]
+    }
+  ]
+}

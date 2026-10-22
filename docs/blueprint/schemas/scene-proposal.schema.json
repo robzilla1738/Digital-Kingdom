@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Digital Kingdom proposed AI scene proposal contract v0.1",
+  "description": "Presentation-only. Security findings and executable content are forbidden. Semantic reference checks are additionally required.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "graph_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "style_profile": {
+      "enum": [
+        "stone-slate-v1",
+        "high-contrast-v1"
+      ]
+    },
+    "camera_profile": {
+      "enum": [
+        "isometric-v1"
+      ]
+    },
+    "placements": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "zone_id": {
+            "enum": [
+              "public",
+              "application",
+              "data",
+              "automation",
+              "delivery"
+            ]
+          },
+          "module_id": {
+            "enum": [
+              "gatehouse",
+              "guardhouse",
+              "hall",
+              "workshop",
+              "vault",
+              "observatory",
+              "tool_annex",
+              "forge"
+            ]
+          }
+        },
+        "required": [
+          "asset_id",
+          "zone_id",
+          "module_id"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "graph_revision",
+    "seed",
+    "style_profile",
+    "camera_profile",
+    "placements"
+  ]
+}

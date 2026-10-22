@@ -1,0 +1,10 @@
+node_modules
+dist
+*.tsbuildinfo
+.data
+*.db
+*.db-wal
+*.db-shm
+.env
+coverage
+artifacts/tmp

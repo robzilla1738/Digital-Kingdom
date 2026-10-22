@@ -1,0 +1,20 @@
+{
+  "name": "@dk/contracts",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schemas/*": "./schemas/*"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "ajv": "~8.17.1",
+    "ajv-formats": "~3.0.1"
+  },
+  "scripts": {
+    "generate:validators": "tsx scripts/generate-validators.ts"
+  }
+}

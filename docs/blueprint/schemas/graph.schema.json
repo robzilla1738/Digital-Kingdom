@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Digital Kingdom proposed graph fixture contract v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "dataset_kind": {
+      "const": "synthetic"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "graph_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "kind": {
+            "enum": [
+              "edge",
+              "auth",
+              "service",
+              "worker",
+              "database",
+              "agent",
+              "tool_server",
+              "pipeline"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "allowed_zone_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "public",
+                "application",
+                "data",
+                "automation",
+                "delivery"
+              ]
+            }
+          },
+          "source_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "environment",
+          "allowed_zone_ids",
+          "source_refs"
+        ]
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "source_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "target_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "kind": {
+            "enum": [
+              "calls",
+              "reads_from",
+              "deploys",
+              "invokes_tool"
+            ]
+          },
+          "evidence_level": {
+            "enum": [
+              "declared",
+              "observed",
+              "inferred"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "id",
+          "source_id",
+          "target_id",
+          "kind",
+          "evidence_level",
+          "evidence_refs"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "dataset_kind",
+    "project_id",
+    "graph_revision",
+    "assets",
+    "relationships"
+  ]
+}

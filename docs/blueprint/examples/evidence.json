@@ -1,0 +1,28 @@
+{
+  "dataset_kind": "synthetic",
+  "records": {
+    "fixture:inventory-1": {
+      "kind": "declared_inventory",
+      "note": "Synthetic manifest declares these assets and relationships; no live infrastructure was inspected."
+    },
+    "fixture:edge-1": {
+      "request_id": "req-1",
+      "security_rule": "demo-block-rule",
+      "action": "deny"
+    },
+    "fixture:auth-1": {
+      "request_id": "req-2",
+      "authentication_result": "success",
+      "identity": "synthetic-user"
+    },
+    "fixture:decoy-1": {
+      "token_id": "synthetic-canary-1",
+      "registered_placement": "agent",
+      "trigger": "test-auth-attempt"
+    },
+    "fixture:health-1": {
+      "sensor": "database-audit",
+      "status": "unavailable"
+    }
+  }
+}

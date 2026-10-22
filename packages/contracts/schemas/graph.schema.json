@@ -1,0 +1,258 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://digital-kingdom.dev/schemas/graph.schema.json",
+  "title": "Digital Kingdom asset graph v0.2",
+  "description": "Logical assets and relationships for one project/environment. Declared, observed, and inferred relationships stay distinct.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "0.1",
+        "0.2"
+      ]
+    },
+    "dataset_kind": {
+      "enum": [
+        "synthetic",
+        "live"
+      ]
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "graph_revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 40
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "kind": {
+            "enum": [
+              "edge",
+              "auth",
+              "service",
+              "worker",
+              "database",
+              "storage",
+              "agent",
+              "tool_server",
+              "pipeline",
+              "third_party"
+            ]
+          },
+          "environment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "allowed_zone_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "public",
+                "application",
+                "data",
+                "automation",
+                "delivery",
+                "external"
+              ]
+            }
+          },
+          "source_refs": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+            }
+          },
+          "owner": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "aliases": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "sensitivity": {
+            "enum": [
+              "public",
+              "internal",
+              "confidential",
+              "restricted"
+            ]
+          },
+          "lifecycle": {
+            "enum": [
+              "active",
+              "tombstoned"
+            ]
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 40
+          },
+          "valid_to": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 40
+          },
+          "instance_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100000
+          },
+          "secondary_label": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "deployment": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "environment",
+          "allowed_zone_ids",
+          "source_refs"
+        ]
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "source_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "target_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+          },
+          "kind": {
+            "enum": [
+              "calls",
+              "reads_from",
+              "writes_to",
+              "deploys",
+              "invokes_tool",
+              "runs_as",
+              "may_assume",
+              "protected_by",
+              "belongs_to"
+            ]
+          },
+          "evidence_level": {
+            "enum": [
+              "declared",
+              "observed",
+              "inferred",
+              "hypothetical"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+            }
+          },
+          "assumptions": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 40
+          },
+          "valid_to": {
+            "type": "string",
+            "format": "date-time",
+            "maxLength": 40
+          }
+        },
+        "required": [
+          "id",
+          "source_id",
+          "target_id",
+          "kind",
+          "evidence_level",
+          "evidence_refs"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "dataset_kind",
+    "project_id",
+    "graph_revision",
+    "assets",
+    "relationships"
+  ]
+}

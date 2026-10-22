@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://digital-kingdom.dev/schemas/event.schema.json",
+  "title": "Digital Kingdom normalized security event v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "enum": [
+        "0.1",
+        "0.2"
+      ]
+    },
+    "dataset_kind": {
+      "enum": [
+        "synthetic",
+        "live"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 40
+    },
+    "parser_version": {
+      "type": "string",
+      "maxLength": 40
+    },
+    "source_event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 40
+    },
+    "asset_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+      }
+    },
+    "action": {
+      "enum": [
+        "request_received",
+        "authentication",
+        "authorization_change",
+        "decoy_used",
+        "sensor_unavailable",
+        "sensor_restored",
+        "waf_match",
+        "data_access",
+        "tool_invocation",
+        "side_effect_observed",
+        "runtime_alert"
+      ]
+    },
+    "outcome": {
+      "enum": [
+        "allowed",
+        "denied",
+        "blocked",
+        "success",
+        "failure",
+        "attempted",
+        "refused",
+        "observed",
+        "unknown"
+      ]
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "request_id_trust": {
+      "enum": [
+        "trusted",
+        "untrusted"
+      ]
+    },
+    "trace_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "session_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "actor_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+    },
+    "rule_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "route": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "severity": {
+      "enum": [
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "sampled": {
+      "type": "boolean"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+      }
+    },
+    "coverage_note": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "client_ip": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "attributes": {
+      "type": "object",
+      "maxProperties": 32,
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "boolean"
+        ],
+        "maxLength": 500
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "dataset_kind",
+    "id",
+    "project_id",
+    "source_id",
+    "source_event_id",
+    "occurred_at",
+    "received_at",
+    "asset_ids",
+    "action",
+    "outcome",
+    "evidence_refs"
+  ]
+}
