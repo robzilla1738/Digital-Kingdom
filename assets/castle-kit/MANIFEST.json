@@ -14,7 +14,7 @@
     "source_files": [
       {
         "path": "apps/web/src/castle/geometry.ts",
-        "sha256": "a4e1493819d2f7e675a9960385062135fcdb7ed7922712a182b84a8ee4227e79"
+        "sha256": "10adc36543a034dfc0e04234a3c9b671da4eb6adbc7a9aad966489b9bb2e6b68"
       },
       {
         "path": "apps/web/src/castle/modules.tsx",
@@ -37,20 +37,22 @@
         "sha256": "fc8b71170d02331c2931a3919e7126c4b3cbf19b341e2465873b601b9c60c81b"
       }
     ],
-    "content_hash": "sha256:2ff6c6bb978e24d75cbc6fe1eea7a06eb19dd9bd7ed922183ea4af2d7e098389",
+    "content_hash": "sha256:edb74d6b9cc3c4b90864a67ed2566e5c2f0139a7948f273aa3027199e2844c1b",
     "hash_method": "SHA-256 over UTF-8 path + NUL + raw file bytes + NUL, in editable_source_paths order. Shared source content hash applies to all ten procedural modules.",
     "ownership": "Repository-owned implementation; no paid or externally generated asset pipeline."
   },
   "units": "metres; Y-up; ground-centre origin",
   "materials": {
-    "stone": "#C5C0B5",
-    "stone_edge": "#D8D1C2",
-    "stone_base": "#8F9395",
-    "roof": "#465769",
-    "iron": "#444A52",
-    "timber": "#81715D",
-    "dark_recess": "#39414A",
-    "bronze": "#718C8B",
+    "stone": "#CEC5B2",
+    "stone_edge": "#E2D8C3",
+    "stone_base": "#8E877A",
+    "roof": "#4B5B70",
+    "roof_seam": "#61728A",
+    "iron": "#3E434A",
+    "timber": "#8A6E50",
+    "dark_recess": "#2C3540",
+    "bronze": "#6F948A",
+    "tonal_variation": "deterministic ±4% per part plus baked ground-contact darkening",
     "status_geometry_independent": true
   },
   "rendering": {
@@ -109,49 +111,49 @@
       "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
       "lods": {
         "low": {
-          "triangles": 384,
-          "meshes": 3,
+          "triangles": 592,
+          "meshes": 4,
           "bounds": {
             "min": [
-              -1.9550000429153442,
+              -1.909999966621399,
               -3.5762786065873797e-9,
               -1.1999999284744263
             ],
             "max": [
-              1.9550000429153442,
-              3.859999895095825,
+              1.909999966621399,
+              3.740000009536743,
               1.399999976158142
             ]
           }
         },
         "medium": {
-          "triangles": 1764,
+          "triangles": 2060,
           "meshes": 4,
           "bounds": {
             "min": [
-              -1.9700000286102295,
+              -1.909999966621399,
               -3.5762786065873797e-9,
               -1.1999999284744263
             ],
             "max": [
-              1.9700000286102295,
-              3.8949999809265137,
+              1.909999966621399,
+              3.880000114440918,
               1.399999976158142
             ]
           }
         },
         "high": {
-          "triangles": 2124,
+          "triangles": 2324,
           "meshes": 4,
           "bounds": {
             "min": [
-              -1.9700000286102295,
+              -1.909999966621399,
               -3.5762786065873797e-9,
               -1.1999999284744263
             ],
             "max": [
-              1.9700000286102295,
-              3.8949999809265137,
+              1.909999966621399,
+              3.880000114440918,
               1.399999976158142
             ]
           }
@@ -196,13 +198,13 @@
       "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
       "lods": {
         "low": {
-          "triangles": 276,
+          "triangles": 360,
           "meshes": 4,
           "bounds": {
             "min": [
               -1.6349999904632568,
               -3.5762786065873797e-9,
-              -1.1700000762939453
+              -1.2599999904632568
             ],
             "max": [
               1.3300000429153442,
@@ -212,33 +214,33 @@
           }
         },
         "medium": {
-          "triangles": 1188,
+          "triangles": 1400,
           "meshes": 4,
           "bounds": {
             "min": [
               -1.649999976158142,
               -3.5762786065873797e-9,
-              -1.1700000762939453
+              -1.2599999904632568
             ],
             "max": [
               1.3450000286102295,
-              3.305000066757202,
+              3.3299999237060547,
               1.2699999809265137
             ]
           }
         },
         "high": {
-          "triangles": 1436,
+          "triangles": 1816,
           "meshes": 4,
           "bounds": {
             "min": [
               -1.649999976158142,
               -3.5762786065873797e-9,
-              -1.1700000762939453
+              -1.2599999904632568
             ],
             "max": [
               1.3450000286102295,
-              3.305000066757202,
+              3.3299999237060547,
               1.2699999809265137
             ]
           }
@@ -544,50 +546,50 @@
       "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
       "lods": {
         "low": {
-          "triangles": 196,
+          "triangles": 292,
           "meshes": 3,
           "bounds": {
             "min": [
-              -1.5499999523162842,
+              -1.5700000524520874,
               5.9604643443123e-10,
-              -1.5
+              -1.5099999904632568
             ],
             "max": [
-              1.5499999523162842,
+              1.5700000524520874,
               2.495000123977661,
-              1.5
+              1.5099999904632568
             ]
           }
         },
         "medium": {
-          "triangles": 804,
+          "triangles": 900,
           "meshes": 4,
           "bounds": {
             "min": [
-              -1.5499999523162842,
+              -1.5700000524520874,
               5.9604643443123e-10,
-              -1.5
+              -1.5099999904632568
             ],
             "max": [
-              1.5499999523162842,
+              1.5700000524520874,
               2.495000123977661,
-              1.5
+              1.5099999904632568
             ]
           }
         },
         "high": {
-          "triangles": 940,
+          "triangles": 1036,
           "meshes": 4,
           "bounds": {
             "min": [
-              -1.5499999523162842,
+              -1.5700000524520874,
               5.9604643443123e-10,
-              -1.5
+              -1.5099999904632568
             ],
             "max": [
-              1.5499999523162842,
+              1.5700000524520874,
               2.495000123977661,
-              1.5
+              1.5099999904632568
             ]
           }
         }

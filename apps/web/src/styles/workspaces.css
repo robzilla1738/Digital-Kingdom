@@ -270,3 +270,8 @@
   .topbar .header-auth .btn { min-height:44px; white-space:nowrap; }
   .topbar .header-search { grid-column:1/-1; grid-row:2; width:100%; min-width:0; }
 }
+/* Camera tools sit in one compact row so the castle or graph is not covered by a tall column. */
+.castle-wrap .stage-tools, .graph-wrap .stage-tools { flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:flex-end; max-width:calc(100% - 180px); }
+.castle-wrap .stage-tools button, .graph-wrap .stage-tools button { white-space:nowrap; }
+.graph-wrap .stage-tools .vr-h { width:1px; height:20px; margin:0 3px; }
+.graph-wrap #graph-view-controls:not([hidden]) { display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; gap:2px; }

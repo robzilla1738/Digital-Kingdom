@@ -22,6 +22,7 @@
     "generate:validators": "pnpm --filter @dk/contracts generate:validators",
     "mcp": "tsx apps/mcp/src/main.ts",
     "fixtures:demo": "tsx scripts/build-demo-fixture.ts",
+    "castle:manifest": "tsx scripts/update-castle-manifest.ts",
     "pilot": "playwright test",
     "diagnose:tombstones": "tsx scripts/diagnose-legacy-tombstones.ts",
     "eval:gen": "tsx eval/scripts/gen.ts",

@@ -2,17 +2,21 @@
 
 **A self-hosted security evidence console for small software teams, rendered as a navigable castle, and an MCP layer so AI agents can see the same evidence.**
 
-Every service, database, worker, AI agent and tool server becomes a room in an isometric castle. Blocked probes, failed sign-ins, privilege changes, decoy-credential use, agent tool calls, observed side effects and lost telemetry show up on the right room, on a matching 2D graph, on a replayable timeline, and in an evidence pane that says exactly what is known, what is not, and what is *not* being claimed.
+Every service, database, worker, AI agent and tool server becomes a building in a 3D castle town: gatehouses, halls, vaults and an observatory laid out on paved terraces, one terrace per zone. Blocked probes, failed sign-ins, privilege changes, decoy-credential use, agent tool calls, observed side effects and lost telemetry show up on the right room, on a matching 2D graph, on a replayable timeline, and in an evidence pane that says exactly what is known, what is not, and what is *not* being claimed.
 
 The castle is the human interface. **[Digital Kingdom MCP](#digital-kingdom-mcp-the-agent-interface)** is the agent interface. Both read one security engine.
 
-![Castle view with a contradiction finding selected](docs/img/castle-finding.png)
+![Kingdom view: the synthetic demo castle with findings labelled on the affected buildings](docs/img/castle-overview.png)
 
-| 2D graph (same evidence, same selection) | Historical replay ("as occurred" vs "as known") |
+| Finding selected (castle + evidence inspector) | 2D graph (same evidence, same selection) |
 |---|---|
-| ![2D graph](docs/img/graph-2d.png) | ![Replay](docs/img/replay.png) |
+| ![Castle view with a contradiction finding selected](docs/img/castle-finding.png) | ![2D graph](docs/img/graph-2d.png) |
 
-> **Status: v0.3.2 alpha.** Suitable for a fresh-database, isolated non-production pilot with controlled data. Not production-certified. See [CHANGELOG.md](CHANGELOG.md).
+| Historical replay with expanded timeline lanes |
+|---|
+| ![Replay](docs/img/replay.png) |
+
+> **Status: v0.3.2 alpha, plus the unreleased work on `main`** (interface redesign, castle refresh, event investigation, change assessment v2; see the changelog). Suitable for a fresh-database, isolated non-production pilot with controlled data. Not production-certified. See [CHANGELOG.md](CHANGELOG.md).
 >
 > **Scope:** It ingests, stores, correlates, renders and replays real events from local sources and adapters, with a full synthetic demo. It is **not** a SIEM, an EDR, a WAF, a compliance product, or an autonomous responder, and it does not execute remediation. See [Known limitations](#known-limitations).
 
@@ -39,23 +43,37 @@ Other ways to run it:
 | Docker (localhost-bound, non-root, read-only rootfs) | `docker compose -f infra/compose/docker-compose.yml up --build` |
 | Everything CI runs | `pnpm check && pnpm build` |
 
-Keyboard: `/` search, `2` 2D graph, `3` castle, `Space` play or pause replay, `←/→` scrub on the timeline (Shift = 1 minute), `R` roofs, `0` reset camera, `Esc` clear selection.
+Keyboard: `/` search, `2` graph, `3` castle, `[` and `]` toggle the list and inspector, `Esc` close a menu or clear the selection. With the castle or graph focused: `+` and `-` zoom, `0` fit, `f` focus the selection. The timeline slider takes arrow keys.
+
+## The workspaces
+
+| Workspace | What it is for |
+|---|---|
+| **Kingdom** | The castle and the 2D graph of the same assets, with an attention queue. Selecting never moves the camera; **Focus selection** does, and **Back** returns. Roofs, relationship layers, hypothetical paths and render quality are toggled from the camera toolbar and *Layers & display*. |
+| **Investigate** | The finding queue with an expandable evidence view (supporting and counter-evidence, both timestamps, redaction, completeness), plus server-side event search that includes events no finding references. |
+| **Coverage** | Which sources report, which are stale, disabled or unassessed, and which assets have partial or no telemetry. Unknown is never shown as healthy. |
+| **Integrations** | SDK, OTLP, Falco and MCP setup guidance and manifest or Compose import with field-level validation. Nothing is marked connected until real events arrive. |
+| **Timeline** | Latest vs. replay, *as occurred* vs. *as known*, and expanded record lanes. Replay states which graph revision it uses and that coverage and notes are current, not historical. |
 
 ## What you're looking at
 
 | Castle element | System meaning |
 |---|---|
-| Gatehouse (in the curtain wall) | Edge gateway, reverse proxy, WAF |
-| Guardhouse | Authentication / identity |
-| Hall / Great hall | Logical application service (replicas are grouped, never one room per pod) |
+| Gatehouse (two crenellated towers and an open gate) | Edge gateway, reverse proxy, WAF |
+| Guardhouse (with a round watch turret) | Authentication / identity |
+| Hall / Great hall | Logical application service (replicas are grouped, never one building per pod) |
 | Workshop | Worker, queue consumer, scheduler |
-| Vault | Database or storage |
-| Observatory | AI agent runtime |
+| Vault (buttressed, flat-roofed) | Database or storage |
+| Observatory (domed tower) | AI agent runtime |
 | Tool annex | Agent tool / MCP server |
 | Forge | Build and deployment pipeline |
-| Portal (across the moat) | Third-party service; its interior is never shown |
-| Hatched ground with **?** | Coverage gap: missing telemetry is **unknown, never safe** |
-| Dashed path | Inferred or hypothetical relationship, not observed |
+| Portal (a freestanding arch) | Third-party service; its interior is never shown |
+| Paved terrace with a zone label | Organizational zone (Public edge, Application, Data, Agents & automation, …). Presentation only, **not** a security boundary |
+| Lawn and trees | Decoration only. They carry no meaning and can't be selected |
+| Hatched ground under a building | Partial or missing coverage: missing telemetry is **unknown, never safe** |
+| Dashed path | Declared, inferred or hypothetical relationship, not observed traffic (hypothetical paths are off by default) |
+
+Building colours never change with status. Status lives on the label: shape + word + colour, plus the severity border.
 
 Every status is a **shape + word + color**, never color alone: ▣ Blocked, ◆ Attempted, ▲ Needs review, ◎ Observed effect, □ Refused (model declined, which is not enforcement), ▨ Unknown.
 
@@ -159,7 +177,7 @@ Details: [SECURITY.md](SECURITY.md) and [docs/THREAT_MODEL.md](docs/THREAT_MODEL
 
 ## Verification
 
-`pnpm check` runs typecheck, **141 tests**, and fixture validation. Highlights, mapped to the blueprint's acceptance suite ([docs/VERIFICATION.md](docs/VERIFICATION.md)):
+`pnpm check` runs typecheck, **376 tests** (43 files), and fixture validation. CI also runs two Playwright browser suites against the built UI: the controlled pilot (`pnpm pilot`) and the redesign acceptance suite (`pnpm pilot:redesign`). Highlights, mapped to the blueprint's acceptance suite ([docs/VERIFICATION.md](docs/VERIFICATION.md)):
 
 - Evidence E01–E12: dedupe, distinct ids, no IP-only linking, untrusted request ids, blocked ≠ compromise, HTTP 200 ≠ exploit, coverage gaps, contradiction with counterevidence, late-event revision, decoy semantics, temporal topology.
 - Durability O01/O02/O06: restart without loss, crash mid-batch rolls back and recovers idempotently, SSE resume and resync.
@@ -169,7 +187,7 @@ Details: [SECURITY.md](SECURITY.md) and [docs/THREAT_MODEL.md](docs/THREAT_MODEL
 - MCP: an MCP client drives the real server and gets the same findings as the castle; viewer agents cannot propose containment.
 - Trustworthiness (v0.3): planted secrets never reach disk; unknown, missing-graph, mixed and failed lookups never get a favorable posture; out-of-scope source assertions are rejected; relayed reports don't corroborate themselves; a finding's evidence survives 5,100 later events, more than 50 records, truncation and a deleted record, with incompleteness explicit in MCP, UI and exports; OTLP success, gzip, partial success, empty, invalid, wrong-encoding, gzip-bomb and retry cases.
 
-The UI was exercised in headless Chromium (SwiftShader WebGL); screenshots above are from that run.
+The screenshots above are from the offline synthetic demo (`VITE_DK_STATIC_DEMO=1`) in headless Chromium with SwiftShader WebGL at 1440×900.
 
 ## Known limitations
 
@@ -178,7 +196,7 @@ The UI was exercised in headless Chromium (SwiftShader WebGL); screenshots above
 - Adapters: generic events, Node SDK, Falco HTTP output, OTLP/HTTP JSON (sampled context only; no protobuf; not yet run against a Collector binary). No cloud-audit, Cloudflare, or Postgres pgAudit adapters yet.
 - Snapshot views load the latest 5,000 events; older findings fetch their own evidence on demand and say when a view is incomplete.
 - Containment decisions prove distinct human-typed tokens, not distinct people.
-- Castle art is an original procedural kit (Apache-2.0). It is readable, not bespoke artwork; LOD, instancing beyond merged parapets, and per-device performance budgets are not yet measured on real hardware.
+- Castle art is an original procedural kit (Apache-2.0, `assets/castle-kit/MANIFEST.json`): ten modules, three levels of detail each, merged into at most four meshes per module, with deterministic tonal variation and baked ground-contact shading. It is not bespoke artwork, and frame rate has only been checked in software WebGL, not on real GPUs. After editing the kit, run `pnpm castle:manifest` to refresh its hashes and triangle counts.
 - Accessibility: keyboard paths, focusable 2D graph, text equivalents and reduced motion are implemented; a screen-reader audit and contrast review on real assistive tech have not been done.
 - Not a compliance product. Do not expose the demo publicly with live data.
 

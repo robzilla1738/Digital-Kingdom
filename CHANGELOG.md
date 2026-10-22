@@ -1,6 +1,24 @@
 # Changelog
 
-## Unreleased (branch `improve/investigation-honesty`): event investigation, honest assessments, import validation
+## Unreleased (on `main`, after 0.3.2)
+
+### Castle visual refresh
+
+- **Architecture.** The gatehouse now has two crenellated towers with slate spires and a crenellated gate walk, the guardhouse gains a round watch turret with a conical roof, and the vault gets corner buttresses. Every module stays inside its catalogued footprint, height and triangle budget, and roof-off still shows each interior floor.
+- **Materials.** A warmer limestone and slate palette, deterministic per-part tonal variation, and baked ground-contact darkening so buildings sit on their terraces. Building colour stays independent of status.
+- **Setting.** The district terraces now sit on a lawn island with earth-banded sides that also covers the paths between districts (no more paving overhanging the edge), with scattered low-poly trees as non-selectable decoration placed outside every district. No walls, moat or perimeter are drawn, since none is implied.
+- **Lighting.** A warmer key light and a deeper ground bounce.
+- **Camera tools.** The castle and graph camera tools sit in one compact row instead of a tall column that covered the scene.
+- **Tooling.** `pnpm castle:manifest` regenerates `assets/castle-kit/MANIFEST.json` (source hashes, per-LOD triangles and bounds, palette).
+- README screenshots re-shot from the offline demo, and the README updated for the redesigned workspaces and keyboard shortcuts.
+
+### Interface redesign (from the owner-provided redesign branch)
+
+- New workspace shell: **Kingdom** (castle and graph), **Investigate** (findings and event search), **Coverage** and **Integrations**, with a shared non-modal inspector and an expandable finding view.
+- Exact evidence cards, bounded expanded timeline lanes, known-time vs. event-time replay with a visible replay scope, grouped districts for large scenes, a relationship chooser for overlapping paths, and labelled neutral-block recovery for module geometry or shader failures.
+- Redesign acceptance suite (`pnpm pilot:redesign`) and verification artifacts under `artifacts/redesign/`.
+
+### Event investigation, honest assessments, import validation (from branch `improve/investigation-honesty`)
 
 - **Event-level investigation.** New read-only, viewer-role `GET /api/projects/:p/events/search` and `GET /api/projects/:p/events/:id`, exposed as the MCP tools `dk_search_events` and `dk_get_event`.
   - Search covers normalized, redacted events in a declared interval of at most 31 days, using exact-match filters only (identity, session, run, request, trace, address, route, rule, source, asset, action, outcome).
@@ -13,7 +31,7 @@
 - **MCP profiles:** `DK_MCP_TOOLS=investigation` now includes event search. `investigation-v1` reproduces the v1 evaluation tool set.
 - **Evaluation:** v1 records and judgments are unchanged. Added: a review note, a read-only citation audit (identifier existence vs. evidence availability vs. claim support), a pending human-review packet, and the predefined v2 plan (`docs/AGENT_EVAL_V2_PLAN.md`).
 
-## Unreleased (branch `pilot/browser-pilot`): controlled browser pilot
+### Controlled browser pilot (from branch `pilot/browser-pilot`)
 
 - **Browser pilot** (`e2e/`, Playwright, CI job `browser-pilot`). Runs the real server and worker on a fresh temp DB, the reference app through the real SDK, the built UI in Chromium, and a stdio MCP client. It covers source-to-screen evidence, human/MCP parity, 3D/2D parity, failed evidence fetches, WebGL fallback, staleness and unknown targets, crash-restart durability and reconnect, proposal-only containment, and untrusted evidence text.
 - **Fix:** if the server became unreachable after a live session, the UI could silently swap in the offline *synthetic* demo. It now keeps the last data and shows a "not live monitoring" banner with the time of the last sync.

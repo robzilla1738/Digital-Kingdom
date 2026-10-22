@@ -5,7 +5,11 @@ import { MODULE_CATALOG, type ModuleId } from "@dk/contracts";
 export type DetailLevel = "low" | "medium" | "high";
 export type ArchitectureGroup = "structure" | "roof" | "interior-structure" | "detail-static";
 type V3 = [number, number, number];
-const STONE = "#C5C0B5", EDGE = "#D8D1C2", BASE = "#8F9395", ROOF = "#465769", IRON = "#444A52", WOOD = "#81715D", DARK = "#39414A", BRONZE = "#718C8B";
+const STONE = "#CEC5B2", EDGE = "#E2D8C3", BASE = "#8E877A", ROOF = "#4B5B70", SEAM = "#61728A", IRON = "#3E434A", WOOD = "#8A6E50", DARK = "#2C3540", BRONZE = "#6F948A";
+/** Deterministic, status-independent tonal variation: a ±4% per-part shift (masonry courses, roof
+ * slates) and a baked ground-contact darkening so buildings sit on the terrace instead of floating. */
+const tone = (i: number) => { const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return 0.96 + (x - Math.floor(x)) * 0.08; };
+const contact = (y: number) => 0.74 + 0.26 * Math.min(1, Math.max(0, y / 1.1));
 export interface ModuleGeometry { groups: Partial<Record<ArchitectureGroup, THREE.BufferGeometry>>; bounds: THREE.Box3; triangles: number; }
 
 /** Original editable architectural construction. Each group is merged, with vertex colour variation,
@@ -13,6 +17,7 @@ export interface ModuleGeometry { groups: Partial<Record<ArchitectureGroup, THRE
  * is bounded by the ten known IDs × three LODs and shared for the application lifetime. */
 class Builder {
   parts: Record<ArchitectureGroup, THREE.BufferGeometry[]> = { structure: [], roof: [], "interior-structure": [], "detail-static": [] };
+  private serial = 0;
   constructor(readonly lod: DetailLevel) {}
   get segments() { return this.lod === "high" ? 24 : this.lod === "medium" ? 12 : 6; }
   add(g: THREE.BufferGeometry, color: string, p: V3 = [0, 0, 0], group: ArchitectureGroup = "structure", r: V3 = [0, 0, 0]) {
@@ -21,8 +26,8 @@ class Builder {
     geo.deleteAttribute("uv");
     const mat = new THREE.Matrix4().compose(new THREE.Vector3(...p), new THREE.Quaternion().setFromEuler(new THREE.Euler(...r)), new THREE.Vector3(1, 1, 1));
     geo.applyMatrix4(mat);
-    const c = new THREE.Color(color), n = geo.getAttribute("position").count, colors = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) { colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b; }
+    const c = new THREE.Color(color).multiplyScalar(tone(++this.serial)), pos = geo.getAttribute("position"), n = pos.count, colors = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { const k = contact(pos.getY(i)); colors[i * 3] = c.r * k; colors[i * 3 + 1] = c.g * k; colors[i * 3 + 2] = c.b * k; }
     geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
     this.parts[group].push(geo);
   }
@@ -79,9 +84,29 @@ class Builder {
       for (const side of [-1, 1]) {
         this.box([w + 0.08, 0.07, 0.07], [p[0], p[1] + rise, p[2]], BASE, "roof");
         const count = this.lod === "high" ? Math.ceil(w / 0.32) : 4;
-        for (let i = 0; i <= count; i++) this.box([0.025, 0.025, length], [p[0] - w / 2 + i * w / count, p[1] + rise / 2 + 0.025, p[2] + side * d / 4], "#607182", "roof", [side * angle, 0, 0]);
+        for (let i = 0; i <= count; i++) this.box([0.025, 0.025, length], [p[0] - w / 2 + i * w / count, p[1] + rise / 2 + 0.025, p[2] + side * d / 4], SEAM, "roof", [side * angle, 0, 0]);
       }
     }
+  }
+  /** Crenellated parapet on a rectangle's perimeter: merlons at medium/high, one band at low. */
+  parapet(cx: number, cz: number, w: number, d: number, y: number, h = 0.24, t = 0.16, color = EDGE) {
+    if (this.lod === "low") {
+      for (const z of [-1, 1]) this.box([w, h * 0.6, t], [cx, y + h * 0.3, cz + z * (d / 2 - t / 2)], color, "detail-static");
+      for (const x of [-1, 1]) this.box([t, h * 0.6, d - 2 * t], [cx + x * (w / 2 - t / 2), y + h * 0.3, cz], color, "detail-static");
+      return;
+    }
+    const step = 0.34, mw = 0.19;
+    for (const z of [-1, 1]) { const n = Math.max(2, Math.round(w / step)); for (let i = 0; i < n; i++)
+      this.box([mw, h, t], [cx - w / 2 + mw / 2 + i * (w - mw) / (n - 1), y + h / 2, cz + z * (d / 2 - t / 2)], color, "detail-static"); }
+    for (const x of [-1, 1]) { const n = Math.max(2, Math.round(d / step)); for (let i = 1; i < n - 1; i++)
+      this.box([t, h, mw], [cx + x * (w / 2 - t / 2), y + h / 2, cz - d / 2 + mw / 2 + i * (d - mw) / (n - 1)], color, "detail-static"); }
+    // Continuous wall-walk band under the merlons.
+    for (const z of [-1, 1]) this.box([w, 0.08, t + 0.04], [cx, y + 0.04, cz + z * (d / 2 - t / 2)], BASE, "detail-static");
+  }
+  /** Pyramidal (4 sides) or conical spire roof with a short finial. */
+  spire(r: number, h: number, p: V3, sides = 4, color = ROOF) {
+    this.add(new THREE.ConeGeometry(r, h, sides, 1), color, [p[0], p[1] + h / 2, p[2]], "roof", [0, sides === 4 ? Math.PI / 4 : 0, 0]);
+    if (this.lod !== "low") this.cylinder(0.025, 0.025, 0.16, [p[0], p[1] + h + 0.06, p[2]], IRON, "roof", [0, 0, 0], 5);
   }
   window(x: number, y: number, z: number, w = 0.19, h = 0.42) {
     if (this.lod === "low") return;
@@ -103,15 +128,20 @@ class Builder {
 function gatehouse(b: Builder) {
   b.box([3.8, 0.18, 2.6], [0, 0.09, 0.1], BASE);
   for (const x of [-1.26, 1.26]) {
-    b.hall(1.12, 1.85, 2.9, [x, 0.18, -0.1], 0.3);
+    b.hall(1.12, 1.85, 2.7, [x, 0.18, -0.1], 0.3);
     b.box([1.25, 0.2, 1.98], [x, 0.4, -0.1], BASE);
-    b.gable(1.34, 2.06, 0.78, [x, 3.08, -0.1]);
-    b.window(x, 2.24, 0.87, 0.18, 0.53);
+    // Corbelled crown, crenellated parapet and a slate spire set inside the wall-walk.
+    for (const z of [-1, 1]) b.box([1.3, 0.12, 0.2], [x, 2.94, -0.1 + z * 0.915], EDGE);
+    for (const sx of [-1, 1]) b.box([0.2, 0.12, 1.63], [x + sx * 0.55, 2.94, -0.1], EDGE);
+    b.parapet(x, -0.1, 1.3, 2.03, 3.0, 0.24, 0.15);
+    b.spire(0.52, 0.74, [x, 3.0, -0.1]);
+    b.window(x, 2.12, 0.87, 0.18, 0.53);
   }
-  b.arch(1.45, 2.55, 1.3, 1.1, 1.2, [0, 0.18, -0.7]);
+  b.arch(1.45, 2.45, 1.3, 1.1, 1.2, [0, 0.18, -0.7]);
   b.archTrim(1.1, 1.2, [0, 0.18, 0.66]);
-  b.box([1.55, 0.18, 1.55], [0, 2.82, -0.05], EDGE);
-  b.gable(1.65, 1.65, 0.5, [0, 2.96, -0.05]);
+  b.box([1.55, 0.14, 1.45], [0, 2.7, -0.05], EDGE);
+  b.parapet(0, -0.05, 1.55, 1.45, 2.77, 0.22, 0.14);
+  b.box([1.2, 0.05, 1.1], [0, 2.795, -0.05], WOOD, "roof");
   if (b.lod !== "low") {
     for (const x of [-0.42, -0.21, 0, 0.21, 0.42]) b.box([0.035, 1.35, 0.05], [x, 1.16, -0.3], IRON, "detail-static");
     for (const y of [0.65, 1.12, 1.6]) b.box([1.04, 0.045, 0.05], [0, y, -0.3], IRON, "detail-static");
@@ -164,7 +194,13 @@ function build(id: ModuleId, lod: DetailLevel): ModuleGeometry {
     case "guardhouse": {
       b.hall(1.6, 1.65, 2.5, [0.38, 0, -0.2], 0.48); b.gable(1.85, 1.9, 0.75, [0.38, 2.52, -0.2]);
       b.hall(1.15, 1.6, 1.3, [-0.95, 0, 0.35], 0.38); b.gable(1.32, 1.8, 0.42, [-0.95, 1.32, 0.35]);
-      b.window(0.38, 1.78, 0.68, 0.15, 0.48); b.box([0.34, 0.3, 0.07], [0.38, 1.2, 0.7], BASE, "detail-static"); break;
+      b.window(0.38, 1.78, 0.68, 0.15, 0.48); b.box([0.34, 0.3, 0.07], [0.38, 1.2, 0.7], BASE, "detail-static");
+      // Round corner turret with a conical roof: the identity watchtower silhouette.
+      b.cylinder(0.4, 0.44, 0.16, [-1.2, 0.08, -0.82], BASE);
+      b.cylinder(0.34, 0.38, 2.45, [-1.2, 1.385, -0.82]);
+      b.cylinder(0.41, 0.36, 0.14, [-1.2, 2.67, -0.82], EDGE);
+      b.spire(0.42, 0.45, [-1.2, 2.74, -0.82], b.segments);
+      if (lod !== "low") for (const y of [1.0, 1.8]) b.box([0.05, 0.26, 0.09], [-0.835, y, -0.82], DARK, "detail-static"); break;
     }
     case "workshop": {
       b.hall(2.6, 1.8, 1.3, [-0.1, 0, -0.2], 0.95); b.gable(2.85, 2.08, 0.48, [-0.1, 1.32, -0.2], "#56616B");
@@ -176,6 +212,8 @@ function build(id: ModuleId, lod: DetailLevel): ModuleGeometry {
     case "vault": {
       b.box([3.1, 0.22, 3.0], [0, 0.11, 0], BASE); b.hall(2.8, 2.5, 1.85, [0, 0.22, 0], 0.92);
       b.box([3.0, 0.25, 2.7], [0, 2.12, 0], EDGE, "roof"); b.box([2.65, 0.27, 2.35], [0, 2.36, 0], ROOF, "roof");
+      // Battered corner buttresses read as heavy, protected masonry.
+      for (const x of [-1.38, 1.38]) for (const z of [-1.32, 1.32]) { b.box([0.34, 1.7, 0.34], [x, 1.07, z], BASE); b.box([0.38, 0.12, 0.38], [x, 1.98, z], EDGE); }
       b.cylinder(0.43, 0.43, 0.1, [0, 0.98, 1.01], IRON, "interior-structure", [Math.PI / 2, 0, 0]);
       // Neutral schematic storage bays, not records, contents, or a security-state claim.
       // The central aisle remains open from the cutaway to the existing interior floor.

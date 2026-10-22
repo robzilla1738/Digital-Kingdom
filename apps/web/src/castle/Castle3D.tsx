@@ -206,10 +206,10 @@ function Lights({ scene, quality }: { scene: CompiledScene; quality: DetailLevel
   const span = Math.max(scene.bounds.maxX - scene.bounds.minX, scene.bounds.maxZ - scene.bounds.minZ) / 2 + 6;
   const key = useRef<THREE.DirectionalLight>(null);
   useEffect(() => { if (key.current) { key.current.target.position.set(cx, 0, cz); key.current.target.updateMatrixWorld(); } }, [cx, cz]);
-  return <><hemisphereLight args={["#E7EFF9", "#4D453A", 1.65]} />
-    <directionalLight ref={key} position={[cx - 30, 50, cz + 32]} intensity={3.1} color="#FFF1DA" castShadow={quality !== "low"} shadow-mapSize={quality === "high" ? [2048, 2048] : [1024, 1024]} shadow-bias={-0.0003} shadow-normalBias={0.04} shadow-radius={3}
+  return <><hemisphereLight args={["#DCE7F4", "#3D3529", 1.45]} />
+    <directionalLight ref={key} position={[cx - 30, 50, cz + 32]} intensity={3.3} color="#FFE7C7" castShadow={quality !== "low"} shadow-mapSize={quality === "high" ? [2048, 2048] : [1024, 1024]} shadow-bias={-0.0003} shadow-normalBias={0.04} shadow-radius={3}
       shadow-camera-left={-span} shadow-camera-right={span} shadow-camera-top={span} shadow-camera-bottom={-span} shadow-camera-near={1} shadow-camera-far={200} />
-    <directionalLight position={[cx + 24, 16, cz - 30]} intensity={1.1} color="#AAC9EF" />
+    <directionalLight position={[cx + 24, 16, cz - 30]} intensity={0.95} color="#9FC0EA" />
   </>;
 }
 function Room({ room, selected, quality }: { room: SceneRoom; selected: boolean; quality: DetailLevel }) {
