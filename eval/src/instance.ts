@@ -23,7 +23,7 @@ export async function until<T>(what: string, fn: () => Promise<T | null | undefi
   throw new Error(`timed out waiting for: ${what}${last ? ` (${(last as Error).message})` : ""}`);
 }
 
-export interface KnownIds { events: string[]; source_event_ids: string[]; findings: string[]; assets: string[]; sources: string[]; evidence_refs: string[]; request_ids: string[]; actors: string[] }
+export interface KnownIds { relationships: string[]; events: string[]; source_event_ids: string[]; findings: string[]; assets: string[]; sources: string[]; evidence_refs: string[]; request_ids: string[]; actors: string[] }
 export interface Instance {
   url: string; projectId: string; otherProjectId: string;
   /** the agent's credential: service-typed viewer, scoped to the case project only */
@@ -93,6 +93,7 @@ export async function startInstance(spec: CaseSpec, logFile: string): Promise<In
       events: ev.map((e) => e.id), source_event_ids: ev.map((e) => e.source_event_id),
       findings: (findings as { id: string }[]).map((f) => f.id),
       assets: ((snap.graph?.assets ?? []) as { id: string }[]).map((a) => a.id),
+      relationships: ((snap.graph?.relationships ?? []) as { id: string }[]).map((x) => x.id),
       sources: spec.sources.map((s) => s.id),
       evidence_refs: [...new Set(ev.flatMap((e) => e.evidence_refs ?? []))],
       request_ids: [...new Set(ev.map((e) => e.request_id).filter(Boolean) as string[])],

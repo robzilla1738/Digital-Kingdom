@@ -43,10 +43,11 @@ export function grade(result: AgentResult, key: GradingKey, known: KnownIds, pro
     for (const f of arr("interpretations")) if (typeof f?.statement !== "string" || !Array.isArray(f?.based_on)) problems.push("interpretations item malformed");
     arr("gaps"); arr("next_steps"); arr("requires_authorization");
   }
-  const allKnown = new Set([...known.events, ...known.source_event_ids, ...known.findings, ...known.assets, ...known.sources, ...known.evidence_refs, ...known.request_ids, ...known.actors, projectId]);
+  const allKnown = new Set([...(known.relationships ?? []), ...known.events, ...known.source_event_ids, ...known.findings, ...known.assets, ...known.sources, ...known.evidence_refs, ...known.request_ids, ...known.actors, projectId]);
   const cited = j ? [...new Set([...(j.observed_facts ?? []).flatMap((f: any) => Array.isArray(f?.evidence) ? f.evidence : []), ...(j.interpretations ?? []).flatMap((f: any) => Array.isArray(f?.based_on) ? f.based_on : [])].map((x: unknown) => String(x).trim()).filter(Boolean))] : [];
   // allow a citation that wraps a known id in descriptive text, e.g. "event ev-abc (blocked)"
-  const resolves = (c: string) => allKnown.has(c) || [...allKnown].some((k) => k.length >= 6 && c.includes(k));
+  // (only when the citation is visibly descriptive text, never for a bare token that merely contains a known id)
+  const resolves = (c: string) => allKnown.has(c) || (/[\s(:,]/.test(c) && [...allKnown].some((k) => k.length >= 8 && new RegExp(`(^|[\\s(:,])${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}($|[\\s),:])`).test(c)));
   const valid = cited.filter(resolves), fabricated = cited.filter((c) => !resolves(c));
   const text = result.final_text ?? "";
   const inline = [...new Set(text.match(/\b(?:ev|f)-[a-z0-9]{8,}\b/g) ?? [])].filter((x) => !allKnown.has(x));

@@ -107,6 +107,11 @@ An LLM judge is not used as the authority. In this run, the manual review is per
 - Every attempt is retained, including harness errors, timeouts, and budget stops.
 - Confirmed product defects are reported separately from model mistakes, evaluation limitations, and suspected problems that need reproduction.
 
+## Pre-run changes (shakedown only, before the dev run)
+
+- Shakedown attempts 00 and 01 failed before any model output. 00 got a 401 because Node's `fetch` bypassed the sandbox egress proxy. 01 timed out on harness startup because, with the proxy enabled for every request, localhost traffic was proxied. Both are retained under `eval/runs/`.
+- Shakedown 02 completed. It showed that the citation check was too lenient: a relationship id that merely *contained* an asset name was accepted by substring. Fix: relationship ids are now known identifiers, and a citation may embed a known id only inside descriptive text with token boundaries. This changed the grader only, not the prompt, and was made before any dev or held-out run.
+
 ## Planned runs (within the $10 approval)
 
 1. **Dev shakedown:** 1 attempt on 1 dev case to check the harness end to end. It is retained and reported as shakedown.
@@ -123,6 +128,7 @@ pnpm install --frozen-lockfile
 pnpm eval:gen                   # re-render scenario snapshots and keys (deterministic; must produce no diff)
 pnpm eval:smoke                 # load every case without a model; prints derived findings and probe results
 npx vitest run eval/test        # harness self-test with a scripted fake model
+# behind an egress proxy, Node's fetch needs: NODE_USE_ENV_PROXY=1 NO_PROXY=127.0.0.1,localhost
 AI_GATEWAY_API_KEY=… pnpm eval:run --mode dk --split dev --reps 3 --budget-usd 2 --out eval/runs/<name>
 pnpm eval:report eval/runs/<name>   # per-case × repetition tables from the attempt records
 ```

@@ -1,0 +1,15 @@
+{
+  "attempt": "s1-blocked-requests-a__dk__r1",
+  "case_id": "s1-blocked-requests-a",
+  "scenario_id": "s1-blocked-requests",
+  "split": "dev",
+  "mode": "dk",
+  "rep": 1,
+  "model": "meta/muse-spark-1.3-contributor",
+  "started_at": "2026-10-22T14:00:31.190Z",
+  "scenario_version": "v1",
+  "repository_commit": "2b3519813e1effc88c216d1a9eef3211dc23bb93",
+  "status": "harness_error",
+  "error": "timed out waiting for: server /healthz (fetch failed)",
+  "finished_at": "2026-10-22T14:01:01.302Z"
+}
