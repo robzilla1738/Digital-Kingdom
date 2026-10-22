@@ -1,4 +1,4 @@
-{ "name": "@dk/mcp", "version": "0.2.0", "private": true, "type": "module", "license": "Apache-2.0",
+{ "name": "@dk/mcp", "version": "0.3.2", "private": true, "type": "module", "license": "Apache-2.0",
   "description": "Digital Kingdom MCP server: the agent interface to the same security engine the castle renders.",
   "bin": { "digital-kingdom-mcp": "src/main.ts" },
   "scripts": { "start": "tsx src/main.ts" },

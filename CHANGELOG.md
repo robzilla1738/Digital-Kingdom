@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2: safe upgrade from v0.3
+
+- **Fix:** an in-place upgrade from v0.3 could tombstone *pending* journal rows, because v0.3 stored its redaction report inside the payload as `evidence._dk_redaction` and v0.3.1 rejects reserved keys. Legacy rows now go through a separate, versioned conversion that lifts out and type-checks that report, records its provenance in `journal.meta`, and re-minimizes the rest. Live ingestion is still strict.
+- Regression tests run against a database fixture written by the genuine v0.3 code. They check pending rows processed exactly once, unchanged event ids and dedup, preserved redaction notes, restart, malformed legacy metadata, and live rejection of `_dk_` fields.
+- **Guidance:** don't upgrade a v0.3 database with a backlog to v0.3.1; use 0.3.2 or later. 0.3.x is suited to a fresh-database, isolated, non-production pilot with controlled data. It is not production-certified.
+
 ## 0.3.1: hardening
 
 - **Token delegation cannot escalate.** Only human admin tokens can issue tokens. Requested projects must be a subset of the issuer's scope, omitted projects default to the issuer's scope, and `*` is reserved for installation admins. Roles cannot exceed the issuer's. Service identities cannot mint identities. Project creation is installation-admin only, and project admins see only their projects' audit entries.

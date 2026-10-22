@@ -39,7 +39,7 @@ function out(data: unknown, note?: string) {
 }
 
 export function createServer(client: DkClient): McpServer {
-  const server = new McpServer({ name: "digital-kingdom", version: "0.2.0" }, {
+  const server = new McpServer({ name: "digital-kingdom", version: "0.3.2" }, {
     instructions:
       "Digital Kingdom gives you the security situation of the application you are working on: its assets, observed findings, evidence coverage, and permitted containment steps. " +
       "Call dk_assess_change before modifying an endpoint, service, or permission path. Treat 'unknown' coverage as unknown, never as safe. " +

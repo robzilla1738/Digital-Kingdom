@@ -1,3 +1,3 @@
-{ "name": "@dk/sdk-node", "version": "0.2.0", "private": true, "type": "module", "license": "Apache-2.0",
+{ "name": "@dk/sdk-node", "version": "0.3.2", "private": true, "type": "module", "license": "Apache-2.0",
   "description": "Application security-event adapter for Node: emit authentication, authorization and request outcomes to Digital Kingdom.",
   "main": "src/index.ts", "exports": { ".": "./src/index.ts" } }

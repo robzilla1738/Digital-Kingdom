@@ -23,7 +23,8 @@ Run `pnpm check` (typecheck + tests + fixture validation) and `pnpm build`.
 | Token delegation scope | `apps/server/test/hardening.test.ts` › token delegation |
 | Reserved metadata, quarantine, infra-error retry | `apps/server/test/hardening.test.ts` › internal metadata |
 | v0.2 → v0.3.1 upgrade purge | `apps/server/test/hardening.test.ts` › upgrading a v0.2 database |
-| Isolated non-production trial (SDK → finding → UI API → MCP, outage, unknowns, restart, inert proposal) | `apps/mcp/test/trial.e2e.test.ts` |
+| v0.3 → v0.3.2 upgrade with a pending backlog (genuine v0.3 fixture) | `apps/server/test/upgrade-v03.test.ts` |
+| Isolated non-production trial, backend/API/MCP only (SDK → finding → UI API → MCP, outage, unknowns, restart, inert proposal) | `apps/mcp/test/trial.e2e.test.ts` |
 | Human/service approvals | `apps/server/test/trust.test.ts` › containment approvals |
 | Fixture integrity | `scripts/validate-fixtures.ts` → `docs/VALIDATION_REPORT.md` |
 

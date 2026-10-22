@@ -5,7 +5,7 @@ import {
 } from "@dk/contracts";
 import { GraphIndex, validateGraph } from "@dk/graph-core";
 import { compileScene, defaultProposal, validateProposal } from "@dk/scene-compiler";
-import { checkCapability, evaluate, minimizeIngest, normalizeIngest, sourceCapabilities, toStoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
+import { checkCapability, evaluate, minimizeIngest, normalizeIngest, sanitizeStoredRedaction, sourceCapabilities, toStoredRedaction, type StoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
 import { tx, type DB } from "./db.ts";
 import { atLeast, newToken, sha256, type Role } from "./security.ts";
 import { CONTAINMENT_CATALOG, type ContainmentAction } from "./containment.ts";
@@ -308,12 +308,15 @@ export class Store {
       for (const r of rows) {
         let parsed: unknown = null;
         try { parsed = JSON.parse(r.payload); } catch { /* tombstone */ }
-        const m = parsed ? minimizeIngest(parsed) : { ok: false as const, detail: "unparseable" };
-        if (m.ok) {
-          this.db.prepare("UPDATE journal SET payload = ?, meta = ?, minimized = 1 WHERE seq = ?").run(JSON.stringify(m.event), JSON.stringify({ redaction: toStoredRedaction(m.redaction), legacy: true }), r.seq);
+        const conv = convertLegacyPayload(parsed);
+        const m = conv ? minimizeIngest(conv.payload) : { ok: false as const, detail: "unparseable" };
+        if (m.ok && conv) {
+          const redaction = toStoredRedaction({ removedKeys: [...conv.historical.removed_keys, ...m.redaction.removedKeys], maskedValues: conv.historical.masked_values + m.redaction.maskedValues, truncated: false });
+          const meta = { redaction, legacy: true, ...(conv.format ? { legacy_format: conv.format, legacy_redaction_note: "carried from the pre-0.3.1 payload; type-checked, not independently verified" } : {}) };
+          this.db.prepare("UPDATE journal SET payload = ?, meta = ?, minimized = 1 WHERE seq = ?").run(JSON.stringify(m.event), JSON.stringify(meta), r.seq);
           rewritten++;
         } else {
-          this.db.prepare("UPDATE journal SET payload = ?, meta = ?, minimized = 2 WHERE seq = ?").run(JSON.stringify({ _tombstone: true }), JSON.stringify({ legacy: true, tombstone: m.detail.slice(0, 200) }), r.seq);
+          this.db.prepare("UPDATE journal SET payload = ?, meta = ?, minimized = 2 WHERE seq = ?").run(JSON.stringify({ _tombstone: true }), JSON.stringify({ legacy: true, tombstone: ("detail" in m ? m.detail : "unconvertible").slice(0, 200) }), r.seq);
           tombstoned++;
         }
       }
@@ -600,6 +603,25 @@ export class Store {
     if (!atLeast(p.role, role)) throw new HttpError(403, `requires ${role} role`);
     return proj;
   }
+}
+
+/**
+ * Versioned conversion for journal payloads written before v0.3.1 (never used for live ingestion, whose
+ * reserved-field check stays strict). v0.3 stored its own redaction report inside the payload as
+ * evidence._dk_redaction; it is lifted out, type-sanitized and returned separately. v0.3 also kept an
+ * otherwise-empty evidence object when it existed only to carry that report; that shape is preserved so
+ * the normalized event matches what v0.3 would have produced. Any other _dk_ key still fails minimization.
+ */
+export function convertLegacyPayload(v: unknown): { payload: Record<string, unknown>; historical: StoredRedaction; format: "v0.3-evidence-redaction" | null } | null {
+  if (v === null || typeof v !== "object" || Array.isArray(v)) return null;
+  const payload = { ...(v as Record<string, unknown>) };
+  const ev = payload.evidence;
+  if (ev !== null && typeof ev === "object" && !Array.isArray(ev) && Object.prototype.hasOwnProperty.call(ev, "_dk_redaction")) {
+    const { _dk_redaction: historical, ...rest } = ev as Record<string, unknown>;
+    payload.evidence = rest;
+    return { payload, historical: sanitizeStoredRedaction(historical), format: "v0.3-evidence-redaction" };
+  }
+  return { payload, historical: { removed_keys: [], masked_values: 0 }, format: null };
 }
 
 /** SQLite / I/O failures must be retried with durability preserved, never quarantined as "bad data". */

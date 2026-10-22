@@ -12,7 +12,7 @@ The castle is the human interface. **[Digital Kingdom MCP](#digital-kingdom-mcp-
 |---|---|
 | ![2D graph](docs/img/graph-2d.png) | ![Replay](docs/img/replay.png) |
 
-> **Status: v0.3.1, trustworthiness release plus hardening.** See [CHANGELOG.md](CHANGELOG.md).
+> **Status: v0.3.2 alpha.** Suitable for a fresh-database, isolated non-production pilot with controlled data. Not production-certified. See [CHANGELOG.md](CHANGELOG.md).
 >
 > **Scope:** It ingests, stores, correlates, renders and replays real events from local sources and adapters, with a full synthetic demo. It is **not** a SIEM, an EDR, a WAF, a compliance product, or an autonomous responder, and it does not execute remediation. See [Known limitations](#known-limitations).
 
@@ -150,7 +150,7 @@ Then send events to `POST /ingest/events` (single or `{"events":[...]}`, max 500
 - **Source capabilities:** producers can only assert events about their assigned assets and permitted categories.
 - **Server-controlled metadata:** field names starting with `_dk_` are reserved and rejected at ingestion; redaction metadata lives in a separate journal column and is type-checked on every replay.
 - **Poison-record isolation:** a record that fails processing deterministically is quarantined (`GET /api/projects/:p/quarantine`), counted and audited, and the queue moves on. Database and I/O failures are retried with the checkpoint held, never quarantined.
-- **Upgrading from v0.2:** v0.2 journaled raw payloads. On first start, v0.3.1 re-minimizes every legacy journal row in place, then checkpoints and truncates the WAL. See [docs/UPGRADING.md](docs/UPGRADING.md) for what that cannot reach (backups, snapshots).
+- **Upgrading:** from v0.3, pending rows carrying v0.3's in-payload redaction report are converted rather than discarded (fixed in 0.3.2). From v0.2, which journaled raw payloads, the first start re-minimizes every legacy journal row in place, then checkpoints and truncates the WAL. See [docs/UPGRADING.md](docs/UPGRADING.md) for what that cannot reach (backups, snapshots).
 - **AI is optional and presentation-only.** The planner sees ids, kinds and short names only, and its output is untrusted until it passes schema and semantic validation. No AI is needed to run anything.
 - **Exports** carry per-section SHA-256 digests and an HMAC signature: tamper detection relative to this server, explicitly *not* proof of completeness or admissibility.
 
@@ -158,7 +158,7 @@ Details: [SECURITY.md](SECURITY.md) and [docs/THREAT_MODEL.md](docs/THREAT_MODEL
 
 ## Verification
 
-`pnpm check` runs typecheck, **138 tests**, and fixture validation. Highlights, mapped to the blueprint's acceptance suite ([docs/VERIFICATION.md](docs/VERIFICATION.md)):
+`pnpm check` runs typecheck, **141 tests**, and fixture validation. Highlights, mapped to the blueprint's acceptance suite ([docs/VERIFICATION.md](docs/VERIFICATION.md)):
 
 - Evidence E01–E12: dedupe, distinct ids, no IP-only linking, untrusted request ids, blocked ≠ compromise, HTTP 200 ≠ exploit, coverage gaps, contradiction with counterevidence, late-event revision, decoy semantics, temporal topology.
 - Durability O01/O02/O06: restart without loss, crash mid-batch rolls back and recovers idempotently, SSE resume and resync.
