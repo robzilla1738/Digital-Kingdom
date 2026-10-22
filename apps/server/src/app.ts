@@ -115,21 +115,45 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     reply.header("set-cookie", `${COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0`);
     return { ok: true };
   });
+  /**
+   * Token delegation policy (scoped delegation, never escalation):
+   *  - only HUMAN admin tokens may issue tokens (service identities can never mint identities);
+   *  - requested projects must be a subset of the issuer's scope; omitted projects default to the
+   *    issuer's own scope, never to "*";
+   *  - only an installation admin (human, admin, projects "*") may issue "*"-scoped tokens;
+   *  - a role can never exceed the issuer's role; service tokens are never admins.
+   */
   app.post("/api/tokens", { preHandler: authed("admin") }, async (req) => {
+    const issuer = req.principal!;
     const b = req.body as { name?: string; role?: Role; principal_type?: "human" | "service"; projects?: string[] | "*" };
+    if (issuer.kind !== "token" || issuer.principalType !== "human") throw new HttpError(403, "only human admin tokens may issue tokens");
     if (!b?.name || !b.role || !["viewer", "analyst", "admin"].includes(b.role)) throw new HttpError(400, "name and role (viewer|analyst|admin) are required");
+    if (!atLeast(issuer.role, b.role)) throw new HttpError(403, "cannot issue a role above your own");
     const type = b.principal_type ?? "human";
     if (!["human", "service"].includes(type)) throw new HttpError(400, "principal_type must be human or service");
     if (type === "service" && b.role === "admin") throw new HttpError(400, "service tokens cannot be admins");
-    const t = store.createToken(b.name, b.role, b.projects === undefined || b.projects === "*" ? "*" : b.projects.map(String), undefined, type);
-    store.audit(who(req), "token.create", null, t.id, { role: b.role, principal_type: type });
-    return { id: t.id, token: t.token, role: b.role, principal_type: type, note: "Shown once; only its hash is stored." };
+    let scope: "*" | string[];
+    if (b.projects === undefined) scope = issuer.projects;
+    else if (b.projects === "*") scope = "*";
+    else if (Array.isArray(b.projects) && b.projects.length) scope = [...new Set(b.projects.map(String))];
+    else throw new HttpError(400, "projects must be \"*\" or a non-empty list of project ids");
+    if (scope === "*" && issuer.projects !== "*") throw new HttpError(403, "only an installation admin may issue tokens for all projects");
+    if (scope !== "*") {
+      const outside = issuer.projects === "*" ? [] : scope.filter((p) => !(issuer.projects as string[]).includes(p));
+      if (outside.length) throw new HttpError(403, `cannot delegate access to projects outside your scope: ${outside.join(", ")}`);
+      const unknown = scope.filter((p) => !store.getProject(p));
+      if (unknown.length) throw new HttpError(422, `unknown projects: ${unknown.join(", ")}`);
+    }
+    const t = store.createToken(b.name, b.role, scope, undefined, type);
+    store.audit(who(req), "token.create", scope === "*" ? null : scope.length === 1 ? scope[0]! : null, t.id, { role: b.role, principal_type: type, projects: scope });
+    return { id: t.id, token: t.token, role: b.role, principal_type: type, projects: scope, note: "Shown once; only its hash is stored." };
   });
   app.get("/api/me", { preHandler: authed() }, async (req) => ({ name: req.principal!.name, role: req.principal!.role, kind: req.principal!.kind, demo_mode: cfg.demoMode }));
 
   // ---- projects ----
   app.get("/api/projects", { preHandler: authed() }, async (req) => store.listProjects(req.principal!).map((p) => ({ id: p.id, name: p.name, dataset_kind: p.dataset_kind })));
   app.post("/api/projects", { preHandler: authed("admin") }, async (req) => {
+    if (req.principal!.projects !== "*") throw new HttpError(403, "only an installation admin may create projects");
     const b = req.body as { id: string; name: string; dataset_kind?: "live" | "synthetic" };
     const proj = store.createProject(b.id, b.name ?? b.id, b.dataset_kind ?? "live");
     store.audit(who(req), "project.create", proj.id, null, { dataset_kind: proj.dataset_kind });
@@ -173,6 +197,10 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const d = store.getFinding(proj.id, (req.params as { id: string }).id);
     if (!d) throw new HttpError(404, "finding not found");
     return d;
+  });
+  app.get("/api/projects/:p/quarantine", { preHandler: authed("admin") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "admin");
+    return { records: store.listQuarantine(proj.id) };
   });
   app.get("/api/projects/:p/findings/:id/evidence", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
@@ -286,7 +314,14 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     return exportCase(store, proj.id, (req.params as { id: string }).id, who(req), cfg.secret);
   });
   app.post("/api/verify-export", { preHandler: authed("viewer") }, async (req) => verifyCase(req.body, cfg.secret));
-  app.get("/api/audit", { preHandler: authed("admin") }, async (req) => store.listAudit((req.query as { project?: string }).project));
+  // Installation admins see the whole audit log; project admins only their projects' entries.
+  app.get("/api/audit", { preHandler: authed("admin") }, async (req) => {
+    const p = req.principal!;
+    const project = (req.query as { project?: string }).project;
+    if (project) { store.require(p, project, "admin"); return store.listAudit(project); }
+    if (p.projects === "*") return store.listAudit();
+    return p.projects.flatMap((id) => store.listAudit(id) as { id: number }[]).sort((a, b) => b.id - a.id).slice(0, 200);
+  });
 
   // ---- live updates (SSE, resumable) ----
   app.get("/api/projects/:p/stream", { preHandler: authed() }, async (req, reply) => {

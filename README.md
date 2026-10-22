@@ -12,7 +12,7 @@ The castle is the human interface. **[Digital Kingdom MCP](#digital-kingdom-mcp-
 |---|---|
 | ![2D graph](docs/img/graph-2d.png) | ![Replay](docs/img/replay.png) |
 
-> **Status: v0.3, the trustworthiness release.** See [CHANGELOG.md](CHANGELOG.md).
+> **Status: v0.3.1, trustworthiness release plus hardening.** See [CHANGELOG.md](CHANGELOG.md).
 >
 > **Scope:** It ingests, stores, correlates, renders and replays real events from local sources and adapters, with a full synthetic demo. It is **not** a SIEM, an EDR, a WAF, a compliance product, or an autonomous responder, and it does not execute remediation. See [Known limitations](#known-limitations).
 
@@ -118,7 +118,7 @@ Any MCP-capable agent working on your application can understand the security si
 
 Example: a coding agent updating the login handler calls `dk_assess_change({asset_ids:["identity-service"]})`, learns there are repeated sign-in failures followed by a success for the same account, and is told not to weaken rate limiting in this change. Meanwhile the guardhouse in the castle shows the same ▲.
 
-Guardrails: evidence is returned inside an explicit *untrusted data* envelope (prompt-injection-aware), tokens are role-scoped server-side, and there is no tool that changes monitored systems. Give agents a **service** token (`POST /api/tokens` with `"principal_type":"service"`). Approval checks prove that a different human-typed token decided, **not** that two different people did; bind tokens to an identity provider before any executor is ever added.
+Guardrails: evidence is returned inside an explicit *untrusted data* envelope (prompt-injection-aware), tokens are role-scoped server-side, and there is no tool that changes monitored systems. Give agents a **service** token (`POST /api/tokens` with `"principal_type":"service"`). Token delegation never escalates: only human admin tokens can issue tokens, requested projects must be within the issuer's scope (omitted means the issuer's scope, never all projects), only an installation admin (projects `*`) can issue `*` tokens or create projects, and project admins see only their projects' audit entries. Approval checks prove that a different human-typed token decided, **not** that two different people did; bind tokens to an identity provider before any executor is ever added.
 
 The MCP layer is query-driven: an agent can ask what is happening. It does not subscribe to incidents or respond autonomously, by design at this stage.
 
@@ -148,6 +148,9 @@ Then send events to `POST /ingest/events` (single or `{"events":[...]}`, max 500
 - **Ingestion hardening:** body limits, no compressed bodies, depth and node limits, prototype-pollution rejection, schema validation, bounded batches.
 - **Redaction before persistence:** every inbound record is schema-validated and minimized *before the first durable write*. Credential-bearing keys are removed, bearer tokens, JWTs, key-shaped strings and card-like numbers are masked in every free-text field, and query strings are dropped. Only that minimized envelope is journaled; raw originals are never written (`PRAGMA secure_delete=ON`). Tested by scanning the SQLite files for planted markers before processing, after processing and after restart. Free text with no recognizable secret pattern cannot be detected, so don't send secrets as plain prose.
 - **Source capabilities:** producers can only assert events about their assigned assets and permitted categories.
+- **Server-controlled metadata:** field names starting with `_dk_` are reserved and rejected at ingestion; redaction metadata lives in a separate journal column and is type-checked on every replay.
+- **Poison-record isolation:** a record that fails processing deterministically is quarantined (`GET /api/projects/:p/quarantine`), counted and audited, and the queue moves on. Database and I/O failures are retried with the checkpoint held, never quarantined.
+- **Upgrading from v0.2:** v0.2 journaled raw payloads. On first start, v0.3.1 re-minimizes every legacy journal row in place, then checkpoints and truncates the WAL. See [docs/UPGRADING.md](docs/UPGRADING.md) for what that cannot reach (backups, snapshots).
 - **AI is optional and presentation-only.** The planner sees ids, kinds and short names only, and its output is untrusted until it passes schema and semantic validation. No AI is needed to run anything.
 - **Exports** carry per-section SHA-256 digests and an HMAC signature: tamper detection relative to this server, explicitly *not* proof of completeness or admissibility.
 
@@ -155,7 +158,7 @@ Details: [SECURITY.md](SECURITY.md) and [docs/THREAT_MODEL.md](docs/THREAT_MODEL
 
 ## Verification
 
-`pnpm check` runs typecheck, **125 tests**, and fixture validation. Highlights, mapped to the blueprint's acceptance suite ([docs/VERIFICATION.md](docs/VERIFICATION.md)):
+`pnpm check` runs typecheck, **138 tests**, and fixture validation. Highlights, mapped to the blueprint's acceptance suite ([docs/VERIFICATION.md](docs/VERIFICATION.md)):
 
 - Evidence E01–E12: dedupe, distinct ids, no IP-only linking, untrusted request ids, blocked ≠ compromise, HTTP 200 ≠ exploit, coverage gaps, contradiction with counterevidence, late-event revision, decoy semantics, temporal topology.
 - Durability O01/O02/O06: restart without loss, crash mid-batch rolls back and recovers idempotently, SSE resume and resync.

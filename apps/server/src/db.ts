@@ -9,7 +9,7 @@ import { dirname } from "node:path";
  */
 export type DB = DatabaseSync;
 
-const MIGRATIONS: string[] = [
+export const MIGRATIONS: string[] = [
   `CREATE TABLE projects (id TEXT PRIMARY KEY, name TEXT NOT NULL, dataset_kind TEXT NOT NULL CHECK (dataset_kind IN ('synthetic','live')), created_at TEXT NOT NULL, meta TEXT);
    CREATE TABLE graph_revisions (project_id TEXT NOT NULL, revision TEXT NOT NULL, graph TEXT NOT NULL, created_at TEXT NOT NULL, current INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (project_id, revision));
    CREATE TABLE scenes (project_id TEXT NOT NULL, graph_revision TEXT NOT NULL, scene TEXT NOT NULL, proposal TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY (project_id, graph_revision));
@@ -35,6 +35,10 @@ const MIGRATIONS: string[] = [
    ALTER TABLE api_tokens ADD COLUMN principal_type TEXT NOT NULL DEFAULT 'human' CHECK (principal_type IN ('human','service'));
    ALTER TABLE containment_requests ADD COLUMN requested_by_type TEXT NOT NULL DEFAULT 'human';
    CREATE INDEX events_project_seq ON events (project_id, seq);`,
+  // v0.3.1: server-controlled journal metadata, legacy-minimization marker, per-record quarantine
+  `ALTER TABLE journal ADD COLUMN meta TEXT;
+   ALTER TABLE journal ADD COLUMN minimized INTEGER NOT NULL DEFAULT 0;
+   CREATE TABLE quarantine (journal_seq INTEGER PRIMARY KEY, project_id TEXT NOT NULL, source_id TEXT NOT NULL, source_event_id TEXT NOT NULL, error TEXT NOT NULL, created_at TEXT NOT NULL);`,
 ];
 
 export function openDb(path: string): DB {

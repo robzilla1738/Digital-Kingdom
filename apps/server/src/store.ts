@@ -5,7 +5,7 @@ import {
 } from "@dk/contracts";
 import { GraphIndex, validateGraph } from "@dk/graph-core";
 import { compileScene, defaultProposal, validateProposal } from "@dk/scene-compiler";
-import { checkCapability, evaluate, minimizeIngest, normalizeIngest, sourceCapabilities, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
+import { checkCapability, evaluate, minimizeIngest, normalizeIngest, sourceCapabilities, toStoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
 import { tx, type DB } from "./db.ts";
 import { atLeast, newToken, sha256, type Role } from "./security.ts";
 import { CONTAINMENT_CATALOG, type ContainmentAction } from "./containment.ts";
@@ -25,7 +25,9 @@ export interface ProjectRow { id: string; name: string; dataset_kind: DatasetKin
 export interface StoreOptions {
   now?: () => Date;
   /** Fault injection for tests: called inside the processing transaction after events are written. */
-  faultHook?: (stage: "after_events" | "after_findings") => void;
+  faultHook?: (stage: "record" | "after_events" | "after_findings") => void;
+  /** Tests only: open a legacy database without running the v0.2 journal minimization. */
+  skipLegacyMinimization?: boolean;
   eventWindow?: number;
 }
 
@@ -37,6 +39,7 @@ export class Store {
 
   constructor(readonly db: DB, private readonly opts: StoreOptions = {}) {
     this.now = opts.now ?? (() => new Date());
+    if (!opts.skipLegacyMinimization) this.minimizeLegacyJournal();
   }
   private iso() { return this.now().toISOString(); }
 
@@ -199,7 +202,7 @@ export class Store {
         this.count(projectId, sourceId, "duplicate");
         return { status: "duplicate" as const, seq: existing.seq };
       }
-      const r = this.db.prepare("INSERT INTO journal (project_id, source_id, source_event_id, payload, received_at) VALUES (?, ?, ?, ?, ?)").run(projectId, sourceId, p.source_event_id, JSON.stringify(p), receivedAtOverride ?? this.iso());
+      const r = this.db.prepare("INSERT INTO journal (project_id, source_id, source_event_id, payload, received_at, meta, minimized) VALUES (?, ?, ?, ?, ?, ?, 1)").run(projectId, sourceId, p.source_event_id, JSON.stringify(p), receivedAtOverride ?? this.iso(), JSON.stringify({ redaction: toStoredRedaction(m.redaction) }));
       this.count(projectId, sourceId, "accepted");
       return { status: "accepted" as const, seq: Number(r.lastInsertRowid) };
     });
@@ -232,32 +235,92 @@ export class Store {
    * for affected projects, publish outbox messages, advance the checkpoint. A crash anywhere rolls the
    * whole batch back, and the next run reprocesses it idempotently (event ids are deterministic).
    */
-  processBatch(limit = 200): { processed: number; projects: string[] } {
+  /**
+   * Process the next batch of journal entries in one transaction. A record that fails DETERMINISTICALLY
+   * (malformed content, a processing bug) is rolled back to its own savepoint, quarantined and counted, so
+   * good records behind it still make progress. Database/infrastructure errors are not swallowed: the whole
+   * batch rolls back, the checkpoint does not move, and the worker retries.
+   */
+  processBatch(limit = 200): { processed: number; projects: string[]; quarantined: number } {
     const from = this.checkpoint();
-    const rows = this.db.prepare("SELECT * FROM journal WHERE seq > ? ORDER BY seq LIMIT ?").all(from, limit) as { seq: number; project_id: string; source_id: string; payload: string; received_at: string }[];
-    if (!rows.length) return { processed: 0, projects: [] };
+    const rows = this.db.prepare("SELECT * FROM journal WHERE seq > ? ORDER BY seq LIMIT ?").all(from, limit) as { seq: number; project_id: string; source_id: string; source_event_id: string; payload: string; received_at: string; meta: string | null }[];
+    if (!rows.length) return { processed: 0, projects: [], quarantined: 0 };
     const touched = new Set<string>();
+    let quarantined = 0;
     tx(this.db, () => {
       for (const row of rows) {
-        const ix = this.index(row.project_id);
-        const proj = this.getProject(row.project_id);
-        const src = this.listSources(row.project_id).find((s) => s.id === row.source_id);
-        if (!ix || !proj || !src) { this.rejectInTx(row.project_id, row.source_id, "unmapped_asset", "project has no graph or source was removed"); continue; }
-        const r = normalizeIngest(JSON.parse(row.payload), { projectId: row.project_id, sourceId: row.source_id, datasetKind: proj.dataset_kind, receivedAt: row.received_at, trustsRequestIds: !!src.trusts_request_ids, index: ix.index, capabilities: sourceCapabilities(src) });
-        if (!r.ok) { this.rejectInTx(row.project_id, row.source_id, r.reason, r.detail); continue; }
-        const e = r.event;
-        const ins = this.db.prepare("INSERT OR IGNORE INTO events (id, seq, project_id, source_id, occurred_at, received_at, action, outcome, asset_ids, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-          .run(e.id, row.seq, e.project_id, e.source_id, e.occurred_at, e.received_at, e.action, e.outcome, JSON.stringify(e.asset_ids), JSON.stringify(e));
-        if (r.evidence) this.db.prepare("INSERT OR IGNORE INTO evidence (ref, project_id, event_id, body, redacted, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(`evidence:${e.id}`, e.project_id, e.id, JSON.stringify(r.evidence), r.evidence.redacted ? 1 : 0, this.iso());
-        if (Number(ins.changes) > 0) this.emit(e.project_id, "event", { id: e.id, asset_ids: e.asset_ids, action: e.action, outcome: e.outcome, occurred_at: e.occurred_at, source_id: e.source_id });
-        touched.add(row.project_id);
+        this.db.exec("SAVEPOINT rec");
+        try {
+          this.opts.faultHook?.("record");
+          if (this.processRecord(row)) touched.add(row.project_id);
+          this.db.exec("RELEASE rec");
+        } catch (err) {
+          this.db.exec("ROLLBACK TO rec"); this.db.exec("RELEASE rec");
+          if (isInfrastructureError(err)) throw err;
+          const msg = String((err as Error)?.message ?? err).slice(0, 300);
+          this.db.prepare("INSERT OR REPLACE INTO quarantine (journal_seq, project_id, source_id, source_event_id, error, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(row.seq, row.project_id, row.source_id, row.source_event_id, msg, this.iso());
+          this.db.prepare("INSERT INTO rejections (project_id, source_id, stage, reason, detail, created_at) VALUES (?, ?, 'process', 'quarantined', ?, ?)").run(row.project_id, row.source_id, `journal seq ${row.seq}: ${msg}`, this.iso());
+          this.count(row.project_id, row.source_id, "rejected:quarantined");
+          this.audit("system", "journal.quarantine", row.project_id, String(row.seq), { error: msg });
+          quarantined++;
+        }
       }
       this.opts.faultHook?.("after_events");
       for (const p of touched) this.evaluateInTx(p);
       this.opts.faultHook?.("after_findings");
       this.db.prepare("INSERT INTO checkpoints (name, last_seq) VALUES ('normalizer', ?) ON CONFLICT (name) DO UPDATE SET last_seq = excluded.last_seq").run(rows[rows.length - 1]!.seq);
     });
-    return { processed: rows.length, projects: [...touched] };
+    return { processed: rows.length, projects: [...touched], quarantined };
+  }
+
+  private processRecord(row: { seq: number; project_id: string; source_id: string; payload: string; received_at: string; meta: string | null }): boolean {
+    const ix = this.index(row.project_id);
+    const proj = this.getProject(row.project_id);
+    const src = this.listSources(row.project_id).find((s) => s.id === row.source_id);
+    if (!ix || !proj || !src) { this.rejectInTx(row.project_id, row.source_id, "unmapped_asset", "project has no graph or source was removed"); return false; }
+    const meta = row.meta ? (JSON.parse(row.meta) as { redaction?: unknown }) : {};
+    const r = normalizeIngest(JSON.parse(row.payload), { projectId: row.project_id, sourceId: row.source_id, datasetKind: proj.dataset_kind, receivedAt: row.received_at, trustsRequestIds: !!src.trusts_request_ids, index: ix.index, capabilities: sourceCapabilities(src), priorRedaction: meta?.redaction });
+    if (!r.ok) { this.rejectInTx(row.project_id, row.source_id, r.reason, r.detail); return false; }
+    const e = r.event;
+    const ins = this.db.prepare("INSERT OR IGNORE INTO events (id, seq, project_id, source_id, occurred_at, received_at, action, outcome, asset_ids, body) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .run(e.id, row.seq, e.project_id, e.source_id, e.occurred_at, e.received_at, e.action, e.outcome, JSON.stringify(e.asset_ids), JSON.stringify(e));
+    if (r.evidence) this.db.prepare("INSERT OR IGNORE INTO evidence (ref, project_id, event_id, body, redacted, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(`evidence:${e.id}`, e.project_id, e.id, JSON.stringify(r.evidence), r.evidence.redacted ? 1 : 0, this.iso());
+    if (Number(ins.changes) > 0) this.emit(e.project_id, "event", { id: e.id, asset_ids: e.asset_ids, action: e.action, outcome: e.outcome, occurred_at: e.occurred_at, source_id: e.source_id });
+    return true;
+  }
+
+  listQuarantine(projectId: string) {
+    return this.db.prepare("SELECT journal_seq, source_id, source_event_id, error, created_at FROM quarantine WHERE project_id = ? ORDER BY journal_seq DESC LIMIT 500").all(projectId);
+  }
+
+  /**
+   * Upgrade path for databases written by v0.2, which journaled raw payloads. Re-minimizes every legacy
+   * journal row in place (same seq, same source_event_id, so deduplication and the checkpoint are
+   * unchanged). A row that no longer validates is replaced by a tombstone and quarantined if still pending.
+   * secure_delete overwrites the freed content, and the WAL is checkpointed and truncated afterwards.
+   * This cannot reach copies outside this database file (backups, snapshots, old disks).
+   */
+  minimizeLegacyJournal(): { rewritten: number; tombstoned: number } {
+    const rows = this.db.prepare("SELECT seq, payload FROM journal WHERE minimized = 0").all() as { seq: number; payload: string }[];
+    if (!rows.length) return { rewritten: 0, tombstoned: 0 };
+    let rewritten = 0, tombstoned = 0;
+    tx(this.db, () => {
+      for (const r of rows) {
+        let parsed: unknown = null;
+        try { parsed = JSON.parse(r.payload); } catch { /* tombstone */ }
+        const m = parsed ? minimizeIngest(parsed) : { ok: false as const, detail: "unparseable" };
+        if (m.ok) {
+          this.db.prepare("UPDATE journal SET payload = ?, meta = ?, minimized = 1 WHERE seq = ?").run(JSON.stringify(m.event), JSON.stringify({ redaction: toStoredRedaction(m.redaction), legacy: true }), r.seq);
+          rewritten++;
+        } else {
+          this.db.prepare("UPDATE journal SET payload = ?, meta = ?, minimized = 2 WHERE seq = ?").run(JSON.stringify({ _tombstone: true }), JSON.stringify({ legacy: true, tombstone: m.detail.slice(0, 200) }), r.seq);
+          tombstoned++;
+        }
+      }
+      this.audit("system", "journal.legacy_minimized", null, null, { rewritten, tombstoned });
+    });
+    this.db.exec("PRAGMA wal_checkpoint(TRUNCATE)");
+    return { rewritten, tombstoned };
   }
 
   private rejectInTx(projectId: string, sourceId: string, reason: string, detail: string) {
@@ -537,6 +600,12 @@ export class Store {
     if (!atLeast(p.role, role)) throw new HttpError(403, `requires ${role} role`);
     return proj;
   }
+}
+
+/** SQLite / I/O failures must be retried with durability preserved, never quarantined as "bad data". */
+export function isInfrastructureError(err: unknown): boolean {
+  const e = err as { code?: string; errcode?: number; message?: string };
+  return (typeof e?.code === "string" && /SQLITE|ERR_SQLITE|EIO|ENOSPC/.test(e.code)) || typeof e?.errcode === "number" || /database is locked|disk I\/O|SQLITE_/i.test(String(e?.message ?? ""));
 }
 
 export class HttpError extends Error {

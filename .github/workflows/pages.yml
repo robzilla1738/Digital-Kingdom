@@ -1,13 +1,15 @@
 name: demo-pages
-# Publishes the OFFLINE synthetic demo (no server, bundled fixtures, same engine in the browser) to the
-# gh-pages branch. This does not deploy the backend or the MCP server.
+# Publishes the OFFLINE synthetic demo (bundled fixtures, same engine in the browser) with GitHub's
+# supported artifact deployment, then verifies that the served page carries this commit's build id.
+# Requires: Settings -> Pages -> Build and deployment -> Source = "GitHub Actions".
+# This does not deploy the backend or the MCP server.
 on:
   push: { branches: [main] }
   workflow_dispatch: {}
-permissions: { contents: write }
-concurrency: { group: pages, cancel-in-progress: true }
+permissions: { contents: read, pages: write, id-token: write }
+concurrency: { group: pages, cancel-in-progress: false }
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,15 +18,28 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - run: DK_BASE=/${{ github.event.repository.name }}/ pnpm --filter @dk/web build
-      - name: Push to gh-pages
+      - run: pnpm --filter @dk/web build
+        env:
+          DK_BASE: /${{ github.event.repository.name }}/
+          VITE_DK_BUILD: ${{ github.sha }}
+      - name: Check build id is embedded
+        run: grep -q 'name="dk-build" content="${{ github.sha }}"' apps/web/dist/index.html
+      - run: cp apps/web/dist/index.html apps/web/dist/404.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: apps/web/dist }
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: "${{ steps.deployment.outputs.page_url }}" }
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Verify the served site is this commit
         run: |
-          cd apps/web/dist
-          touch .nojekyll
-          cp index.html 404.html
-          git init -q -b gh-pages
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -qm "Deploy offline demo from ${GITHUB_SHA}"
-          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+          url="${{ steps.deployment.outputs.page_url }}"
+          for i in $(seq 1 20); do
+            if curl -fsSL "$url?nocache=$GITHUB_RUN_ID-$i" | grep -q 'name="dk-build" content="${{ github.sha }}"'; then echo "served build matches ${{ github.sha }}"; exit 0; fi
+            sleep 15
+          done
+          echo "::error::$url is not serving build ${{ github.sha }}"; exit 1

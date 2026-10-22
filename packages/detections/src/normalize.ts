@@ -15,6 +15,8 @@ export interface SourceContext {
   index: GraphIndex;
   /** Enforced authorization scope of this source (assets and event categories). */
   capabilities?: SourceCapabilities;
+  /** Redaction metadata recorded by the server at receive time (separate journal column, untrusted shape). */
+  priorRedaction?: unknown;
 }
 
 export type NormalizeResult =
@@ -31,6 +33,8 @@ export function minimizeIngest(input: unknown): { ok: true; event: IngestEvent; 
   const v = validateIngestEventSchema(input);
   if (!v.ok) return { ok: false, detail: v.errors.join("; ") };
   const e = input as IngestEvent;
+  const reserved = findReservedKey(e.evidence) ?? findReservedKey(e.attributes);
+  if (reserved) return { ok: false, detail: `reserved field name "${reserved}" (the _dk_ prefix is server-controlled)` };
   const redaction: RedactionReport = { removedKeys: [], maskedValues: 0, truncated: false };
   const out: IngestEvent = {
     source_event_id: e.source_event_id,
@@ -52,10 +56,25 @@ export function minimizeIngest(input: unknown): { ok: true; event: IngestEvent; 
     if (Object.keys(a).length) out.attributes = a;
   }
   if (e.evidence) out.evidence = redactValue(e.evidence, redaction) as Record<string, unknown>;
-  if (redaction.removedKeys.length || redaction.maskedValues) {
-    (out.evidence ??= {})["_dk_redaction"] = { removed_keys: redaction.removedKeys.slice(0, 32), masked_values: redaction.maskedValues };
-  }
   return { ok: true, event: out, redaction };
+}
+
+/** Keys with the _dk_ prefix are reserved for server-controlled metadata; producers may not send them. */
+function findReservedKey(v: unknown, depth = 0): string | null {
+  if (depth > 32 || v === null || typeof v !== "object") return null;
+  if (Array.isArray(v)) { for (const x of v) { const r = findReservedKey(x, depth + 1); if (r) return r; } return null; }
+  for (const [k, x] of Object.entries(v)) { if (k.toLowerCase().startsWith("_dk_")) return k; const r = findReservedKey(x, depth + 1); if (r) return r; }
+  return null;
+}
+
+/** Server-controlled redaction metadata as stored beside a journal entry. Type-checked on every read (replay, migration). */
+export interface StoredRedaction { removed_keys: string[]; masked_values: number }
+export function toStoredRedaction(r: RedactionReport): StoredRedaction { return { removed_keys: r.removedKeys.slice(0, 32).map((k) => k.slice(0, 200)), masked_values: r.maskedValues }; }
+export function sanitizeStoredRedaction(v: unknown): StoredRedaction {
+  const o = v !== null && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : {};
+  const keys = Array.isArray(o.removed_keys) ? o.removed_keys.filter((k): k is string => typeof k === "string").slice(0, 32).map((k) => k.slice(0, 200)) : [];
+  const n = typeof o.masked_values === "number" && Number.isFinite(o.masked_values) && o.masked_values >= 0 ? Math.min(Math.floor(o.masked_values), 1_000_000) : 0;
+  return { removed_keys: keys, masked_values: n };
 }
 
 /** Turn an authenticated inbound record into a canonical event. Project and source identity come from auth, not the payload. */
@@ -72,10 +91,9 @@ export function normalizeIngest(input: unknown, ctx: SourceContext): NormalizeRe
   if (!resolved.length) return { ok: false, reason: "unmapped_asset", detail: `no known asset for: ${unmapped.slice(0, 5).join(", ")}` };
   if (ctx.capabilities) { const v = checkCapability(ctx.capabilities, ctx.sourceId, e.action, resolved); if (v) return { ok: false, ...v }; }
 
-  // carry forward the report from minimization (journaled records were already minimized at receive)
-  const prior = (e.evidence?._dk_redaction ?? null) as { removed_keys?: string[]; masked_values?: number } | null;
-  const redaction: RedactionReport = { removedKeys: [...(prior?.removed_keys ?? []), ...m.redaction.removedKeys], maskedValues: (prior?.masked_values ?? 0) + m.redaction.maskedValues, truncated: m.redaction.truncated };
-  if (e.evidence) { const { _dk_redaction: _drop, ...rest } = e.evidence; e.evidence = Object.keys(rest).length || prior ? rest : undefined; }
+  // carry forward the server-controlled report from receive time (never read from the payload itself)
+  const prior = sanitizeStoredRedaction(ctx.priorRedaction);
+  const redaction: RedactionReport = { removedKeys: [...prior.removed_keys, ...m.redaction.removedKeys], maskedValues: prior.masked_values + m.redaction.maskedValues, truncated: m.redaction.truncated };
   const id = stableId("ev", ctx.projectId, ctx.sourceId, e.source_event_id);
   const evidence = e.evidence ? e.evidence : null;
   const attributes = e.attributes;
