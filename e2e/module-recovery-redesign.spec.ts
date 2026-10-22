@@ -99,7 +99,9 @@ test('15.3: a valid scene replacement clears the failed label for the same canon
     // Selected evidence deliberately pins the prior snapshot. Apply the confirmed update
     // through its real control, rather than bypassing snapshot/replay semantics.
     const apply = page.getByRole('button', { name: 'Return to latest', exact: true });
-    await expect(apply).toBeEnabled(); await expect(label).toHaveAttribute('data-module-recovery', 'invalid_asset_pack_geometry');
+    // The confirmed snapshot arrives through the real outbox, SSE and snapshot fetch; under software
+    // WebGL this takes about 7-8 s, so the default 5 s expectation raced it.
+    await expect(apply).toBeEnabled({ timeout: 20_000 }); await expect(label).toHaveAttribute('data-module-recovery', 'invalid_asset_pack_geometry');
     await apply.click();
     await expect(label).not.toHaveAttribute('data-module-recovery'); await expect(label).not.toContainText('Model unavailable');
     await expect(label).toBeVisible(); await expect(label).toContainText('orders-api');
