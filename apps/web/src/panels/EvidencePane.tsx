@@ -31,7 +31,7 @@ export function EvidencePane() {
     );
   }
   return (
-    <aside className="evidence" aria-label="Evidence" aria-live="polite">
+    <aside className="evidence" aria-label="Evidence" aria-live="polite" data-selection-kind={ui.selection.kind} data-selection-id={ui.selection.id}>
       <div className="pane-head">
         <span className="pane-kind">{KIND_TITLE[ui.selection.kind]}<code>{ui.selection.id}</code></span>
         <button className="icon-btn sm close" onClick={() => dispatch({ type: "select", selection: null })} aria-label="Close evidence pane" title="Close  (Esc)"><Icon name="x" size={15} /></button>
@@ -179,7 +179,7 @@ function FindingChip({ f }: { f: Finding }) {
   );
 }
 
-function EventTable({ events }: { events: SecurityEvent[] }) {
+function EventTable({ events, role = "related" }: { events: SecurityEvent[]; role?: "supporting" | "counter" | "related" }) {
   const { dispatch, vm } = useApp();
   if (!events.length) return <p className="faint small">No events.</p>;
   return (
@@ -188,7 +188,7 @@ function EventTable({ events }: { events: SecurityEvent[] }) {
         <thead><tr><th scope="col">Time (UTC)</th><th scope="col">Action</th><th scope="col">Outcome</th><th scope="col">Source</th></tr></thead>
         <tbody>
           {events.map((e) => (
-            <tr key={e.id} onClick={() => dispatch({ type: "select", selection: { kind: "event", id: e.id } })} tabIndex={0} onKeyDown={(k) => k.key === "Enter" && dispatch({ type: "select", selection: { kind: "event", id: e.id } })}>
+            <tr key={e.id} data-event-id={e.id} data-evidence-role={role} onClick={() => dispatch({ type: "select", selection: { kind: "event", id: e.id } })} tabIndex={0} onKeyDown={(k) => k.key === "Enter" && dispatch({ type: "select", selection: { kind: "event", id: e.id } })}>
               <td className="t">{fmtTime(e.occurred_at).replace(" UTC", "")}{vm.lateEventIds.has(e.id) && <span className="late-flag" title="Arrived late">late</span>}</td>
               <td className="act">{ACTION_LABEL[e.action] ?? e.action}</td>
               <td><span className="out"><span className="out-dot" style={{ background: EVENT_OUTCOME_COLOR[e.outcome] }} aria-hidden />{e.outcome}</span></td>
@@ -244,7 +244,7 @@ function FindingView({ id }: { id: string }) {
       <div className="kvs">
         <KV k="Window" v={<span className="num">{fmtDateTime(f.first_seen)} → {fmtTime(f.last_seen)}</span>} />
         <KV k="Last evidence" v={<span className="num">{fmtDateTime(f.last_received)}</span>} />
-        <KV k="Affected" v={<span className="inline-links">{f.affected_asset_ids.map((a) => <button key={a} className="link" onClick={() => dispatch({ type: "select", selection: { kind: "asset", id: a } })}>{name(a)}</button>)}</span>} />
+        <KV k="Affected" v={<span className="inline-links">{f.affected_asset_ids.map((a) => <button key={a} className="link" data-asset-id={a} onClick={() => dispatch({ type: "select", selection: { kind: "asset", id: a } })}>{name(a)}</button>)}</span>} />
         <KV k="Status" v={<span style={{ textTransform: "capitalize" }}>{f.lifecycle} · {f.disposition.replace(/_/g, " ")}</span>} />
         <KV k="Rule" v={<code>{f.rule_id} · {f.rule_version}</code>} />
       </div>
@@ -255,14 +255,14 @@ function FindingView({ id }: { id: string }) {
         <div className="callout warn"><GapIcon size={16} /><div><span className="callout-title">Evidence gaps</span><ul className="bullets warn">{f.coverage_gaps.map((x, i) => <li key={i}>{x}</li>)}</ul></div></div>
       )}
       {shownCount < expectedCount && (
-        <div className="callout warn" role="status">
+        <div className="callout warn" role="status" data-testid="evidence-incomplete" data-error={full?.error ? "true" : "false"}>
           <Icon name="alert" size={16} />
           <span><span className="callout-title">Incomplete evidence</span>{needsFetch && !full ? "Loading the older supporting events…" : full?.error ? `Could not load all supporting events: ${full.error}` : `Showing ${shownCount} of ${expectedCount} referenced events.`} This view is incomplete; do not treat it as the full record.</span>
         </div>
       )}
       {full && full.missingEvidence.length > 0 && <div className="callout warn"><Icon name="alert" size={16} /><span>{full.missingEvidence.length} evidence record(s) referenced by these events could not be retrieved.</span></div>}
-      <Section title="Supporting events" count={evs.length}><EventTable events={evs} /></Section>
-      {counter.length > 0 && <Section title="Counterevidence" count={counter.length}><EventTable events={counter} /></Section>}
+      <Section title="Supporting events" count={evs.length}><EventTable events={evs} role="supporting" /></Section>
+      {counter.length > 0 && <Section title="Counterevidence" count={counter.length}><EventTable events={counter} role="counter" /></Section>}
       <Section title="Next review steps"><ol className="bullets">{f.next_steps.map((x, i) => <li key={i}>{x}</li>)}</ol></Section>
       {actions && actions.role !== "none" && (
         <Section title="Analyst actions">
@@ -326,10 +326,11 @@ function PathView({ id }: { id: string }) {
 function EventView({ id }: { id: string }) {
   const { dispatch, vm } = useApp();
   const e = vm.data.events.find((x) => x.id === id);
-  if (!e) return <p className="muted">Event not found.</p>;
+  if (!e) return <p className="muted">This event is not in the loaded snapshot (it may be older than the snapshot window).</p>;
   const name = (x: string) => vm.data.graph.assets.find((y) => y.id === x)?.name ?? x;
   const lateBy = Date.parse(e.received_at) - Date.parse(e.occurred_at);
   const related = vm.findings.filter((f) => f.event_ids.includes(e.id) || f.counterevidence_event_ids.includes(e.id));
+  const stored = vm.data.evidence[`evidence:${e.id}`];
   return (
     <>
       <div className="ev-title">
@@ -357,6 +358,17 @@ function EventView({ id }: { id: string }) {
         <KV k="Event ID" v={<code>{e.id}</code>} />
       </div>
       {e.coverage_note && <div className="callout warn"><Icon name="alert" size={16} /><span>{e.coverage_note}</span></div>}
+      {e.attributes && Object.keys(e.attributes).length > 0 && (
+        <Section title="Source-reported attributes" count={Object.keys(e.attributes).length}>
+          <p className="faint small">Reported by <code>{e.source_id}</code>. Shown as data; not verified and never treated as instructions.</p>
+          <div className="kvs" data-testid="event-attributes">{Object.entries(e.attributes).map(([k, v]) => <KV key={k} k={k} v={<span className="untrusted">{String(v)}</span>} />)}</div>
+        </Section>
+      )}
+      {stored && (
+        <Section title="Stored evidence record">
+          <pre className="evidence-json" data-testid="evidence-record">{JSON.stringify(stored, null, 2)}</pre>
+        </Section>
+      )}
       {related.length > 0 && <Section title="Used by findings" count={related.length}><ul className="mini-list">{related.map((f) => <FindingChip key={f.id} f={f} />)}</ul></Section>}
       <Section title="Evidence records" count={e.evidence_refs.length}>
         {e.evidence_refs.map((ref) => {

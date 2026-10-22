@@ -29,7 +29,7 @@ export function startReferenceApp(opts: { port?: number; dk: DigitalKingdom; ass
     }
     if (url.pathname === "/orders" && req.method === "GET") {
       const q = url.searchParams.get("q") ?? "";
-      if (/('|--|\bunion\b|\bor\b\s+\d+=\d+)/i.test(q)) { opts.dk.denied(asset, "/orders", "input-filter-sqli", { requestId, severity: "medium" }); return send(400, { error: "rejected input" }); }
+      if (/('|--|\bunion\b|\bor\b\s+\d+=\d+)/i.test(q)) { opts.dk.denied(asset, "/orders", "input-filter-sqli", { requestId, severity: "medium", details: { input_sample: q.slice(0, 160) } }); return send(400, { error: "rejected input" }); }
       opts.dk.emit({ asset, action: "request_received", outcome: "success", route: "/orders", requestId });
       return send(200, { orders: [] });
     }

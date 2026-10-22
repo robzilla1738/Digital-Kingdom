@@ -15,3 +15,30 @@ jobs:
       - run: pnpm test
       - run: pnpm validate:fixtures
       - run: pnpm build
+
+  # Browser pilot: real server process + worker, fresh temp DB, reference app via the real SDK,
+  # the built web app in Chromium, and a stdio MCP client. 3D uses SwiftShader software WebGL; the 3D test
+  # fails (never passes on the fallback) if no WebGL context or a blank frame is produced.
+  browser-pilot:
+    # pinned: Playwright 1.56's --with-deps installer targets known distro releases, and ubuntu-latest
+    # began migrating to Ubuntu 26 on 2026-10-19
+    runs-on: ubuntu-24.04
+    needs: check
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.12.1 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: npx playwright install --with-deps chromium
+      - run: pnpm build
+      - run: pnpm pilot
+      - name: Upload pilot evidence (traces, screenshots, sanitized server log, JSON results)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-pilot-evidence
+          path: artifacts/pilot/
+          retention-days: 14

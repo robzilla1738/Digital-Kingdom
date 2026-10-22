@@ -102,9 +102,14 @@ code { color: var(--text-2); }
 }
 .pill .pip { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .pill.synthetic { color: var(--warn); border-color: rgba(226, 184, 79, 0.28); background: var(--warn-soft); }
-.pill.live { color: var(--ok); border-color: rgba(79, 191, 138, 0.3); background: var(--ok-soft); }
+.pill.telemetry { color: var(--text-2, #b6bcc8); }
 .pill.conn-live .pip { background: var(--ok); box-shadow: 0 0 0 3px rgba(79, 191, 138, 0.18); }
 .pill.conn-reconnecting .pip { background: var(--warn); }
+.pill.conn-synchronizing .pip, .pill.conn-sync-failed .pip { background: var(--warn); }
+.pill.conn-sync-failed { color: var(--warn); }
+.pill.conn-lost { color: var(--warn); border-color: rgba(226, 184, 79, 0.28); }
+.pill.conn-lost .pip { background: var(--warn); }
+.banner.warn { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 6; }
 .spacer { flex: 1; min-width: var(--s2); }
 .toolbar-group { display: flex; align-items: center; gap: var(--s1); }
 .vr { width: 1px; height: 20px; background: var(--border); margin: 0 var(--s1); flex: none; }
@@ -477,3 +482,6 @@ ol.bullets li::marker { font-variant-numeric: tabular-nums; }
   .brand-name, .crumb-sep, .select-inline { display: none; }
   .seg button { padding: 0 8px; }
 }
+
+.untrusted { font-family: var(--mono, ui-monospace, monospace); font-size: 12px; white-space: pre-wrap; word-break: break-word; }
+.evidence-json { margin: 0; padding: 10px 12px; border: 1px solid var(--border-1, #262a33); border-radius: 8px; background: var(--bg-2, #12141a); font: 12px/1.5 var(--mono, ui-monospace, monospace); white-space: pre-wrap; word-break: break-word; max-height: 260px; overflow: auto; }

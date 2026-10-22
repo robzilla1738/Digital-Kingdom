@@ -34,7 +34,7 @@ export interface EvaluationResult {
 const SEV_ORDER: Severity[] = ["info", "low", "medium", "high", "critical"];
 const maxSev = (a: Severity, b: Severity) => (SEV_ORDER.indexOf(a) >= SEV_ORDER.indexOf(b) ? a : b);
 
-type Draft = Omit<Finding, "id" | "lifecycle" | "disposition" | "revision" | "first_seen" | "last_seen" | "last_received" | "event_count" | "evidence_refs" | "dataset_kind"> & { key: string; events: SecurityEvent[]; counter?: SecurityEvent[] };
+type Draft = Omit<Finding, "id" | "lifecycle" | "disposition" | "revision" | "first_seen" | "last_seen" | "last_received" | "event_count" | "evidence_refs" | "dataset_kind"> & { key: string; events: SecurityEvent[]; counter?: SecurityEvent[]; /** when the finding has no events of its own (e.g. a source went silent): the derived moment it became true */ at?: string };
 
 /**
  * Deterministic rule evaluation over a bounded event set. Pure: same events => same findings.
@@ -214,7 +214,12 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
   const coverage = deriveCoverage(graph, events, opts);
   for (const c of coverage) if (c.state === "offline" || c.state === "degraded") {
     const evs = events.filter((e) => c.event_ids.includes(e.id));
+    // a stale source has no event marking the moment it went quiet: derive it from the last receipt + threshold
+    const decl = opts.sources?.find((x) => x.id === c.source_id);
+    const lastOwn = events.filter((e) => e.source_id === c.source_id).at(-1);
+    const at = c.state === "degraded" && lastOwn && decl?.stale_after_seconds ? new Date(toMs(lastOwn.received_at) + decl.stale_after_seconds * 1000).toISOString() : undefined;
     drafts.push({
+      ...(at ? { at } : {}),
       key: `coverage:${c.source_id}`, kind: "coverage_loss", title: `${c.label} ${c.state === "offline" ? "offline" : "stale"}`,
       claim: `${c.label} is ${c.state}. Activity on ${c.asset_ids.map(assetName).join(", ")} that only this source would record is not assessable.`,
       evidence_level: "not_assessed", outcome_state: "unknown", severity: "medium",
@@ -226,7 +231,8 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
     });
   }
 
-  const findings = drafts.map(toFinding).sort((a, b) => toMs(a.first_seen) - toMs(b.first_seen) || (a.id < b.id ? -1 : 1));
+  const kind = inputEvents.find((e) => e.dataset_kind)?.dataset_kind ?? "synthetic";
+  const findings = drafts.map((d) => toFinding(d, kind)).sort((a, b) => toMs(a.first_seen) - toMs(b.first_seen) || (a.id < b.id ? -1 : 1));
   const covered = new Set(coverage.flatMap((c) => c.asset_ids));
   return { findings, coverage, unobserved_asset_ids: graph.assets.map((a) => a.id).filter((id) => !covered.has(id)), ruleset_version: RULESET_VERSION };
 }
@@ -252,11 +258,12 @@ export function deriveCoverage(graph: Graph, events: SecurityEvent[], opts: Eval
   });
 }
 
-function toFinding(d: Draft): Finding {
+function toFinding(d: Draft, projectKind: Finding["dataset_kind"]): Finding {
   const all = [...d.events, ...(d.counter ?? [])];
   const times = all.map((e) => toMs(e.occurred_at));
   const recv = all.map((e) => toMs(e.received_at));
-  const nowIso = new Date(0).toISOString();
+  // never present the Unix epoch as an observation time: a finding without events uses its derived moment
+  const nowIso = d.at ?? new Date(0).toISOString();
   return {
     id: stableId("f", d.rule_id, d.key),
     kind: d.kind as FindingKind, title: d.title, claim: d.claim,
@@ -271,7 +278,7 @@ function toFinding(d: Draft): Finding {
     last_received: recv.length ? new Date(Math.max(...recv)).toISOString() : nowIso,
     event_count: unique(all.map((e) => e.id)).length,
     revision: 1,
-    dataset_kind: all[0]?.dataset_kind ?? "synthetic",
+    dataset_kind: all[0]?.dataset_kind ?? projectKind,
   };
 }
 

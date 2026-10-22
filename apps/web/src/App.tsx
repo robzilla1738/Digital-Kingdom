@@ -11,6 +11,10 @@ import { webglAvailable } from "./lib/webgl.ts";
 import { Icon } from "./lib/icons.tsx";
 import { BrandMark } from "./panels/TopBar.tsx";
 import { fmtTime } from "./lib/vocab.ts";
+import { ConnectionCtx, CONNECTION_BANNER, deriveConnection, type Connection, type SyncState, type Transport } from "./lib/connection.ts";
+
+/** Set at build time for the public static demo: never contact a backend, always use bundled fixtures. */
+const STATIC_DEMO = (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_DK_STATIC_DEMO === "1";
 
 const Castle3D = lazy(() => import("./castle/Castle3D.tsx").then((m) => ({ default: m.Castle3D })));
 
@@ -19,23 +23,56 @@ export function App() {
   const [data, setData] = useState<Dataset | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [needsLogin, setNeedsLogin] = useState(false);
-  const [connection, setConnection] = useState<string | null>(null);
+  const [connection, setConnection] = useState<Connection | null>(null);
+  // once a server session is established we never silently swap in the offline synthetic demo
+  const serverMode = useRef(false);
+  const lastSync = useRef<string | null>(null);
+  // SSE transport and snapshot synchronization are tracked separately; see lib/connection.ts
+  const transport = useRef<Transport>("connecting");
+  const sync = useRef<SyncState>("synced");
+  const reachable = useRef(true);
+  const retryTimer = useRef<number | null>(null);
+  const retryDelay = useRef(1000);
+  const publish = useCallback(() => setConnection({ state: deriveConnection(transport.current, sync.current, reachable.current), since: lastSync.current }), []);
   const [projectId, setProjectId] = useState<string | undefined>(() => new URLSearchParams(location.search).get("project") ?? undefined);
   const reloadTimer = useRef<number | null>(null);
 
   const load = useCallback(async () => {
+    if (STATIC_DEMO) { setData(loadOfflineDemo()); return; }
     const me = await detectServer(api);
-    if (!me) { setData(loadOfflineDemo()); return; }
+    if (!me) {
+      if (serverMode.current) { syncFailed(false); return; } // keep the last data, flagged stale
+      setData(loadOfflineDemo()); return;
+    }
     if (me.role === "none") { setNeedsLogin(true); return; }
     try {
       const d = await loadFromServer(api, projectId);
       d.identity = me.kind === "anonymous-demo" ? "anonymous demo" : me.name;
       if (me.kind === "anonymous-demo") d.role = "none";
+      serverMode.current = true; lastSync.current = new Date().toISOString();
       setData(d); setError(null); setNeedsLogin(false);
+      // only a successfully applied snapshot clears staleness
+      sync.current = "synced"; reachable.current = true; retryDelay.current = 1000;
+      if (retryTimer.current) { clearTimeout(retryTimer.current); retryTimer.current = null; }
+      if (transport.current !== "connecting") publish();
     } catch (e) {
-      if (e instanceof ApiError && e.status === 401) setNeedsLogin(true); else setError((e as Error).message);
+      if (e instanceof ApiError && e.status === 401) setNeedsLogin(true);
+      else if (serverMode.current) syncFailed(true);
+      else setError((e as Error).message);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api, projectId]);
+
+  // a failed snapshot never yields "live"; while the stream stays open we retry with bounded backoff
+  // (when the stream is down, its reconnect triggers the catch-up instead)
+  function syncFailed(serverAnswered: boolean) {
+    sync.current = "failed"; reachable.current = serverAnswered || transport.current === "open";
+    publish();
+    if (transport.current === "open" && !retryTimer.current) {
+      retryTimer.current = window.setTimeout(() => { retryTimer.current = null; void load(); }, retryDelay.current);
+      retryDelay.current = Math.min(retryDelay.current * 2, 10_000);
+    }
+  }
 
   useEffect(() => { void load(); }, [load]);
 
@@ -44,11 +81,17 @@ export function App() {
     if (!data || data.mode !== "server") return;
     const es = new EventSource(`/api/projects/${encodeURIComponent(data.project.id)}/stream?cursor=${data.cursor}`);
     const schedule = () => { if (reloadTimer.current) return; reloadTimer.current = window.setTimeout(() => { reloadTimer.current = null; void load(); }, 1200); };
-    es.addEventListener("hello", () => setConnection("live"));
+    // hello = transport connected. After any interruption the view stays stale ("Synchronizing") until the
+    // catch-up snapshot has actually been applied by load().
+    es.addEventListener("hello", () => {
+      const resume = transport.current === "down" || sync.current !== "synced";
+      transport.current = "open"; reachable.current = true;
+      if (resume) { sync.current = "syncing"; if (retryTimer.current) { clearTimeout(retryTimer.current); retryTimer.current = null; } void load(); }
+      publish();
+    });
     for (const t of ["event", "finding", "graph", "scene", "containment", "resync"]) es.addEventListener(t, schedule);
-    es.onerror = () => setConnection("reconnecting");
-    es.onopen = () => setConnection("live");
-    return () => es.close();
+    es.onerror = () => { transport.current = "down"; if (sync.current === "synced") sync.current = "syncing"; publish(); };
+    return () => { es.close(); transport.current = "connecting"; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.project.id, data?.mode]);
 
@@ -80,6 +123,7 @@ export function App() {
   if (!data) return <div className="fullscreen-msg" aria-busy="true"><div className="spinner" aria-hidden /><p className="small">Loading evidence…</p></div>;
 
   return (
+    <ConnectionCtx.Provider value={connection}>
     <ActionsCtx.Provider value={actions}>
       <AppStateProvider key={data.project.id} data={data}>
         <Shell connection={connection}
@@ -88,10 +132,11 @@ export function App() {
           onProject={(id) => { setProjectId(id); history.replaceState(null, "", `?project=${encodeURIComponent(id)}`); }} />
       </AppStateProvider>
     </ActionsCtx.Provider>
+    </ConnectionCtx.Provider>
   );
 }
 
-function Shell(props: { connection: string | null; onSignIn: () => void; onSignOut: () => void; onProject: (id: string) => void }) {
+function Shell(props: { connection: Connection | null; onSignIn: () => void; onSignOut: () => void; onProject: (id: string) => void }) {
   const { ui, dispatch, vm } = useApp();
   useEffect(() => { const r = webglAvailable(); if (r) dispatch({ type: "webglFailed", reason: r }); }, [dispatch]);
   useEffect(() => {
@@ -116,6 +161,12 @@ function Shell(props: { connection: string | null; onSignIn: () => void; onSignO
       <main id="main" className="stage">
         {ui.webglFailed && ui.view === "graph" && <div className="banner" role="status"><Icon name="alert" size={15} />{ui.webglFailed} The 2D graph and timeline show the same evidence.</div>}
         {ui.view === "castle" && !ui.webglFailed ? <Suspense fallback={<div className="stage-loading"><div className="spinner" aria-hidden /></div>}><Castle3D /></Suspense> : <Graph2D />}
+        {props.connection && props.connection.state !== "live" && (
+          <div className="banner warn" role="alert" data-testid="connection-banner">
+            <Icon name="alert" size={15} />
+            {CONNECTION_BANNER[props.connection.state]} Showing data as of {props.connection.since ? fmtTime(props.connection.since) : "the last sync"}. This is not live monitoring.
+          </div>
+        )}
         {!vm.isLatest && <div className="stage-title"><span className="replay-tag"><span className="pip" aria-hidden />Replay · {fmtTime(vm.at)}</span></div>}
         <Legend />
       </main>

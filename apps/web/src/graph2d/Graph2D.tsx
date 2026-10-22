@@ -268,7 +268,7 @@ export function Graph2D() {
           const sub = st?.coverage === "gap" ? "Coverage gap" : st?.coverage === "unobserved" ? "No telemetry" : KIND_LABEL[a.kind];
           const nF = st?.findingIds.length ?? 0;
           return (
-            <g key={r.asset_id} data-node transform={`translate(${rect.x},${rect.y})`} tabIndex={0} role="button" opacity={dim ? 0.28 : 1}
+            <g key={r.asset_id} data-node data-asset-id={r.asset_id} transform={`translate(${rect.x},${rect.y})`} tabIndex={0} role="button" opacity={dim ? 0.28 : 1}
               aria-label={`${a.name}, ${KIND_LABEL[a.kind]}${style ? `, ${style.label}` : ""}${nF ? `, ${nF} open findings` : ""}${gap ? ", coverage gap" : ""}`}
               aria-pressed={isSel} className={`node${isSel ? " selected" : ""}${gap ? " gap" : ""}`}
               onClick={() => select(a.id, a.name)} onKeyDown={(e) => key(e, a.id, a.name)}

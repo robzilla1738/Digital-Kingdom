@@ -1,3 +1,4 @@
+import { CONNECTION_LABEL, type Connection } from "../lib/connection.ts";
 import { useApp } from "../lib/state.tsx";
 import { LAYER_STYLE, type Layer } from "../lib/vocab.ts";
 import { Icon } from "../lib/icons.tsx";
@@ -10,7 +11,7 @@ export function BrandMark({ size = 14 }: { size?: number }) {
   );
 }
 
-export function TopBar({ onSignIn, onSignOut, onProject, connection }: { onSignIn?: () => void; onSignOut?: () => void; onProject?: (id: string) => void; connection: string | null }) {
+export function TopBar({ onSignIn, onSignOut, onProject, connection }: { onSignIn?: () => void; onSignOut?: () => void; onProject?: (id: string) => void; connection: Connection | null }) {
   const { ui, dispatch, vm } = useApp();
   const d = vm.data;
   return (
@@ -32,9 +33,9 @@ export function TopBar({ onSignIn, onSignOut, onProject, connection }: { onSignI
         <span className="project-meta">
           {d.project.dataset_kind === "synthetic"
             ? <span className="pill synthetic" title="All data in this project is synthetic. It is not production monitoring.">Synthetic</span>
-            : <span className="pill live" title="Live project, read-only view">Live</span>}
+            : <span className="pill telemetry" title="Project built from ingested telemetry (not synthetic). Connection state is shown separately.">Telemetry</span>}
           {d.mode === "offline-demo" && <span className="pill" title="Running entirely in your browser from bundled fixtures, using the same engine as the server.">Offline</span>}
-          {connection && <span className={`pill conn-${connection}`} aria-live="polite"><span className="pip" aria-hidden />{connection === "live" ? "Streaming" : "Reconnecting"}</span>}
+          {connection && <span className={`pill conn-${connection.state}`} aria-live="polite" data-testid="connection-pill" data-state={connection.state}><span className="pip" aria-hidden />{CONNECTION_LABEL[connection.state]}</span>}
         </span>
       </div>
       <div className="spacer" />

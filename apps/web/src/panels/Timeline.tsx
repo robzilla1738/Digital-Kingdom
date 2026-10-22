@@ -1,4 +1,5 @@
-import { useMemo, useRef, type KeyboardEvent, type PointerEvent } from "react";
+import { ConnectionCtx } from "../lib/connection.ts";
+import { useContext, useMemo, useRef, type KeyboardEvent, type PointerEvent } from "react";
 import { useApp } from "../lib/state.tsx";
 import { ACTION_LABEL, EVENT_OUTCOME_COLOR, fmtDateTime, fmtSpan, fmtTime } from "../lib/vocab.ts";
 import { Icon } from "../lib/icons.tsx";
@@ -31,7 +32,9 @@ export function Timeline() {
     if (e.key === "Home") { e.preventDefault(); dispatch({ type: "playhead", at: new Date(start).toISOString() }); }
     if (e.key === "End") { e.preventDefault(); dispatch({ type: "playhead", at: null }); }
   };
-  const live = vm.data.project.dataset_kind === "live" && vm.isLatest;
+  const connection = useContext(ConnectionCtx);
+  // "Live" requires a live project, the latest position AND a healthy stream; otherwise it is stale data
+  const live = vm.data.project.dataset_kind === "live" && vm.isLatest && connection?.state === "live";
   const mode = live ? "live" : vm.isLatest ? "latest" : "historical";
   return (
     <section className="timeline" aria-label="Timeline and replay">
@@ -45,7 +48,7 @@ export function Timeline() {
         </button>
         <div className={`tl-time ${mode}`} aria-live="polite">
           <b>{fmtTime(vm.at)}</b>
-          <span>{live ? "Live" : vm.isLatest ? "Latest evidence" : `Historical replay · ${fmtSpan(at - start)} in`}</span>
+          <span data-testid="timeline-mode" data-mode={mode}>{live ? "Live" : vm.isLatest ? (vm.data.project.dataset_kind === "live" ? "Latest received · not live" : "Latest evidence") : `Historical replay · ${fmtSpan(at - start)} in`}</span>
         </div>
         <div className="spacer" />
         <label className="select-inline">Speed

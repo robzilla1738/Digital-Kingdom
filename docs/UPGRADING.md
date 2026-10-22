@@ -12,6 +12,44 @@ Verified against `fixtures/legacy/v0.3-journal.sqlite`, written by the **genuine
 
 To regenerate the fixture: `git worktree add /tmp/v03wt 83df9bb`, symlink the repo's root `node_modules` into the worktree, copy each workspace package's `node_modules` into it (pnpm's workspace links are relative), then from `/tmp/v03wt` run `npx tsx <repo>/scripts/make-v03-legacy-fixture.ts <repo>/fixtures/legacy/v0.3-journal.sqlite`.
 
+### Prevention is not recovery
+
+**v0.3.2 prevents the bad conversion during a direct upgrade from v0.3. It cannot reconstruct original payloads that a prior v0.3.1 startup already replaced with tombstones.**
+
+v0.3.1 overwrote each affected `journal.payload` with `{"_tombstone":true}`, set `journal.minimized = 2`, and recorded the reason in `journal.meta.tombstone`. With `secure_delete=ON`, the old content was zeroed, so nothing in that database can restore it. The v0.3.2+ converter only reads rows with `minimized = 0`, so it never touches an existing tombstone. This is tested in `apps/server/test/tombstones.test.ts` against `fixtures/legacy/v0.3-after-v0.3.1-startup.sqlite`, which was produced by running the genuine v0.3.1 code once on the genuine v0.3 fixture.
+
+What a tombstone means depends on whether its row had already been processed when v0.3.1 started:
+
+- **Processed before the upgrade:** the normalized event, evidence and findings already existed and are unaffected. Only the journal copy is gone.
+- **Pending at the upgrade:** the event was acknowledged (HTTP 202) but never normalized. It is absent from events, findings and coverage. That is the actual data loss.
+
+### Identify potentially affected rows (read-only)
+
+```
+npx tsx scripts/diagnose-legacy-tombstones.ts /path/to/digital-kingdom.db          # human-readable
+npx tsx scripts/diagnose-legacy-tombstones.ts /path/to/digital-kingdom.db --json   # machine-readable
+```
+
+Stop the server first, or point the script at a backup. It copies the database and any `-wal` file to a temporary directory and only reads the copy. For each tombstone it lists `seq`, project, source, `source_event_id`, the recorded reason, whether the row was pending at the checkpoint, and whether a normalized event exists. Every row is reported as `recovered: false`.
+
+Limits:
+
+- A reason naming `_dk_redaction` is consistent with this bug but does not prove it, because a v0.2 producer could have sent that key itself. Tombstones with other reasons (unparseable or invalid legacy payloads) are unrelated.
+- It cannot show what the lost payloads contained.
+- It does not look at backups, snapshots or source systems.
+
+### Recovery considerations
+
+These are bounded by what has been verified. Recovery itself has not been tested end to end.
+
+1. **Preserve the affected database first.** Stop the server and copy the database with its `-wal` and `-shm` files before doing anything else.
+2. **Work on an isolated copy.** Assess a pre-upgrade backup, or the original source records (application logs, the producer's own store), in a separate scratch installation. Never touch the live data directory.
+3. **Never overwrite the current installation automatically.** No tool here merges data back, and none should be run blindly.
+4. **Don't invent event contents.** If no authoritative copy of an original payload exists, the event stays lost. Record that as a known gap, for example in an analyst note on the affected findings or coverage. Don't reconstruct it from memory or from findings.
+5. **Don't change event IDs to get past deduplication.** Event IDs are derived from (project, source, `source_event_id`). Re-sending an original record with its original `source_event_id` is **collapsed as a duplicate**, because the tombstoned journal row still holds that dedup key. That behavior is verified in `tombstones.test.ts`. So a straightforward replay through `/ingest` does not restore a pending tombstoned event. Inventing a new `source_event_id` would create an event that claims to be something it isn't, and would break correlation with the source system.
+6. A supported repair path would need its own design and review: verified provenance of the original record, an explicit audit entry, and a way to replace a tombstone in place under the same identity. It is not part of this release.
+7. If credentials may have been in the affected payloads, rotate them regardless. See the v0.2 section below.
+
 ## v0.2 → v0.3.1: legacy raw journal payloads
 
 v0.2 wrote each inbound payload to `journal.payload` *before* redaction. Its normalized events and evidence were redacted, but the journal could still hold credential-like values that producers sent.
