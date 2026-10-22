@@ -1,0 +1,492 @@
+{
+  "case_id": "s1-blocked-requests-a",
+  "scenario_id": "s1-blocked-requests",
+  "version": "v1",
+  "variant": "a",
+  "split": "dev",
+  "project_id": "case-4ccfbf",
+  "project_name": "Investigation workspace 4ccfbf",
+  "manifest": "project: eval\nenvironment: staging\nassets:\n  - {id: front-door, name: front-door, kind: edge}\n  - {id: ledger-api, name: ledger-api, kind: service, owner: platform}\n  - {id: records-db, name: records-db, kind: database}\nrelationships:\n  - {from: front-door, to: ledger-api}\n  - {from: ledger-api, to: records-db, kind: reads_from}\n",
+  "sources": [
+    {
+      "id": "src-f80e",
+      "label": "edge request filter",
+      "kind": "waf",
+      "asset_ids": [
+        "front-door"
+      ]
+    },
+    {
+      "id": "src-57b8",
+      "label": "application request log",
+      "kind": "app_security",
+      "asset_ids": [
+        "ledger-api"
+      ],
+      "trusts_request_ids": true
+    },
+    {
+      "id": "src-ba95",
+      "label": "database audit",
+      "kind": "db_audit",
+      "asset_ids": [
+        "records-db"
+      ],
+      "trusts_request_ids": true
+    }
+  ],
+  "events": [
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-18c1b624",
+        "occurred_at": "2026-10-19T14:03:00.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-e438a8cef9",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-9b3f1a62",
+        "occurred_at": "2026-10-19T14:03:07.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-14a3c5f117",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-9d21b742",
+        "occurred_at": "2026-10-19T14:03:14.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-9503d8954d",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-13f22a81",
+        "occurred_at": "2026-10-19T14:03:21.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-cebdac8829",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-887a852b",
+        "occurred_at": "2026-10-19T14:03:28.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-b9240f98cc",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-252651f7",
+        "occurred_at": "2026-10-19T14:03:35.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-b5f0cd1f3d",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-765a8a5b",
+        "occurred_at": "2026-10-19T14:03:42.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-bded6a32fe",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-2b072534",
+        "occurred_at": "2026-10-19T14:03:49.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-aa4d6a2bea",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-736d4abf",
+        "occurred_at": "2026-10-19T14:03:56.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-16fffb3865",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-2bc0de38",
+        "occurred_at": "2026-10-19T14:04:03.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-fa9dc9606f",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-408a5590",
+        "occurred_at": "2026-10-19T14:04:10.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-1b683a19f0",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-63088f6d",
+        "occurred_at": "2026-10-19T14:04:17.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-55b95ce63b",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-271d914f",
+        "occurred_at": "2026-10-19T14:04:24.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-090176ecb9",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-f80e",
+      "body": {
+        "source_event_id": "w-e97ca3cf",
+        "occurred_at": "2026-10-19T14:04:31.000Z",
+        "asset_ids": [
+          "front-door"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "sqli-941010",
+        "route": "/admin/export",
+        "client_ip": "198.51.100.53",
+        "severity": "medium",
+        "request_id": "rq-b62acfe137",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-57b8",
+      "body": {
+        "source_event_id": "a-ce3f0cfb",
+        "occurred_at": "2026-10-19T14:01:00.000Z",
+        "asset_ids": [
+          "ledger-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-17730c84f5",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ba95",
+      "body": {
+        "source_event_id": "d-e5cac28a",
+        "occurred_at": "2026-10-19T14:01:01.000Z",
+        "asset_ids": [
+          "records-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-17730c84f5",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 26
+        }
+      }
+    },
+    {
+      "source": "src-57b8",
+      "body": {
+        "source_event_id": "a-a18f7494",
+        "occurred_at": "2026-10-19T14:02:00.000Z",
+        "asset_ids": [
+          "ledger-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-988081e315",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ba95",
+      "body": {
+        "source_event_id": "d-916956c6",
+        "occurred_at": "2026-10-19T14:02:01.000Z",
+        "asset_ids": [
+          "records-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-988081e315",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 39
+        }
+      }
+    },
+    {
+      "source": "src-57b8",
+      "body": {
+        "source_event_id": "a-1e8c592b",
+        "occurred_at": "2026-10-19T14:03:00.000Z",
+        "asset_ids": [
+          "ledger-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-8e1cc3ed34",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ba95",
+      "body": {
+        "source_event_id": "d-e2082c8f",
+        "occurred_at": "2026-10-19T14:03:01.000Z",
+        "asset_ids": [
+          "records-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-8e1cc3ed34",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 32
+        }
+      }
+    },
+    {
+      "source": "src-57b8",
+      "body": {
+        "source_event_id": "a-1da1d176",
+        "occurred_at": "2026-10-19T14:04:00.000Z",
+        "asset_ids": [
+          "ledger-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-5976287a68",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ba95",
+      "body": {
+        "source_event_id": "d-afe6bdaf",
+        "occurred_at": "2026-10-19T14:04:01.000Z",
+        "asset_ids": [
+          "records-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-5976287a68",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 32
+        }
+      }
+    },
+    {
+      "source": "src-57b8",
+      "body": {
+        "source_event_id": "a-a3255c5f",
+        "occurred_at": "2026-10-19T14:05:00.000Z",
+        "asset_ids": [
+          "ledger-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-428ce4e9cf",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ba95",
+      "body": {
+        "source_event_id": "d-6fec1a30",
+        "occurred_at": "2026-10-19T14:05:01.000Z",
+        "asset_ids": [
+          "records-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-428ce4e9cf",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 1
+        }
+      }
+    },
+    {
+      "source": "src-57b8",
+      "body": {
+        "source_event_id": "a-a0dbf99a",
+        "occurred_at": "2026-10-19T14:06:00.000Z",
+        "asset_ids": [
+          "ledger-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-dc0f0f3845",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ba95",
+      "body": {
+        "source_event_id": "d-fcbb4856",
+        "occurred_at": "2026-10-19T14:06:01.000Z",
+        "asset_ids": [
+          "records-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-dc0f0f3845",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 28
+        }
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"We got an alert about traffic hitting ledger-api through front-door. What happened, and what should we do?\""
+}

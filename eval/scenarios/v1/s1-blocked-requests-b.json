@@ -1,0 +1,402 @@
+{
+  "case_id": "s1-blocked-requests-b",
+  "scenario_id": "s1-blocked-requests",
+  "version": "v1",
+  "variant": "b",
+  "split": "heldout",
+  "project_id": "case-6274df",
+  "project_name": "Investigation workspace 6274df",
+  "manifest": "project: eval\nenvironment: staging\nassets:\n  - {id: edge-gw, name: edge-gw, kind: edge}\n  - {id: billing-api, name: billing-api, kind: service, owner: platform}\n  - {id: orders-db, name: orders-db, kind: database}\nrelationships:\n  - {from: edge-gw, to: billing-api}\n  - {from: billing-api, to: orders-db, kind: reads_from}\n",
+  "sources": [
+    {
+      "id": "src-fc22",
+      "label": "edge request filter",
+      "kind": "waf",
+      "asset_ids": [
+        "edge-gw"
+      ]
+    },
+    {
+      "id": "src-d639",
+      "label": "application request log",
+      "kind": "app_security",
+      "asset_ids": [
+        "billing-api"
+      ],
+      "trusts_request_ids": true
+    },
+    {
+      "id": "src-ccbf",
+      "label": "database audit",
+      "kind": "db_audit",
+      "asset_ids": [
+        "orders-db"
+      ],
+      "trusts_request_ids": true
+    }
+  ],
+  "events": [
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-db901e4b",
+        "occurred_at": "2026-10-19T14:03:00.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-42cf0722d8",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-38ae4863",
+        "occurred_at": "2026-10-19T14:03:07.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-fd434ee7de",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-fb137a71",
+        "occurred_at": "2026-10-19T14:03:14.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-d505e485c2",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-5bb6ca70",
+        "occurred_at": "2026-10-19T14:03:21.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-29e7e09680",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-83752c14",
+        "occurred_at": "2026-10-19T14:03:28.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-a879fc8ec2",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-c4f24442",
+        "occurred_at": "2026-10-19T14:03:35.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-45763c1166",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-e9f45bad",
+        "occurred_at": "2026-10-19T14:03:42.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-b16d5a66d4",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-9dedc105",
+        "occurred_at": "2026-10-19T14:03:49.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-52a10173c0",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-fc22",
+      "body": {
+        "source_event_id": "w-7425fcc9",
+        "occurred_at": "2026-10-19T14:03:56.000Z",
+        "asset_ids": [
+          "edge-gw"
+        ],
+        "action": "waf_match",
+        "outcome": "blocked",
+        "rule_ref": "pathtrav-930710",
+        "route": "/api/v2/search",
+        "client_ip": "198.51.100.136",
+        "severity": "medium",
+        "request_id": "rq-cd53d19cdc",
+        "request_id_trust": "untrusted"
+      }
+    },
+    {
+      "source": "src-d639",
+      "body": {
+        "source_event_id": "a-22e6fd68",
+        "occurred_at": "2026-10-19T14:01:00.000Z",
+        "asset_ids": [
+          "billing-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-1d4060a101",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ccbf",
+      "body": {
+        "source_event_id": "d-c8751ca0",
+        "occurred_at": "2026-10-19T14:01:01.000Z",
+        "asset_ids": [
+          "orders-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-1d4060a101",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 2
+        }
+      }
+    },
+    {
+      "source": "src-d639",
+      "body": {
+        "source_event_id": "a-ee0aae4c",
+        "occurred_at": "2026-10-19T14:02:00.000Z",
+        "asset_ids": [
+          "billing-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-98a263c364",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ccbf",
+      "body": {
+        "source_event_id": "d-ea0d114b",
+        "occurred_at": "2026-10-19T14:02:01.000Z",
+        "asset_ids": [
+          "orders-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-98a263c364",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 8
+        }
+      }
+    },
+    {
+      "source": "src-d639",
+      "body": {
+        "source_event_id": "a-28dee077",
+        "occurred_at": "2026-10-19T14:03:00.000Z",
+        "asset_ids": [
+          "billing-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-1d5a8620bd",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ccbf",
+      "body": {
+        "source_event_id": "d-7b9c8d13",
+        "occurred_at": "2026-10-19T14:03:01.000Z",
+        "asset_ids": [
+          "orders-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-1d5a8620bd",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 4
+        }
+      }
+    },
+    {
+      "source": "src-d639",
+      "body": {
+        "source_event_id": "a-82b475d8",
+        "occurred_at": "2026-10-19T14:04:00.000Z",
+        "asset_ids": [
+          "billing-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-bfa15b9ff2",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ccbf",
+      "body": {
+        "source_event_id": "d-bdf9233d",
+        "occurred_at": "2026-10-19T14:04:01.000Z",
+        "asset_ids": [
+          "orders-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-bfa15b9ff2",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 31
+        }
+      }
+    },
+    {
+      "source": "src-d639",
+      "body": {
+        "source_event_id": "a-3bc14f0f",
+        "occurred_at": "2026-10-19T14:05:00.000Z",
+        "asset_ids": [
+          "billing-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-878bcd773e",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ccbf",
+      "body": {
+        "source_event_id": "d-0a670acf",
+        "occurred_at": "2026-10-19T14:05:01.000Z",
+        "asset_ids": [
+          "orders-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-878bcd773e",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 13
+        }
+      }
+    },
+    {
+      "source": "src-d639",
+      "body": {
+        "source_event_id": "a-e2fb759b",
+        "occurred_at": "2026-10-19T14:06:00.000Z",
+        "asset_ids": [
+          "billing-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items",
+        "request_id": "rq-8ba15b7353",
+        "request_id_trust": "trusted"
+      }
+    },
+    {
+      "source": "src-ccbf",
+      "body": {
+        "source_event_id": "d-962f16cd",
+        "occurred_at": "2026-10-19T14:06:01.000Z",
+        "asset_ids": [
+          "orders-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-8ba15b7353",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 40
+        }
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"We got an alert about traffic hitting billing-api through edge-gw. What happened, and what should we do?\""
+}

@@ -1,0 +1,227 @@
+{
+  "case_id": "s2-failures-then-success-a",
+  "scenario_id": "s2-failures-then-success",
+  "version": "v1",
+  "variant": "a",
+  "split": "dev",
+  "project_id": "case-922ce9",
+  "project_name": "Investigation workspace 922ce9",
+  "manifest": "project: eval\nenvironment: production-like test\nassets:\n  - {id: auth-svc, name: auth-svc, kind: auth, owner: identity}\n  - {id: quotes-api, name: quotes-api, kind: service}\n  - {id: accounts-db, name: accounts-db, kind: database}\nrelationships:\n  - {from: auth-svc, to: quotes-api}\n  - {from: quotes-api, to: accounts-db, kind: reads_from}\n",
+  "sources": [
+    {
+      "id": "src-d059",
+      "label": "sign-in log",
+      "kind": "app_security",
+      "asset_ids": [
+        "auth-svc"
+      ],
+      "trusts_request_ids": true
+    },
+    {
+      "id": "src-eaad",
+      "label": "database audit",
+      "kind": "db_audit",
+      "asset_ids": [
+        "accounts-db"
+      ],
+      "trusts_request_ids": true
+    }
+  ],
+  "events": [
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-529f46be",
+        "occurred_at": "2026-10-19T14:10:00.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-0a713b",
+        "client_ip": "198.51.100.209",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-f547591a",
+        "occurred_at": "2026-10-19T14:10:25.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-0a713b",
+        "client_ip": "198.51.100.209",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-86030389",
+        "occurred_at": "2026-10-19T14:10:50.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-0a713b",
+        "client_ip": "198.51.100.209",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-40626603",
+        "occurred_at": "2026-10-19T14:11:15.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-0a713b",
+        "client_ip": "198.51.100.209",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-a582a7d4",
+        "occurred_at": "2026-10-19T14:11:40.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-0a713b",
+        "client_ip": "198.51.100.209",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-f7d5b9b9",
+        "occurred_at": "2026-10-19T14:12:05.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-0a713b",
+        "client_ip": "198.51.100.209",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-a6bbb243",
+        "occurred_at": "2026-10-19T14:14:10.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-0a713b",
+        "session_ref": "s-9145b2cb",
+        "client_ip": "198.51.100.209",
+        "attributes": {
+          "method": "password"
+        }
+      }
+    },
+    {
+      "source": "src-eaad",
+      "body": {
+        "source_event_id": "d-5cbe508a",
+        "occurred_at": "2026-10-19T14:16:00.000Z",
+        "asset_ids": [
+          "accounts-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "actor_ref": "u-0a713b",
+        "attributes": {
+          "table": "customer_profiles",
+          "rows": 220
+        }
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-becb37e3",
+        "occurred_at": "2026-10-19T14:05:00.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-8f5a6f",
+        "client_ip": "203.0.113.17"
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-c4bdd7ac",
+        "occurred_at": "2026-10-19T14:11:00.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-6eef91",
+        "client_ip": "198.51.100.63"
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-e70410a7",
+        "occurred_at": "2026-10-19T14:17:00.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-9d5719",
+        "client_ip": "198.51.100.172"
+      }
+    },
+    {
+      "source": "src-d059",
+      "body": {
+        "source_event_id": "l-955002d0",
+        "occurred_at": "2026-10-19T14:23:00.000Z",
+        "asset_ids": [
+          "auth-svc"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-3932c9",
+        "client_ip": "203.0.113.171"
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"Someone flagged sign-in activity for account u-0a713b. Can you look into it and tell us what we know?\""
+}

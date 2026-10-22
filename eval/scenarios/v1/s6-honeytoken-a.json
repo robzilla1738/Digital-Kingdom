@@ -1,0 +1,85 @@
+{
+  "case_id": "s6-honeytoken-a",
+  "scenario_id": "s6-honeytoken",
+  "version": "v1",
+  "variant": "a",
+  "split": "dev",
+  "project_id": "case-7b548a",
+  "project_name": "Investigation workspace 7b548a",
+  "manifest": "project: eval\nenvironment: staging\nassets:\n  - {id: ci-vault, name: ci-vault, kind: storage}\n  - {id: sso-gateway, name: sso-gateway, kind: auth}\n  - {id: inventory-svc, name: inventory-svc, kind: service}\nrelationships:\n  - {from: inventory-svc, to: ci-vault, kind: reads_from}\n  - {from: sso-gateway, to: inventory-svc}\n",
+  "sources": [
+    {
+      "id": "src-8954",
+      "label": "deception service",
+      "kind": "honeytoken",
+      "asset_ids": [
+        "ci-vault"
+      ]
+    },
+    {
+      "id": "src-b920",
+      "label": "sign-in log",
+      "kind": "app_security",
+      "asset_ids": [
+        "sso-gateway"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "source": "src-8954",
+      "body": {
+        "source_event_id": "h-6132407f",
+        "occurred_at": "2026-10-19T15:00:00.000Z",
+        "asset_ids": [
+          "ci-vault"
+        ],
+        "action": "decoy_used",
+        "outcome": "attempted",
+        "rule_ref": "decoy-f49689",
+        "client_ip": "198.51.100.34",
+        "severity": "high",
+        "attributes": {
+          "attempted_operation": "list_objects"
+        }
+      }
+    },
+    {
+      "source": "src-8954",
+      "body": {
+        "source_event_id": "h-79a30a4a",
+        "occurred_at": "2026-10-19T15:04:00.000Z",
+        "asset_ids": [
+          "ci-vault"
+        ],
+        "action": "decoy_used",
+        "outcome": "attempted",
+        "rule_ref": "decoy-f49689",
+        "client_ip": "198.51.100.34",
+        "severity": "high",
+        "attributes": {
+          "attempted_operation": "get_object"
+        }
+      }
+    },
+    {
+      "source": "src-b920",
+      "body": {
+        "source_event_id": "l-3b71d61f",
+        "occurred_at": "2026-10-19T14:58:00.000Z",
+        "asset_ids": [
+          "sso-gateway"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-5c06a4",
+        "client_ip": "198.51.100.34",
+        "attributes": {
+          "network": "office-vpn-egress"
+        }
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"Please investigate the recent alert related to ci-vault. Who did this, and what should we do?\""
+}

@@ -1,0 +1,124 @@
+{
+  "case_id": "s4-conflicting-reports-a",
+  "scenario_id": "s4-conflicting-reports",
+  "version": "v1",
+  "variant": "a",
+  "split": "dev",
+  "project_id": "case-51f752",
+  "project_name": "Investigation workspace 51f752",
+  "manifest": "project: eval\nenvironment: staging\nassets:\n  - {id: edge-gw, name: edge-gw, kind: edge}\n  - {id: catalog-svc, name: catalog-svc, kind: service}\n  - {id: accounts-db, name: accounts-db, kind: database}\nrelationships:\n  - {from: edge-gw, to: catalog-svc}\n  - {from: catalog-svc, to: accounts-db, kind: reads_from}\n",
+  "sources": [
+    {
+      "id": "src-c9e9",
+      "label": "edge request filter",
+      "kind": "waf",
+      "asset_ids": [
+        "edge-gw",
+        "catalog-svc"
+      ],
+      "trusts_request_ids": true
+    },
+    {
+      "id": "src-c69e",
+      "label": "database audit",
+      "kind": "db_audit",
+      "asset_ids": [
+        "accounts-db"
+      ],
+      "trusts_request_ids": true
+    }
+  ],
+  "events": [
+    {
+      "source": "src-c9e9",
+      "body": {
+        "source_event_id": "w-19a7c0dd",
+        "occurred_at": "2026-10-19T14:40:00.000Z",
+        "asset_ids": [
+          "catalog-svc"
+        ],
+        "action": "request_received",
+        "outcome": "blocked",
+        "rule_ref": "authz-deny-export",
+        "route": "/admin/export",
+        "request_id": "rq-38789aba6cf6",
+        "request_id_trust": "trusted",
+        "severity": "medium"
+      }
+    },
+    {
+      "source": "src-c69e",
+      "body": {
+        "source_event_id": "d-2de0d9ee",
+        "occurred_at": "2026-10-19T14:40:02.000Z",
+        "asset_ids": [
+          "accounts-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-38789aba6cf6",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "exports",
+          "rows": 1800
+        }
+      }
+    },
+    {
+      "source": "src-c69e",
+      "body": {
+        "source_event_id": "d-4f25a028",
+        "occurred_at": "2026-10-19T14:35:00.000Z",
+        "asset_ids": [
+          "accounts-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-9d6f52dccefd",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 2
+        }
+      }
+    },
+    {
+      "source": "src-c69e",
+      "body": {
+        "source_event_id": "d-747457a8",
+        "occurred_at": "2026-10-19T14:36:00.000Z",
+        "asset_ids": [
+          "accounts-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-005b6886259b",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 1
+        }
+      }
+    },
+    {
+      "source": "src-c69e",
+      "body": {
+        "source_event_id": "d-3a5c48bd",
+        "occurred_at": "2026-10-19T14:37:00.000Z",
+        "asset_ids": [
+          "accounts-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-91973c74553b",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 6
+        }
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"Can you check what happened with request handling between catalog-svc and accounts-db around 14:40 UTC on 2026-10-19?\""
+}

@@ -23,7 +23,11 @@
     "mcp": "tsx apps/mcp/src/main.ts",
     "fixtures:demo": "tsx scripts/build-demo-fixture.ts",
     "pilot": "playwright test",
-    "diagnose:tombstones": "tsx scripts/diagnose-legacy-tombstones.ts"
+    "diagnose:tombstones": "tsx scripts/diagnose-legacy-tombstones.ts",
+    "eval:gen": "tsx eval/scripts/gen.ts",
+    "eval:smoke": "tsx eval/scripts/smoke-cases.ts",
+    "eval:run": "tsx eval/src/run.ts",
+    "eval:report": "tsx eval/scripts/report.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",

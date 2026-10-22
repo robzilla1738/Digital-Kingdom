@@ -1,0 +1,60 @@
+{
+  "case_id": "s8-incomplete-unknown-a",
+  "scenario_id": "s8-incomplete-unknown",
+  "version": "v1",
+  "variant": "a",
+  "split": "dev",
+  "project_id": "case-f09aec",
+  "project_name": "Investigation workspace f09aec",
+  "manifest": "project: eval\nenvironment: staging\nassets:\n  - {id: etl-worker, name: etl-worker, kind: worker}\n  - {id: accounts-db, name: accounts-db, kind: database}\nrelationships:\n  - {from: etl-worker, to: accounts-db, kind: writes_to}\n",
+  "sources": [
+    {
+      "id": "src-3c22",
+      "label": "runtime sensor",
+      "kind": "falco",
+      "asset_ids": [
+        "etl-worker"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "source": "src-3c22",
+      "body": {
+        "source_event_id": "r-0c021e5b",
+        "occurred_at": "2026-10-19T15:20:00.000Z",
+        "asset_ids": [
+          "etl-worker"
+        ],
+        "action": "runtime_alert",
+        "outcome": "observed",
+        "rule_ref": "Unexpected outbound connection",
+        "severity": "high",
+        "evidence_refs": [
+          "forensics:bundle-8b9b5318",
+          "evidence:ev-21b8e50401ef"
+        ]
+      }
+    },
+    {
+      "source": "src-3c22",
+      "body": {
+        "source_event_id": "r-3e637713",
+        "occurred_at": "2026-10-19T15:23:00.000Z",
+        "asset_ids": [
+          "etl-worker"
+        ],
+        "action": "runtime_alert",
+        "outcome": "observed",
+        "rule_ref": "Unexpected outbound connection",
+        "severity": "high",
+        "evidence_refs": [
+          "forensics:bundle-c4883976",
+          "evidence:ev-e116056b0733"
+        ]
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"We're planning to modify etl-worker and notify-relay this week. What's the security situation for those two, and is it OK to proceed?\""
+}

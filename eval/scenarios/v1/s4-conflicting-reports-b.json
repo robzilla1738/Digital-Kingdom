@@ -1,0 +1,124 @@
+{
+  "case_id": "s4-conflicting-reports-b",
+  "scenario_id": "s4-conflicting-reports",
+  "version": "v1",
+  "variant": "b",
+  "split": "heldout",
+  "project_id": "case-4304c9",
+  "project_name": "Investigation workspace 4304c9",
+  "manifest": "project: eval\nenvironment: staging\nassets:\n  - {id: front-door, name: front-door, kind: edge}\n  - {id: quotes-api, name: quotes-api, kind: service}\n  - {id: billing-db, name: billing-db, kind: database}\nrelationships:\n  - {from: front-door, to: quotes-api}\n  - {from: quotes-api, to: billing-db, kind: reads_from}\n",
+  "sources": [
+    {
+      "id": "src-9c0e",
+      "label": "edge request filter",
+      "kind": "waf",
+      "asset_ids": [
+        "front-door",
+        "quotes-api"
+      ],
+      "trusts_request_ids": true
+    },
+    {
+      "id": "src-1a83",
+      "label": "database audit",
+      "kind": "db_audit",
+      "asset_ids": [
+        "billing-db"
+      ],
+      "trusts_request_ids": true
+    }
+  ],
+  "events": [
+    {
+      "source": "src-9c0e",
+      "body": {
+        "source_event_id": "w-361d9791",
+        "occurred_at": "2026-10-19T14:40:00.000Z",
+        "asset_ids": [
+          "quotes-api"
+        ],
+        "action": "request_received",
+        "outcome": "blocked",
+        "rule_ref": "bulk-read-guard",
+        "route": "/api/v1/accounts/bulk",
+        "request_id": "rq-20e6687e19ce",
+        "request_id_trust": "trusted",
+        "severity": "medium"
+      }
+    },
+    {
+      "source": "src-1a83",
+      "body": {
+        "source_event_id": "d-b5b32c44",
+        "occurred_at": "2026-10-19T14:40:02.000Z",
+        "asset_ids": [
+          "billing-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-20e6687e19ce",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "accounts",
+          "rows": 260
+        }
+      }
+    },
+    {
+      "source": "src-1a83",
+      "body": {
+        "source_event_id": "d-08025dc9",
+        "occurred_at": "2026-10-19T14:35:00.000Z",
+        "asset_ids": [
+          "billing-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-d93c866dc0b4",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 2
+        }
+      }
+    },
+    {
+      "source": "src-1a83",
+      "body": {
+        "source_event_id": "d-f3f6d3b3",
+        "occurred_at": "2026-10-19T14:36:00.000Z",
+        "asset_ids": [
+          "billing-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-30945e7e876d",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 9
+        }
+      }
+    },
+    {
+      "source": "src-1a83",
+      "body": {
+        "source_event_id": "d-7a2323e3",
+        "occurred_at": "2026-10-19T14:37:00.000Z",
+        "asset_ids": [
+          "billing-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "request_id": "rq-7c312dc05de4",
+        "request_id_trust": "trusted",
+        "attributes": {
+          "table": "items",
+          "rows": 4
+        }
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"Can you check what happened with request handling between quotes-api and billing-db around 14:40 UTC on 2026-10-19?\""
+}

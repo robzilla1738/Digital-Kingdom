@@ -1,0 +1,151 @@
+{
+  "case_id": "s5-visibility-gaps-a",
+  "scenario_id": "s5-visibility-gaps",
+  "version": "v1",
+  "variant": "a",
+  "split": "dev",
+  "project_id": "case-3fae34",
+  "project_name": "Investigation workspace 3fae34",
+  "manifest": "project: eval\nenvironment: production-like test\nassets:\n  - {id: quotes-api, name: quotes-api, kind: service}\n  - {id: records-db, name: records-db, kind: database}\n  - {id: sync-worker, name: sync-worker, kind: worker}\n  - {id: exports-bucket, name: exports-bucket, kind: storage}\nrelationships:\n  - {from: quotes-api, to: records-db, kind: reads_from}\n  - {from: sync-worker, to: records-db, kind: writes_to}\n  - {from: sync-worker, to: exports-bucket, kind: writes_to}\n",
+  "sources": [
+    {
+      "id": "src-0f18",
+      "label": "application request log",
+      "kind": "app_security",
+      "asset_ids": [
+        "quotes-api"
+      ]
+    },
+    {
+      "id": "src-90c0",
+      "label": "database audit",
+      "kind": "db_audit",
+      "asset_ids": [
+        "records-db"
+      ],
+      "stale_after_seconds": 3
+    },
+    {
+      "id": "src-6e52",
+      "label": "runtime sensor",
+      "kind": "falco",
+      "asset_ids": [
+        "sync-worker"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "source": "src-0f18",
+      "body": {
+        "source_event_id": "a-bcf1cafc",
+        "occurred_at": "2026-10-19T14:50:00.000Z",
+        "asset_ids": [
+          "quotes-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items"
+      }
+    },
+    {
+      "source": "src-0f18",
+      "body": {
+        "source_event_id": "a-40f9d9a1",
+        "occurred_at": "2026-10-19T14:51:00.000Z",
+        "asset_ids": [
+          "quotes-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items"
+      }
+    },
+    {
+      "source": "src-0f18",
+      "body": {
+        "source_event_id": "a-483e9112",
+        "occurred_at": "2026-10-19T14:52:00.000Z",
+        "asset_ids": [
+          "quotes-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items"
+      }
+    },
+    {
+      "source": "src-0f18",
+      "body": {
+        "source_event_id": "a-f9a28e6c",
+        "occurred_at": "2026-10-19T14:53:00.000Z",
+        "asset_ids": [
+          "quotes-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items"
+      }
+    },
+    {
+      "source": "src-0f18",
+      "body": {
+        "source_event_id": "a-1cd9eded",
+        "occurred_at": "2026-10-19T14:54:00.000Z",
+        "asset_ids": [
+          "quotes-api"
+        ],
+        "action": "request_received",
+        "outcome": "allowed",
+        "route": "/api/v2/items"
+      }
+    },
+    {
+      "source": "src-90c0",
+      "body": {
+        "source_event_id": "d-1a386756",
+        "occurred_at": "2026-10-19T14:30:00.000Z",
+        "asset_ids": [
+          "records-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "attributes": {
+          "table": "items",
+          "rows": 3
+        }
+      }
+    },
+    {
+      "source": "src-90c0",
+      "body": {
+        "source_event_id": "d-837dd9df",
+        "occurred_at": "2026-10-19T14:31:00.000Z",
+        "asset_ids": [
+          "records-db"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "attributes": {
+          "table": "items",
+          "rows": 3
+        }
+      }
+    },
+    {
+      "source": "src-6e52",
+      "body": {
+        "source_event_id": "r-4b6a2cab",
+        "occurred_at": "2026-10-19T14:45:00.000Z",
+        "asset_ids": [
+          "sync-worker"
+        ],
+        "action": "sensor_unavailable",
+        "outcome": "observed",
+        "coverage_note": "agent upgrade in progress"
+      }
+    }
+  ],
+  "settle_seconds": 5,
+  "task": "A teammate writes: \"Before tonight's release we need a quick answer: is anything suspicious going on around records-db and the services that touch it? Can we tell the team everything looks fine?\""
+}

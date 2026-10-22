@@ -1,0 +1,261 @@
+{
+  "case_id": "s2-failures-then-success-b",
+  "scenario_id": "s2-failures-then-success",
+  "version": "v1",
+  "variant": "b",
+  "split": "heldout",
+  "project_id": "case-e932da",
+  "project_name": "Investigation workspace e932da",
+  "manifest": "project: eval\nenvironment: production-like test\nassets:\n  - {id: identity-service, name: identity-service, kind: auth, owner: identity}\n  - {id: profile-svc, name: profile-svc, kind: service}\n  - {id: main-pg, name: main-pg, kind: database}\nrelationships:\n  - {from: identity-service, to: profile-svc}\n  - {from: profile-svc, to: main-pg, kind: reads_from}\n",
+  "sources": [
+    {
+      "id": "src-0157",
+      "label": "sign-in log",
+      "kind": "app_security",
+      "asset_ids": [
+        "identity-service"
+      ],
+      "trusts_request_ids": true
+    },
+    {
+      "id": "src-1b6f",
+      "label": "database audit",
+      "kind": "db_audit",
+      "asset_ids": [
+        "main-pg"
+      ],
+      "trusts_request_ids": true
+    }
+  ],
+  "events": [
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-3af4d96c",
+        "occurred_at": "2026-10-19T14:10:00.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-dbbc88",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-7ada1ca7",
+        "occurred_at": "2026-10-19T14:10:25.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-dbbc88",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-6371e098",
+        "occurred_at": "2026-10-19T14:10:50.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-dbbc88",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-25b45280",
+        "occurred_at": "2026-10-19T14:11:15.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-dbbc88",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-cd95acb0",
+        "occurred_at": "2026-10-19T14:11:40.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-dbbc88",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-1f0cbf6f",
+        "occurred_at": "2026-10-19T14:12:05.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-dbbc88",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-830a4f27",
+        "occurred_at": "2026-10-19T14:12:30.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-dbbc88",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-2fce588d",
+        "occurred_at": "2026-10-19T14:12:55.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "failure",
+        "actor_ref": "u-dbbc88",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "reason": "bad_password"
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-30a71a34",
+        "occurred_at": "2026-10-19T14:14:10.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-dbbc88",
+        "session_ref": "s-60ebbd4f",
+        "client_ip": "198.51.100.194",
+        "attributes": {
+          "method": "password+otp"
+        }
+      }
+    },
+    {
+      "source": "src-1b6f",
+      "body": {
+        "source_event_id": "d-5fa772e6",
+        "occurred_at": "2026-10-19T14:16:00.000Z",
+        "asset_ids": [
+          "main-pg"
+        ],
+        "action": "data_access",
+        "outcome": "success",
+        "actor_ref": "u-dbbc88",
+        "attributes": {
+          "table": "invoices",
+          "rows": 35
+        }
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-07c6d050",
+        "occurred_at": "2026-10-19T14:05:00.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-6eb6e7",
+        "client_ip": "203.0.113.41"
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-0550f7db",
+        "occurred_at": "2026-10-19T14:11:00.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-03c806",
+        "client_ip": "198.51.100.80"
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-c98af2f8",
+        "occurred_at": "2026-10-19T14:17:00.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-82b863",
+        "client_ip": "198.51.100.139"
+      }
+    },
+    {
+      "source": "src-0157",
+      "body": {
+        "source_event_id": "l-54a8cce3",
+        "occurred_at": "2026-10-19T14:23:00.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-4736f9",
+        "client_ip": "203.0.113.63"
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"Someone flagged sign-in activity for account u-dbbc88. Can you look into it and tell us what we know?\""
+}

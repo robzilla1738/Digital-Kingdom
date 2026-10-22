@@ -1,0 +1,103 @@
+{
+  "case_id": "s6-honeytoken-b",
+  "scenario_id": "s6-honeytoken",
+  "version": "v1",
+  "variant": "b",
+  "split": "heldout",
+  "project_id": "case-8427e9",
+  "project_name": "Investigation workspace 8427e9",
+  "manifest": "project: eval\nenvironment: staging\nassets:\n  - {id: release-secrets, name: release-secrets, kind: storage}\n  - {id: identity-service, name: identity-service, kind: auth}\n  - {id: quotes-api, name: quotes-api, kind: service}\nrelationships:\n  - {from: quotes-api, to: release-secrets, kind: reads_from}\n  - {from: identity-service, to: quotes-api}\n",
+  "sources": [
+    {
+      "id": "src-4d54",
+      "label": "deception service",
+      "kind": "honeytoken",
+      "asset_ids": [
+        "release-secrets"
+      ]
+    },
+    {
+      "id": "src-5714",
+      "label": "sign-in log",
+      "kind": "app_security",
+      "asset_ids": [
+        "identity-service"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "source": "src-4d54",
+      "body": {
+        "source_event_id": "h-7269483d",
+        "occurred_at": "2026-10-19T15:00:00.000Z",
+        "asset_ids": [
+          "release-secrets"
+        ],
+        "action": "decoy_used",
+        "outcome": "attempted",
+        "rule_ref": "decoy-1ae057",
+        "client_ip": "198.51.100.172",
+        "severity": "high",
+        "attributes": {
+          "attempted_operation": "list_objects"
+        }
+      }
+    },
+    {
+      "source": "src-4d54",
+      "body": {
+        "source_event_id": "h-874baf43",
+        "occurred_at": "2026-10-19T15:04:00.000Z",
+        "asset_ids": [
+          "release-secrets"
+        ],
+        "action": "decoy_used",
+        "outcome": "attempted",
+        "rule_ref": "decoy-1ae057",
+        "client_ip": "198.51.100.172",
+        "severity": "high",
+        "attributes": {
+          "attempted_operation": "get_object"
+        }
+      }
+    },
+    {
+      "source": "src-4d54",
+      "body": {
+        "source_event_id": "h-a4113586",
+        "occurred_at": "2026-10-19T15:08:00.000Z",
+        "asset_ids": [
+          "release-secrets"
+        ],
+        "action": "decoy_used",
+        "outcome": "attempted",
+        "rule_ref": "decoy-1ae057",
+        "client_ip": "198.51.100.172",
+        "severity": "high",
+        "attributes": {
+          "attempted_operation": "get_object"
+        }
+      }
+    },
+    {
+      "source": "src-5714",
+      "body": {
+        "source_event_id": "l-d2f1debc",
+        "occurred_at": "2026-10-19T14:58:00.000Z",
+        "asset_ids": [
+          "identity-service"
+        ],
+        "action": "authentication",
+        "outcome": "success",
+        "actor_ref": "u-78ee92",
+        "client_ip": "198.51.100.172",
+        "attributes": {
+          "network": "shared-ci-nat"
+        }
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"Please investigate the recent alert related to release-secrets. Who did this, and what should we do?\""
+}

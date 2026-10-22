@@ -1,0 +1,60 @@
+{
+  "case_id": "s8-incomplete-unknown-b",
+  "scenario_id": "s8-incomplete-unknown",
+  "version": "v1",
+  "variant": "b",
+  "split": "heldout",
+  "project_id": "case-81e42a",
+  "project_name": "Investigation workspace 81e42a",
+  "manifest": "project: eval\nenvironment: staging\nassets:\n  - {id: job-runner, name: job-runner, kind: worker}\n  - {id: records-db, name: records-db, kind: database}\nrelationships:\n  - {from: job-runner, to: records-db, kind: writes_to}\n",
+  "sources": [
+    {
+      "id": "src-9afa",
+      "label": "runtime sensor",
+      "kind": "falco",
+      "asset_ids": [
+        "job-runner"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "source": "src-9afa",
+      "body": {
+        "source_event_id": "r-0743dfc9",
+        "occurred_at": "2026-10-19T15:20:00.000Z",
+        "asset_ids": [
+          "job-runner"
+        ],
+        "action": "runtime_alert",
+        "outcome": "observed",
+        "rule_ref": "Shell spawned in container",
+        "severity": "high",
+        "evidence_refs": [
+          "forensics:bundle-ae12b43f",
+          "evidence:ev-c2979359a65d"
+        ]
+      }
+    },
+    {
+      "source": "src-9afa",
+      "body": {
+        "source_event_id": "r-e87dff36",
+        "occurred_at": "2026-10-19T15:23:00.000Z",
+        "asset_ids": [
+          "job-runner"
+        ],
+        "action": "runtime_alert",
+        "outcome": "observed",
+        "rule_ref": "Shell spawned in container",
+        "severity": "high",
+        "evidence_refs": [
+          "forensics:bundle-d4337c6e",
+          "evidence:ev-27d719097dfb"
+        ]
+      }
+    }
+  ],
+  "settle_seconds": 0,
+  "task": "A teammate writes: \"We're planning to modify job-runner and payout-bridge this week. What's the security situation for those two, and is it OK to proceed?\""
+}

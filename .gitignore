@@ -9,3 +9,5 @@ dist
 coverage
 artifacts/tmp
 artifacts/pilot
+artifacts/eval
+eval/runs/*/server-logs

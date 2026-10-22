@@ -38,13 +38,37 @@ function out(data: unknown, note?: string) {
   return { content: [{ type: "text" as const, text: JSON.stringify(payload, null, 2) }] };
 }
 
-export function createServer(client: DkClient): McpServer {
+export interface CreateServerOptions {
+  /**
+   * Expose only these tools (deployment-side least privilege, e.g. a read-only investigation profile).
+   * Hiding a tool is defence in depth only: the token's role and project scope are what the Digital Kingdom
+   * server enforces.
+   */
+  tools?: readonly string[];
+}
+
+/** Read-only investigation profile: every tool except dk_propose_containment. */
+export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
+
+export function parseToolAllowlist(v: string | undefined): string[] | undefined {
+  if (!v || !v.trim()) return undefined;
+  if (v.trim() === "investigation") return [...INVESTIGATION_TOOLS];
+  return v.split(",").map((x) => x.trim()).filter(Boolean);
+}
+
+export function createServer(client: DkClient, opts: CreateServerOptions = {}): McpServer {
   const server = new McpServer({ name: "digital-kingdom", version: "0.3.2" }, {
     instructions:
       "Digital Kingdom gives you the security situation of the application you are working on: its assets, observed findings, evidence coverage, and permitted containment steps. " +
       "Call dk_assess_change before modifying an endpoint, service, or permission path. Treat 'unknown' coverage as unknown, never as safe. " +
       "Findings distinguish blocked attempts, observed effects and hypotheses; do not overstate them. You cannot execute containment: you may only propose it for human approval. If a target does not resolve, say so; never report it as safe.",
   });
+  if (opts.tools) {
+    const allowed = new Set(opts.tools);
+    const register = server.registerTool.bind(server) as (...a: unknown[]) => unknown;
+    (server as unknown as { registerTool: (...a: unknown[]) => unknown }).registerTool = (name: unknown, ...rest: unknown[]) =>
+      allowed.has(String(name)) ? register(name, ...rest) : undefined;
+  }
   const project = z.string().max(64).optional().describe("Project id (defaults to the configured project)");
   const RO = { readOnlyHint: true, openWorldHint: false } as const;
 
