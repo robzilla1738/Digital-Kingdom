@@ -1,0 +1,22 @@
+{
+  "name": "3d-overlapping-relationship-chooser",
+  "file": "3d-overlapping-relationship-chooser.png",
+  "sha256": "c2ba4212479de57f0acf7382c6ea549c161a2277f4dab7b1e417a6a09b5f4d3b",
+  "bytes": 226279,
+  "capturedAt": "2026-10-22T20:48:53.251Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

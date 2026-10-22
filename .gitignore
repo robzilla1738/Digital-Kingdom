@@ -6,8 +6,14 @@ dist
 *.db-wal
 *.db-shm
 .env
-coverage
+/coverage/
+/apps/*/coverage/
+/packages/*/coverage/
 artifacts/tmp
 artifacts/pilot
 artifacts/eval
 eval/runs/*/server-logs
+
+# Transient SQLite fixture sidecars are never source artifacts.
+*.sqlite-wal
+*.sqlite-shm

@@ -1,0 +1,80 @@
+[
+  {
+    "fixture": "F12",
+    "logicalAssets": 50,
+    "loadToCaptureMs": 3680,
+    "before": {
+      "engine": "three.js r178",
+      "moduleShaderOwners": "50",
+      "cameraPose": "{\"position\":[134.869,68.866,62.856],\"target\":[73.576,1.143,1.564],\"zoom\":5.846}",
+      "renderCount": "6",
+      "drawCalls": "243",
+      "triangles": "16848",
+      "quality": "medium",
+      "moduleGeometryBuilds": "19",
+      "gpuGeometries": "158",
+      "gpuTextures": "2",
+      "gpuPrograms": "33"
+    },
+    "after": {
+      "engine": "three.js r178",
+      "moduleShaderOwners": "50",
+      "cameraPose": "{\"position\":[134.869,68.866,62.856],\"target\":[73.576,1.143,1.564],\"zoom\":5.846}",
+      "renderCount": "6",
+      "drawCalls": "243",
+      "triangles": "16848",
+      "quality": "medium",
+      "moduleGeometryBuilds": "19",
+      "gpuGeometries": "158",
+      "gpuTextures": "2",
+      "gpuPrograms": "33"
+    },
+    "renderer": {
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "vendor": "Google Inc. (Google)"
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "note": "Headless SwiftShader smoke only. Not a real-GPU FPS benchmark; load includes shader compilation and tool environment. drawCalls and triangles are Three.js main-pass counters: the renderer resets info after shadowMap.render. Shadow passes are excluded, so these counters do not establish the combined main-plus-shadow budget."
+  },
+  {
+    "fixture": "F13",
+    "logicalAssets": 200,
+    "loadToCaptureMs": 2317,
+    "before": {
+      "engine": "three.js r178",
+      "cameraPose": "{\"position\":[270.877,71.385,64.165],\"target\":[209.585,3.662,2.872],\"zoom\":2.328}",
+      "renderCount": "3",
+      "drawCalls": "3",
+      "triangles": "4772",
+      "quality": "medium",
+      "moduleGeometryBuilds": "0",
+      "gpuGeometries": "3",
+      "gpuTextures": "1",
+      "gpuPrograms": "1"
+    },
+    "after": {
+      "engine": "three.js r178",
+      "cameraPose": "{\"position\":[270.877,71.385,64.165],\"target\":[209.585,3.662,2.872],\"zoom\":2.328}",
+      "renderCount": "3",
+      "drawCalls": "3",
+      "triangles": "4772",
+      "quality": "medium",
+      "moduleGeometryBuilds": "0",
+      "gpuGeometries": "3",
+      "gpuTextures": "1",
+      "gpuPrograms": "1"
+    },
+    "renderer": {
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "vendor": "Google Inc. (Google)"
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "note": "Headless SwiftShader smoke only. Not a real-GPU FPS benchmark; load includes shader compilation and tool environment. drawCalls and triangles are Three.js main-pass counters: the renderer resets info after shadowMap.render. Shadow passes are excluded, so these counters do not establish the combined main-plus-shadow budget."
+  }
+]

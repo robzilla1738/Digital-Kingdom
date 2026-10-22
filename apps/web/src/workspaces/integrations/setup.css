@@ -1,0 +1,11 @@
+.setup-checklist { margin:12px; padding:16px; border:1px solid var(--border); border-radius:8px; background:var(--surface); }
+.setup-checklist h3 { font-size:1rem; margin:0 0 8px; }
+.setup-checklist p { margin:8px 0; font-size:.8125rem; line-height:1.5; }
+.setup-checklist ol { padding-left:20px; margin:16px 0; }
+.setup-checklist li { padding-left:4px; margin-bottom:16px; font-size:.8125rem; }
+.setup-checklist li strong,.setup-checklist li span { display:block; overflow-wrap:anywhere; }
+.setup-checklist li span { margin-top:4px; color:var(--text-2); }
+.setup-checklist li[data-complete="true"] strong::after { content:" · Server data available"; color:var(--text-2); font-weight:400; }
+.setup-checklist button { min-height:44px; text-align:left; }
+.integration-status { margin-top:16px; border-top:1px solid var(--border); padding-top:12px; font-size:.8125rem; line-height:1.5; overflow-wrap:anywhere; }
+.integration-status p { margin:6px 0; }

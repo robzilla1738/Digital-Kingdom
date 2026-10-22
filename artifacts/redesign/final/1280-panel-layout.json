@@ -1,0 +1,20 @@
+{
+  "canvasBox": {
+    "x": 72,
+    "y": 160,
+    "width": 824,
+    "height": 536
+  },
+  "paneBox": {
+    "x": 896,
+    "y": 160,
+    "width": 384,
+    "height": 608
+  },
+  "viewport": {
+    "width": 1280,
+    "height": 768
+  },
+  "noPanelOverlap": true,
+  "minimumCanvasWidthRequired": 560
+}

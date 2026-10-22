@@ -1,0 +1,15 @@
+vite v7.0.8 building for production...
+transforming...
+✓ 760 modules transformed.
+rendering chunks...
+computing gzip size...
+../../artifacts/redesign/offline-dist/index.html                              1.04 kB │ gzip:   0.53 kB
+../../artifacts/redesign/offline-dist/assets/index-D2lAxyzJ.css              53.55 kB │ gzip:  11.48 kB
+../../artifacts/redesign/offline-dist/assets/ModuleSheet-DGrFT-tD.js          2.33 kB │ gzip:   1.26 kB
+../../artifacts/redesign/offline-dist/assets/ComponentFixtures-DeDLmzsc.js    3.38 kB │ gzip:   1.30 kB
+../../artifacts/redesign/offline-dist/assets/modules-4tP4_J1M.js             18.55 kB │ gzip:   6.91 kB
+../../artifacts/redesign/offline-dist/assets/Castle3D-BU1ogo6_.js            27.38 kB │ gzip:  10.73 kB
+../../artifacts/redesign/offline-dist/assets/r3f-Cy3TS7m8.js                385.61 kB │ gzip: 121.48 kB
+../../artifacts/redesign/offline-dist/assets/index-7h5O8oRq.js              453.86 kB │ gzip: 116.44 kB
+../../artifacts/redesign/offline-dist/assets/three-D-fHQp3O.js              698.73 kB │ gzip: 180.05 kB
+✓ built in 5.20s

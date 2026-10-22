@@ -1,0 +1,20 @@
+
+Running 11 tests using 1 worker
+
+(node:2491) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2491) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/pilot.spec.ts:136:1 › A. controlled activity in the reference app becomes an evidence-backed finding in the browser (3.1s)
+  ✓   2 e2e/pilot.spec.ts:207:1 › B. a protocol-level MCP client (stdio launch path) receives the same evidence (366ms)
+  ✓   3 e2e/pilot.spec.ts:239:1 › C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest (3.7s)
+  ✓   4 e2e/pilot.spec.ts:346:1 › C2. a failed evidence fetch is shown as incomplete, distinct from an empty result (2.3s)
+  ✓   5 e2e/pilot.spec.ts:393:1 › C3. WebGL unavailable: explicit fallback to the 2D graph (this is NOT a 3D pass) (1.4s)
+  ✓   6 e2e/pilot.spec.ts:424:1 › D. a stale source and unknown targets stay explicitly uncertain in browser and MCP (5.3s)
+  ✓   7 e2e/pilot.spec.ts:501:1 › E. an acknowledged-but-unprocessed event survives restart; the browser shows the lost stream honestly (4.1s)
+  ✓   8 e2e/pilot.spec.ts:600:1 › E2. SSE reconnects but the catch-up snapshot fails, then is delayed: never Live until it is applied (4.4s)
+  ✓   9 e2e/pilot.spec.ts:663:1 › E3. snapshot fails while SSE stays connected, then recovers on retry (1.6s)
+  ✓  10 e2e/pilot.spec.ts:702:1 › F. containment stays proposal-only: service proposes, cannot approve; human approval executes nothing (2.4s)
+  ✓  11 e2e/pilot.spec.ts:775:1 › G. instruction-like evidence text is displayed as data and authorizes nothing (1.4s)
+
+  11 passed (32.5s)

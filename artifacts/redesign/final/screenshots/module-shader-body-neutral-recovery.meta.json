@@ -1,0 +1,22 @@
+{
+  "name": "module-shader-body-neutral-recovery",
+  "file": "module-shader-body-neutral-recovery.png",
+  "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57",
+  "bytes": 260858,
+  "capturedAt": "2026-10-22T20:50:45.140Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

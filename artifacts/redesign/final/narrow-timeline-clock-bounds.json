@@ -1,0 +1,142 @@
+[
+  {
+    "width": 390,
+    "historical": false,
+    "text": "14:13:00 UTC",
+    "bounds": {
+      "x": 152,
+      "y": 656.90625,
+      "width": 222,
+      "height": 18.1875,
+      "top": 656.90625,
+      "right": 374,
+      "bottom": 675.09375,
+      "left": 152
+    },
+    "clientWidth": 222,
+    "scrollWidth": 222,
+    "textRects": [
+      {
+        "x": 152,
+        "y": 657.90625,
+        "width": 93.625,
+        "height": 15,
+        "top": 657.90625,
+        "right": 245.625,
+        "bottom": 672.90625,
+        "left": 152
+      }
+    ],
+    "hits": [
+      true,
+      true,
+      true
+    ],
+    "occluders": []
+  },
+  {
+    "width": 390,
+    "historical": true,
+    "text": "14:03:00 UTC",
+    "bounds": {
+      "x": 152,
+      "y": 656.90625,
+      "width": 222,
+      "height": 18.1875,
+      "top": 656.90625,
+      "right": 374,
+      "bottom": 675.09375,
+      "left": 152
+    },
+    "clientWidth": 222,
+    "scrollWidth": 222,
+    "textRects": [
+      {
+        "x": 152,
+        "y": 657.90625,
+        "width": 93.625,
+        "height": 15,
+        "top": 657.90625,
+        "right": 245.625,
+        "bottom": 672.90625,
+        "left": 152
+      }
+    ],
+    "hits": [
+      true,
+      true,
+      true
+    ],
+    "occluders": []
+  },
+  {
+    "width": 320,
+    "historical": false,
+    "text": "14:13:00 UTC",
+    "bounds": {
+      "x": 152,
+      "y": 656.90625,
+      "width": 152,
+      "height": 18.1875,
+      "top": 656.90625,
+      "right": 304,
+      "bottom": 675.09375,
+      "left": 152
+    },
+    "clientWidth": 152,
+    "scrollWidth": 152,
+    "textRects": [
+      {
+        "x": 152,
+        "y": 657.90625,
+        "width": 93.625,
+        "height": 15,
+        "top": 657.90625,
+        "right": 245.625,
+        "bottom": 672.90625,
+        "left": 152
+      }
+    ],
+    "hits": [
+      true,
+      true,
+      true
+    ],
+    "occluders": []
+  },
+  {
+    "width": 320,
+    "historical": true,
+    "text": "14:03:00 UTC",
+    "bounds": {
+      "x": 152,
+      "y": 669.90625,
+      "width": 152,
+      "height": 18.1875,
+      "top": 669.90625,
+      "right": 304,
+      "bottom": 688.09375,
+      "left": 152
+    },
+    "clientWidth": 152,
+    "scrollWidth": 152,
+    "textRects": [
+      {
+        "x": 152,
+        "y": 670.90625,
+        "width": 93.625,
+        "height": 15,
+        "top": 670.90625,
+        "right": 245.625,
+        "bottom": 685.90625,
+        "left": 152
+      }
+    ],
+    "hits": [
+      true,
+      true,
+      true
+    ],
+    "occluders": []
+  }
+]

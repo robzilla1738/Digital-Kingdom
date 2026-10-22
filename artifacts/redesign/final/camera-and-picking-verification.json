@@ -1,0 +1,82 @@
+[
+  {
+    "case": "manual pointer drag cancels active focus",
+    "before": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":19.701}",
+    "stopped": "{\"position\":[9.711,96.326,50.989],\"target\":[-2.292,1.461,-3.386],\"zoom\":63.708}",
+    "idleFrames": "15",
+    "selection": "api",
+    "result": "passed"
+  },
+  {
+    "case": "overlapping edge chooser",
+    "pointer": {
+      "x": 701.4894485473633,
+      "y": 500.6589660644531,
+      "ids": [
+        "rel-api-auth",
+        "rel-api-worker"
+      ]
+    },
+    "choices": [
+      "rel-api-auth",
+      "rel-api-worker"
+    ],
+    "chosen": "rel-api-auth",
+    "selectionDoesNotFocus": true,
+    "escapeAndDragPreserveSelection": true,
+    "result": "passed"
+  },
+  {
+    "case": "3D overlapping connections",
+    "clicked": {
+      "x": 677.4846468753442,
+      "y": 397.01006235560516
+    },
+    "ids": [
+      "rel-tools-api",
+      "rel-api-pay"
+    ],
+    "chosen": "rel-tools-api",
+    "selectionDoesNotFocus": true,
+    "result": "passed"
+  },
+  {
+    "case": "decorative surface picking",
+    "module": "gatehouse",
+    "clicked": {
+      "x": 609.7045292038896,
+      "y": 368.16998174607454,
+      "world": [
+        -1.9300000667572021,
+        3.4199999141693116,
+        12.899999983608723
+      ]
+    },
+    "canonicalAssetId": "edge",
+    "previousSelection": "api",
+    "selectionDoesNotFocus": true,
+    "result": "passed"
+  },
+  {
+    "case": "unlinked event has no invented causal trail",
+    "event": "redesign-unlinked-data-access",
+    "asset": "db",
+    "existingStaticRelationshipIds": [
+      "rel-api-db",
+      "rel-tools-db",
+      "rel-worker-db"
+    ],
+    "renderCountStable": "8",
+    "cameraUnchanged": true,
+    "result": "passed"
+  },
+  {
+    "case": "real background-tab pause",
+    "result": "unsupported in this headless browser",
+    "visibility": {
+      "hidden": false,
+      "state": "visible"
+    },
+    "reason": "Bringing a genuine second tab to the front does not change document visibility. No hidden-property override or synthetic visibility event used."
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "name": "V14-768-detail",
+  "file": "V14-768-detail.png",
+  "sha256": "5d57d7341fb018ad3b554d70674f8b4a33767a65ffb0be817f533cb224402e9b",
+  "bytes": 61095,
+  "capturedAt": "2026-10-22T20:52:06.724Z",
+  "viewport": {
+    "width": 768,
+    "height": 768
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

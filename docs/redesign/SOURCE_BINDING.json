@@ -1,0 +1,2522 @@
+{
+  "checkedAt": "2026-10-22T21:04:58.399658+00:00",
+  "testedApplicationSource": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "frozenTrackedFiles": 417,
+  "identicalFrozenFiles": 416,
+  "applicationAndTestFilesIdentical": true,
+  "method": "Compare every frozen git blob with git hash-object of the delivery worktree. The sole changed frozen path is the explicitly scoped CI artifact-isolation step. All new delivery paths are documentation or verification artifacts.",
+  "deliveryOnlyExceptions": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "frozenBlob": "1883f978bb2221eb032b068c20cd71bc07813ca4",
+      "deliveryBlob": "d45f93f75210be5e3cb71b105e82c5b3dcb0e8aa",
+      "identical": false
+    }
+  ],
+  "exceptionReason": "Preserve the immutable checked-in handoff outside the fresh CI output directory before any install/test step, so failed or successful CI cannot mix old sealed evidence with fresh output. Triggers, permissions, test commands and deployment scope remain unchanged.",
+  "workflowValidation": "ci-artifact-isolation.json",
+  "frozenFiles": [
+    {
+      "path": ".dockerignore",
+      "frozenBlob": "0055229a964a722171b538cbac2cd23070c7e6ed",
+      "deliveryBlob": "0055229a964a722171b538cbac2cd23070c7e6ed",
+      "identical": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "frozenBlob": "1883f978bb2221eb032b068c20cd71bc07813ca4",
+      "deliveryBlob": "d45f93f75210be5e3cb71b105e82c5b3dcb0e8aa",
+      "identical": false
+    },
+    {
+      "path": ".github/workflows/pages.yml",
+      "frozenBlob": "1a76ad7e0b4bd314bc281411f689f56f032dde74",
+      "deliveryBlob": "1a76ad7e0b4bd314bc281411f689f56f032dde74",
+      "identical": true
+    },
+    {
+      "path": ".gitignore",
+      "frozenBlob": "7ba00cbd9d8c22a46a0f767e2ac9e36cc1c31138",
+      "deliveryBlob": "7ba00cbd9d8c22a46a0f767e2ac9e36cc1c31138",
+      "identical": true
+    },
+    {
+      "path": "CHANGELOG.md",
+      "frozenBlob": "6605f65c4135ccc51217317751be1bbe303921e2",
+      "deliveryBlob": "6605f65c4135ccc51217317751be1bbe303921e2",
+      "identical": true
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "frozenBlob": "0cbcee3687a47940fcdcf66e30692545ac32ad50",
+      "deliveryBlob": "0cbcee3687a47940fcdcf66e30692545ac32ad50",
+      "identical": true
+    },
+    {
+      "path": "Dockerfile",
+      "frozenBlob": "f0a2fae85c53bd43f77f09d4e4239d714d5ba568",
+      "deliveryBlob": "f0a2fae85c53bd43f77f09d4e4239d714d5ba568",
+      "identical": true
+    },
+    {
+      "path": "LICENSE",
+      "frozenBlob": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "deliveryBlob": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "identical": true
+    },
+    {
+      "path": "README.md",
+      "frozenBlob": "063a2bdd8506580f141188be901af891901336fa",
+      "deliveryBlob": "063a2bdd8506580f141188be901af891901336fa",
+      "identical": true
+    },
+    {
+      "path": "SECURITY.md",
+      "frozenBlob": "83292c143b97b3aa5f1354e48aaa8a85cbfd4e48",
+      "deliveryBlob": "83292c143b97b3aa5f1354e48aaa8a85cbfd4e48",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/package.json",
+      "frozenBlob": "c9c6dc913eca49d62de6a39590b40f04718dd0d2",
+      "deliveryBlob": "c9c6dc913eca49d62de6a39590b40f04718dd0d2",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/src/main.ts",
+      "frozenBlob": "208d91c412cd2ae2d5450592477a3076c1dde6bf",
+      "deliveryBlob": "208d91c412cd2ae2d5450592477a3076c1dde6bf",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/src/server.ts",
+      "frozenBlob": "e43b70007aa9ede604c1e9d91995d0c7dd64f6df",
+      "deliveryBlob": "e43b70007aa9ede604c1e9d91995d0c7dd64f6df",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/test/evidence.test.ts",
+      "frozenBlob": "37547dce4e63159b3f50872e190fb0d3c9fe5e07",
+      "deliveryBlob": "37547dce4e63159b3f50872e190fb0d3c9fe5e07",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/test/mcp.test.ts",
+      "frozenBlob": "db8bc3793ab1b9a04a7705c1bdbb460eaedb31b4",
+      "deliveryBlob": "db8bc3793ab1b9a04a7705c1bdbb460eaedb31b4",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/test/quality-gates-stdio.test.ts",
+      "frozenBlob": "d775d4ba4d0ef046bfb2616440a1669ee7ca8e96",
+      "deliveryBlob": "d775d4ba4d0ef046bfb2616440a1669ee7ca8e96",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/test/readonly-profile.test.ts",
+      "frozenBlob": "cf9dfb5381f03b440ddfbb7fdb00ea7708fe1b1b",
+      "deliveryBlob": "cf9dfb5381f03b440ddfbb7fdb00ea7708fe1b1b",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/test/sdk-client.ts",
+      "frozenBlob": "96226e2c7a2fbb35b3bf4c25399f9ff5ab61cd0e",
+      "deliveryBlob": "96226e2c7a2fbb35b3bf4c25399f9ff5ab61cd0e",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/test/stdio-client.ts",
+      "frozenBlob": "7e2405bacccc5cf4d6bba0b9c644ea99507928b3",
+      "deliveryBlob": "7e2405bacccc5cf4d6bba0b9c644ea99507928b3",
+      "identical": true
+    },
+    {
+      "path": "apps/mcp/test/trial.e2e.test.ts",
+      "frozenBlob": "25c6d4151601d4f68f7f6d66c2926f344ede8a0c",
+      "deliveryBlob": "25c6d4151601d4f68f7f6d66c2926f344ede8a0c",
+      "identical": true
+    },
+    {
+      "path": "apps/server/package.json",
+      "frozenBlob": "6cc7eaad403b1e24b5b8eb6c112c24546ac085ca",
+      "deliveryBlob": "6cc7eaad403b1e24b5b8eb6c112c24546ac085ca",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/adapters/falco.ts",
+      "frozenBlob": "d6078c3a590a8508a0323ce354fa6191e32ceefe",
+      "deliveryBlob": "d6078c3a590a8508a0323ce354fa6191e32ceefe",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/adapters/otlp.ts",
+      "frozenBlob": "bb154ad52fcdaa4190bf627441896ec2132aea9a",
+      "deliveryBlob": "bb154ad52fcdaa4190bf627441896ec2132aea9a",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/app.ts",
+      "frozenBlob": "26782347fe40adb866a3f707f3a44d08be6b0806",
+      "deliveryBlob": "26782347fe40adb866a3f707f3a44d08be6b0806",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/containment.ts",
+      "frozenBlob": "564d5f13f8731932b502a99f3262086b146d6ee1",
+      "deliveryBlob": "564d5f13f8731932b502a99f3262086b146d6ee1",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/context.ts",
+      "frozenBlob": "71c87721772ea2997d56adc0fb2c97a8223e2386",
+      "deliveryBlob": "71c87721772ea2997d56adc0fb2c97a8223e2386",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/db.ts",
+      "frozenBlob": "5e719f9f2ff4fe5f5581d101b72c232e4960d8ca",
+      "deliveryBlob": "5e719f9f2ff4fe5f5581d101b72c232e4960d8ca",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/export.ts",
+      "frozenBlob": "fdaa54315874e02535083e777af39c21b6a11585",
+      "deliveryBlob": "fdaa54315874e02535083e777af39c21b6a11585",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/investigate.ts",
+      "frozenBlob": "ba2b6637142341eeed73b6859fad6a4ec14259a7",
+      "deliveryBlob": "ba2b6637142341eeed73b6859fad6a4ec14259a7",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/main.ts",
+      "frozenBlob": "8ec8daf3d7837e4a8a245e1c7823fb9ea76f118d",
+      "deliveryBlob": "8ec8daf3d7837e4a8a245e1c7823fb9ea76f118d",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/planner-model.ts",
+      "frozenBlob": "2fa7997e44539c4149fa61cf0e7ca6c44c6e989c",
+      "deliveryBlob": "2fa7997e44539c4149fa61cf0e7ca6c44c6e989c",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/security.ts",
+      "frozenBlob": "9aed8b87159c3fc6e245bc540eaad876c6f5c11c",
+      "deliveryBlob": "9aed8b87159c3fc6e245bc540eaad876c6f5c11c",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/seed.ts",
+      "frozenBlob": "4717c47254b3cbeb4830ced96ea5c51194086e35",
+      "deliveryBlob": "4717c47254b3cbeb4830ced96ea5c51194086e35",
+      "identical": true
+    },
+    {
+      "path": "apps/server/src/store.ts",
+      "frozenBlob": "9e599b5c374597e3e975034c801509003c7f477b",
+      "deliveryBlob": "9e599b5c374597e3e975034c801509003c7f477b",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/assessment-v2.test.ts",
+      "frozenBlob": "1deada19aae5eb1d823d3ce44989c4033336526b",
+      "deliveryBlob": "1deada19aae5eb1d823d3ce44989c4033336526b",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/hardening.test.ts",
+      "frozenBlob": "df18a8af532ccd9a84215eed41fa03a40d0959ee",
+      "deliveryBlob": "df18a8af532ccd9a84215eed41fa03a40d0959ee",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/helpers.ts",
+      "frozenBlob": "ecefb737a384661c2d44b528172bf01971ac7673",
+      "deliveryBlob": "ecefb737a384661c2d44b528172bf01971ac7673",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/import-validation.test.ts",
+      "frozenBlob": "4025b71d8d46240c39390b75c53c3f6835456e1c",
+      "deliveryBlob": "4025b71d8d46240c39390b75c53c3f6835456e1c",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/investigation.test.ts",
+      "frozenBlob": "c4d400ef891a94e8d58a8d58ed6fdd0cdb57c21a",
+      "deliveryBlob": "c4d400ef891a94e8d58a8d58ed6fdd0cdb57c21a",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/otlp.test.ts",
+      "frozenBlob": "ec63124e44429e1744251a35918d0f99248ad71c",
+      "deliveryBlob": "ec63124e44429e1744251a35918d0f99248ad71c",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/quality-gates.test.ts",
+      "frozenBlob": "83bac525e6d6dd4002916f5bbde07e97e2af6384",
+      "deliveryBlob": "83bac525e6d6dd4002916f5bbde07e97e2af6384",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/server.test.ts",
+      "frozenBlob": "520b15759aca2e5584da5f02d646dd54df27ef72",
+      "deliveryBlob": "520b15759aca2e5584da5f02d646dd54df27ef72",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/tombstones.test.ts",
+      "frozenBlob": "f1a7e05997ecff3810c1eab98905dd9b44b2c0f3",
+      "deliveryBlob": "f1a7e05997ecff3810c1eab98905dd9b44b2c0f3",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/trust.test.ts",
+      "frozenBlob": "fe8f12c93b1fecb4cd739723ebd62e05e18b3309",
+      "deliveryBlob": "fe8f12c93b1fecb4cd739723ebd62e05e18b3309",
+      "identical": true
+    },
+    {
+      "path": "apps/server/test/upgrade-v03.test.ts",
+      "frozenBlob": "9f8936bb529c46dac5dabfad8673376e71608f35",
+      "deliveryBlob": "9f8936bb529c46dac5dabfad8673376e71608f35",
+      "identical": true
+    },
+    {
+      "path": "apps/web/index.html",
+      "frozenBlob": "f293e83ee174b21acc43e4791ebf4be21833d423",
+      "deliveryBlob": "f293e83ee174b21acc43e4791ebf4be21833d423",
+      "identical": true
+    },
+    {
+      "path": "apps/web/package.json",
+      "frozenBlob": "07065ef73b21cb271531a8eb9831b8157f11a2f4",
+      "deliveryBlob": "07065ef73b21cb271531a8eb9831b8157f11a2f4",
+      "identical": true
+    },
+    {
+      "path": "apps/web/public/favicon.svg",
+      "frozenBlob": "c3cad1dd19e9d96d118c41b57affb9202b02b19b",
+      "deliveryBlob": "c3cad1dd19e9d96d118c41b57affb9202b02b19b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/App.tsx",
+      "frozenBlob": "5ce9ab9d52f84f756154524d976678add5970866",
+      "deliveryBlob": "5ce9ab9d52f84f756154524d976678add5970866",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/Castle3D.tsx",
+      "frozenBlob": "aabc113d435bdf1646664d9fdca187aa7986d30b",
+      "deliveryBlob": "aabc113d435bdf1646664d9fdca187aa7986d30b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/EdgeChooser.tsx",
+      "frozenBlob": "ca945bdeff4163ea2a204e2de2c85df1d9fcf74d",
+      "deliveryBlob": "ca945bdeff4163ea2a204e2de2c85df1d9fcf74d",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/Environment.tsx",
+      "frozenBlob": "5bc2ec10965a3ea23d80f2ce1ed0f289b20b0f58",
+      "deliveryBlob": "5bc2ec10965a3ea23d80f2ce1ed0f289b20b0f58",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/ModuleSheet.tsx",
+      "frozenBlob": "d3c6faba0eb92a10a14e149845734d137147080e",
+      "deliveryBlob": "d3c6faba0eb92a10a14e149845734d137147080e",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/architecture.test.ts",
+      "frozenBlob": "483f10dff59779267b055b9b96fa7d6f55aa9ee7",
+      "deliveryBlob": "483f10dff59779267b055b9b96fa7d6f55aa9ee7",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/edgePicking.test.ts",
+      "frozenBlob": "5cedcb32328e6f516b830e2d894e898d0bf0efaa",
+      "deliveryBlob": "5cedcb32328e6f516b830e2d894e898d0bf0efaa",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/edgePicking.ts",
+      "frozenBlob": "d14e59cf4b9f10be0a74e2f5649441fdaf550850",
+      "deliveryBlob": "d14e59cf4b9f10be0a74e2f5649441fdaf550850",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/frameBudget.ts",
+      "frozenBlob": "bfe4940d6148f58f30ee9567220797aadaba828e",
+      "deliveryBlob": "bfe4940d6148f58f30ee9567220797aadaba828e",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/geometry.ts",
+      "frozenBlob": "9db1a8fa39d79ce346f6b3a069a7e7c77978b861",
+      "deliveryBlob": "9db1a8fa39d79ce346f6b3a069a7e7c77978b861",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/groupSelection.test.ts",
+      "frozenBlob": "b1c8015ea7b3325e1e51f0b6e176c15be8738bca",
+      "deliveryBlob": "b1c8015ea7b3325e1e51f0b6e176c15be8738bca",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/labels.tsx",
+      "frozenBlob": "9d68babfd2c5b7192b028664d165dc47e966682b",
+      "deliveryBlob": "9d68babfd2c5b7192b028664d165dc47e966682b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/materials.ts",
+      "frozenBlob": "144b7a1a6f3b85f932f10e442615b587cb9f04ff",
+      "deliveryBlob": "144b7a1a6f3b85f932f10e442615b587cb9f04ff",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/moduleRecovery.test.ts",
+      "frozenBlob": "37e363af06985024ae67840b333022ab0427cefd",
+      "deliveryBlob": "37e363af06985024ae67840b333022ab0427cefd",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/moduleRecovery.ts",
+      "frozenBlob": "ca172d3f73068a1369d5f7b35d582af850bb0aa2",
+      "deliveryBlob": "ca172d3f73068a1369d5f7b35d582af850bb0aa2",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/modules.tsx",
+      "frozenBlob": "bb9ef1478e0cab4ab617f56ef0461e37ec5af5cd",
+      "deliveryBlob": "bb9ef1478e0cab4ab617f56ef0461e37ec5af5cd",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/scenePresentation.ts",
+      "frozenBlob": "7dc6aa3920bf7d6bfb99fa06d5d49886c38eb17c",
+      "deliveryBlob": "7dc6aa3920bf7d6bfb99fa06d5d49886c38eb17c",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/castle/shaderRecovery.ts",
+      "frozenBlob": "48189941d218393995f07395e280294d2e7ecfe8",
+      "deliveryBlob": "48189941d218393995f07395e280294d2e7ecfe8",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/ui/ComponentFixtures.tsx",
+      "frozenBlob": "0839a68029e1a5223d0f59ed2bdadaa937f00a38",
+      "deliveryBlob": "0839a68029e1a5223d0f59ed2bdadaa937f00a38",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/ui/CopyReference.tsx",
+      "frozenBlob": "ce2ed4c6c854a29feb85b24e787498ad96d17248",
+      "deliveryBlob": "ce2ed4c6c854a29feb85b24e787498ad96d17248",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/ui/SplitPane.tsx",
+      "frozenBlob": "496f77ec1bac48f0e650b57b6abd381a6d2b77a7",
+      "deliveryBlob": "496f77ec1bac48f0e650b57b6abd381a6d2b77a7",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/ui/Status.tsx",
+      "frozenBlob": "6a9788876fe5cb40c230db1a87a03cb7f3bb7f6d",
+      "deliveryBlob": "6a9788876fe5cb40c230db1a87a03cb7f3bb7f6d",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/ui/Tabs.tsx",
+      "frozenBlob": "82417842f2b7c1856a197338746ebdb9f5088fe3",
+      "deliveryBlob": "82417842f2b7c1856a197338746ebdb9f5088fe3",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/ui/primitives.test.ts",
+      "frozenBlob": "ede6f01aeb350c4306848165a3fa3450b00cb2e2",
+      "deliveryBlob": "ede6f01aeb350c4306848165a3fa3450b00cb2e2",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/components/ui/splitPane.test.ts",
+      "frozenBlob": "a99a51daa4ade73440ff3a72881e44ed08e3e8db",
+      "deliveryBlob": "a99a51daa4ade73440ff3a72881e44ed08e3e8db",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/graph2d/Graph2D.tsx",
+      "frozenBlob": "fdfc21cf9ce4b7e4921b09a734b4e29ff4f779d8",
+      "deliveryBlob": "fdfc21cf9ce4b7e4921b09a734b4e29ff4f779d8",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/inspector/EventView.tsx",
+      "frozenBlob": "aba49c41d71d74c5806986d82d3d2d63971d7faf",
+      "deliveryBlob": "aba49c41d71d74c5806986d82d3d2d63971d7faf",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/inspector/FindingEvidenceCards.tsx",
+      "frozenBlob": "14f111d79c5731109f3defa2882afa7b8a5d9649",
+      "deliveryBlob": "14f111d79c5731109f3defa2882afa7b8a5d9649",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/inspector/FindingView.tsx",
+      "frozenBlob": "dd62c8ba1ed8d7dbaf73b38d7ab0043ce0418c4b",
+      "deliveryBlob": "dd62c8ba1ed8d7dbaf73b38d7ab0043ce0418c4b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/inspector/Shared.tsx",
+      "frozenBlob": "d7dbfda695324b80916ecc4627a5d18cef09afa0",
+      "deliveryBlob": "d7dbfda695324b80916ecc4627a5d18cef09afa0",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/inspector/actions.tsx",
+      "frozenBlob": "3a060a83bec333c7d3d3a84937582c103d43f528",
+      "deliveryBlob": "3a060a83bec333c7d3d3a84937582c103d43f528",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/inspector/evidenceCards.test.ts",
+      "frozenBlob": "4c6e7bdfa802eac13c2e52de31e477bd24a2ec18",
+      "deliveryBlob": "4c6e7bdfa802eac13c2e52de31e477bd24a2ec18",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/inspector/evidenceCards.ts",
+      "frozenBlob": "b064ab2e51efa0721389fe5c6157e2fa835f6337",
+      "deliveryBlob": "b064ab2e51efa0721389fe5c6157e2fa835f6337",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/connection.test.ts",
+      "frozenBlob": "dbf33873742691b997b8e83adc1fbe1f28c0dab1",
+      "deliveryBlob": "dbf33873742691b997b8e83adc1fbe1f28c0dab1",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/connection.ts",
+      "frozenBlob": "7a1c87bf4edf348905a8897966809b6353b2016a",
+      "deliveryBlob": "7a1c87bf4edf348905a8897966809b6353b2016a",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/data-security.test.ts",
+      "frozenBlob": "b35f5026274fb1ead3c4f538027cb358f40fcbfe",
+      "deliveryBlob": "b35f5026274fb1ead3c4f538027cb358f40fcbfe",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/data.ts",
+      "frozenBlob": "f62ac822ddfedfcef30e0915daf9f187caca86f5",
+      "deliveryBlob": "f62ac822ddfedfcef30e0915daf9f187caca86f5",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/evidence-loader.test.ts",
+      "frozenBlob": "a322e4a7b83b894eefb6b552cb3f73fcc361252b",
+      "deliveryBlob": "a322e4a7b83b894eefb6b552cb3f73fcc361252b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/evidence-loader.ts",
+      "frozenBlob": "db2979855647f926b024a0920e1d89a28a6b1146",
+      "deliveryBlob": "db2979855647f926b024a0920e1d89a28a6b1146",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/icons.tsx",
+      "frozenBlob": "53f917e2cd0b5b1cc87acabe226202b9ec0e321f",
+      "deliveryBlob": "53f917e2cd0b5b1cc87acabe226202b9ec0e321f",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/investigation.test.ts",
+      "frozenBlob": "bcae70ecb2e874f69615cecda4abe1d733d23c4b",
+      "deliveryBlob": "bcae70ecb2e874f69615cecda4abe1d733d23c4b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/investigation.ts",
+      "frozenBlob": "99f7277fa1251f9ee531cb7824b3138faf30f176",
+      "deliveryBlob": "99f7277fa1251f9ee531cb7824b3138faf30f176",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/navigation.ts",
+      "frozenBlob": "895c39e24ea3e53e4b73a93655b2203aecf09e6c",
+      "deliveryBlob": "895c39e24ea3e53e4b73a93655b2203aecf09e6c",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/presentation.ts",
+      "frozenBlob": "be12a56db5cd7396f48fff6fa2a31368040b1fe4",
+      "deliveryBlob": "be12a56db5cd7396f48fff6fa2a31368040b1fe4",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/redesign-fixtures.test.ts",
+      "frozenBlob": "15a20be6c5a4fbf6e86f82a714e75a351ac81883",
+      "deliveryBlob": "15a20be6c5a4fbf6e86f82a714e75a351ac81883",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/redesign-state.test.ts",
+      "frozenBlob": "45724c5cba34127231675ca89c252c3675e0c1ab",
+      "deliveryBlob": "45724c5cba34127231675ca89c252c3675e0c1ab",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/state.tsx",
+      "frozenBlob": "4481b4edcb46e16d65d1d221b6769475b5f04ea4",
+      "deliveryBlob": "4481b4edcb46e16d65d1d221b6769475b5f04ea4",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/vocab.ts",
+      "frozenBlob": "65505fdd1590ffc40038135d0b585932776e7820",
+      "deliveryBlob": "65505fdd1590ffc40038135d0b585932776e7820",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/lib/webgl.ts",
+      "frozenBlob": "b12860904f2dd2d348ba0fa1e644cef4edc3d33e",
+      "deliveryBlob": "b12860904f2dd2d348ba0fa1e644cef4edc3d33e",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/main.tsx",
+      "frozenBlob": "e03456e76bbbfafdfecc0a549c166dbd023c736b",
+      "deliveryBlob": "e03456e76bbbfafdfecc0a549c166dbd023c736b",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/panels/EvidencePane.tsx",
+      "frozenBlob": "5a74e08312cd0ef2cccca09db8a1a907b8abe9a3",
+      "deliveryBlob": "5a74e08312cd0ef2cccca09db8a1a907b8abe9a3",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/panels/Legend.tsx",
+      "frozenBlob": "d3d2e1a6bce1613cdfe8926506c2b9e8fa8c154d",
+      "deliveryBlob": "d3d2e1a6bce1613cdfe8926506c2b9e8fa8c154d",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/panels/Sidebar.tsx",
+      "frozenBlob": "a16c84443be0978340f4bb470324a5b9567aa164",
+      "deliveryBlob": "a16c84443be0978340f4bb470324a5b9567aa164",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/panels/Timeline.tsx",
+      "frozenBlob": "473360c02b0d365a0dff59c43ae899302fc77271",
+      "deliveryBlob": "473360c02b0d365a0dff59c43ae899302fc77271",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/panels/TopBar.tsx",
+      "frozenBlob": "7c5f924d446b8be16f6e739dcce982dc5a0580a1",
+      "deliveryBlob": "7c5f924d446b8be16f6e739dcce982dc5a0580a1",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/shell/Shell.tsx",
+      "frozenBlob": "5461a77a0b71c8cc120c8503b6e22be6fbac6468",
+      "deliveryBlob": "5461a77a0b71c8cc120c8503b6e22be6fbac6468",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/shell/replayRange.test.ts",
+      "frozenBlob": "490b780934f929c9e5503fdb9378a3a62c1f7e41",
+      "deliveryBlob": "490b780934f929c9e5503fdb9378a3a62c1f7e41",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/shell/replayRange.ts",
+      "frozenBlob": "79c508646477ce34bf4ef2c69aa9065a3f983cb4",
+      "deliveryBlob": "79c508646477ce34bf4ef2c69aa9065a3f983cb4",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/shell/timelineLanes.test.ts",
+      "frozenBlob": "9e83455df7f638edf9d301b625109172b4d5d157",
+      "deliveryBlob": "9e83455df7f638edf9d301b625109172b4d5d157",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/shell/timelineLanes.ts",
+      "frozenBlob": "0bedf41a42eeb61390c8cf6b17e0cd8bcf2c6dd5",
+      "deliveryBlob": "0bedf41a42eeb61390c8cf6b17e0cd8bcf2c6dd5",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/shell/verify-controls.mjs",
+      "frozenBlob": "9e7e4c863b318ae0ebf4b05ad255efb3be319328",
+      "deliveryBlob": "9e7e4c863b318ae0ebf4b05ad255efb3be319328",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/styles.css",
+      "frozenBlob": "45b051bc71e8709e2eabf2361ad8f6a83b401d80",
+      "deliveryBlob": "45b051bc71e8709e2eabf2361ad8f6a83b401d80",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/styles/base.css",
+      "frozenBlob": "1f2744aec42b97518383643ca8138bd6c30b3787",
+      "deliveryBlob": "1f2744aec42b97518383643ca8138bd6c30b3787",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/styles/components.css",
+      "frozenBlob": "8bbf61f610e18ee0e5d6d1aa8e466f06611691ec",
+      "deliveryBlob": "8bbf61f610e18ee0e5d6d1aa8e466f06611691ec",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/styles/inspector.css",
+      "frozenBlob": "63b6c52d7efe3d4c0137305f168f3c91d4ad52b3",
+      "deliveryBlob": "63b6c52d7efe3d4c0137305f168f3c91d4ad52b3",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/styles/scene.css",
+      "frozenBlob": "919ee193176e3e1b5ceaf4ae62c1d802cdabdadc",
+      "deliveryBlob": "919ee193176e3e1b5ceaf4ae62c1d802cdabdadc",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/styles/tokens.css",
+      "frozenBlob": "2e970c79ed8ade5872a9ebc08f16ddf89e06abb7",
+      "deliveryBlob": "2e970c79ed8ade5872a9ebc08f16ddf89e06abb7",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/styles/workspaces.css",
+      "frozenBlob": "7dcb5f0fee93ed9c073189d5b54eb9af88412b86",
+      "deliveryBlob": "7dcb5f0fee93ed9c073189d5b54eb9af88412b86",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/coverage/CoverageWorkspace.tsx",
+      "frozenBlob": "db26ef23493e67cb712115ff101ab591648c8f84",
+      "deliveryBlob": "db26ef23493e67cb712115ff101ab591648c8f84",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/coverage/currentSources.test.ts",
+      "frozenBlob": "e6015a8b872e7d8410a3f624d03e44dcafc4ee9c",
+      "deliveryBlob": "e6015a8b872e7d8410a3f624d03e44dcafc4ee9c",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/integrations/IntegrationStatus.tsx",
+      "frozenBlob": "a187eb2dbf32f5b6253bee4f737db49efe8c28fe",
+      "deliveryBlob": "a187eb2dbf32f5b6253bee4f737db49efe8c28fe",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/integrations/IntegrationsWorkspace.tsx",
+      "frozenBlob": "c2c9072fbb0ed249306d176dbb7300c20c3b0887",
+      "deliveryBlob": "c2c9072fbb0ed249306d176dbb7300c20c3b0887",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/integrations/InventoryImport.tsx",
+      "frozenBlob": "a100c97fd375fc8e279fe2834a3160d8744ff1ae",
+      "deliveryBlob": "a100c97fd375fc8e279fe2834a3160d8744ff1ae",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/integrations/SetupChecklist.tsx",
+      "frozenBlob": "0ac1505efd10307a85f32180a18da88a4cb4f953",
+      "deliveryBlob": "0ac1505efd10307a85f32180a18da88a4cb4f953",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/integrations/setup.css",
+      "frozenBlob": "2045956e7b07a0674d206cd464fb1ab3272480bb",
+      "deliveryBlob": "2045956e7b07a0674d206cd464fb1ab3272480bb",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/integrations/setupProgress.test.ts",
+      "frozenBlob": "aaa567f021958e889b575710fa8730dfe2675885",
+      "deliveryBlob": "aaa567f021958e889b575710fa8730dfe2675885",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/integrations/setupProgress.ts",
+      "frozenBlob": "9d94e817c9abe933f1e03ee94f9d0e45aaed0918",
+      "deliveryBlob": "9d94e817c9abe933f1e03ee94f9d0e45aaed0918",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/investigate/EventWorkspace.tsx",
+      "frozenBlob": "4eddf6283c5d2b468228c73202b379c2f7d47c10",
+      "deliveryBlob": "4eddf6283c5d2b468228c73202b379c2f7d47c10",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/investigate/FindingsWorkspace.tsx",
+      "frozenBlob": "077698104e3584103628ea3240f7972fdc4844a6",
+      "deliveryBlob": "077698104e3584103628ea3240f7972fdc4844a6",
+      "identical": true
+    },
+    {
+      "path": "apps/web/src/workspaces/investigate/findingCapabilities.test.ts",
+      "frozenBlob": "66d2ae6fa4e58fa46ea2a29844eacc98b3cf0d67",
+      "deliveryBlob": "66d2ae6fa4e58fa46ea2a29844eacc98b3cf0d67",
+      "identical": true
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "frozenBlob": "008c9456ff959dd979d0660fd511c0b2a3e40ab1",
+      "deliveryBlob": "008c9456ff959dd979d0660fd511c0b2a3e40ab1",
+      "identical": true
+    },
+    {
+      "path": "apps/web/vite.config.ts",
+      "frozenBlob": "ebb4c9aed051c98bb8b4382ba085885ef609bf4a",
+      "deliveryBlob": "ebb4c9aed051c98bb8b4382ba085885ef609bf4a",
+      "identical": true
+    },
+    {
+      "path": "artifacts/redesign/.gitignore",
+      "frozenBlob": "28d7eb7f50b5f689e1d18266056db2080b42156f",
+      "deliveryBlob": "28d7eb7f50b5f689e1d18266056db2080b42156f",
+      "identical": true
+    },
+    {
+      "path": "artifacts/redesign/reproduction/audit-artifact-publication.py",
+      "frozenBlob": "0d30a0d4a02b51225aa904adb01a7ec8c5b1380f",
+      "deliveryBlob": "0d30a0d4a02b51225aa904adb01a7ec8c5b1380f",
+      "identical": true
+    },
+    {
+      "path": "artifacts/redesign/reproduction/check-touch-bounds.ts",
+      "frozenBlob": "3142befa26c2bf902c9280eaa57b2ba033184c02",
+      "deliveryBlob": "3142befa26c2bf902c9280eaa57b2ba033184c02",
+      "identical": true
+    },
+    {
+      "path": "assets/castle-kit/MANIFEST.json",
+      "frozenBlob": "cbe9841db074b7695ffd10f81b86f40ec4a70a38",
+      "deliveryBlob": "cbe9841db074b7695ffd10f81b86f40ec4a70a38",
+      "identical": true
+    },
+    {
+      "path": "docs/AGENT_EVAL_PLAN.md",
+      "frozenBlob": "141a72d712380ccc058619cc920a340197f423b7",
+      "deliveryBlob": "141a72d712380ccc058619cc920a340197f423b7",
+      "identical": true
+    },
+    {
+      "path": "docs/AGENT_EVAL_RESULTS.md",
+      "frozenBlob": "6185a55ce7f2092d6c2d6e873ee855e660ae65d5",
+      "deliveryBlob": "6185a55ce7f2092d6c2d6e873ee855e660ae65d5",
+      "identical": true
+    },
+    {
+      "path": "docs/AGENT_EVAL_V2_PLAN.md",
+      "frozenBlob": "ca26fa6a67abf05e7050bb73023b9d8fa7c558c8",
+      "deliveryBlob": "ca26fa6a67abf05e7050bb73023b9d8fa7c558c8",
+      "identical": true
+    },
+    {
+      "path": "docs/INVESTIGATION_API.md",
+      "frozenBlob": "ad469f32c5ce41a1a14b53c553dadc01d2a7e67f",
+      "deliveryBlob": "ad469f32c5ce41a1a14b53c553dadc01d2a7e67f",
+      "identical": true
+    },
+    {
+      "path": "docs/PILOT_RESULTS.md",
+      "frozenBlob": "4020394b628744560d9600ac3554d3a6625baba3",
+      "deliveryBlob": "4020394b628744560d9600ac3554d3a6625baba3",
+      "identical": true
+    },
+    {
+      "path": "docs/PILOT_RUNBOOK.md",
+      "frozenBlob": "a28eca36a00cbcc147e590586114cb0537997188",
+      "deliveryBlob": "a28eca36a00cbcc147e590586114cb0537997188",
+      "identical": true
+    },
+    {
+      "path": "docs/QUALITY_GATES.md",
+      "frozenBlob": "1a5f613f3d67e326394cd54bfcd98ec17700dd79",
+      "deliveryBlob": "1a5f613f3d67e326394cd54bfcd98ec17700dd79",
+      "identical": true
+    },
+    {
+      "path": "docs/THREAT_MODEL.md",
+      "frozenBlob": "62d40c822c299121faf1c82780da9e35d8eb1d75",
+      "deliveryBlob": "62d40c822c299121faf1c82780da9e35d8eb1d75",
+      "identical": true
+    },
+    {
+      "path": "docs/UPGRADING.md",
+      "frozenBlob": "1b20979341ed83b209e525f0a32186e235dc1e68",
+      "deliveryBlob": "1b20979341ed83b209e525f0a32186e235dc1e68",
+      "identical": true
+    },
+    {
+      "path": "docs/VALIDATION_REPORT.md",
+      "frozenBlob": "86e6af82c080e6217d193ceb78246ccf7e12b37d",
+      "deliveryBlob": "86e6af82c080e6217d193ceb78246ccf7e12b37d",
+      "identical": true
+    },
+    {
+      "path": "docs/VERIFICATION.md",
+      "frozenBlob": "95131a42bab0626b7a8f3f34a373b72865304d0c",
+      "deliveryBlob": "95131a42bab0626b7a8f3f34a373b72865304d0c",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/ACCEPTANCE.md",
+      "frozenBlob": "00ba62b1d7001502a0419d43ba6f2291bfeb44ee",
+      "deliveryBlob": "00ba62b1d7001502a0419d43ba6f2291bfeb44ee",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/AGENTS.md",
+      "frozenBlob": "80bc1dd7a47c594feaceaab016d42fedb5c8b769",
+      "deliveryBlob": "80bc1dd7a47c594feaceaab016d42fedb5c8b769",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/ARCHITECTURE.md",
+      "frozenBlob": "e7cb2a74ffbc756f923c8ae4bfdda5b7fe1fafd1",
+      "deliveryBlob": "e7cb2a74ffbc756f923c8ae4bfdda5b7fe1fafd1",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/BACKLOG.md",
+      "frozenBlob": "880ec9cfb3b754fda3be0aa181cf780065596fc6",
+      "deliveryBlob": "880ec9cfb3b754fda3be0aa181cf780065596fc6",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/README.md",
+      "frozenBlob": "32f0d3626a5484b7f76f170d36206efcc2e27a70",
+      "deliveryBlob": "32f0d3626a5484b7f76f170d36206efcc2e27a70",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/ROADMAP.md",
+      "frozenBlob": "1208ac7bf8e84d629de2443605e351b27553ee4d",
+      "deliveryBlob": "1208ac7bf8e84d629de2443605e351b27553ee4d",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/SOURCES.md",
+      "frozenBlob": "e22e05d59935ad4f67421ee8c5cc38839d6eeadb",
+      "deliveryBlob": "e22e05d59935ad4f67421ee8c5cc38839d6eeadb",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/VALIDATION_REPORT.md",
+      "frozenBlob": "123d0a5c1713c83eca41068d0e48c2ca39296d80",
+      "deliveryBlob": "123d0a5c1713c83eca41068d0e48c2ca39296d80",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/VISUAL_SPEC.md",
+      "frozenBlob": "75421d2c4432ff48b6a48989393b6b50ac06dde7",
+      "deliveryBlob": "75421d2c4432ff48b6a48989393b6b50ac06dde7",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/examples/events.json",
+      "frozenBlob": "af47ffb186295cc556e23304346cc08a431c7c7a",
+      "deliveryBlob": "af47ffb186295cc556e23304346cc08a431c7c7a",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/examples/evidence.json",
+      "frozenBlob": "cecbcd80e1df0475d8a9f8fcf30a71cb4a67cee1",
+      "deliveryBlob": "cecbcd80e1df0475d8a9f8fcf30a71cb4a67cee1",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/examples/graph.json",
+      "frozenBlob": "d720f5cffec9aaaf4e040369d3ac4d407edde1f7",
+      "deliveryBlob": "d720f5cffec9aaaf4e040369d3ac4d407edde1f7",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/examples/scene-proposal.json",
+      "frozenBlob": "7759ce500d12b5eb06b4c7ba6ea40281de18248b",
+      "deliveryBlob": "7759ce500d12b5eb06b4c7ba6ea40281de18248b",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/requirements-validation.txt",
+      "frozenBlob": "3ee1ea1a4270a73d0a83859fefca415177450121",
+      "deliveryBlob": "3ee1ea1a4270a73d0a83859fefca415177450121",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/schemas/event.schema.json",
+      "frozenBlob": "c49e718fec2a191ffc20a49297139ca8b3b6d40b",
+      "deliveryBlob": "c49e718fec2a191ffc20a49297139ca8b3b6d40b",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/schemas/graph.schema.json",
+      "frozenBlob": "69bd1139d1dc31443bdda839e1cf281467d3180d",
+      "deliveryBlob": "69bd1139d1dc31443bdda839e1cf281467d3180d",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/schemas/scene-proposal.schema.json",
+      "frozenBlob": "194701babfe94749115ab81cde99aa4a2568bb89",
+      "deliveryBlob": "194701babfe94749115ab81cde99aa4a2568bb89",
+      "identical": true
+    },
+    {
+      "path": "docs/blueprint/validate_examples.py",
+      "frozenBlob": "b46910fead328f0d5ad36bf432674fb3cdbcd975",
+      "deliveryBlob": "b46910fead328f0d5ad36bf432674fb3cdbcd975",
+      "identical": true
+    },
+    {
+      "path": "docs/img/castle-finding.png",
+      "frozenBlob": "62477db5ed49839b0c7110d1116bbf69aa0c23dd",
+      "deliveryBlob": "62477db5ed49839b0c7110d1116bbf69aa0c23dd",
+      "identical": true
+    },
+    {
+      "path": "docs/img/graph-2d.png",
+      "frozenBlob": "2e3427f4b11f2e4cfa1f5e58c0380625863ce3ac",
+      "deliveryBlob": "2e3427f4b11f2e4cfa1f5e58c0380625863ce3ac",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/A-finding-in-browser.png",
+      "frozenBlob": "3df16b04d5222f42a4370d2782e765cd9770491b",
+      "deliveryBlob": "3df16b04d5222f42a4370d2782e765cd9770491b",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/C-2d-asset.png",
+      "frozenBlob": "4851cdb71a55853ddd664306a1f5ed31a327c6d8",
+      "deliveryBlob": "4851cdb71a55853ddd664306a1f5ed31a327c6d8",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/C-3d-finding.png",
+      "frozenBlob": "f9c6a0c2d769b56d0bfa5ee9bce3ba85ac2738b0",
+      "deliveryBlob": "f9c6a0c2d769b56d0bfa5ee9bce3ba85ac2738b0",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/C-replay.png",
+      "frozenBlob": "d463cfb82b02b4571657c75db2016fbf97e35344",
+      "deliveryBlob": "d463cfb82b02b4571657c75db2016fbf97e35344",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/C2-evidence-fetch-failed.png",
+      "frozenBlob": "5304ce0eb577f8a5681100c1c74d999c8984cdac",
+      "deliveryBlob": "5304ce0eb577f8a5681100c1c74d999c8984cdac",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/C3-webgl-fallback.png",
+      "frozenBlob": "d04ca9c49d988222c5e1ccb363894bd2976bacf5",
+      "deliveryBlob": "d04ca9c49d988222c5e1ccb363894bd2976bacf5",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/D-stale-source.png",
+      "frozenBlob": "ec8e18b74297d8db8ddbc7b05465dedde5721a1b",
+      "deliveryBlob": "ec8e18b74297d8db8ddbc7b05465dedde5721a1b",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/E-connection-lost.png",
+      "frozenBlob": "731098710bd7457537ba5747af1fc699fc8f3691",
+      "deliveryBlob": "731098710bd7457537ba5747af1fc699fc8f3691",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/E-reconnected.png",
+      "frozenBlob": "7e50ce16e840eea0a562f6c29056463d4f78de78",
+      "deliveryBlob": "7e50ce16e840eea0a562f6c29056463d4f78de78",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/E2-reconnected-snapshot-failed.png",
+      "frozenBlob": "0a2611847b7e36aa3ff307895528be6206af18a2",
+      "deliveryBlob": "0a2611847b7e36aa3ff307895528be6206af18a2",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/E3-snapshot-failed-sse-connected.png",
+      "frozenBlob": "55c08daab7e74e7d79d0b154cde31dee1174bc6f",
+      "deliveryBlob": "55c08daab7e74e7d79d0b154cde31dee1174bc6f",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/G-untrusted-text-as-data.png",
+      "frozenBlob": "ccd7a4dffa57714eaf08dea56730acfb21df73f8",
+      "deliveryBlob": "ccd7a4dffa57714eaf08dea56730acfb21df73f8",
+      "identical": true
+    },
+    {
+      "path": "docs/img/pilot/pilot-observations.json",
+      "frozenBlob": "7b791b3171da94f120b9ea7d290914edc02550e8",
+      "deliveryBlob": "7b791b3171da94f120b9ea7d290914edc02550e8",
+      "identical": true
+    },
+    {
+      "path": "docs/img/replay.png",
+      "frozenBlob": "95c8f75652a8cfe94432c731fbb95e55a225c513",
+      "deliveryBlob": "95c8f75652a8cfe94432c731fbb95e55a225c513",
+      "identical": true
+    },
+    {
+      "path": "e2e/announcements-redesign.spec.ts",
+      "frozenBlob": "7e08f773142ed400eecfb4bd690b2231b5b2dac0",
+      "deliveryBlob": "7e08f773142ed400eecfb4bd690b2231b5b2dac0",
+      "identical": true
+    },
+    {
+      "path": "e2e/camera-redesign.spec.ts",
+      "frozenBlob": "2462449e1ce9b811e0465be401571f074f6554ce",
+      "deliveryBlob": "2462449e1ce9b811e0465be401571f074f6554ce",
+      "identical": true
+    },
+    {
+      "path": "e2e/evidence-cards-redesign.spec.ts",
+      "frozenBlob": "f852d109edc96b7eb0a632a900a1e0dbf20ef4e0",
+      "deliveryBlob": "f852d109edc96b7eb0a632a900a1e0dbf20ef4e0",
+      "identical": true
+    },
+    {
+      "path": "e2e/evidence-redesign.spec.ts",
+      "frozenBlob": "5e2164ac69fa31030aad8f6b166e01e44ebb5c19",
+      "deliveryBlob": "5e2164ac69fa31030aad8f6b166e01e44ebb5c19",
+      "identical": true
+    },
+    {
+      "path": "e2e/expanded-investigation-redesign.spec.ts",
+      "frozenBlob": "dfbe43d36a6fd380dee03b5994ff1f50019edbcf",
+      "deliveryBlob": "dfbe43d36a6fd380dee03b5994ff1f50019edbcf",
+      "identical": true
+    },
+    {
+      "path": "e2e/grouped-focus-redesign.spec.ts",
+      "frozenBlob": "e24074b0f08f78d0d87fbee159601680a775e008",
+      "deliveryBlob": "e24074b0f08f78d0d87fbee159601680a775e008",
+      "identical": true
+    },
+    {
+      "path": "e2e/harness.ts",
+      "frozenBlob": "dd52ef06aff6fdb1ed815dd135d649a0f0d60cdd",
+      "deliveryBlob": "dd52ef06aff6fdb1ed815dd135d649a0f0d60cdd",
+      "identical": true
+    },
+    {
+      "path": "e2e/latency-redesign.spec.ts",
+      "frozenBlob": "81ea9a87a18c0a7384dd8c465ac015f15f6048e7",
+      "deliveryBlob": "81ea9a87a18c0a7384dd8c465ac015f15f6048e7",
+      "identical": true
+    },
+    {
+      "path": "e2e/module-recovery-redesign.spec.ts",
+      "frozenBlob": "5e1eca64ab9f41b3041d6cc9de1c6f219c1ab0d8",
+      "deliveryBlob": "5e1eca64ab9f41b3041d6cc9de1c6f219c1ab0d8",
+      "identical": true
+    },
+    {
+      "path": "e2e/navigation-redesign.spec.ts",
+      "frozenBlob": "9d560e77dbc6500e7f6c3185b5b9f900621b6231",
+      "deliveryBlob": "9d560e77dbc6500e7f6c3185b5b9f900621b6231",
+      "identical": true
+    },
+    {
+      "path": "e2e/pilot.spec.ts",
+      "frozenBlob": "94454dc6ffa5f321f2a7655d6dd4fdd74d6e4c02",
+      "deliveryBlob": "94454dc6ffa5f321f2a7655d6dd4fdd74d6e4c02",
+      "identical": true
+    },
+    {
+      "path": "e2e/presentation-redesign.spec.ts",
+      "frozenBlob": "58301e792825ee770fa7ffcfcb3cf77638b34fb7",
+      "deliveryBlob": "58301e792825ee770fa7ffcfcb3cf77638b34fb7",
+      "identical": true
+    },
+    {
+      "path": "e2e/redesign-harness.ts",
+      "frozenBlob": "b3fd6cbda6d881c4ba94fbc1b9e426828c079a64",
+      "deliveryBlob": "b3fd6cbda6d881c4ba94fbc1b9e426828c079a64",
+      "identical": true
+    },
+    {
+      "path": "e2e/redesign.spec.ts",
+      "frozenBlob": "588d520213c1dc35893edddba4ed47ccb0264d47",
+      "deliveryBlob": "588d520213c1dc35893edddba4ed47ccb0264d47",
+      "identical": true
+    },
+    {
+      "path": "e2e/setup-redesign.spec.ts",
+      "frozenBlob": "38a76c31dddd5a9504661556a155cd8578b7d110",
+      "deliveryBlob": "38a76c31dddd5a9504661556a155cd8578b7d110",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s1-blocked-requests-a.json",
+      "frozenBlob": "2c59eccb110eaf3dab2596752086732d5461a24c",
+      "deliveryBlob": "2c59eccb110eaf3dab2596752086732d5461a24c",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s1-blocked-requests-b.json",
+      "frozenBlob": "6ecc59aea760b07465f7bdbfdd4e3f4de0358c1b",
+      "deliveryBlob": "6ecc59aea760b07465f7bdbfdd4e3f4de0358c1b",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s2-failures-then-success-a.json",
+      "frozenBlob": "de77868e4f7707c12afb3c5f05805b6513177ad8",
+      "deliveryBlob": "de77868e4f7707c12afb3c5f05805b6513177ad8",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s2-failures-then-success-b.json",
+      "frozenBlob": "52d42c03c3416b9451a6890a778668958272e800",
+      "deliveryBlob": "52d42c03c3416b9451a6890a778668958272e800",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s3-independent-observation-a.json",
+      "frozenBlob": "fafc6a2f41bbcd66b0acc4d055cb0e2ebaa44f3b",
+      "deliveryBlob": "fafc6a2f41bbcd66b0acc4d055cb0e2ebaa44f3b",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s3-independent-observation-b.json",
+      "frozenBlob": "00f0c7c0b4907aa18bac796e649ba852c10c27fb",
+      "deliveryBlob": "00f0c7c0b4907aa18bac796e649ba852c10c27fb",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s4-conflicting-reports-a.json",
+      "frozenBlob": "d0b0a8b354d589e321c414c95b8a6e11b014e10a",
+      "deliveryBlob": "d0b0a8b354d589e321c414c95b8a6e11b014e10a",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s4-conflicting-reports-b.json",
+      "frozenBlob": "2cd314cef11e48a9deb03c5d0852d6852ef50023",
+      "deliveryBlob": "2cd314cef11e48a9deb03c5d0852d6852ef50023",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s5-visibility-gaps-a.json",
+      "frozenBlob": "ebb785aba9826043f1ef18f1f4aa5b0f87ff0bd0",
+      "deliveryBlob": "ebb785aba9826043f1ef18f1f4aa5b0f87ff0bd0",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s5-visibility-gaps-b.json",
+      "frozenBlob": "a5718162a5d4952df4521691e577c7797751093f",
+      "deliveryBlob": "a5718162a5d4952df4521691e577c7797751093f",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s6-honeytoken-a.json",
+      "frozenBlob": "cf76c8d6b2cea79676539dd45cf84fef7b198e0a",
+      "deliveryBlob": "cf76c8d6b2cea79676539dd45cf84fef7b198e0a",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s6-honeytoken-b.json",
+      "frozenBlob": "74c98a2405f98ad196bd9b5b18a84fb10c876585",
+      "deliveryBlob": "74c98a2405f98ad196bd9b5b18a84fb10c876585",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s7-embedded-instructions-a.json",
+      "frozenBlob": "ca8b0b7baa6d0e4ae8194d09fb07522a9d0845a3",
+      "deliveryBlob": "ca8b0b7baa6d0e4ae8194d09fb07522a9d0845a3",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s7-embedded-instructions-b.json",
+      "frozenBlob": "e3affd170bea5f147780a41ce4e8a5ae567e7b9e",
+      "deliveryBlob": "e3affd170bea5f147780a41ce4e8a5ae567e7b9e",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s8-incomplete-unknown-a.json",
+      "frozenBlob": "c7f7cfc82aad749690a2181da4d2e042ad9608d5",
+      "deliveryBlob": "c7f7cfc82aad749690a2181da4d2e042ad9608d5",
+      "identical": true
+    },
+    {
+      "path": "eval/grading/v1/s8-incomplete-unknown-b.json",
+      "frozenBlob": "5c4f2b091ab7e1335b59179f6c48a62cafdce264",
+      "deliveryBlob": "5c4f2b091ab7e1335b59179f6c48a62cafdce264",
+      "identical": true
+    },
+    {
+      "path": "eval/review/v1-auto-checks.md",
+      "frozenBlob": "bd9989a1e67346e1becd1a409e98d9688f1e4e32",
+      "deliveryBlob": "bd9989a1e67346e1becd1a409e98d9688f1e4e32",
+      "identical": true
+    },
+    {
+      "path": "eval/review/v1-citation-audit.json",
+      "frozenBlob": "89a2df1536f522d7c5c1eb9744ebf1baf42ce1f7",
+      "deliveryBlob": "89a2df1536f522d7c5c1eb9744ebf1baf42ce1f7",
+      "identical": true
+    },
+    {
+      "path": "eval/review/v1-citation-audit.md",
+      "frozenBlob": "e6c43e9752bc2aeb4ec185882840618c4fa1a6d5",
+      "deliveryBlob": "e6c43e9752bc2aeb4ec185882840618c4fa1a6d5",
+      "identical": true
+    },
+    {
+      "path": "eval/review/v1-human-review-packet.md",
+      "frozenBlob": "1789d94a2a324bcaa4a5988c2c90b2c62cf0f7bc",
+      "deliveryBlob": "1789d94a2a324bcaa4a5988c2c90b2c62cf0f7bc",
+      "identical": true
+    },
+    {
+      "path": "eval/review/v1-manual-review.md",
+      "frozenBlob": "790c67a30e0cabd1faae67c42444613b4b749cdd",
+      "deliveryBlob": "790c67a30e0cabd1faae67c42444613b4b749cdd",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/00-shakedown-dk/attempts/s1-blocked-requests-a__dk__r1.json",
+      "frozenBlob": "0321e37942a6e6c4699a01b718a1c68b08260251",
+      "deliveryBlob": "0321e37942a6e6c4699a01b718a1c68b08260251",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/00-shakedown-dk/manifest.json",
+      "frozenBlob": "645713edf8a61e5878fe214677f321efa1b1a8e6",
+      "deliveryBlob": "645713edf8a61e5878fe214677f321efa1b1a8e6",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/00-shakedown-dk/progress.jsonl",
+      "frozenBlob": "ccf38b67b1413591eeb8795a8a85031eee7641c6",
+      "deliveryBlob": "ccf38b67b1413591eeb8795a8a85031eee7641c6",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/00-shakedown-dk/summary.json",
+      "frozenBlob": "316f1831da71b9ac69a901ed8816a76f2fc502b1",
+      "deliveryBlob": "316f1831da71b9ac69a901ed8816a76f2fc502b1",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/01-shakedown-dk/attempts/s1-blocked-requests-a__dk__r1.json",
+      "frozenBlob": "21394d046ecefdb9affbefb7a41cc007dad45ccc",
+      "deliveryBlob": "21394d046ecefdb9affbefb7a41cc007dad45ccc",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/01-shakedown-dk/manifest.json",
+      "frozenBlob": "060d1dbac36f9eade9cff49ae602d8dc5d6279b3",
+      "deliveryBlob": "060d1dbac36f9eade9cff49ae602d8dc5d6279b3",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/01-shakedown-dk/progress.jsonl",
+      "frozenBlob": "0136c75db4d16fddda7b182fc259c9d191a9a4f8",
+      "deliveryBlob": "0136c75db4d16fddda7b182fc259c9d191a9a4f8",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/01-shakedown-dk/summary.json",
+      "frozenBlob": "22919a90d7723ed2b667a6db330c41a0e6d89df4",
+      "deliveryBlob": "22919a90d7723ed2b667a6db330c41a0e6d89df4",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/02-shakedown-dk/attempts/s1-blocked-requests-a__dk__r1.json",
+      "frozenBlob": "19bd62baabeed778c81fcb5c154bfa934a4cc77b",
+      "deliveryBlob": "19bd62baabeed778c81fcb5c154bfa934a4cc77b",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/02-shakedown-dk/manifest.json",
+      "frozenBlob": "fda62866180e1008bacb1e1dfee6e44def565f1b",
+      "deliveryBlob": "fda62866180e1008bacb1e1dfee6e44def565f1b",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/02-shakedown-dk/progress.jsonl",
+      "frozenBlob": "c009a9b9d84a303b45a62ae71c40f81a4a0a4343",
+      "deliveryBlob": "c009a9b9d84a303b45a62ae71c40f81a4a0a4343",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/02-shakedown-dk/summary.json",
+      "frozenBlob": "1e4c62222a0cbc1440c9851a458185027dac535d",
+      "deliveryBlob": "1e4c62222a0cbc1440c9851a458185027dac535d",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s1-blocked-requests-a__dk__r1.json",
+      "frozenBlob": "71b95ee65a4f077f200dab3577e02505f1e70be4",
+      "deliveryBlob": "71b95ee65a4f077f200dab3577e02505f1e70be4",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s1-blocked-requests-a__dk__r2.json",
+      "frozenBlob": "00c6bfb14e2c96f26390617790f918f7b200be3b",
+      "deliveryBlob": "00c6bfb14e2c96f26390617790f918f7b200be3b",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s1-blocked-requests-a__dk__r3.json",
+      "frozenBlob": "5005d7c7855d9992d6f370facd47222d2b1864b6",
+      "deliveryBlob": "5005d7c7855d9992d6f370facd47222d2b1864b6",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s2-failures-then-success-a__dk__r1.json",
+      "frozenBlob": "47e4ed51fd9e69c942943d9050b2f474152c58fd",
+      "deliveryBlob": "47e4ed51fd9e69c942943d9050b2f474152c58fd",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s2-failures-then-success-a__dk__r2.json",
+      "frozenBlob": "b0d271f63e38ae55a73569f7d928c675c7614842",
+      "deliveryBlob": "b0d271f63e38ae55a73569f7d928c675c7614842",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s2-failures-then-success-a__dk__r3.json",
+      "frozenBlob": "edf79f8b59a3333b7a8c8f426e246d6c522ba2d5",
+      "deliveryBlob": "edf79f8b59a3333b7a8c8f426e246d6c522ba2d5",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s3-independent-observation-a__dk__r1.json",
+      "frozenBlob": "a627ad9f89643c6318603610dad2d5b871060e7f",
+      "deliveryBlob": "a627ad9f89643c6318603610dad2d5b871060e7f",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s3-independent-observation-a__dk__r2.json",
+      "frozenBlob": "828f759d03e661f4c0d7803d7cd2e12b8b71c0ae",
+      "deliveryBlob": "828f759d03e661f4c0d7803d7cd2e12b8b71c0ae",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s3-independent-observation-a__dk__r3.json",
+      "frozenBlob": "1c7c7d1d522d5f34077a7b07548804628eaa1c70",
+      "deliveryBlob": "1c7c7d1d522d5f34077a7b07548804628eaa1c70",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s4-conflicting-reports-a__dk__r1.json",
+      "frozenBlob": "91fe2010debe305e1d5eaad624e97fd1d971fe4c",
+      "deliveryBlob": "91fe2010debe305e1d5eaad624e97fd1d971fe4c",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s4-conflicting-reports-a__dk__r2.json",
+      "frozenBlob": "557c4d970a77a756826b472bdeaab70b8e3e0222",
+      "deliveryBlob": "557c4d970a77a756826b472bdeaab70b8e3e0222",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s4-conflicting-reports-a__dk__r3.json",
+      "frozenBlob": "c99758b0dfea297c743bda4f901eae30d826b18a",
+      "deliveryBlob": "c99758b0dfea297c743bda4f901eae30d826b18a",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s5-visibility-gaps-a__dk__r1.json",
+      "frozenBlob": "1c0cd3ad2d0b1e53edb6e9aaa399c18093ec6487",
+      "deliveryBlob": "1c0cd3ad2d0b1e53edb6e9aaa399c18093ec6487",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s5-visibility-gaps-a__dk__r2.json",
+      "frozenBlob": "d88ff621cb887f151ce23fedfaab1fa4f4f2b816",
+      "deliveryBlob": "d88ff621cb887f151ce23fedfaab1fa4f4f2b816",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s5-visibility-gaps-a__dk__r3.json",
+      "frozenBlob": "fc25280718417ee7af0fe0b19ce1e72c581aa149",
+      "deliveryBlob": "fc25280718417ee7af0fe0b19ce1e72c581aa149",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s6-honeytoken-a__dk__r1.json",
+      "frozenBlob": "6d2bfc6e246ab55dbbcf76429af5c1ef962468d1",
+      "deliveryBlob": "6d2bfc6e246ab55dbbcf76429af5c1ef962468d1",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s6-honeytoken-a__dk__r2.json",
+      "frozenBlob": "24c26697f4d6fb04f74f270190867939e380bbec",
+      "deliveryBlob": "24c26697f4d6fb04f74f270190867939e380bbec",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s6-honeytoken-a__dk__r3.json",
+      "frozenBlob": "4e9bd2fc59e524ea801879020aa0ca62f6d1a5a9",
+      "deliveryBlob": "4e9bd2fc59e524ea801879020aa0ca62f6d1a5a9",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s7-embedded-instructions-a__dk__r1.json",
+      "frozenBlob": "79f9cf8082f66b1b2945be138ad541fe8fa74a29",
+      "deliveryBlob": "79f9cf8082f66b1b2945be138ad541fe8fa74a29",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s7-embedded-instructions-a__dk__r2.json",
+      "frozenBlob": "7a10c0eb70a598f19f46e642e140088336117621",
+      "deliveryBlob": "7a10c0eb70a598f19f46e642e140088336117621",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s7-embedded-instructions-a__dk__r3.json",
+      "frozenBlob": "0ef53839375922768980dddb195975756619c394",
+      "deliveryBlob": "0ef53839375922768980dddb195975756619c394",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s8-incomplete-unknown-a__dk__r1.json",
+      "frozenBlob": "5ae3c9b2f7766edb64ff8b1ad363430459dba189",
+      "deliveryBlob": "5ae3c9b2f7766edb64ff8b1ad363430459dba189",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s8-incomplete-unknown-a__dk__r2.json",
+      "frozenBlob": "d95c043ce4c7428b3ce726cc3e929feaea24167c",
+      "deliveryBlob": "d95c043ce4c7428b3ce726cc3e929feaea24167c",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/attempts/s8-incomplete-unknown-a__dk__r3.json",
+      "frozenBlob": "1e706b1f1afd9ada7ccde251210ce453b845a9e8",
+      "deliveryBlob": "1e706b1f1afd9ada7ccde251210ce453b845a9e8",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/manifest.json",
+      "frozenBlob": "980078e52c2b0ba25975de5988b545caa2624edb",
+      "deliveryBlob": "980078e52c2b0ba25975de5988b545caa2624edb",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/progress.jsonl",
+      "frozenBlob": "e213f5c8f26a561e9a82fd9185863f82d4959b71",
+      "deliveryBlob": "e213f5c8f26a561e9a82fd9185863f82d4959b71",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/10-dev-dk/summary.json",
+      "frozenBlob": "93ebb616eec510b2ed969df67c4c27f0b56cbb92",
+      "deliveryBlob": "93ebb616eec510b2ed969df67c4c27f0b56cbb92",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s1-blocked-requests-b__dk__r1.json",
+      "frozenBlob": "36531eef623ffd22932eda80dbbc99ec62e84350",
+      "deliveryBlob": "36531eef623ffd22932eda80dbbc99ec62e84350",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s1-blocked-requests-b__dk__r2.json",
+      "frozenBlob": "9c61e69a44a9e86bd8100126fd5760065828c9a7",
+      "deliveryBlob": "9c61e69a44a9e86bd8100126fd5760065828c9a7",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s1-blocked-requests-b__dk__r3.json",
+      "frozenBlob": "c912963d285e402345802f613662cf8ee603bf32",
+      "deliveryBlob": "c912963d285e402345802f613662cf8ee603bf32",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s2-failures-then-success-b__dk__r1.json",
+      "frozenBlob": "4f6af0e74b44ea096dc191c611ebf4d0c393a9c8",
+      "deliveryBlob": "4f6af0e74b44ea096dc191c611ebf4d0c393a9c8",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s2-failures-then-success-b__dk__r2.json",
+      "frozenBlob": "a803fc50c45ac12f00037957d9eff655998e9242",
+      "deliveryBlob": "a803fc50c45ac12f00037957d9eff655998e9242",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s2-failures-then-success-b__dk__r3.json",
+      "frozenBlob": "9a7643ecf31d4b960c646f35847b3db4bdfb060f",
+      "deliveryBlob": "9a7643ecf31d4b960c646f35847b3db4bdfb060f",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s3-independent-observation-b__dk__r1.json",
+      "frozenBlob": "d28f67e64cb5c3730b9ccf8f650ad6df71dd0731",
+      "deliveryBlob": "d28f67e64cb5c3730b9ccf8f650ad6df71dd0731",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s3-independent-observation-b__dk__r2.json",
+      "frozenBlob": "6001f0670072a83e01802ac1efd7f97bb04ac4c8",
+      "deliveryBlob": "6001f0670072a83e01802ac1efd7f97bb04ac4c8",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s3-independent-observation-b__dk__r3.json",
+      "frozenBlob": "a0d5bf909748f4b193dab2836070da713a3ccf48",
+      "deliveryBlob": "a0d5bf909748f4b193dab2836070da713a3ccf48",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s4-conflicting-reports-b__dk__r1.json",
+      "frozenBlob": "2219ecaa5ac2fc8025c5d62cd3f8180295edb1a4",
+      "deliveryBlob": "2219ecaa5ac2fc8025c5d62cd3f8180295edb1a4",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s4-conflicting-reports-b__dk__r2.json",
+      "frozenBlob": "ff8b9c755560979a23c4f168af982b36536b06a0",
+      "deliveryBlob": "ff8b9c755560979a23c4f168af982b36536b06a0",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s4-conflicting-reports-b__dk__r3.json",
+      "frozenBlob": "21207c03055daf781a2346ca6deea088e7a55d76",
+      "deliveryBlob": "21207c03055daf781a2346ca6deea088e7a55d76",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s5-visibility-gaps-b__dk__r1.json",
+      "frozenBlob": "5dc1daf599af2b8eaf621e26e383ed38f7caf495",
+      "deliveryBlob": "5dc1daf599af2b8eaf621e26e383ed38f7caf495",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s5-visibility-gaps-b__dk__r2.json",
+      "frozenBlob": "22f0909eed5f36636906f72e3e31c71d212d5d49",
+      "deliveryBlob": "22f0909eed5f36636906f72e3e31c71d212d5d49",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s5-visibility-gaps-b__dk__r3.json",
+      "frozenBlob": "c6930a3dcc929c69374fd64cdf2f20f12abcd94a",
+      "deliveryBlob": "c6930a3dcc929c69374fd64cdf2f20f12abcd94a",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s6-honeytoken-b__dk__r1.json",
+      "frozenBlob": "36b7195d799f9304e1ba0499b3333ccaaccdaab6",
+      "deliveryBlob": "36b7195d799f9304e1ba0499b3333ccaaccdaab6",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s6-honeytoken-b__dk__r2.json",
+      "frozenBlob": "b88a0c14f93413ebb36ddb5b86fd4da3409412cb",
+      "deliveryBlob": "b88a0c14f93413ebb36ddb5b86fd4da3409412cb",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s6-honeytoken-b__dk__r3.json",
+      "frozenBlob": "bb05acaaf5f2453c3db82c3cafb5c080273cf89f",
+      "deliveryBlob": "bb05acaaf5f2453c3db82c3cafb5c080273cf89f",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s7-embedded-instructions-b__dk__r1.json",
+      "frozenBlob": "362158d12881d027228f2bf53124da1db18d8a2e",
+      "deliveryBlob": "362158d12881d027228f2bf53124da1db18d8a2e",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s7-embedded-instructions-b__dk__r2.json",
+      "frozenBlob": "4578ab3d584d86196a26f0f31a95da94dc3ea28b",
+      "deliveryBlob": "4578ab3d584d86196a26f0f31a95da94dc3ea28b",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s7-embedded-instructions-b__dk__r3.json",
+      "frozenBlob": "855c856ddee5c99b354647d7b864642d5a433a90",
+      "deliveryBlob": "855c856ddee5c99b354647d7b864642d5a433a90",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s8-incomplete-unknown-b__dk__r1.json",
+      "frozenBlob": "e978646e034b3a47d8c29057a94abb9cf99b2f92",
+      "deliveryBlob": "e978646e034b3a47d8c29057a94abb9cf99b2f92",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s8-incomplete-unknown-b__dk__r2.json",
+      "frozenBlob": "34b668231726afe6b4f5e6065a78da0a40108ed5",
+      "deliveryBlob": "34b668231726afe6b4f5e6065a78da0a40108ed5",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/attempts/s8-incomplete-unknown-b__dk__r3.json",
+      "frozenBlob": "20c5ce63c30b50e4a84b0f91858cf2752053deb7",
+      "deliveryBlob": "20c5ce63c30b50e4a84b0f91858cf2752053deb7",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/manifest.json",
+      "frozenBlob": "600133c0df801ced89c7e82bba3a8dbf0de64652",
+      "deliveryBlob": "600133c0df801ced89c7e82bba3a8dbf0de64652",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/progress.jsonl",
+      "frozenBlob": "70f2ce94df40051c63bb4d0bad0037cca5bccb10",
+      "deliveryBlob": "70f2ce94df40051c63bb4d0bad0037cca5bccb10",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/20-heldout-dk/summary.json",
+      "frozenBlob": "836f24bddce4489deac51a3d3d1371811f8e3d04",
+      "deliveryBlob": "836f24bddce4489deac51a3d3d1371811f8e3d04",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s1-blocked-requests-a__baseline__r1.json",
+      "frozenBlob": "25fdf053d91808b009be7333bbb647d69647a2ae",
+      "deliveryBlob": "25fdf053d91808b009be7333bbb647d69647a2ae",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s1-blocked-requests-a__baseline__r2.json",
+      "frozenBlob": "d0060dbb0a21fdeddbe5ba7e769c9305a4d393b9",
+      "deliveryBlob": "d0060dbb0a21fdeddbe5ba7e769c9305a4d393b9",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s1-blocked-requests-b__baseline__r1.json",
+      "frozenBlob": "70f2038cf6053df642c02bfce88a4e7c914f0c13",
+      "deliveryBlob": "70f2038cf6053df642c02bfce88a4e7c914f0c13",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s1-blocked-requests-b__baseline__r2.json",
+      "frozenBlob": "619423f557a2e640c0cded69d13f4ea589cf73a2",
+      "deliveryBlob": "619423f557a2e640c0cded69d13f4ea589cf73a2",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s2-failures-then-success-a__baseline__r1.json",
+      "frozenBlob": "396bfc7e590c3e1c35cfc39436a272a64d839b39",
+      "deliveryBlob": "396bfc7e590c3e1c35cfc39436a272a64d839b39",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s2-failures-then-success-a__baseline__r2.json",
+      "frozenBlob": "d4c192a6a74d86ce9c8dec172f563299b48cd8a2",
+      "deliveryBlob": "d4c192a6a74d86ce9c8dec172f563299b48cd8a2",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s2-failures-then-success-b__baseline__r1.json",
+      "frozenBlob": "b9e474c10284458076d477f0676c8d272e7b5d4e",
+      "deliveryBlob": "b9e474c10284458076d477f0676c8d272e7b5d4e",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s2-failures-then-success-b__baseline__r2.json",
+      "frozenBlob": "fe099a29bcb144fe9dfed0da3743e66ce5e9b380",
+      "deliveryBlob": "fe099a29bcb144fe9dfed0da3743e66ce5e9b380",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s3-independent-observation-a__baseline__r1.json",
+      "frozenBlob": "bf6c1087a4c628b639e4b8fc83b4ac59a75fdcb7",
+      "deliveryBlob": "bf6c1087a4c628b639e4b8fc83b4ac59a75fdcb7",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s3-independent-observation-a__baseline__r2.json",
+      "frozenBlob": "c360f3751240328424aacc456edf76964aa92975",
+      "deliveryBlob": "c360f3751240328424aacc456edf76964aa92975",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s3-independent-observation-b__baseline__r1.json",
+      "frozenBlob": "18c2d403d64d14eed49b9420c337416a1b21ce6e",
+      "deliveryBlob": "18c2d403d64d14eed49b9420c337416a1b21ce6e",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s3-independent-observation-b__baseline__r2.json",
+      "frozenBlob": "bacd60c0d1e4c38c2bf44421676cab4f63a2abba",
+      "deliveryBlob": "bacd60c0d1e4c38c2bf44421676cab4f63a2abba",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s4-conflicting-reports-a__baseline__r1.json",
+      "frozenBlob": "64c9377428263317084c617209ee1d69e100b4a1",
+      "deliveryBlob": "64c9377428263317084c617209ee1d69e100b4a1",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s4-conflicting-reports-a__baseline__r2.json",
+      "frozenBlob": "2c9afd72ba510476308131269d61d62b343a5003",
+      "deliveryBlob": "2c9afd72ba510476308131269d61d62b343a5003",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s4-conflicting-reports-b__baseline__r1.json",
+      "frozenBlob": "1f29463734da1917562206caac6d63f31a7086fb",
+      "deliveryBlob": "1f29463734da1917562206caac6d63f31a7086fb",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s4-conflicting-reports-b__baseline__r2.json",
+      "frozenBlob": "3da3f0d96757182332b718edf8aaafe77a874d99",
+      "deliveryBlob": "3da3f0d96757182332b718edf8aaafe77a874d99",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s5-visibility-gaps-a__baseline__r1.json",
+      "frozenBlob": "6e1e65bb9b2e7d40504df7e297d487b9a9ba0f6d",
+      "deliveryBlob": "6e1e65bb9b2e7d40504df7e297d487b9a9ba0f6d",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s5-visibility-gaps-a__baseline__r2.json",
+      "frozenBlob": "6e4bd87cb9f5dfcfa41886b3124c5827f8b37734",
+      "deliveryBlob": "6e4bd87cb9f5dfcfa41886b3124c5827f8b37734",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s5-visibility-gaps-b__baseline__r1.json",
+      "frozenBlob": "bb437c9e8bd93f1f2cfc2900278e8c0d10b111e9",
+      "deliveryBlob": "bb437c9e8bd93f1f2cfc2900278e8c0d10b111e9",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s5-visibility-gaps-b__baseline__r2.json",
+      "frozenBlob": "5ce767c47cf240b98229a1bd309fb42e6d20039a",
+      "deliveryBlob": "5ce767c47cf240b98229a1bd309fb42e6d20039a",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s6-honeytoken-a__baseline__r1.json",
+      "frozenBlob": "8ce4284cc2ea613164ad576795f0f1d16510ee5f",
+      "deliveryBlob": "8ce4284cc2ea613164ad576795f0f1d16510ee5f",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s6-honeytoken-a__baseline__r2.json",
+      "frozenBlob": "db4af29cd81f847f3378af1eda90028f6efec139",
+      "deliveryBlob": "db4af29cd81f847f3378af1eda90028f6efec139",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s6-honeytoken-b__baseline__r1.json",
+      "frozenBlob": "f1b2c777d007f7c50fb4d789f10b4b23b78c0f7f",
+      "deliveryBlob": "f1b2c777d007f7c50fb4d789f10b4b23b78c0f7f",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s6-honeytoken-b__baseline__r2.json",
+      "frozenBlob": "39bb0ff50274dc6dbed0ca56bd151283e2b58ac7",
+      "deliveryBlob": "39bb0ff50274dc6dbed0ca56bd151283e2b58ac7",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s7-embedded-instructions-a__baseline__r1.json",
+      "frozenBlob": "553d6918651d44182809075a6e594bb760ef1f6e",
+      "deliveryBlob": "553d6918651d44182809075a6e594bb760ef1f6e",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s7-embedded-instructions-a__baseline__r2.json",
+      "frozenBlob": "6a85711b330295da8b16eda1ae8526c2067d08ea",
+      "deliveryBlob": "6a85711b330295da8b16eda1ae8526c2067d08ea",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s7-embedded-instructions-b__baseline__r1.json",
+      "frozenBlob": "5dadf1b25d949b56d2eb8b5dc9750cee84351c22",
+      "deliveryBlob": "5dadf1b25d949b56d2eb8b5dc9750cee84351c22",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s7-embedded-instructions-b__baseline__r2.json",
+      "frozenBlob": "d7011ac7d6497051040a09a12855a2031a7ddb56",
+      "deliveryBlob": "d7011ac7d6497051040a09a12855a2031a7ddb56",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s8-incomplete-unknown-a__baseline__r1.json",
+      "frozenBlob": "361a752bc9e42fdf10d405fbadd02f3125176551",
+      "deliveryBlob": "361a752bc9e42fdf10d405fbadd02f3125176551",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s8-incomplete-unknown-a__baseline__r2.json",
+      "frozenBlob": "412202b5a32cf3a7f1532f306d90a014c6a51fcc",
+      "deliveryBlob": "412202b5a32cf3a7f1532f306d90a014c6a51fcc",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s8-incomplete-unknown-b__baseline__r1.json",
+      "frozenBlob": "44f9e84c830d09a1e926acaff0c22074d898d4ce",
+      "deliveryBlob": "44f9e84c830d09a1e926acaff0c22074d898d4ce",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/attempts/s8-incomplete-unknown-b__baseline__r2.json",
+      "frozenBlob": "92adc2b6a0207f001925e7bc2058f9ade4bc85e6",
+      "deliveryBlob": "92adc2b6a0207f001925e7bc2058f9ade4bc85e6",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/manifest.json",
+      "frozenBlob": "68c56518dc32e5cd0c80f5993081eff9c056f809",
+      "deliveryBlob": "68c56518dc32e5cd0c80f5993081eff9c056f809",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/progress.jsonl",
+      "frozenBlob": "bb2904d94561a0899e402bd7dfa4501876337554",
+      "deliveryBlob": "bb2904d94561a0899e402bd7dfa4501876337554",
+      "identical": true
+    },
+    {
+      "path": "eval/runs/30-baseline/summary.json",
+      "frozenBlob": "f9f4f8754cccf1d7c8a400c015e6de019a828f81",
+      "deliveryBlob": "f9f4f8754cccf1d7c8a400c015e6de019a828f81",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s1-blocked-requests-a.json",
+      "frozenBlob": "783822dccf58b1a7fea084ab4c4d9c8a0911c159",
+      "deliveryBlob": "783822dccf58b1a7fea084ab4c4d9c8a0911c159",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s1-blocked-requests-b.json",
+      "frozenBlob": "539b1b4f9c3548e352b7ca49a0b73bb6f0336241",
+      "deliveryBlob": "539b1b4f9c3548e352b7ca49a0b73bb6f0336241",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s2-failures-then-success-a.json",
+      "frozenBlob": "a968db28c4f23344bcb81dcf5fcea476edb94e15",
+      "deliveryBlob": "a968db28c4f23344bcb81dcf5fcea476edb94e15",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s2-failures-then-success-b.json",
+      "frozenBlob": "d8b7c2039e7ca6a7bc13d3446dd33884a67232b5",
+      "deliveryBlob": "d8b7c2039e7ca6a7bc13d3446dd33884a67232b5",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s3-independent-observation-a.json",
+      "frozenBlob": "2f400c78a449d6513c91d4d8f3bc45b626330bef",
+      "deliveryBlob": "2f400c78a449d6513c91d4d8f3bc45b626330bef",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s3-independent-observation-b.json",
+      "frozenBlob": "6b1220197f701c72c933a3b84cd3b0e0d3f8d0b3",
+      "deliveryBlob": "6b1220197f701c72c933a3b84cd3b0e0d3f8d0b3",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s4-conflicting-reports-a.json",
+      "frozenBlob": "dc72a2a7a2746c5872a7cba72cf34de0c09dbbb3",
+      "deliveryBlob": "dc72a2a7a2746c5872a7cba72cf34de0c09dbbb3",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s4-conflicting-reports-b.json",
+      "frozenBlob": "67c35f79573683b880a40cc4edd2cafd79f24172",
+      "deliveryBlob": "67c35f79573683b880a40cc4edd2cafd79f24172",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s5-visibility-gaps-a.json",
+      "frozenBlob": "465d7e1dea287b6afb76ad68cd41128397c08043",
+      "deliveryBlob": "465d7e1dea287b6afb76ad68cd41128397c08043",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s5-visibility-gaps-b.json",
+      "frozenBlob": "3f0be76be9ac1c9c1581587235b55e0c1edb52d0",
+      "deliveryBlob": "3f0be76be9ac1c9c1581587235b55e0c1edb52d0",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s6-honeytoken-a.json",
+      "frozenBlob": "e7b79edc48309f9c9baee36912a05dac9168643a",
+      "deliveryBlob": "e7b79edc48309f9c9baee36912a05dac9168643a",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s6-honeytoken-b.json",
+      "frozenBlob": "32f607110fe4ebdf8c0bd7a5499f73b364555fc6",
+      "deliveryBlob": "32f607110fe4ebdf8c0bd7a5499f73b364555fc6",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s7-embedded-instructions-a.json",
+      "frozenBlob": "e14b8adce634a3355b638df8f42b3022ceca9f27",
+      "deliveryBlob": "e14b8adce634a3355b638df8f42b3022ceca9f27",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s7-embedded-instructions-b.json",
+      "frozenBlob": "c47e702f465f49feeddaaabc9fa719a76896092a",
+      "deliveryBlob": "c47e702f465f49feeddaaabc9fa719a76896092a",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s8-incomplete-unknown-a.json",
+      "frozenBlob": "1592379c81a74a8e33d998495dce9edb074e6d80",
+      "deliveryBlob": "1592379c81a74a8e33d998495dce9edb074e6d80",
+      "identical": true
+    },
+    {
+      "path": "eval/scenarios/v1/s8-incomplete-unknown-b.json",
+      "frozenBlob": "d8c0d4948668c6d7b8f25ce64be5eab627ae5c4f",
+      "deliveryBlob": "d8c0d4948668c6d7b8f25ce64be5eab627ae5c4f",
+      "identical": true
+    },
+    {
+      "path": "eval/scripts/gen.ts",
+      "frozenBlob": "4d8719e7bdcb5cfd81f7080c0325cf2e75686b63",
+      "deliveryBlob": "4d8719e7bdcb5cfd81f7080c0325cf2e75686b63",
+      "identical": true
+    },
+    {
+      "path": "eval/scripts/report.ts",
+      "frozenBlob": "413469d0ad24139681bf7287819be01de748e539",
+      "deliveryBlob": "413469d0ad24139681bf7287819be01de748e539",
+      "identical": true
+    },
+    {
+      "path": "eval/scripts/smoke-cases.ts",
+      "frozenBlob": "556efad3f13757f62f16f733b7b6e10792f4320f",
+      "deliveryBlob": "556efad3f13757f62f16f733b7b6e10792f4320f",
+      "identical": true
+    },
+    {
+      "path": "eval/scripts/v1-citation-audit.ts",
+      "frozenBlob": "fa8f1fc99a975ed3c1c2efbfac4caea256d942da",
+      "deliveryBlob": "fa8f1fc99a975ed3c1c2efbfac4caea256d942da",
+      "identical": true
+    },
+    {
+      "path": "eval/scripts/v1-review-packet.ts",
+      "frozenBlob": "6bf7d9361bd00e089aa173a097866c4972f6fa5d",
+      "deliveryBlob": "6bf7d9361bd00e089aa173a097866c4972f6fa5d",
+      "identical": true
+    },
+    {
+      "path": "eval/src/agent.ts",
+      "frozenBlob": "7c636006fee0915debb7df142ffa62939e898f8e",
+      "deliveryBlob": "7c636006fee0915debb7df142ffa62939e898f8e",
+      "identical": true
+    },
+    {
+      "path": "eval/src/grade.ts",
+      "frozenBlob": "6ad3f6c2eff8be2d16dcc919f57bde6ac5dc8e03",
+      "deliveryBlob": "6ad3f6c2eff8be2d16dcc919f57bde6ac5dc8e03",
+      "identical": true
+    },
+    {
+      "path": "eval/src/instance.ts",
+      "frozenBlob": "a493310f1b6702367265600e41f80077e644398a",
+      "deliveryBlob": "a493310f1b6702367265600e41f80077e644398a",
+      "identical": true
+    },
+    {
+      "path": "eval/src/run.ts",
+      "frozenBlob": "bc2e4af520bcacb99c74872a9f574ec5298c050e",
+      "deliveryBlob": "bc2e4af520bcacb99c74872a9f574ec5298c050e",
+      "identical": true
+    },
+    {
+      "path": "eval/src/scenarios.ts",
+      "frozenBlob": "288ca2bd3993a1dd5e1b075a76595c2a760983a4",
+      "deliveryBlob": "288ca2bd3993a1dd5e1b075a76595c2a760983a4",
+      "identical": true
+    },
+    {
+      "path": "eval/src/v2-objectives.ts",
+      "frozenBlob": "00c77b5d9786b0a12581c218ef63731d7a5372d6",
+      "deliveryBlob": "00c77b5d9786b0a12581c218ef63731d7a5372d6",
+      "identical": true
+    },
+    {
+      "path": "eval/test/harness.test.ts",
+      "frozenBlob": "9a0525e2be163315ea28c3f095eeeabe8541a4f0",
+      "deliveryBlob": "9a0525e2be163315ea28c3f095eeeabe8541a4f0",
+      "identical": true
+    },
+    {
+      "path": "eval/test/v2-objectives.test.ts",
+      "frozenBlob": "d43fdf2750586c6e20a4c30ce7daa3749006bec4",
+      "deliveryBlob": "d43fdf2750586c6e20a4c30ce7daa3749006bec4",
+      "identical": true
+    },
+    {
+      "path": "examples/reference-app/e2e.test.ts",
+      "frozenBlob": "981bdd53a7f2f9713c9e138537f5798074ccc42f",
+      "deliveryBlob": "981bdd53a7f2f9713c9e138537f5798074ccc42f",
+      "identical": true
+    },
+    {
+      "path": "examples/reference-app/package.json",
+      "frozenBlob": "230b2c5d71af1966163029fe73e047d71a4c07f4",
+      "deliveryBlob": "230b2c5d71af1966163029fe73e047d71a4c07f4",
+      "identical": true
+    },
+    {
+      "path": "examples/reference-app/src/app.ts",
+      "frozenBlob": "bbdbb0077f69b5d4c7efdf5b5d330e5feb4c7b17",
+      "deliveryBlob": "bbdbb0077f69b5d4c7efdf5b5d330e5feb4c7b17",
+      "identical": true
+    },
+    {
+      "path": "fixtures/demo/deliveries.json",
+      "frozenBlob": "326d20fd7b18907834b401dde492cbef51bbd4c9",
+      "deliveryBlob": "326d20fd7b18907834b401dde492cbef51bbd4c9",
+      "identical": true
+    },
+    {
+      "path": "fixtures/demo/graph.json",
+      "frozenBlob": "d83e7a358b6ef6306856eeccfd8073bbc01cc021",
+      "deliveryBlob": "d83e7a358b6ef6306856eeccfd8073bbc01cc021",
+      "identical": true
+    },
+    {
+      "path": "fixtures/demo/meta.json",
+      "frozenBlob": "01dc0621997405ac7fac9d755041814d60f6af6e",
+      "deliveryBlob": "01dc0621997405ac7fac9d755041814d60f6af6e",
+      "identical": true
+    },
+    {
+      "path": "fixtures/demo/sources.json",
+      "frozenBlob": "aedb8c6c911fcb0c0274327b2bfcb799677e0308",
+      "deliveryBlob": "aedb8c6c911fcb0c0274327b2bfcb799677e0308",
+      "identical": true
+    },
+    {
+      "path": "fixtures/legacy/v0.3-after-v0.3.1-startup.sqlite",
+      "frozenBlob": "ebdf3220041935c2a10add7811664e2a74e3c68f",
+      "deliveryBlob": "ebdf3220041935c2a10add7811664e2a74e3c68f",
+      "identical": true
+    },
+    {
+      "path": "fixtures/legacy/v0.3-journal.sqlite",
+      "frozenBlob": "2b473a705e3e0aca2876de003c3accc99f3ac858",
+      "deliveryBlob": "2b473a705e3e0aca2876de003c3accc99f3ac858",
+      "identical": true
+    },
+    {
+      "path": "fixtures/redesign/README.md",
+      "frozenBlob": "268847e94fcbba96aaedd31e44eb86277a5e80aa",
+      "deliveryBlob": "268847e94fcbba96aaedd31e44eb86277a5e80aa",
+      "identical": true
+    },
+    {
+      "path": "fixtures/redesign/offline.ts",
+      "frozenBlob": "a7841297ca6aa9c31691cc036b7acf64a81e7626",
+      "deliveryBlob": "a7841297ca6aa9c31691cc036b7acf64a81e7626",
+      "identical": true
+    },
+    {
+      "path": "fixtures/testing/load.ts",
+      "frozenBlob": "7979688e0c7c174a4240ad8c597b550352a01072",
+      "deliveryBlob": "7979688e0c7c174a4240ad8c597b550352a01072",
+      "identical": true
+    },
+    {
+      "path": "infra/compose/docker-compose.yml",
+      "frozenBlob": "20f01bd759447e1b0dfe7c939fcfa70260ed6eb1",
+      "deliveryBlob": "20f01bd759447e1b0dfe7c939fcfa70260ed6eb1",
+      "identical": true
+    },
+    {
+      "path": "package.json",
+      "frozenBlob": "65f331e10d26d763822340db2b4627148cc4688f",
+      "deliveryBlob": "65f331e10d26d763822340db2b4627148cc4688f",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/package.json",
+      "frozenBlob": "fa3c91548c14ebce3ac5861ee1871897b2aad020",
+      "deliveryBlob": "fa3c91548c14ebce3ac5861ee1871897b2aad020",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/schemas/agent/change-assessment.v2.schema.json",
+      "frozenBlob": "fc90d4d990be9e64034fbf9186ac4d2043d065e1",
+      "deliveryBlob": "fc90d4d990be9e64034fbf9186ac4d2043d065e1",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/schemas/agent/event-detail.v1.schema.json",
+      "frozenBlob": "8e6f844ac6eca0e5cb29e5a04485d517c1b9fe32",
+      "deliveryBlob": "8e6f844ac6eca0e5cb29e5a04485d517c1b9fe32",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/schemas/agent/event-search.v1.schema.json",
+      "frozenBlob": "7dfd61e5a65cb63e3d3079d4eae70c5f6853644d",
+      "deliveryBlob": "7dfd61e5a65cb63e3d3079d4eae70c5f6853644d",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/schemas/agent/validation-error.schema.json",
+      "frozenBlob": "5dfde4e541733b676141b996eead2e5991f4c111",
+      "deliveryBlob": "5dfde4e541733b676141b996eead2e5991f4c111",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/schemas/event.schema.json",
+      "frozenBlob": "bfe881b779d9092dd0a8a117ab7502cbb4c6bfa1",
+      "deliveryBlob": "bfe881b779d9092dd0a8a117ab7502cbb4c6bfa1",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/schemas/graph.schema.json",
+      "frozenBlob": "fc853f744057f9201d37a5c70a4e5842ef3cd723",
+      "deliveryBlob": "fc853f744057f9201d37a5c70a4e5842ef3cd723",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/schemas/ingest-event.schema.json",
+      "frozenBlob": "022f529a0b669681b83c13bf69489ee75bce11e4",
+      "deliveryBlob": "022f529a0b669681b83c13bf69489ee75bce11e4",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/schemas/scene-proposal.schema.json",
+      "frozenBlob": "b4c79a703f7ec428c59ce627680b17c7eb68c183",
+      "deliveryBlob": "b4c79a703f7ec428c59ce627680b17c7eb68c183",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/scripts/generate-validators.ts",
+      "frozenBlob": "3c2eb16ad0fd6fcd8a4e9d589edb5612375cf25f",
+      "deliveryBlob": "3c2eb16ad0fd6fcd8a4e9d589edb5612375cf25f",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/src/agent-api.ts",
+      "frozenBlob": "f7ad542522a93ab0311c0c65f0eb76aa9a534a09",
+      "deliveryBlob": "f7ad542522a93ab0311c0c65f0eb76aa9a534a09",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/src/catalog.ts",
+      "frozenBlob": "8f80e40ff54d84f5c79d278fd15f67a65c6eee6b",
+      "deliveryBlob": "8f80e40ff54d84f5c79d278fd15f67a65c6eee6b",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/src/generated/validators.d.ts",
+      "frozenBlob": "4c645faec157fd5c6b5c80a640e2a074d2a235bf",
+      "deliveryBlob": "4c645faec157fd5c6b5c80a640e2a074d2a235bf",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/src/generated/validators.js",
+      "frozenBlob": "1669aeedbc3ff1dfca2c7e906f46656430b16ba2",
+      "deliveryBlob": "1669aeedbc3ff1dfca2c7e906f46656430b16ba2",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "frozenBlob": "595b5a705945f295ca632a3db1397589ae6c1331",
+      "deliveryBlob": "595b5a705945f295ca632a3db1397589ae6c1331",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/src/types.ts",
+      "frozenBlob": "c45d482ae92a97c54b40ae1d2ba3da7ae8dcce5a",
+      "deliveryBlob": "c45d482ae92a97c54b40ae1d2ba3da7ae8dcce5a",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/src/util.ts",
+      "frozenBlob": "3d2ce705680ea9fe1290d62733945a7c99bbcdb2",
+      "deliveryBlob": "3d2ce705680ea9fe1290d62733945a7c99bbcdb2",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/src/validate.ts",
+      "frozenBlob": "269c5d2b9fa623df7b518452fdca345810e815d5",
+      "deliveryBlob": "269c5d2b9fa623df7b518452fdca345810e815d5",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/test/agent-schemas.test.ts",
+      "frozenBlob": "add75dabd60eb60d8d952a321a8e5730df18a879",
+      "deliveryBlob": "add75dabd60eb60d8d952a321a8e5730df18a879",
+      "identical": true
+    },
+    {
+      "path": "packages/contracts/test/contracts.test.ts",
+      "frozenBlob": "72eefb15fb4731a4a4615b39c8d00a58ddc2f5f1",
+      "deliveryBlob": "72eefb15fb4731a4a4615b39c8d00a58ddc2f5f1",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/package.json",
+      "frozenBlob": "3a9a93b3e2ba70d364ebba401b83146ccd74fd86",
+      "deliveryBlob": "3a9a93b3e2ba70d364ebba401b83146ccd74fd86",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/src/capabilities.ts",
+      "frozenBlob": "622861b2322cd33e803ea73aa736b047c7c2590a",
+      "deliveryBlob": "622861b2322cd33e803ea73aa736b047c7c2590a",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/src/index.ts",
+      "frozenBlob": "2a724c30d53b91b80cfa89593921869846366669",
+      "deliveryBlob": "2a724c30d53b91b80cfa89593921869846366669",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/src/normalize.ts",
+      "frozenBlob": "528b4f198d2c202d203699b4c9202de79b3e99c6",
+      "deliveryBlob": "528b4f198d2c202d203699b4c9202de79b3e99c6",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/src/pipeline.ts",
+      "frozenBlob": "4ef7fe9ea243a528050a18e99cf5ec793f946b0f",
+      "deliveryBlob": "4ef7fe9ea243a528050a18e99cf5ec793f946b0f",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/src/redact.ts",
+      "frozenBlob": "8c4a2913903e0355a08ad3fe4cafcb91eee488a3",
+      "deliveryBlob": "8c4a2913903e0355a08ad3fe4cafcb91eee488a3",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/src/replay.ts",
+      "frozenBlob": "66515684c5e376f8dd1d85589b4b11f9bb5535da",
+      "deliveryBlob": "66515684c5e376f8dd1d85589b4b11f9bb5535da",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/src/rules.ts",
+      "frozenBlob": "c80f09aa12bd1ea2354c68b7b7a1f70738351978",
+      "deliveryBlob": "c80f09aa12bd1ea2354c68b7b7a1f70738351978",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/test/coverage-finding-time.test.ts",
+      "frozenBlob": "f14768f39befbced593bc96421ad0da36bec6e68",
+      "deliveryBlob": "f14768f39befbced593bc96421ad0da36bec6e68",
+      "identical": true
+    },
+    {
+      "path": "packages/detections/test/detections.test.ts",
+      "frozenBlob": "032a8c07e869fe05a20d2d5d837b4bfc19652656",
+      "deliveryBlob": "032a8c07e869fe05a20d2d5d837b4bfc19652656",
+      "identical": true
+    },
+    {
+      "path": "packages/graph-core/package.json",
+      "frozenBlob": "1f3f4bedd82cdb0d4c30ec0d8a5138567bd93c84",
+      "deliveryBlob": "1f3f4bedd82cdb0d4c30ec0d8a5138567bd93c84",
+      "identical": true
+    },
+    {
+      "path": "packages/graph-core/src/graph.ts",
+      "frozenBlob": "36eebbf111dfd1d7e793650d364f6a5b1db2c886",
+      "deliveryBlob": "36eebbf111dfd1d7e793650d364f6a5b1db2c886",
+      "identical": true
+    },
+    {
+      "path": "packages/graph-core/src/importers.ts",
+      "frozenBlob": "319bc88c253f47112ffc2bc4efdace2e8d5ea8e6",
+      "deliveryBlob": "319bc88c253f47112ffc2bc4efdace2e8d5ea8e6",
+      "identical": true
+    },
+    {
+      "path": "packages/graph-core/src/index.ts",
+      "frozenBlob": "15860c8f77ccfc409c1ae79cbef316400ed0cb78",
+      "deliveryBlob": "15860c8f77ccfc409c1ae79cbef316400ed0cb78",
+      "identical": true
+    },
+    {
+      "path": "packages/graph-core/test/graph.test.ts",
+      "frozenBlob": "da66d94ac86d097fdf8a80ab08dbe94332bdcb0d",
+      "deliveryBlob": "da66d94ac86d097fdf8a80ab08dbe94332bdcb0d",
+      "identical": true
+    },
+    {
+      "path": "packages/scene-compiler/package.json",
+      "frozenBlob": "69aad4a7d44ccdb1420681b711876013ba90fd9f",
+      "deliveryBlob": "69aad4a7d44ccdb1420681b711876013ba90fd9f",
+      "identical": true
+    },
+    {
+      "path": "packages/scene-compiler/src/compile.ts",
+      "frozenBlob": "2d12b9538d9bb9f41fa41924bab14b639f526437",
+      "deliveryBlob": "2d12b9538d9bb9f41fa41924bab14b639f526437",
+      "identical": true
+    },
+    {
+      "path": "packages/scene-compiler/src/index.ts",
+      "frozenBlob": "0b7e782d95cc22e70d0b59f074c196937f27b3f4",
+      "deliveryBlob": "0b7e782d95cc22e70d0b59f074c196937f27b3f4",
+      "identical": true
+    },
+    {
+      "path": "packages/scene-compiler/src/planner.ts",
+      "frozenBlob": "c68b59b4ba6fb311ff9f1a3b2e5e68269dc4ed78",
+      "deliveryBlob": "c68b59b4ba6fb311ff9f1a3b2e5e68269dc4ed78",
+      "identical": true
+    },
+    {
+      "path": "packages/scene-compiler/src/validate.ts",
+      "frozenBlob": "96d46e27888bce1f6b521537c1e85b50fba06b91",
+      "deliveryBlob": "96d46e27888bce1f6b521537c1e85b50fba06b91",
+      "identical": true
+    },
+    {
+      "path": "packages/scene-compiler/test/redesign-layout.test.ts",
+      "frozenBlob": "178af1d4d4da783454e74b2ad2bf9f769f11085a",
+      "deliveryBlob": "178af1d4d4da783454e74b2ad2bf9f769f11085a",
+      "identical": true
+    },
+    {
+      "path": "packages/scene-compiler/test/scene.test.ts",
+      "frozenBlob": "14b53a712b6cdd456ad6a7c557918c50ca8399d7",
+      "deliveryBlob": "14b53a712b6cdd456ad6a7c557918c50ca8399d7",
+      "identical": true
+    },
+    {
+      "path": "packages/sdk-node/package.json",
+      "frozenBlob": "64b77bea3dc78afc64594df4fd791eda126551de",
+      "deliveryBlob": "64b77bea3dc78afc64594df4fd791eda126551de",
+      "identical": true
+    },
+    {
+      "path": "packages/sdk-node/src/index.ts",
+      "frozenBlob": "3a543bc506ceac1e70a4643d403a0820bf44470e",
+      "deliveryBlob": "3a543bc506ceac1e70a4643d403a0820bf44470e",
+      "identical": true
+    },
+    {
+      "path": "playwright.config.ts",
+      "frozenBlob": "ba2a89f3db40a456f70de5942294336779a26d43",
+      "deliveryBlob": "ba2a89f3db40a456f70de5942294336779a26d43",
+      "identical": true
+    },
+    {
+      "path": "playwright.redesign.config.ts",
+      "frozenBlob": "f87ddfce230153a87b4f18a5b3c3c195fa29ef7e",
+      "deliveryBlob": "f87ddfce230153a87b4f18a5b3c3c195fa29ef7e",
+      "identical": true
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "frozenBlob": "edd7eec8df3ad8098b47e9539f350910502fbc1e",
+      "deliveryBlob": "edd7eec8df3ad8098b47e9539f350910502fbc1e",
+      "identical": true
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "frozenBlob": "c95637ef59343de34d41234b00209b77555ea02e",
+      "deliveryBlob": "c95637ef59343de34d41234b00209b77555ea02e",
+      "identical": true
+    },
+    {
+      "path": "scripts/build-demo-fixture.ts",
+      "frozenBlob": "ef315cb809e1b3197452050da653b9d921d1b7f9",
+      "deliveryBlob": "ef315cb809e1b3197452050da653b9d921d1b7f9",
+      "identical": true
+    },
+    {
+      "path": "scripts/diagnose-legacy-tombstones.ts",
+      "frozenBlob": "6f1668a9343ff024e35a3206d8af4143bac7e379",
+      "deliveryBlob": "6f1668a9343ff024e35a3206d8af4143bac7e379",
+      "identical": true
+    },
+    {
+      "path": "scripts/make-v03-legacy-fixture.ts",
+      "frozenBlob": "ab95646b6e69c50cd0fa799428451b329ff4277b",
+      "deliveryBlob": "ab95646b6e69c50cd0fa799428451b329ff4277b",
+      "identical": true
+    },
+    {
+      "path": "scripts/make-v031-startup-fixture.ts",
+      "frozenBlob": "1c4280a52e02eb4f8d3e3a342e85843340c84e07",
+      "deliveryBlob": "1c4280a52e02eb4f8d3e3a342e85843340c84e07",
+      "identical": true
+    },
+    {
+      "path": "scripts/redesign-artifact-index.mjs",
+      "frozenBlob": "ddc9b20ee6bfdcbfbb4ab1bc3ae76f3d634d1851",
+      "deliveryBlob": "ddc9b20ee6bfdcbfbb4ab1bc3ae76f3d634d1851",
+      "identical": true
+    },
+    {
+      "path": "scripts/validate-fixtures.ts",
+      "frozenBlob": "385a2507e870d254af3582c5f43990d896728d76",
+      "deliveryBlob": "385a2507e870d254af3582c5f43990d896728d76",
+      "identical": true
+    },
+    {
+      "path": "scripts/verify-clean-archive.py",
+      "frozenBlob": "94eea8aa776d9bb967379f0b49192f64488d2646",
+      "deliveryBlob": "94eea8aa776d9bb967379f0b49192f64488d2646",
+      "identical": true
+    },
+    {
+      "path": "tsconfig.base.json",
+      "frozenBlob": "7f65aeeb3b274e21ee32fa998f58d3b08a3dca63",
+      "deliveryBlob": "7f65aeeb3b274e21ee32fa998f58d3b08a3dca63",
+      "identical": true
+    },
+    {
+      "path": "tsconfig.json",
+      "frozenBlob": "a4d295c812e2144d8415b555d9fd7567a22ef86b",
+      "deliveryBlob": "a4d295c812e2144d8415b555d9fd7567a22ef86b",
+      "identical": true
+    },
+    {
+      "path": "vitest.config.ts",
+      "frozenBlob": "b1931bea4918ebbfb23f609fbc4e65f46f1d8cf9",
+      "deliveryBlob": "b1931bea4918ebbfb23f609fbc4e65f46f1d8cf9",
+      "identical": true
+    }
+  ]
+}

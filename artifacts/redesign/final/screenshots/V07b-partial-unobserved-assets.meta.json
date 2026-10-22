@@ -1,0 +1,22 @@
+{
+  "name": "V07b-partial-unobserved-assets",
+  "file": "V07b-partial-unobserved-assets.png",
+  "sha256": "7e3ff8ae5f3292836ec3080e1c77e8511a81cf854aca453b217a9d6c9a6c625e",
+  "bytes": 120609,
+  "capturedAt": "2026-10-22T20:51:49.531Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F04"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "V14-390-detail",
+  "file": "V14-390-detail.png",
+  "sha256": "947ba677a105e13e5cd2b3d5199f32e45fe4a9cdbf495ba93162defe133dce94",
+  "bytes": 53768,
+  "capturedAt": "2026-10-22T20:52:07.079Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

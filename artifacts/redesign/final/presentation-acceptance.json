@@ -1,0 +1,40 @@
+{
+  "scope": "Isolated API-backed canonical synthetic seed. No production data, fake mutation success, or historical coverage claims.",
+  "checks": [
+    {
+      "acceptance": "COV-05",
+      "canonicalSourceCount": 8,
+      "unavailableSources": 1,
+      "inventoryAssets": 13,
+      "distinctAssetsWithGaps": 3
+    },
+    {
+      "name": "COV-05: canonical source counts and distinct affected asset counts agree across Coverage and header",
+      "status": "passed",
+      "durationMs": 675
+    },
+    {
+      "name": "COV-06: fault-injected missing assessments remain unknown, never zero gaps or healthy",
+      "status": "passed",
+      "durationMs": 848
+    },
+    {
+      "name": "COV-06: failed refresh retains confirmed nonzero gaps and visibly marks the snapshot stale",
+      "status": "passed",
+      "durationMs": 2423
+    },
+    {
+      "acceptance": "TIME-03",
+      "replayTime": "2026-10-20T14:00:00Z",
+      "currentAnnotationCreatedAt": "2026-10-22T20:51:43.424Z",
+      "findingId": "f-kkdavse0frwk",
+      "currentLifecycle": "acknowledged",
+      "currentDisposition": "expected_test"
+    },
+    {
+      "name": "TIME-03: earlier replay visibly labels later server notes and dispositions as current annotations",
+      "status": "passed",
+      "durationMs": 939
+    }
+  ]
+}

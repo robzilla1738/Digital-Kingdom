@@ -1,0 +1,22 @@
+{
+  "name": "V14-1280-resized-inspector",
+  "file": "V14-1280-resized-inspector.png",
+  "sha256": "d9e1f418d8afbaed3cf6ea80919f844e2f1af9b14b12f6d5bda26bd01cf1f78a",
+  "bytes": 202528,
+  "capturedAt": "2026-10-22T20:52:13.275Z",
+  "viewport": {
+    "width": 1280,
+    "height": 768
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

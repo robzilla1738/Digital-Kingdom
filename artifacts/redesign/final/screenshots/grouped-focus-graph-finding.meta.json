@@ -1,0 +1,22 @@
+{
+  "name": "grouped-focus-graph-finding",
+  "file": "grouped-focus-graph-finding.png",
+  "sha256": "9b32347e965a2fd8b23cd1dfbb04afe73d83b737d25bfb88c9d393c98c316894",
+  "bytes": 229655,
+  "capturedAt": "2026-10-22T20:50:12.148Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F13"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

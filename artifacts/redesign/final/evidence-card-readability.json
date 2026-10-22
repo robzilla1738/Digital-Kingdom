@@ -1,0 +1,29 @@
+{
+  "fixture": "Real API-backed isolated synthetic record",
+  "viewportWidth": 320,
+  "operationalFontSizesPx": [
+    14,
+    13,
+    13,
+    13,
+    13,
+    13,
+    13
+  ],
+  "minimumOperationalFontPx": 13,
+  "geometry": {
+    "width": 275,
+    "scroll": 275,
+    "sourceWidth": 255,
+    "sourceScroll": 255,
+    "documentWidth": 320,
+    "documentScroll": 320
+  },
+  "fullDerivativeReconstructedExactly": true,
+  "rawCharacters": 10630,
+  "textDisplayPages": 3,
+  "maxRenderedTextCharacters": 4095,
+  "instructionRemainedInert": true,
+  "externalRequests": 0,
+  "selectedFindingPreserved": true
+}

@@ -1,0 +1,25 @@
+{
+  "commit": "453b2db522780361405c388f036d7874041cb005",
+  "dataset": "bundled offline synthetic demo",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "screenshots": [
+    "before-kingdom-overview",
+    "before-kingdom-finding-selection",
+    "before-graph-finding-selection",
+    "before-graph-asset-selection",
+    "before-kingdom-asset-selection",
+    "before-source-coverage"
+  ],
+  "console": [],
+  "pageErrors": [],
+  "browser": "141.0.7390.37",
+  "webgl": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "selectedFinding": "f-nfzy2a9kaquu",
+  "outcome": "captured"
+}

@@ -1,9 +1,949 @@
 {
-  "catalog_version": "dk-castle-kit-1.0.0",
+  "catalog_version": "dk-castle-kit-2.0.0",
   "license": "Apache-2.0",
-  "source": "Original procedural geometry authored in apps/web/src/castle/modules.tsx. No third-party meshes, textures, fonts or runtime downloads.",
-  "units": "metres, Y-up, origin at ground centre",
-  "modules": ["gatehouse", "guardhouse", "hall", "great_hall", "workshop", "vault", "observatory", "tool_annex", "forge", "portal"],
-  "footprints_and_heights": "packages/contracts/src/catalog.ts (MODULE_CATALOG)",
-  "roof_groups": "Every roofed module renders its roof conditionally so the interior can be revealed."
+  "provenance": {
+    "origin": "Original local procedural geometry for Digital Kingdom. No third-party model, texture, font, AI-generated mesh, or runtime remote asset.",
+    "editable_source_paths": [
+      "apps/web/src/castle/geometry.ts",
+      "apps/web/src/castle/modules.tsx",
+      "apps/web/src/castle/materials.ts",
+      "packages/contracts/src/catalog.ts",
+      "apps/web/src/castle/moduleRecovery.ts",
+      "apps/web/src/castle/shaderRecovery.ts"
+    ],
+    "source_files": [
+      {
+        "path": "apps/web/src/castle/geometry.ts",
+        "sha256": "a4e1493819d2f7e675a9960385062135fcdb7ed7922712a182b84a8ee4227e79"
+      },
+      {
+        "path": "apps/web/src/castle/modules.tsx",
+        "sha256": "b578152c2c9ee3c4aabd913ed5278e0e1a628bea9ac92ae3453bd134f83178b8"
+      },
+      {
+        "path": "apps/web/src/castle/materials.ts",
+        "sha256": "c4906364cd0b6a1e343cbbcb488d5c919790e3b9362ffba32af36f3b579a726c"
+      },
+      {
+        "path": "packages/contracts/src/catalog.ts",
+        "sha256": "8ca63fdf4f7ce8a0db7932001fd27d5b321d656e832e94b684f4b238641fa6b3"
+      },
+      {
+        "path": "apps/web/src/castle/moduleRecovery.ts",
+        "sha256": "88f3dbed113755bd7f9123aa71edeaffe5e3b6d43f92801ec58be6edcb0d9dc1"
+      },
+      {
+        "path": "apps/web/src/castle/shaderRecovery.ts",
+        "sha256": "fc8b71170d02331c2931a3919e7126c4b3cbf19b341e2465873b601b9c60c81b"
+      }
+    ],
+    "content_hash": "sha256:2ff6c6bb978e24d75cbc6fe1eea7a06eb19dd9bd7ed922183ea4af2d7e098389",
+    "hash_method": "SHA-256 over UTF-8 path + NUL + raw file bytes + NUL, in editable_source_paths order. Shared source content hash applies to all ten procedural modules.",
+    "ownership": "Repository-owned implementation; no paid or externally generated asset pipeline."
+  },
+  "units": "metres; Y-up; ground-centre origin",
+  "materials": {
+    "stone": "#C5C0B5",
+    "stone_edge": "#D8D1C2",
+    "stone_base": "#8F9395",
+    "roof": "#465769",
+    "iron": "#444A52",
+    "timber": "#81715D",
+    "dark_recess": "#39414A",
+    "bronze": "#718C8B",
+    "status_geometry_independent": true
+  },
+  "rendering": {
+    "geometry_cache": "At most 30 module geometries: 10 stable IDs × 3 LODs, shared app lifetime; no cache keys for asset IDs, event ticks, or projects.",
+    "merged_meshes_per_module": 4,
+    "demand_rendering": true,
+    "default_quality": "medium",
+    "dpr_caps": {
+      "low": 1,
+      "medium": 1.5,
+      "high": 2
+    },
+    "triangles_max": {
+      "low": 600,
+      "medium": 3000,
+      "high": 8000
+    },
+    "roof_toggle": "Cached roof group mounts only when roofs are enabled. Hollow shells retain perimeter cornices, real openings and exposed neutral floors. Vault storage bays are schematic, with an open aisle, and do not represent records or security state. No glow or security animation."
+  },
+  "modules": [
+    {
+      "id": "gatehouse",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 4,
+        "d": 2.8
+      },
+      "height": 3.9,
+      "label_anchor": [
+        0,
+        4.7,
+        0
+      ],
+      "status_anchor": [
+        0,
+        4.2,
+        0
+      ],
+      "hit_proxy": {
+        "w": 4,
+        "d": 2.8,
+        "h": 3.9
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 384,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.9550000429153442,
+              -3.5762786065873797e-9,
+              -1.1999999284744263
+            ],
+            "max": [
+              1.9550000429153442,
+              3.859999895095825,
+              1.399999976158142
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 1764,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.9700000286102295,
+              -3.5762786065873797e-9,
+              -1.1999999284744263
+            ],
+            "max": [
+              1.9700000286102295,
+              3.8949999809265137,
+              1.399999976158142
+            ]
+          }
+        },
+        "high": {
+          "triangles": 2124,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.9700000286102295,
+              -3.5762786065873797e-9,
+              -1.1999999284744263
+            ],
+            "max": [
+              1.9700000286102295,
+              3.8949999809265137,
+              1.399999976158142
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guardhouse",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 3.4,
+        "d": 2.6
+      },
+      "height": 3.35,
+      "label_anchor": [
+        0,
+        4.1,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.65,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.4,
+        "d": 2.6,
+        "h": 3.35
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 276,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.6349999904632568,
+              -3.5762786065873797e-9,
+              -1.1700000762939453
+            ],
+            "max": [
+              1.3300000429153442,
+              3.2699999809265137,
+              1.2699999809265137
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 1188,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.649999976158142,
+              -3.5762786065873797e-9,
+              -1.1700000762939453
+            ],
+            "max": [
+              1.3450000286102295,
+              3.305000066757202,
+              1.2699999809265137
+            ]
+          }
+        },
+        "high": {
+          "triangles": 1436,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.649999976158142,
+              -3.5762786065873797e-9,
+              -1.1700000762939453
+            ],
+            "max": [
+              1.3450000286102295,
+              3.305000066757202,
+              1.2699999809265137
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "hall",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 3.85,
+        "d": 2.6
+      },
+      "height": 2.8,
+      "label_anchor": [
+        0,
+        3.55,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.0999999999999996,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.85,
+        "d": 2.6,
+        "h": 2.8
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 144,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.8949999809265137,
+              -3.5762786065873797e-9,
+              -1.1699999570846558
+            ],
+            "max": [
+              1.8949999809265137,
+              2.75,
+              1.1699999570846558
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 840,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.909999966621399,
+              -3.5762786065873797e-9,
+              -1.1699999570846558
+            ],
+            "max": [
+              1.909999966621399,
+              2.75,
+              1.2649999856948853
+            ]
+          }
+        },
+        "high": {
+          "triangles": 1120,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.909999966621399,
+              -3.5762786065873797e-9,
+              -1.1699999570846558
+            ],
+            "max": [
+              1.909999966621399,
+              2.75,
+              1.2649999856948853
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "great_hall",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 4.6,
+        "d": 3.7
+      },
+      "height": 3.85,
+      "label_anchor": [
+        0,
+        4.6,
+        0
+      ],
+      "status_anchor": [
+        0,
+        4.15,
+        0
+      ],
+      "hit_proxy": {
+        "w": 4.6,
+        "d": 3.7,
+        "h": 3.85
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 428,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -2.25,
+              -3.5762786065873797e-9,
+              -1.3450000286102295
+            ],
+            "max": [
+              2.25,
+              3.7799999713897705,
+              1.8199999332427979
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 2144,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -2.265000104904175,
+              -1.4305114426349519e-8,
+              -1.3450000286102295
+            ],
+            "max": [
+              2.265000104904175,
+              3.815000057220459,
+              1.8300000429153442
+            ]
+          }
+        },
+        "high": {
+          "triangles": 2696,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -2.265000104904175,
+              -1.4305114426349519e-8,
+              -1.3450000286102295
+            ],
+            "max": [
+              2.265000104904175,
+              3.815000057220459,
+              1.8300000429153442
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "workshop",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 3.2,
+        "d": 2.65
+      },
+      "height": 2.25,
+      "label_anchor": [
+        0,
+        3,
+        0
+      ],
+      "status_anchor": [
+        0,
+        2.55,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.2,
+        "d": 2.65,
+        "h": 2.25
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 192,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.5500000715255737,
+              -3.5762786065873797e-9,
+              -1.2599999904632568
+            ],
+            "max": [
+              1.350000023841858,
+              2.2300000190734863,
+              1.2995697259902954
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 636,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.565000057220459,
+              -3.5762786065873797e-9,
+              -1.2599999904632568
+            ],
+            "max": [
+              1.3650000095367432,
+              2.2300000190734863,
+              1.2995697259902954
+            ]
+          }
+        },
+        "high": {
+          "triangles": 844,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.565000057220459,
+              -3.5762786065873797e-9,
+              -1.2599999904632568
+            ],
+            "max": [
+              1.3650000095367432,
+              2.2300000190734863,
+              1.2995697259902954
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "vault",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 3.15,
+        "d": 3.05
+      },
+      "height": 2.5,
+      "label_anchor": [
+        0,
+        3.25,
+        0
+      ],
+      "status_anchor": [
+        0,
+        2.8,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.15,
+        "d": 3.05,
+        "h": 2.5
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 196,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.5499999523162842,
+              5.9604643443123e-10,
+              -1.5
+            ],
+            "max": [
+              1.5499999523162842,
+              2.495000123977661,
+              1.5
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 804,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.5499999523162842,
+              5.9604643443123e-10,
+              -1.5
+            ],
+            "max": [
+              1.5499999523162842,
+              2.495000123977661,
+              1.5
+            ]
+          }
+        },
+        "high": {
+          "triangles": 940,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.5499999523162842,
+              5.9604643443123e-10,
+              -1.5
+            ],
+            "max": [
+              1.5499999523162842,
+              2.495000123977661,
+              1.5
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "observatory",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 2.6,
+        "d": 2.6
+      },
+      "height": 5.4,
+      "label_anchor": [
+        0,
+        6.1,
+        0
+      ],
+      "status_anchor": [
+        0,
+        5.7,
+        0
+      ],
+      "hit_proxy": {
+        "w": 2.6,
+        "d": 2.6,
+        "h": 5.4
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 150,
+          "meshes": 2,
+          "bounds": {
+            "min": [
+              -1.1085125207901,
+              0,
+              -1.2799999713897705
+            ],
+            "max": [
+              1.1085125207901,
+              5.380000114440918,
+              1.2799999713897705
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 728,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.2799999713897705,
+              0,
+              -1.2799999713897705
+            ],
+            "max": [
+              1.2799999713897705,
+              5.380000114440918,
+              1.2799999713897705
+            ]
+          }
+        },
+        "high": {
+          "triangles": 1484,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.2799999713897705,
+              0,
+              -1.2799999713897705
+            ],
+            "max": [
+              1.2799999713897705,
+              5.380000114440918,
+              1.2799999713897705
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "tool_annex",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 3.05,
+        "d": 2.05
+      },
+      "height": 2.25,
+      "label_anchor": [
+        0,
+        3,
+        0
+      ],
+      "status_anchor": [
+        0,
+        2.55,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.05,
+        "d": 2.05,
+        "h": 2.25
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 256,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.4199999570846558,
+              -3.5762786065873797e-9,
+              -0.9599999785423279
+            ],
+            "max": [
+              1.4850000143051147,
+              2.190000057220459,
+              0.925000011920929
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 1048,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.4199999570846558,
+              -3.5762786065873797e-9,
+              -0.9599999785423279
+            ],
+            "max": [
+              1.5,
+              2.2265257835388184,
+              0.9950000047683716
+            ]
+          }
+        },
+        "high": {
+          "triangles": 1224,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.4199999570846558,
+              -3.5762786065873797e-9,
+              -0.9599999785423279
+            ],
+            "max": [
+              1.5,
+              2.2265257835388184,
+              0.9950000047683716
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "forge",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 3.5,
+        "d": 3
+      },
+      "height": 2.85,
+      "label_anchor": [
+        0,
+        3.6,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.15,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.5,
+        "d": 3,
+        "h": 2.85
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 220,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.7000000476837158,
+              -2.3841858265427618e-8,
+              -1.3300000429153442
+            ],
+            "max": [
+              1.7000000476837158,
+              2.819999933242798,
+              1.4700000286102295
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 940,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.7350000143051147,
+              -2.3841858265427618e-8,
+              -1.3300000429153442
+            ],
+            "max": [
+              1.7350000143051147,
+              2.819999933242798,
+              1.4700000286102295
+            ]
+          }
+        },
+        "high": {
+          "triangles": 1028,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.7350000143051147,
+              -2.3841858265427618e-8,
+              -1.3300000429153442
+            ],
+            "max": [
+              1.7350000143051147,
+              2.819999933242798,
+              1.4700000286102295
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "portal",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "footprint": {
+        "w": 3.1,
+        "d": 1.85
+      },
+      "height": 3.35,
+      "label_anchor": [
+        0,
+        4.1,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.65,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.1,
+        "d": 1.85,
+        "h": 3.35
+      },
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 96,
+          "meshes": 2,
+          "bounds": {
+            "min": [
+              -1.5,
+              -1.4901161415892261e-9,
+              -0.8999999761581421
+            ],
+            "max": [
+              1.5,
+              3.309999942779541,
+              0.8999999761581421
+            ]
+          }
+        },
+        "medium": {
+          "triangles": 396,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.5149999856948853,
+              -1.4901161415892261e-9,
+              -0.8999999761581421
+            ],
+            "max": [
+              1.5149999856948853,
+              3.3450000286102295,
+              0.8999999761581421
+            ]
+          }
+        },
+        "high": {
+          "triangles": 628,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.5149999856948853,
+              -1.4901161415892261e-9,
+              -0.8999999761581421
+            ],
+            "max": [
+              1.5149999856948853,
+              3.3450000286102295,
+              0.8999999761581421
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "verification": {
+    "automated": "apps/web/src/castle/architecture.test.ts checks bounds, all 30 triangle budgets, shared geometry, real raycast openings and roof grouping.",
+    "visual": "Synthetic three-module and ten-module sheets are exposed by ?moduleSheet=prototype and ?moduleSheet=all; screenshots and release-gate results recorded separately. This manifest does not claim human approval."
+  }
 }

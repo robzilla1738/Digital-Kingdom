@@ -1,0 +1,66 @@
+{
+  "baseline": "453b2db522780361405c388f036d7874041cb005",
+  "source_sha": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "trees": [
+    {
+      "path": "apps/server",
+      "baseline_tree": "499b979c4fb8c21b796f82fe5dd727e464088d56",
+      "candidate_tree": "499b979c4fb8c21b796f82fe5dd727e464088d56",
+      "unchanged": true
+    },
+    {
+      "path": "apps/mcp",
+      "baseline_tree": "f076138ca98bd8646b8a50b5e6b4917d54f08c30",
+      "candidate_tree": "f076138ca98bd8646b8a50b5e6b4917d54f08c30",
+      "unchanged": true
+    },
+    {
+      "path": "packages/detections",
+      "baseline_tree": "613e27020bcf27e2fb7857e1f17869d0646f1c18",
+      "candidate_tree": "613e27020bcf27e2fb7857e1f17869d0646f1c18",
+      "unchanged": true
+    },
+    {
+      "path": "packages/graph-core",
+      "baseline_tree": "90fa8433921cdd5030dd19596c745739d01f6ac1",
+      "candidate_tree": "90fa8433921cdd5030dd19596c745739d01f6ac1",
+      "unchanged": true
+    },
+    {
+      "path": "packages/sdk-node",
+      "baseline_tree": "8bb9045137307a7197f534a9a530f2197b4eb26f",
+      "candidate_tree": "8bb9045137307a7197f534a9a530f2197b4eb26f",
+      "unchanged": true
+    },
+    {
+      "path": "eval",
+      "baseline_tree": "d12581958138eb1892ff3e3d5312c1a589e6a088",
+      "candidate_tree": "d12581958138eb1892ff3e3d5312c1a589e6a088",
+      "unchanged": true
+    },
+    {
+      "path": "eval/runs",
+      "baseline_tree": "fe1bd8ef6e93adde8e9cc9a463ee95f9e6844995",
+      "candidate_tree": "fe1bd8ef6e93adde8e9cc9a463ee95f9e6844995",
+      "unchanged": true
+    },
+    {
+      "path": "eval/grading",
+      "baseline_tree": "2879e58182abad203645eecfb1a4849f3879d4c0",
+      "candidate_tree": "2879e58182abad203645eecfb1a4849f3879d4c0",
+      "unchanged": true
+    },
+    {
+      "path": "eval/scenarios",
+      "baseline_tree": "cf5c4fa7c68fd66b067c853e58d66361ce6d5ee7",
+      "candidate_tree": "cf5c4fa7c68fd66b067c853e58d66361ce6d5ee7",
+      "unchanged": true
+    },
+    {
+      "path": "eval/review",
+      "baseline_tree": "cd21703cf049a03677793219fce78bce7a2e12cf",
+      "candidate_tree": "cd21703cf049a03677793219fce78bce7a2e12cf",
+      "unchanged": true
+    }
+  ]
+}

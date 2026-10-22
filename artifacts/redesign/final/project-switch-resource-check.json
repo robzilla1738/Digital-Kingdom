@@ -1,0 +1,219 @@
+{
+  "recordedAt": "2026-10-22T20:51:33.501Z",
+  "conditions": "Both local synthetic projects warmed twice, then six measured switches with actual transient Castle mounts; 800 ms settling plus two GC passes 100 ms apart. Headless Chromium, SwiftShader, CDP DOM/listener and collected-heap counters plus scoped stream/fetch instrumentation. A bounded regression, not a zero-leak or physical-device performance proof.",
+  "browser": "141.0.7390.37",
+  "warmupSwitches": 4,
+  "initial": {
+    "probe": {
+      "activeStreams": 1,
+      "openedStreams": 5,
+      "closedStreams": 4,
+      "pendingFetches": 0,
+      "listenerKeys": [
+        "document:click:53:true",
+        "document:selectionchange:2:false",
+        "window:dk:access-denied:3:false",
+        "window:dk:close-inspector:54:false",
+        "window:hashchange:56:false",
+        "window:keydown:55:false",
+        "window:keydown:60:false",
+        "window:popstate:50:false",
+        "window:popstate:56:false"
+      ]
+    },
+    "heap": {
+      "usedSize": 9789468,
+      "totalSize": 10522624,
+      "embedderHeapUsedSize": 3185360,
+      "backingStorageSize": 2976248
+    },
+    "dom": {
+      "documents": 2,
+      "nodes": 2544,
+      "jsEventListeners": 2965
+    }
+  },
+  "samples": [
+    {
+      "probe": {
+        "activeStreams": 1,
+        "openedStreams": 6,
+        "closedStreams": 5,
+        "pendingFetches": 0,
+        "listenerKeys": [
+          "document:click:64:true",
+          "document:selectionchange:2:false",
+          "window:dk:access-denied:3:false",
+          "window:dk:close-inspector:65:false",
+          "window:hashchange:67:false",
+          "window:keydown:66:false",
+          "window:keydown:71:false",
+          "window:popstate:61:false",
+          "window:popstate:67:false"
+        ]
+      },
+      "heap": {
+        "usedSize": 9826584,
+        "totalSize": 10784768,
+        "embedderHeapUsedSize": 3182040,
+        "backingStorageSize": 2975982
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 2544,
+        "jsEventListeners": 2965
+      }
+    },
+    {
+      "probe": {
+        "activeStreams": 1,
+        "openedStreams": 7,
+        "closedStreams": 6,
+        "pendingFetches": 0,
+        "listenerKeys": [
+          "document:click:75:true",
+          "document:selectionchange:2:false",
+          "window:dk:access-denied:3:false",
+          "window:dk:close-inspector:76:false",
+          "window:hashchange:78:false",
+          "window:keydown:77:false",
+          "window:keydown:82:false",
+          "window:popstate:72:false",
+          "window:popstate:78:false"
+        ]
+      },
+      "heap": {
+        "usedSize": 9922072,
+        "totalSize": 10784768,
+        "embedderHeapUsedSize": 3194536,
+        "backingStorageSize": 2975968
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 2544,
+        "jsEventListeners": 2965
+      }
+    },
+    {
+      "probe": {
+        "activeStreams": 1,
+        "openedStreams": 8,
+        "closedStreams": 7,
+        "pendingFetches": 0,
+        "listenerKeys": [
+          "document:click:86:true",
+          "document:selectionchange:2:false",
+          "window:dk:access-denied:3:false",
+          "window:dk:close-inspector:87:false",
+          "window:hashchange:89:false",
+          "window:keydown:88:false",
+          "window:keydown:93:false",
+          "window:popstate:83:false",
+          "window:popstate:89:false"
+        ]
+      },
+      "heap": {
+        "usedSize": 9998784,
+        "totalSize": 10784768,
+        "embedderHeapUsedSize": 3189984,
+        "backingStorageSize": 2975140
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 2544,
+        "jsEventListeners": 2965
+      }
+    },
+    {
+      "probe": {
+        "activeStreams": 1,
+        "openedStreams": 9,
+        "closedStreams": 8,
+        "pendingFetches": 0,
+        "listenerKeys": [
+          "document:click:97:true",
+          "document:selectionchange:2:false",
+          "window:dk:access-denied:3:false",
+          "window:dk:close-inspector:98:false",
+          "window:hashchange:100:false",
+          "window:keydown:104:false",
+          "window:keydown:99:false",
+          "window:popstate:100:false",
+          "window:popstate:94:false"
+        ]
+      },
+      "heap": {
+        "usedSize": 10524492,
+        "totalSize": 11046912,
+        "embedderHeapUsedSize": 3204256,
+        "backingStorageSize": 2975959
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 2544,
+        "jsEventListeners": 2965
+      }
+    },
+    {
+      "probe": {
+        "activeStreams": 1,
+        "openedStreams": 10,
+        "closedStreams": 9,
+        "pendingFetches": 0,
+        "listenerKeys": [
+          "document:click:108:true",
+          "document:selectionchange:2:false",
+          "window:dk:access-denied:3:false",
+          "window:dk:close-inspector:109:false",
+          "window:hashchange:111:false",
+          "window:keydown:110:false",
+          "window:keydown:115:false",
+          "window:popstate:105:false",
+          "window:popstate:111:false"
+        ]
+      },
+      "heap": {
+        "usedSize": 10610272,
+        "totalSize": 11571200,
+        "embedderHeapUsedSize": 3203616,
+        "backingStorageSize": 2975973
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 2544,
+        "jsEventListeners": 2965
+      }
+    },
+    {
+      "probe": {
+        "activeStreams": 1,
+        "openedStreams": 11,
+        "closedStreams": 10,
+        "pendingFetches": 0,
+        "listenerKeys": [
+          "document:click:119:true",
+          "document:selectionchange:2:false",
+          "window:dk:access-denied:3:false",
+          "window:dk:close-inspector:120:false",
+          "window:hashchange:122:false",
+          "window:keydown:121:false",
+          "window:keydown:126:false",
+          "window:popstate:116:false",
+          "window:popstate:122:false"
+        ]
+      },
+      "heap": {
+        "usedSize": 10670836,
+        "totalSize": 11571200,
+        "embedderHeapUsedSize": 3209792,
+        "backingStorageSize": 2975959
+      },
+      "dom": {
+        "documents": 2,
+        "nodes": 2544,
+        "jsEventListeners": 2965
+      }
+    }
+  ],
+  "retainedHeapDeltaBytes": 881368
+}

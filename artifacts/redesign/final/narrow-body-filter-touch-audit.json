@@ -1,0 +1,2045 @@
+{
+  "capturedAt": "2026-10-22T20:53:31.247Z",
+  "harnessSha256": "151f21062330b17c7a79cd684f4f124a1858253ea2a14616f128887729532d2c",
+  "browser": "141.0.7390.37",
+  "node": "v24.19.0",
+  "scope": "Read-only Chromium bounding boxes at 390/320 CSS px. Native checkbox/radio associated labels count as their actual click target. Not a physical touch-device test or every possible application state.",
+  "samples": [
+    {
+      "width": 390,
+      "state": "expanded finding filters",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "INPUT",
+          "type": "search",
+          "name": "",
+          "width": 358,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Filter findings",
+          "width": 109.703125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Severity",
+          "width": 173,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Lifecycle",
+          "width": 173,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Outcome",
+          "width": 173,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Evidence level",
+          "width": 173,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Affected asset",
+          "width": 173,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Clear filters",
+          "width": 173,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Search events by source",
+          "width": 146.421875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Closed excluded",
+          "width": 127.40625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Runtime sensor: Terminal shell in container",
+          "width": 282.6875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Decoy credential used (support-agent)",
+          "width": 248.109375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Sources disagree about a request",
+          "width": 215.53125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Request blocked at public-edge",
+          "width": 202.984375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Privilege change on orders-api",
+          "width": 197.40625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Database audit offline",
+          "width": 144.453125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Agent tool call denied by policy (run-77)",
+          "width": 256.359375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "13 requests blocked at public-edge",
+          "width": 224.75,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "6 failed sign-ins for one account",
+          "width": 206.65625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Agent action had an observed effect (run-77)",
+          "width": 289.34375,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 390,
+      "state": "finding inspector",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Expand investigation",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Supporting (1)",
+          "width": 109.09375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Counterevidence (0)",
+          "width": 143.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Revisions",
+          "width": 78.828125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Notes",
+          "width": 58,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-16uq5bk1dvxdws",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 325,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "order-worker",
+          "width": 80.953125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus affected assets",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy investigation context",
+          "width": 183.515625,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 390,
+      "state": "expanded finding and compact queue",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Return to results",
+          "width": 127.84375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Decoy credential used (support-agent)",
+          "width": 107.078125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Supporting (1)",
+          "width": 109.09375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Counterevidence (0)",
+          "width": 143.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Revisions",
+          "width": 78.828125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Notes",
+          "width": 58,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-16uq5bk1dvxdws",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 334,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "order-worker",
+          "width": 80.953125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus affected assets",
+          "width": 358,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy investigation context",
+          "width": 183.515625,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 390,
+      "state": "expanded finding with open raw evidence",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Return to results",
+          "width": 127.84375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Decoy credential used (support-agent)",
+          "width": 107.078125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Supporting (1)",
+          "width": 109.09375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Counterevidence (0)",
+          "width": 143.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Revisions",
+          "width": 78.828125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Notes",
+          "width": 58,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-16uq5bk1dvxdws",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 334,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "order-worker",
+          "width": 80.953125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus affected assets",
+          "width": 358,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy investigation context",
+          "width": 183.515625,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 390,
+      "state": "asset inspector",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus asset",
+          "width": 92.265625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Privilege change on orders-apiNeeds review",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Application security eventsReporting",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Search all stored events for this asset",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-h3oohtmx3q8d",
+          "width": 100.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-f5l5n2ir3dtu",
+          "width": 49.703125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "public-edge → orders-apicallsdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "storefront-web → orders-apicallsobserved",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → identity-servicecallsobserved",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → payments-apicallsdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → orders-dbreads fromdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → order-workercallsdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "support-tools-mcp → orders-apicallsdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "release-pipeline → orders-apideploysdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 390,
+      "state": "asset inspector expanded details",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus asset",
+          "width": 92.265625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Privilege change on orders-apiNeeds review",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Application security eventsReporting",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Search all stored events for this asset",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-h3oohtmx3q8d",
+          "width": 100.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-f5l5n2ir3dtu",
+          "width": 49.703125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "public-edge → orders-apicallsdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "storefront-web → orders-apicallsobserved",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → identity-servicecallsobserved",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → payments-apicallsdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → orders-dbreads fromdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → order-workercallsdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "support-tools-mcp → orders-apicallsdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "release-pipeline → orders-apideploysdeclared",
+          "width": 349,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 390,
+      "state": "expanded finding queue and raw-text pagination page two",
+      "evidenceClass": "Isolated API-backed synthetic test with a labeled long-payload response fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Return to results",
+          "width": 127.84375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Decoy credential used (support-agent)",
+          "width": 107.078125,
+          "height": 50.375,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Request blocked at public-edge",
+          "width": 107.078125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Supporting (1)",
+          "width": 109.09375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Counterevidence (1)",
+          "width": 143.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Revisions",
+          "width": 78.828125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Notes",
+          "width": 58,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "name": "Compare supporting and counterevidence together",
+          "width": 358,
+          "height": 44,
+          "associatedLabelTarget": true
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-9fayr9nhp01t",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 334,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Previous text page",
+          "width": 134.84375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Next text page",
+          "width": 111.234375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-1hzyfmm12lg2qi",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 334,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "public-edge",
+          "width": 71.8125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "receipts-bucket",
+          "width": 93.71875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus affected assets",
+          "width": 358,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy investigation context",
+          "width": 183.515625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Export case",
+          "width": 92.5,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Lifecycle",
+          "width": 173,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Disposition",
+          "width": 173,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": "textarea",
+          "name": "Analyst note",
+          "width": 358,
+          "height": 57,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Propose containment…",
+          "width": 358,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 320,
+      "state": "expanded finding filters",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "INPUT",
+          "type": "search",
+          "name": "",
+          "width": 288,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Filter findings",
+          "width": 109.703125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Severity",
+          "width": 138,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Lifecycle",
+          "width": 138,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Outcome",
+          "width": 138,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Evidence level",
+          "width": 138,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Affected asset",
+          "width": 138,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Clear filters",
+          "width": 138,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Search events by source",
+          "width": 146.421875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Closed excluded",
+          "width": 127.40625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Runtime sensor: Terminal shell in container",
+          "width": 254,
+          "height": 47,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Decoy credential used (support-agent)",
+          "width": 248.109375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Sources disagree about a request",
+          "width": 215.53125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Request blocked at public-edge",
+          "width": 202.984375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Privilege change on orders-api",
+          "width": 197.40625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Database audit offline",
+          "width": 144.453125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Agent tool call denied by policy (run-77)",
+          "width": 254,
+          "height": 47,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "13 requests blocked at public-edge",
+          "width": 224.75,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "6 failed sign-ins for one account",
+          "width": 206.65625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Agent action had an observed effect (run-77)",
+          "width": 254,
+          "height": 47,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 320,
+      "state": "finding inspector",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Expand investigation",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Supporting (1)",
+          "width": 109.09375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Counterevidence (0)",
+          "width": 143.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Revisions",
+          "width": 78.828125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Notes",
+          "width": 58,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-16uq5bk1dvxdws",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 255,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "order-worker",
+          "width": 80.953125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus affected assets",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy investigation context",
+          "width": 183.515625,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 320,
+      "state": "expanded finding and compact queue",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Return to results",
+          "width": 127.84375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Decoy credential used (support-agent)",
+          "width": 72.078125,
+          "height": 50.375,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Supporting (1)",
+          "width": 109.09375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Counterevidence (0)",
+          "width": 143.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Revisions",
+          "width": 78.828125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Notes",
+          "width": 58,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-16uq5bk1dvxdws",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 264,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "order-worker",
+          "width": 80.953125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus affected assets",
+          "width": 288,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy investigation context",
+          "width": 183.515625,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 320,
+      "state": "expanded finding with open raw evidence",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Return to results",
+          "width": 127.84375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Decoy credential used (support-agent)",
+          "width": 72.078125,
+          "height": 50.375,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Supporting (1)",
+          "width": 109.09375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Counterevidence (0)",
+          "width": 143.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Revisions",
+          "width": 78.828125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Notes",
+          "width": 58,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-16uq5bk1dvxdws",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 264,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "order-worker",
+          "width": 80.953125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus affected assets",
+          "width": 288,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy investigation context",
+          "width": 183.515625,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 320,
+      "state": "asset inspector",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus asset",
+          "width": 92.265625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Privilege change on orders-apiNeeds review",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Application security eventsReporting",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Search all stored events for this asset",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-h3oohtmx3q8d",
+          "width": 100.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-f5l5n2ir3dtu",
+          "width": 49.703125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "public-edge → orders-apicallsdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "storefront-web → orders-apicallsobserved",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → identity-servicecallsobserved",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → payments-apicallsdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → orders-dbreads fromdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → order-workercallsdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "support-tools-mcp → orders-apicallsdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "release-pipeline → orders-apideploysdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 320,
+      "state": "asset inspector expanded details",
+      "evidenceClass": "Explicit offline synthetic fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus asset",
+          "width": 92.265625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Privilege change on orders-apiNeeds review",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Application security eventsReporting",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Search all stored events for this asset",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-h3oohtmx3q8d",
+          "width": 100.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-f5l5n2ir3dtu",
+          "width": 49.703125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "public-edge → orders-apicallsdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "storefront-web → orders-apicallsobserved",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → identity-servicecallsobserved",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → payments-apicallsdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → orders-dbreads fromdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "orders-api → order-workercallsdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "support-tools-mcp → orders-apicallsdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "release-pipeline → orders-apideploysdeclared",
+          "width": 279,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    },
+    {
+      "width": 320,
+      "state": "expanded finding queue and raw-text pagination page two",
+      "evidenceClass": "Isolated API-backed synthetic test with a labeled long-payload response fixture",
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "controls": [
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Close evidence pane",
+          "width": 78,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Return to results",
+          "width": 127.84375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Decoy credential used (support-agent)",
+          "width": 72.078125,
+          "height": 50.375,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Request blocked at public-edge",
+          "width": 72.078125,
+          "height": 50.375,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Supporting (1)",
+          "width": 109.09375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Counterevidence (1)",
+          "width": 143.875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Revisions",
+          "width": 78.828125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Notes",
+          "width": 58,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "checkbox",
+          "name": "Compare supporting and counterevidence together",
+          "width": 288,
+          "height": 44,
+          "associatedLabelTarget": true
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-9fayr9nhp01t",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 264,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Previous text page",
+          "width": 134.84375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Next text page",
+          "width": 111.234375,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Open event ev-1hzyfmm12lg2qi",
+          "width": 130.03125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "Show recorded text — untrusted",
+          "width": 264,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "public-edge",
+          "width": 71.8125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "receipts-bucket",
+          "width": 93.71875,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Focus affected assets",
+          "width": 288,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy reference",
+          "width": 114.125,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Copy investigation context",
+          "width": 183.515625,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Export case",
+          "width": 92.5,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Lifecycle",
+          "width": 138,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "select-one",
+          "name": "Disposition",
+          "width": 138,
+          "height": 44,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": "textarea",
+          "name": "Analyst note",
+          "width": 288,
+          "height": 57,
+          "associatedLabelTarget": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "Propose containment…",
+          "width": 288,
+          "height": 44,
+          "associatedLabelTarget": false
+        }
+      ],
+      "undersized": []
+    }
+  ]
+}

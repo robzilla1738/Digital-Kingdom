@@ -1,0 +1,9 @@
+
+> digital-kingdom@0.3.2 pilot /tmp/dk-redesign-baseline-453b2db
+> playwright test --config playwright.baseline.config.ts
+
+Error: Cannot find package '@dk/sdk-node' imported from /tmp/dk-redesign-baseline-453b2db/examples/reference-app/src/app.ts
+Did you mean to import "file:///tmp/dk-redesign-baseline-453b2db/packages/sdk-node/src/index.ts"?
+Error: No tests found
+
+ ELIFECYCLE  Command failed with exit code 1.

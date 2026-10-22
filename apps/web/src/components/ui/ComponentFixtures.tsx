@@ -1,0 +1,18 @@
+import { useState } from "react";
+import { CoverageChip, EvidenceBadge, OutcomeBadge, SeverityBadge } from "./Status.tsx";
+import { SegmentedControl, Tabs } from "./Tabs.tsx";
+import { CopyReference } from "./CopyReference.tsx";
+import { ASSET_COVERAGE_LABEL } from "../../lib/presentation.ts";
+import { EVIDENCE_LEVEL_LABEL, OUTCOME_STYLE, SEVERITY_LABEL } from "../../lib/vocab.ts";
+/** Synthetic-only UI comparison surface, never a record of production state. */
+export function ComponentFixtures() {
+  const [tab, setTab] = useState("summary"); const [view, setView] = useState("castle"); const [checked, setChecked] = useState(false);
+  return <main className="workspace-page component-fixtures" style={{ overflow: "auto", height: "100dvh" }}>
+    <div className="workspace-heading"><div><div className="eyebrow">Synthetic component fixtures</div><h1>Readable states, independent meanings.</h1><p>UI specimens only. These examples are not source records, security assessments, or accepted visual reviews.</p></div><a className="btn" href="?demo=1">Return to synthetic Kingdom</a></div>
+    <div className="integration-grid">
+      <section className="section-card"><h2>Severity</h2><div className="chips">{(Object.keys(SEVERITY_LABEL) as (keyof typeof SEVERITY_LABEL)[]).map((s) => <SeverityBadge key={s} severity={s} />)}</div><h3>Outcome</h3><div className="chips">{(Object.keys(OUTCOME_STYLE) as (keyof typeof OUTCOME_STYLE)[]).map((s) => <OutcomeBadge key={s} outcome={s} />)}</div><h3>Evidence level</h3><div className="chips">{(Object.keys(EVIDENCE_LEVEL_LABEL) as (keyof typeof EVIDENCE_LEVEL_LABEL)[]).map((s) => <EvidenceBadge key={s} level={s} />)}</div><h3>Asset coverage</h3><div className="chips">{(Object.keys(ASSET_COVERAGE_LABEL) as (keyof typeof ASSET_COVERAGE_LABEL)[]).map((s) => <CoverageChip key={s} state={s} />)}</div></section>
+      <section className="section-card"><h2>Controls</h2><Tabs label="Fixture sections" value={tab} onChange={setTab} panelId="fixture-panel" options={[{ value: "summary", label: "Summary" }, { value: "evidence", label: "Evidence" }, { value: "unavailable", label: "Unavailable", disabled: true }]} /><div id="fixture-panel" role="tabpanel" aria-label={tab}>{tab === "summary" ? <p>Arrow keys move focus. Enter or Space activates a tab.</p> : <p>Evidence details stay separate from the claim.</p>}</div><SegmentedControl label="Fixture representation" value={view} onChange={setView} options={[{ value: "castle", label: "Castle" }, { value: "graph", label: "Graph" }]} /><label className="check"><input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} />Example checkbox</label><label className="field">Local text input<input placeholder="Search a known reference" /></label><div className="inline-actions" style={{ marginTop: 16 }}><button className="btn primary" onClick={() => setChecked(!checked)}>Toggle example</button><button className="btn" disabled>Disabled action</button></div><CopyReference value="synthetic-fixture-reference" /><p className="small" role="status">Example checkbox {checked ? "selected" : "not selected"}; {view} representation selected.</p></section>
+      <section className="section-card"><h2>Unknown is not safe</h2><div className="scope-note warning"><strong>Some evidence is unavailable.</strong> References can be missing, inaccessible, retained only as a tombstone, or fail to load. Each state must retain its own meaning.</div><div className="empty"><h3>No matching records</h3><p>No records match these local filters. This does not establish absence of activity.</p></div></section>
+    </div>
+  </main>;
+}

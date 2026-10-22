@@ -1,0 +1,22 @@
+{
+  "name": "overlapping-relationship-keyboard-chooser",
+  "file": "overlapping-relationship-keyboard-chooser.png",
+  "sha256": "c6b5f265c84d3db3687570fcbda43425bfc461eb8e629523ce2fe6b793751a98",
+  "bytes": 168432,
+  "capturedAt": "2026-10-22T20:48:48.256Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

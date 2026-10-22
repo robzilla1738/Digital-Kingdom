@@ -1,0 +1,22 @@
+{
+  "name": "V04c-evidence-card-raw-320",
+  "file": "V04c-evidence-card-raw-320.png",
+  "sha256": "c8d47c8ef5c2c82c280fe704eb309fc98657ee28cb3724b00cca867f6f8b3d89",
+  "bytes": 48833,
+  "capturedAt": "2026-10-22T20:49:19.672Z",
+  "viewport": {
+    "width": 320,
+    "height": 860
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "cards-long-payload"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

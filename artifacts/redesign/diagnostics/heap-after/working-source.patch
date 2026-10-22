@@ -1,0 +1,436 @@
+diff --git a/apps/web/src/castle/Castle3D.tsx b/apps/web/src/castle/Castle3D.tsx
+index ed0088c..48886c9 100644
+--- a/apps/web/src/castle/Castle3D.tsx
++++ b/apps/web/src/castle/Castle3D.tsx
+@@ -14,7 +14,7 @@ import { useApp } from "../lib/state.tsx";
+ import { ASSET_COVERAGE_LABEL } from "../lib/presentation.ts";
+ import { LAYER_STYLE, OUTCOME_STYLE, RELATIONSHIP_LAYER, SEVERITY_RANK } from "../lib/vocab.ts";
+ import { Icon, StateIcon } from "../lib/icons.tsx";
+-import { groupSummary, presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, presentationCollisions, selectionAssets, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
++import { groupSummary, presentationMembers, selectionDistrictKey, presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, presentationCollisions, selectionAssets, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
+ import { cachedModuleGeometryCount, type DetailLevel } from "./geometry.ts";
+ 
+ const BG = "#0B111B", ACCENT = "#A6B6FF", CAM_DIST = 110;
+@@ -46,22 +46,21 @@ export function Castle3D() {
+   const latestDistrict = useRef(district); latestDistrict.current = district;
+   useEffect(() => { setDistrict(districtPoses.get(scene.project_id) ?? null); return () => { districtPoses.set(scene.project_id, latestDistrict.current); if (districtPoses.size > 4) districtPoses.delete(districtPoses.keys().next().value!); }; }, [scene.project_id]);
+   const grouped = scene.rooms.length > 50;
+-  const focus = useMemo(() => selectionAssets(ui.selection, vm), [ui.selection, vm.findings, vm.data, vm.selectedEventAssets]);
+-  const districtRooms = district ? groups.find(g => g.key === district)?.rooms ?? [] : [];
+-  // Expanded districts are bounded. Every remaining member stays in the real-asset membership list.
+-  const selectedRoom = districtRooms.find(r => focus.has(r.asset_id));
+-  const visibleRooms = grouped ? selectedRoom && !districtRooms.slice(0, 50).includes(selectedRoom) ? [...districtRooms.slice(0, 49), selectedRoom] : districtRooms.slice(0, 50) : scene.rooms;
++  const focus = useMemo(() => selectionAssets(ui.selection, vm), [ui.selection, vm.findings, vm.data, vm.latestData, vm.selectedEventAssets]);
++  const membership = useMemo(() => presentationMembers(groups, district, focus), [groups, district, focus]);
++  const districtRooms = membership.members;
++  const visibleRooms = grouped ? membership.visible : scene.rooms;
+   useEffect(() => { if (ui.focusRevision <= ui.focusHandledRevision) return;
+-    if (grouped) { const g = groups.find(g => g.rooms.some(r => focus.has(r.asset_id))); if (g) setDistrict(g.key); }
+-  }, [ui.focusRevision, ui.focusHandledRevision]);
++    if (grouped) { const key = selectionDistrictKey(groups, focus); if (key) setDistrict(key); }
++  }, [ui.focusRevision, ui.focusHandledRevision, grouped, groups, focus]);
+   const visibleIds = useMemo(() => new Set(visibleRooms.map(r => r.asset_id)), [visibleRooms]);
+   return <div ref={wrap} className="castle-wrap" role="region" tabIndex={0} aria-label={`Architectural map of ${scene.rooms.length} assets. Select a building to inspect it; Focus moves the camera. Graph and lists show the same evidence.`}
+     onKeyDown={e => {
+       if (!ui.shortcuts || e.target !== e.currentTarget || e.ctrlKey || e.metaKey || e.altKey) return;
+-      if (["+", "=", "-", "0", "f"].includes(e.key)) { e.preventDefault(); send(e.key === "0" ? "fit" : e.key === "f" ? "focus" : e.key === "-" ? "out" : "in"); }
++      if (["+", "=", "-", "0", "f"].includes(e.key)) { e.preventDefault(); if (e.key === "f") dispatch({ type: "focus" }); else send(e.key === "0" ? "fit" : e.key === "-" ? "out" : "in"); }
+     }}>
+     <CanvasBoundary onError={msg => dispatch({ type: "webglFailed", reason: msg })}>
+-      <Canvas orthographic shadows={quality !== "low" ? "soft" : false} dpr={quality === "low" ? 1 : quality === "high" ? [1, 2] : [1, 1.5]} frameloop="demand"
++      <Canvas orthographic style={{ isolation: "isolate" }} shadows={quality !== "low" ? "soft" : false} dpr={quality === "low" ? 1 : quality === "high" ? [1, 2] : [1, 1.5]} frameloop="demand"
+         camera={{ position: [60, 68, 60], zoom: 12, near: 0.1, far: 800 }}
+         gl={{ antialias: quality !== "low", powerPreference: "default", preserveDrawingBuffer: false }}
+         onCreated={({ gl }) => { gl.toneMapping = THREE.NeutralToneMapping; gl.toneMappingExposure = 1.05; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
+@@ -94,8 +93,9 @@ export function Castle3D() {
+     {help && <div className="scene-help" style={panelStyle}><strong>Architectural map</strong><p>Drag empty space to orbit. Right-drag to pan. Scroll to zoom. Click selects without moving the camera. Focus selection moves it; Back restores the previous view.</p><p>Terraces are organizational, not security boundaries. Marker border is finding severity; the glyph describes outcome. Hatching is current source coverage, not asset health.</p><button onClick={() => dispatch({ type: "view", view: "graph" })}>Use graph and list view</button></div>}
+     {reduced && <div role="status" style={{ ...panelStyle, top: "auto", bottom: 72 }}>Visual quality reduced for performance. Evidence and selection are unchanged.</div>}
+     {grouped && <div className="scene-group-panel" style={{ ...panelStyle, maxWidth: 280 }}>
+-      <strong>{district ? `${groups.find(g => g.key === district)?.label} members` : "District overview"}</strong>
+-      <p>{scene.rooms.length} logical assets. Groups are presentation only. {districtRooms.length > 50 ? `Showing 50 of ${districtRooms.length} buildings; all members remain accessible below.` : "Choose a district to expand its assets."}</p>
++      <strong>{district ? membership.groups.length > 1 ? `Combined focus · ${membership.groups.length} districts` : `${membership.groups[0]?.label ?? "District"} members` : "District overview"}</strong>
++      <p>{scene.rooms.length} logical assets. Groups are presentation only. {district ? `Showing ${visibleRooms.length} of ${districtRooms.length} buildings; selected assets are prioritized and all members remain accessible below.` : "Choose a district to expand its assets."}</p>
++      {membership.selectedOverflow > 0 && <p role="status">Only 50 of {membership.selectedCount} selected assets can be rendered together. {membership.selectedOverflow} selected assets are not drawn; every member remains in the list below. Select an individual asset to inspect it.</p>}
+       {!district ? groups.map(g => { const s = groupSummary(g, vm.assetStatus); return <button className="btn sm" style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 6, whiteSpace: "normal" }} key={g.key} onClick={() => { setDistrict(g.key); send("focus", g.key); }}><span><strong>{g.label}</strong> · {g.environment}<br />{g.rooms.length} assets · {s.findings} distinct findings<small style={{ display: "block", lineHeight: 1.5 }}>{Object.entries(s.coverage).map(([k,n]) => `${n} assets: ${ASSET_COVERAGE_LABEL[k as keyof typeof ASSET_COVERAGE_LABEL] ?? k}`).join(" · ")}</small></span></button>; }) : <>
+         <button className="btn sm" onClick={() => { setDistrict(null); send("fit"); }}>Back to district overview</button>
+         <ul>{districtRooms.map(r => <li key={r.asset_id}><button className="btn sm" onClick={() => { dispatch({ type: "select", selection: { kind: "asset", id: r.asset_id } }); }}>{vm.data.graph.assets.find(a => a.id === r.asset_id)?.name ?? r.asset_id}</button></li>)}</ul>
+@@ -108,6 +108,13 @@ const panelStyle = { position: "absolute", left: 16, top: 16, zIndex: 12, maxWid
+ function SceneLifecycle({ quality, onSlow }: { quality: DetailLevel; onSlow: () => void }) {
+   const { ui, vm, dispatch } = useApp(), { gl, invalidate, setFrameloop } = useThree();
+   const count = useRef(0), budget = useRef<FrameBudget>({ active: false, samples: 0, slow: 0 });
++  const rendererLifetime = useRef(0);
++  useEffect(() => {
++    const generation = ++rendererLifetime.current;
++    // Let module cleanups release shared GPU registrations first. A StrictMode effect replay
++    // immediately acquires the next generation and must not dispose its still-live renderer.
++    return () => { queueMicrotask(() => { if (rendererLifetime.current === generation) gl.dispose(); }); };
++  }, [gl]);
+   useEffect(() => { gl.shadowMap.needsUpdate = true; invalidate(); }, [gl, invalidate, ui.roofs, quality, vm.data.scene, ui.selection, ui.hover, ui.query, ui.layers, ui.playhead]);
+   useEffect(() => {
+     const canvas = gl.domElement;
+@@ -161,7 +168,10 @@ function Rig({ scene, command, groups }: { scene: CompiledScene; command: Comman
+     if (!ctl.current) return;
+     if (!initialized.current) { const saved = cameraPoses.get(key); apply(saved ?? fit()); manual.current = !!saved; initialized.current = true; }
+     else if (!manual.current) apply(fit());
+-    return () => { if (ctl.current) { cameraPoses.set(key, current()); if (cameraPoses.size > 4) cameraPoses.delete(cameraPoses.keys().next().value!); } };
++    // React clears the ref before passive unmount cleanup. Capture the live control instance so
++    // returning from Graph restores the interacted camera, rather than the last resize/overview.
++    const control = ctl.current;
++    return () => { cameraPoses.set(key, { pos: camera.position.clone(), target: control.target.clone(), zoom: (camera as THREE.OrthographicCamera).zoom }); if (cameraPoses.size > 4) cameraPoses.delete(cameraPoses.keys().next().value!); };
+     // Deliberate panel resizing preserves an interacted camera; initial scene fit still responds.
+   }, [key, size.width, size.height]);
+   useEffect(() => {
+@@ -225,7 +235,7 @@ function Room({ room, selected, quality }: { room: SceneRoom; selected: boolean;
+     {(selected || hovered) && <Line points={[[-w / 2 - 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, -d / 2 - 0.18]]} color={selected ? ACCENT : "#EEF3FA"} lineWidth={selected ? 2.6 : 1.5} raycast={() => null} />}
+     {gap && <CoverageHatch w={w + 0.32} d={d + 0.32} warning={status.coverage === "gap" || status.coverage === "partial"} />}
+     <Html position={[0, room.label_anchor.y - 0.08, 0]} center zIndexRange={[20, 10]}>
+-      <div ref={labelRef} className="lbl"><button data-asset-label={asset.id} className={`room-label${selected ? " is-selected" : ""}${dim ? " dim" : ""}`} onClick={select} onDoubleClick={() => dispatch({ type: "focus" })}
++      <div ref={labelRef} className="lbl"><button data-asset-label={asset.id} className={`room-label${selected ? " is-selected" : ""}${dim ? " dim" : ""}`} onClick={e => { e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); dispatch({ type: "focus" }); }}
+         onFocus={() => dispatch({ type: "hover", id: asset.id })} onBlur={() => dispatch({ type: "hover", id: null })}
+         aria-label={`${asset.name}. ${severity ? severity + " severity. " : ""}${status?.worst ? OUTCOME_STYLE[status.worst].label + ". " : "No open findings. "}${status ? ASSET_COVERAGE_LABEL[status.coverage] : "Coverage not assessed"}`}
+         style={{ borderColor: selected ? ACCENT : severity ? SEVERITY_COLOR[severity] : undefined, maxWidth: selected ? 230 : 170, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, borderRadius: 7, padding: "6px 9px" }}>
+diff --git a/apps/web/src/castle/architecture.test.ts b/apps/web/src/castle/architecture.test.ts
+index 087df16..483f10d 100644
+--- a/apps/web/src/castle/architecture.test.ts
++++ b/apps/web/src/castle/architecture.test.ts
+@@ -4,12 +4,46 @@ import { sampleFrameBudget, type FrameBudget } from "./frameBudget.ts";
+ import { describe, expect, it } from "vitest";
+ import * as THREE from "three";
+ import { MODULE_CATALOG, type ModuleId } from "@dk/contracts";
+-import { moduleGeometry, type DetailLevel } from "./geometry.ts";
++import { architectureMaterials, cachedModuleGeometryCount, moduleGeometry, retainArchitectureResources, type DetailLevel } from "./geometry.ts";
+ import { compileScene, defaultProposal } from "@dk/scene-compiler";
+ import { demoGraph } from "../../../../fixtures/testing/load.ts";
+ import { presentationGroups, presentationScene, presentationCollisions, relationshipPattern, groupSummary, selectionAssets } from "./scenePresentation.ts";
+ 
+ const ids = Object.keys(MODULE_CATALOG) as ModuleId[];
++
++describe("shared architecture GPU lifetime", () => {
++  it("releases renderer registrations only after its final module, preserving cached CPU buffers", () => {
++    const geometry = moduleGeometry("hall"), group = geometry.groups.structure!, positions = group.getAttribute("position").array;
++    const count = cachedModuleGeometryCount(), renderer = {};
++    let disposed = 0;
++    const geometryListener = () => { disposed++; group.removeEventListener("dispose", geometryListener); };
++    const materialListener = () => { disposed++; architectureMaterials.body.removeEventListener("dispose", materialListener); };
++    group.addEventListener("dispose", geometryListener); architectureMaterials.body.addEventListener("dispose", materialListener);
++    const first = retainArchitectureResources(renderer, () => {}), second = retainArchitectureResources(renderer, () => {});
++    first(); expect(disposed).toBe(0);
++    second(); expect(disposed).toBe(2);
++    second(); first(); expect(disposed).toBe(2);
++    expect(group.hasEventListener("dispose", geometryListener)).toBe(false);
++    expect(architectureMaterials.body.hasEventListener("dispose", materialListener)).toBe(false);
++    expect(moduleGeometry("hall")).toBe(geometry); expect(group.getAttribute("position").array).toBe(positions);
++    expect(cachedModuleGeometryCount()).toBe(count);
++  });
++  it("refreshes overlapping live canvases after shared GPU disposal, without retaining departed renderers", () => {
++    const group = moduleGeometry("hall").groups.structure!;
++    let departedRefreshes = 0, liveRefreshes = 0;
++    const departedListener = () => group.removeEventListener("dispose", departedListener);
++    const liveListener = () => group.removeEventListener("dispose", liveListener);
++    group.addEventListener("dispose", departedListener); group.addEventListener("dispose", liveListener);
++    const departed = retainArchitectureResources({}, () => { departedRefreshes++; });
++    const live = retainArchitectureResources({}, () => { liveRefreshes++; group.addEventListener("dispose", liveListener); });
++    departed();
++    expect(departedRefreshes).toBe(0); expect(liveRefreshes).toBe(1);
++    expect(group.hasEventListener("dispose", departedListener)).toBe(false);
++    expect(group.hasEventListener("dispose", liveListener)).toBe(true);
++    live(); expect(group.hasEventListener("dispose", liveListener)).toBe(false);
++    expect(liveRefreshes).toBe(1);
++  });
++});
+ describe("architectural kit release geometry", () => {
+   for (const id of ids) for (const lod of ["low", "medium", "high"] as DetailLevel[]) it(`${id} ${lod} is within actual declared bounds and budget`, () => {
+     const g = moduleGeometry(id, lod), s = MODULE_CATALOG[id], eps = 1e-5;
+diff --git a/apps/web/src/castle/geometry.ts b/apps/web/src/castle/geometry.ts
+index 1864058..5eb5e88 100644
+--- a/apps/web/src/castle/geometry.ts
++++ b/apps/web/src/castle/geometry.ts
+@@ -218,3 +218,24 @@ export const architectureMaterials = {
+   body: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.87, metalness: 0.02 }),
+   roof: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.76, metalness: 0.08 }),
+ };
++
++const resourceOwners = new Map<object, { modules: number; refresh: () => void }>();
++/** CPU geometry is reusable, but every WebGL renderer attaches dispose listeners to it and to
++ * shared materials. Context loss alone does not remove those listeners. Release their GPU
++ * registrations when a renderer's last module leaves, without deleting the bounded CPU cache.
++ * Disposal also reaches any overlapping live renderer; explicitly refresh it so Three uploads
++ * the retained buffers again rather than leaving that canvas with invalid GPU resources. */
++export function retainArchitectureResources(renderer: object, refresh: () => void): () => void {
++  const owner = resourceOwners.get(renderer) ?? { modules: 0, refresh };
++  owner.modules++; resourceOwners.set(renderer, owner);
++  let released = false;
++  return () => {
++    if (released) return;
++    released = true;
++    if (--owner.modules > 0) return;
++    resourceOwners.delete(renderer);
++    for (const geometry of cache.values()) for (const group of Object.values(geometry.groups)) group.dispose();
++    for (const material of Object.values(architectureMaterials)) material.dispose();
++    for (const live of resourceOwners.values()) live.refresh();
++  };
++}
+diff --git a/apps/web/src/castle/modules.tsx b/apps/web/src/castle/modules.tsx
+index 6150d48..5df5f26 100644
+--- a/apps/web/src/castle/modules.tsx
++++ b/apps/web/src/castle/modules.tsx
+@@ -1,12 +1,13 @@
+-import { memo, useLayoutEffect } from "react";
++import { memo, useEffect, useLayoutEffect } from "react";
+ import { useThree } from "@react-three/fiber";
+ import { MODULE_CATALOG, type ModuleId } from "@dk/contracts";
+-import { architectureMaterials, moduleGeometry, type DetailLevel } from "./geometry.ts";
++import { architectureMaterials, moduleGeometry, retainArchitectureResources, type DetailLevel } from "./geometry.ts";
+ 
+ /** Shared cached geometry is app-owned, never disposed by an individual room or recoloured by status. */
+ export const CastleModule = memo(function CastleModule({ id, roofs, lod = "medium" }: { id: ModuleId; roofs: boolean; lod?: DetailLevel; highContrast?: boolean; windowColor?: string | null }) {
+   const geometry = moduleGeometry(id, lod), spec = MODULE_CATALOG[id];
+   const { invalidate, gl } = useThree();
++  useEffect(() => retainArchitectureResources(gl, () => { gl.shadowMap.needsUpdate = true; invalidate(); }), [gl, invalidate]);
+   useLayoutEffect(() => { gl.shadowMap.needsUpdate = true; invalidate(); }, [roofs, lod, invalidate, gl]);
+   return <group name="module-root" userData={{ module_id: id, lod }} dispose={null}>
+     {Object.entries(geometry.groups).filter(([name]) => name !== "roof" || roofs).map(([name, g]) => <group key={name} name={name}>
+diff --git a/apps/web/src/castle/scenePresentation.ts b/apps/web/src/castle/scenePresentation.ts
+index be5b491..7dc6aa3 100644
+--- a/apps/web/src/castle/scenePresentation.ts
++++ b/apps/web/src/castle/scenePresentation.ts
+@@ -2,11 +2,15 @@ import { MODULE_CATALOG, type CompiledScene, type Graph, type SceneRoom, type Se
+ import type { AssetStatus, Selection, ViewModel } from "../lib/state.tsx";
+ 
+ export const SEVERITY_COLOR: Record<Severity, string> = { critical: "#FF8F98", high: "#F19A85", medium: "#E8BE78", low: "#92B9FF", info: "#B2BBC8" };
+-export function selectionAssets(selection: Selection, vm: Pick<ViewModel, "findings" | "data" | "selectedEventAssets">): Set<string> {
++export function selectionAssets(selection: Selection, vm: Pick<ViewModel, "findings" | "data" | "latestData" | "selectedEventAssets">): Set<string> {
+   if (selection?.kind === "asset") return new Set([selection.id]);
+   if (selection?.kind === "finding") return new Set(vm.findings.find(f => f.id === selection.id)?.affected_asset_ids ?? []);
+   if (selection?.kind === "event") return new Set(vm.selectedEventAssets);
+-  if (selection?.kind === "source") return new Set(vm.data.sources.find(s => s.id === selection.id)?.asset_ids ?? []);
++  if (selection?.kind === "source") {
++    // Source administration is current, even while graph/findings remain pinned for replay or review.
++    const present = new Set(vm.data.graph.assets.map(asset => asset.id));
++    return new Set((vm.latestData.sources.find(source => source.id === selection.id)?.asset_ids ?? []).filter(id => present.has(id)));
++  }
+   if ((selection?.kind === "path" || selection?.kind === "relationship")) {
+     const p = vm.data.graph.relationships.find(r => r.id === selection.id);
+     return new Set(p ? [p.source_id, p.target_id] : []);
+@@ -34,6 +38,25 @@ export function presentationGroups(scene: CompiledScene, graph: Graph): Presenta
+   }
+   return [...groups.values()].sort((a, b) => a.key.localeCompare(b.key));
+ }
++const FOCUS_GROUP_PREFIX = "selection-groups:";
++/** View-only key remembers every relevant group at explicit Focus time. It is never a canonical asset. */
++export function selectionDistrictKey(groups: PresentationGroup[], selected: ReadonlySet<string>): string | null {
++  const keys = groups.filter(group => group.rooms.some(room => selected.has(room.asset_id))).map(group => group.key);
++  return keys.length > 1 ? FOCUS_GROUP_PREFIX + JSON.stringify(keys) : keys[0] ?? null;
++}
++/** Keep selected assets/endpoints before contextual members. Full real membership is never truncated. */
++export function presentationMembers(groups: PresentationGroup[], district: string | null, selected: ReadonlySet<string>, limit = 50) {
++  let keys: string[] = district ? [district] : [];
++  if (district?.startsWith(FOCUS_GROUP_PREFIX)) {
++    try { const parsed: unknown = JSON.parse(district.slice(FOCUS_GROUP_PREFIX.length)); keys = Array.isArray(parsed) ? parsed.filter((key): key is string => typeof key === "string") : []; } catch { keys = []; }
++  }
++  const expanded = groups.filter(group => keys.includes(group.key));
++  const members = [...new Map(expanded.flatMap(group => group.rooms).map(room => [room.asset_id, room])).values()];
++  const selectedMembers = members.filter(room => selected.has(room.asset_id));
++  const cap = Math.max(0, Math.floor(limit));
++  return { groups: expanded, members, visible: [...selectedMembers, ...members.filter(room => !selected.has(room.asset_id))].slice(0, cap), selectedCount: selectedMembers.length, selectedOverflow: Math.max(0, selectedMembers.length - cap) };
++}
++
+ export function groupSummary(group: PresentationGroup, statuses: Map<string, AssetStatus>) {
+   const findings = new Set<string>(), coverage: Record<string, number> = {}, severity: Record<string, number> = {};
+   for (const r of group.rooms) {
+diff --git a/apps/web/src/graph2d/Graph2D.tsx b/apps/web/src/graph2d/Graph2D.tsx
+index 2380687..0015ece 100644
+--- a/apps/web/src/graph2d/Graph2D.tsx
++++ b/apps/web/src/graph2d/Graph2D.tsx
+@@ -6,7 +6,7 @@ import { Icon } from "../lib/icons.tsx";
+ import { EdgeChooser, type EdgeChoice } from "../castle/EdgeChooser.tsx";
+ import { overlappingEdges, pointerWasDrag, type ScreenPoint } from "../castle/edgePicking.ts";
+ import { ASSET_COVERAGE_LABEL } from "../lib/presentation.ts";
+-import { presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, groupSummary, selectionAssets, relationshipPattern, SEVERITY_COLOR } from "../castle/scenePresentation.ts";
++import { presentationGroups, presentationMembers, selectionDistrictKey, presentationTopologyKey, groupMembershipKey, presentationScene, groupSummary, selectionAssets, relationshipPattern, SEVERITY_COLOR } from "../castle/scenePresentation.ts";
+ 
+ const MONO: Record<AssetKind, string> = {
+   edge: "GW", auth: "ID", service: "SV", worker: "WK", database: "DB", storage: "ST", agent: "AI", tool_server: "MCP", pipeline: "CI", third_party: "3P",
+@@ -50,11 +50,10 @@ export function Graph2D() {
+   const contextKey = `${fullScene.project_id}:${fullScene.graph_revision}`, savedPose = graphPoses.get(contextKey);
+   const [district, setDistrict] = useState<string | null>(() => savedPose?.district ?? null);
+   const grouped = fullScene.rooms.length > 50;
+-  const focusIds = useMemo(() => selectionAssets(ui.selection, vm), [ui.selection, vm.findings, vm.data, vm.selectedEventAssets]);
+-  const members = useMemo(() => groups.find(g => g.key === district)?.rooms ?? [], [groups, district]);
+-  const selectedMember = members.find(r => focusIds.has(r.asset_id));
+-  const visibleMembers = useMemo(() => selectedMember && !members.slice(0, 50).includes(selectedMember) ? [...members.slice(0, 49), selectedMember] : members.slice(0, 50), [members, selectedMember]);
+-  const scene = useMemo(() => !grouped ? fullScene : !district ? { ...fullScene, rooms: [], zones: [] } : { ...fullScene, rooms: visibleMembers, zones: fullScene.zones.filter(z => z.zone_id === members[0]?.zone_id) }, [fullScene, grouped, district, members, visibleMembers]);
++  const focusIds = useMemo(() => selectionAssets(ui.selection, vm), [ui.selection, vm.findings, vm.data, vm.latestData, vm.selectedEventAssets]);
++  const membership = useMemo(() => presentationMembers(groups, district, focusIds), [groups, district, focusIds]);
++  const members = membership.members, visibleMembers = membership.visible;
++  const scene = useMemo(() => !grouped ? fullScene : !district ? { ...fullScene, rooms: [], zones: [] } : { ...fullScene, rooms: visibleMembers, zones: fullScene.zones.filter(z => visibleMembers.some(room => room.zone_id === z.zone_id)) }, [fullScene, grouped, district, visibleMembers]);
+ 
+   const layout = useMemo(() => {
+     const inZone = (z: string) => scene.rooms.filter((r) => r.zone_id === z).sort((x, y) => x.slot - y.slot);
+@@ -182,8 +181,8 @@ export function Graph2D() {
+     if (ui.focusRevision <= ui.focusHandledRevision && !pendingFocus.current) return;
+     focusRevision.current = ui.focusRevision;
+     if (grouped) {
+-      const g = groups.find(g => g.rooms.some(r => focusIds.has(r.asset_id)));
+-      if (g && g.key !== district) { pendingFocus.current = true; setDistrict(g.key); moved.current = false; return; }
++      const nextDistrict = selectionDistrictKey(groups, focusIds);
++      if (nextDistrict && nextDistrict !== district) { pendingFocus.current = true; setDistrict(nextDistrict); moved.current = false; return; }
+     }
+     pendingFocus.current = false;
+     const selected = [...focusIds].map(id => layout.pos.get(id)).filter((r): r is Rect => !!r);
+@@ -266,15 +265,16 @@ export function Graph2D() {
+   return (
+     <div className="graph-wrap" ref={wrap} tabIndex={0} role="region" aria-label="Asset relationship graph">
+       {grouped && <div className="graph-group-panel" style={{ position: "absolute", zIndex: 10, top: 16, left: 16, right: district ? undefined : 16, maxWidth: district ? 300 : undefined, maxHeight: district ? "45%" : "calc(100% - 112px)", overflow: "auto", background: "#121C29", padding: 18, border: "1px solid #70849B", borderRadius: 10 }}>
+-        <strong>{fullScene.rooms.length} assets · {district ? "District members" : "Grouped overview"}</strong>
++        <strong>{fullScene.rooms.length} assets · {district ? membership.groups.length > 1 ? `Combined focus · ${membership.groups.length} districts` : "District members" : "Grouped overview"}</strong>
+         <p style={{ color: "#B5C3D3", margin: "6px 0 16px" }}>Groups retain real asset memberships. They are not new security resources or protection boundaries.</p>
++        {!district && focusIds.size > 0 && <button className="btn sm" onClick={() => dispatch({ type: "focus" })}>Focus selection</button>}
+         {!district ? <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>{groups.map(g => { const summary = groupSummary(g, vm.assetStatus); return <section key={g.key} style={{ border: "1px solid #70849B", borderRadius: 8, padding: 14, background: "#192637" }}>
+           <h3 style={{ margin: "0 0 4px", fontSize: 15 }}>{g.label}</h3><span style={{ color: "#B5C3D3" }}>{g.environment}</span>
+           <p>{g.rooms.length} assets · {summary.findings} distinct findings</p>
+           <p style={{ fontSize: 12 }}>{Object.entries(summary.coverage).map(([k,n]) => `${n} assets: ${ASSET_COVERAGE_LABEL[k as keyof typeof ASSET_COVERAGE_LABEL] ?? k}`).join(" · ")}</p>
+           {Object.keys(summary.severity).length > 0 && <p style={{ fontSize: 12 }}>Assets by severity: {Object.entries(summary.severity).map(([k,n]) => `${n} ${k}`).join(" · ")}</p>}
+           <button className="btn sm" onClick={() => { setDistrict(g.key); moved.current = false; }}>Explore {g.rooms.length} assets</button>
+-        </section>; })}</div> : <><button className="btn sm" onClick={() => { setDistrict(null); moved.current = false; }}>Back to grouped overview</button>{members.length > 50 && <p>50 buildings shown. Every member is listed.</p>}<ul>{members.map(r => <li key={r.asset_id}><button className="btn sm" onClick={() => select(r.asset_id, graph.assets.find(a => a.id === r.asset_id)?.name ?? r.asset_id)}>{graph.assets.find(a => a.id === r.asset_id)?.name ?? r.asset_id}</button></li>)}</ul></>}
++        </section>; })}</div> : <><button className="btn sm" onClick={() => { setDistrict(null); moved.current = false; }}>Back to grouped overview</button><p>{visibleMembers.length} of {members.length} buildings shown; selected assets are prioritized. Every member is listed.</p>{membership.selectedOverflow > 0 && <p role="status">Only 50 of {membership.selectedCount} selected assets can be rendered together. {membership.selectedOverflow} selected assets are not drawn; every member remains below. Select an individual asset to inspect it.</p>}<ul>{members.map(r => <li key={r.asset_id}><button className="btn sm" onClick={() => select(r.asset_id, graph.assets.find(a => a.id === r.asset_id)?.name ?? r.asset_id)}>{graph.assets.find(a => a.id === r.asset_id)?.name ?? r.asset_id}</button></li>)}</ul></>}
+       </div>}
+       <svg ref={svg} viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`} className={`graph2d${panning ? " panning" : ""}`} style={{ visibility: grouped && !district ? "hidden" : "visible" }} onWheel={onWheel} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp}
+         role="group" aria-label="2D asset graph. Tab through assets; press Enter to select." shapeRendering="geometricPrecision">
+diff --git a/apps/web/src/workspaces/coverage/CoverageWorkspace.tsx b/apps/web/src/workspaces/coverage/CoverageWorkspace.tsx
+new file mode 100644
+index 0000000..2ab136c
+--- /dev/null
++++ b/apps/web/src/workspaces/coverage/CoverageWorkspace.tsx
+@@ -0,0 +1,26 @@
++import { useState } from "react";
++import { useApp } from "../../lib/state.tsx";
++import { COVERAGE_STYLE, KIND_LABEL, fmtDateTime } from "../../lib/vocab.ts";
++import { ASSET_COVERAGE_LABEL } from "../../lib/presentation.ts";
++import { Tabs } from "../../components/ui/Tabs.tsx";
++import { CoverageChip } from "../../components/ui/Status.tsx";
++import { Icon } from "../../lib/icons.tsx";
++
++export function CoverageWorkspace() {
++  const { ui, dispatch, vm } = useApp(); const [tab, setTab] = useState<"sources" | "assets">("sources");
++  const assetName = (id: string) => vm.data.graph.assets.find((a) => a.id === id)?.name ?? id;
++  const sources = vm.latestData.sources;
++  const unavailable = sources.filter((s) => s.disabled || vm.coverage.find((c) => c.source_id === s.id)?.state !== "healthy");
++  const gapAssets = vm.data.graph.assets.filter((a) => vm.assetStatus.get(a.id)?.coverage !== "reporting");
++  const unobserved = gapAssets.filter((a) => vm.assetStatus.get(a.id)?.coverage === "unobserved");
++  const partial = gapAssets.filter((a) => vm.assetStatus.get(a.id)?.coverage === "partial");
++  return <section className="workspace-page coverage-workspace" aria-label="Coverage workspace">
++    <div className="workspace-heading"><div><div className="eyebrow">VISIBILITY, NOT A SECURITY VERDICT</div><h1>Know what you can see.</h1><p className="workspace-lede">Reporting sources and missing visibility, kept separate from findings and browser connectivity.</p></div><button className="btn" onClick={() => dispatch({ type: "workspace", workspace: "integrations" })}>View setup guidance</button></div>
++    <div className="summary-strip" role="group" aria-label="Coverage summary"><div className="summary-item"><strong>{unavailable.length}</strong><span>sources not reporting</span></div><div className="summary-item"><strong>{gapAssets.length}</strong><span>assets with visibility gaps</span></div><div className="summary-item"><strong>{partial.length}</strong><span>assets with partial visibility</span></div><div className="summary-item"><strong>{unobserved.length}</strong><span>unobserved assets</span></div></div>
++    <div className="scope-note"><strong>Current coverage as of {fmtDateTime(vm.coverageAsOf)}.</strong> Historical coverage is not assessed. {ui.playhead ? "Replay does not reconstruct historical source administration. " : ""}A reporting source is not proof of complete detection. A missing assessment remains unknown.</div>
++    <Tabs label="Coverage views" value={tab} onChange={setTab} panelId="coverage-panel" options={[{ value: "sources", label: "Sources" }, { value: "assets", label: "Assets with gaps" }]} />
++    <div id="coverage-panel" role="tabpanel" aria-label={tab === "sources" ? "Sources" : "Assets with gaps"}>
++      {tab === "sources" ? !sources.length ? <div className="empty"><Icon name="layers" size={28} /><h3>No telemetry sources configured.</h3><p>The asset map is inventory, not observed runtime activity.</p><button className="btn" onClick={() => dispatch({ type: "workspace", workspace: "integrations" })}>Open Integrations</button></div> : <div className="table-scroll" tabIndex={0} role="region" aria-label="Source reporting table"><table className="record-table"><thead><tr><th scope="col">Source / kind</th><th scope="col">Administration</th><th scope="col">Reporting state</th><th scope="col">Configured assets</th><th scope="col">Last event / freshness</th><th scope="col">Why this state</th></tr></thead><tbody>{sources.map((source) => { const coverage = vm.coverage.find((c) => c.source_id === source.id); return <tr key={source.id} data-source-id={source.id} data-state={coverage?.state ?? "not_assessed"}><td className="record-title"><button className="link" onClick={() => dispatch({ type: "select", selection: { kind: "source", id: source.id }, announce: `Selected source ${source.label}` })}>{source.label}</button><small>{source.kind ?? "Kind not declared"} · {source.id}</small></td><td>{source.disabled ? <span className="status-chip warning">Disabled</span> : "Enabled"}</td><td><span className={`status-chip ${source.disabled || coverage?.state !== "healthy" ? "warning" : "coverage-reporting"}`}>{source.disabled ? "Administratively disabled" : coverage ? COVERAGE_STYLE[coverage.state].label : "Coverage not assessed"}</span></td><td><div className="coverage-assets">{source.asset_ids.map((id) => <button className="link" key={id} onClick={() => dispatch({ type: "select", selection: { kind: "asset", id } })}>{assetName(id)}</button>)}{!source.asset_ids.length && <span>None declared</span>}</div></td><td className="num">{coverage?.last_event_at ? fmtDateTime(coverage.last_event_at) : "No event time available"}<br /><span className="small muted">{source.stale_after_seconds !== undefined ? `${source.stale_after_seconds}s freshness threshold` : "No freshness threshold supplied"}</span></td><td>{source.disabled ? "Administratively disabled. Stored events do not establish current reporting." : coverage?.note ?? (coverage?.state === "healthy" ? "Reporting according to current freshness checks; not proof of complete detection." : "A current reporting assessment is unavailable.")}</td></tr>; })}</tbody></table></div> : !gapAssets.length ? <div className="empty"><Icon name="layers" size={28} /><h3>No visibility gaps recorded in this snapshot.</h3><p>This reflects configured source reporting, not complete detection or proof of safety.</p></div> : <div className="table-scroll" tabIndex={0} role="region" aria-label="Assets with visibility gaps"><table className="record-table"><thead><tr><th scope="col">Asset</th><th scope="col">Visibility</th><th scope="col">Reporting sources</th><th scope="col">Explanation</th></tr></thead><tbody>{gapAssets.map((asset) => { const status = vm.assetStatus.get(asset.id)!; return <tr key={asset.id} data-asset-id={asset.id} data-coverage={status.coverage}><td className="record-title"><button className="link" onClick={() => dispatch({ type: "select", selection: { kind: "asset", id: asset.id } })}>{asset.name}</button><small>{KIND_LABEL[asset.kind]} · {asset.environment}</small></td><td><CoverageChip state={status.coverage} /></td><td>{status.reportingSources} of {status.configuredSources} configured sources</td><td>{status.coverageNote ?? ASSET_COVERAGE_LABEL[status.coverage]}</td></tr>; })}</tbody></table></div>}
++    </div>
++  </section>;
++}
+diff --git a/apps/web/src/workspaces/coverage/currentSources.test.ts b/apps/web/src/workspaces/coverage/currentSources.test.ts
+new file mode 100644
+index 0000000..00e09f9
+--- /dev/null
++++ b/apps/web/src/workspaces/coverage/currentSources.test.ts
+@@ -0,0 +1,28 @@
++import { beforeEach, describe, expect, it, vi } from "vitest";
++import { createElement } from "react";
++import { renderToStaticMarkup } from "react-dom/server";
++const context = vi.hoisted(() => ({ value: {} as any }));
++vi.mock("../../lib/state.tsx", () => ({ useApp: () => context.value }));
++import { CoverageWorkspace } from "./CoverageWorkspace.tsx";
++import { IntegrationsWorkspace } from "../integrations/IntegrationsWorkspace.tsx";
++
++beforeEach(() => {
++  const oldSources = [{ id: "old", label: "Pinned old source", asset_ids: [], kind: "otel", disabled: false }];
++  const currentSources = [{ id: "current", label: "Current source record", asset_ids: [], kind: "otel", disabled: true }, { id: "new", label: "New source record", asset_ids: [], kind: "falco", disabled: false }];
++  context.value = { ui: { playhead: "2026-10-20T14:00:00Z" }, dispatch: vi.fn(), vm: {
++    data: { mode: "offline-demo", role: "none", sources: oldSources, project: { id: "synthetic", name: "Synthetic test", dataset_kind: "synthetic" }, graph: { assets: [], graph_revision: "pinned-r1" } },
++    latestData: { sources: currentSources }, coverage: [{ source_id: "current", state: "healthy" }, { source_id: "new", state: "healthy" }], assetStatus: new Map(), coverageAsOf: "2026-10-22T18:00:00Z",
++  } };
++});
++describe("current source metadata while unrelated evidence is pinned", () => {
++  it("uses current source administration, not the pinned source array", () => {
++    const html = renderToStaticMarkup(createElement(CoverageWorkspace));
++    expect(html).toContain("Current source record"); expect(html).toContain("New source record"); expect(html).not.toContain("Pinned old source");
++    expect(html).toContain("Administratively disabled"); expect(html).toContain("2026-10-22 18:00:00 UTC");
++    expect(html).toContain("Historical coverage is not assessed");
++  });
++  it("shows the current configured-source count in Integrations", () => {
++    const html = renderToStaticMarkup(createElement(IntegrationsWorkspace));
++    expect(html).toContain("2 configured source records in this project."); expect(html).not.toContain("1 configured source records");
++  });
++});
+diff --git a/packages/scene-compiler/src/compile.ts b/packages/scene-compiler/src/compile.ts
+index 9c50a22..2d12b95 100644
+--- a/packages/scene-compiler/src/compile.ts
++++ b/packages/scene-compiler/src/compile.ts
+@@ -112,6 +112,45 @@ export function compileScene(graph: Graph, proposal: SceneProposal, opts: Compil
+   const assets = new Map(graph.assets.map(a => [a.id, a]));
+   const environments = [...new Set(graph.assets.map(a => a.environment))].sort();
+   const environmentStride = Math.max(60, ...Object.values(grids).map(g => Math.abs(g.origin.x) + g.cols * CELL_X)) * 2;
++  // Environment names are metadata, not positional indexes. A new lexically earlier name must
++  // not take an existing environment's origin while its approved rooms remain pinned there.
++  const priorGrids = previous ? zoneGrids(previous.capacities) : grids;
++  const environmentOrigins = new Map<string, number>();
++  const environmentExtents = new Map<string, { min: number; max: number }>();
++  for (const environment of environments) {
++    const members = [...priorRooms.values()].filter(r => assets.get(r.asset_id)?.environment === environment);
++    if (!members.length) continue;
++    // Reconcile the most common prior translation. Capacity growth can leave older pins on
++    // an earlier grid, so a minority of displaced slots must not redefine the district.
++    const offsets = new Map<number, number>();
++    for (const room of members) {
++      const offset = round(room.position.x - slotPosition(priorGrids[room.zone_id], room.slot, room.zone_id).x);
++      offsets.set(offset, (offsets.get(offset) ?? 0) + 1);
++    }
++    environmentOrigins.set(environment, [...offsets].sort((a, b) => b[1] - a[1] || Math.abs(a[0]) - Math.abs(b[0]) || a[0] - b[0])[0]![0]);
++    environmentExtents.set(environment, { min: Math.min(...members.map(r => r.position.x - r.footprint.w / 2)), max: Math.max(...members.map(r => r.position.x + r.footprint.w / 2)) });
++  }
++  let nextOrigin = environmentExtents.size
++    ? Math.ceil((Math.max(...[...environmentExtents.values()].map(b => b.max)) + environmentStride / 2) / environmentStride) * environmentStride
++    : 0;
++  for (const environment of environments) if (!environmentOrigins.has(environment)) {
++    environmentOrigins.set(environment, nextOrigin);
++    environmentExtents.set(environment, { min: nextOrigin, max: nextOrigin });
++    nextOrigin += environmentStride;
++  }
++  // New rooms may grow along Z rather than crossing into a neighboring environment's
++  // existing horizontal territory. Retained approved coordinates are never clamped.
++  const orderedEnvironments = [...environments].sort((a, b) => {
++    const aa = environmentExtents.get(a)!, bb = environmentExtents.get(b)!;
++    return (aa.min + aa.max) - (bb.min + bb.max) || a.localeCompare(b);
++  });
++  const environmentBands = new Map<string, { min: number; max: number }>();
++  for (let i = 0; i < orderedEnvironments.length; i++) {
++    const name = orderedEnvironments[i]!, extent = environmentExtents.get(name)!;
++    const left = i ? environmentExtents.get(orderedEnvironments[i - 1]!) : undefined;
++    const right = i + 1 < orderedEnvironments.length ? environmentExtents.get(orderedEnvironments[i + 1]!) : undefined;
++    environmentBands.set(name, { min: left ? (left.max + extent.min) / 2 + 9 : -Infinity, max: right ? (extent.max + right.min) / 2 - 9 : Infinity });
++  }
+   const rooms: SceneRoom[] = [];
+   for (const z of ZONE_IDS) {
+     const placements = byZone.get(z)!;
+@@ -131,14 +170,18 @@ export function compileScene(graph: Graph, proposal: SceneProposal, opts: Compil
+       const slot = assigned.get(p.asset_id)!;
+       const spec = MODULE_CATALOG[p.module_id];
+       const candidate = slotPosition(grids[z], slot, z);
+-      const env = environments.indexOf(assets.get(p.asset_id)!.environment);
+-      candidate.x += Math.max(0, env) * environmentStride;
++      const environment = assets.get(p.asset_id)!.environment;
++      candidate.x += environmentOrigins.get(environment)!;
+       // Preserve approved world coordinates, not merely slot numbers, across district growth.
+       const prior = priorRooms.get(p.asset_id);
+       const retained = prior && prior.zone_id === z;
+       const pos = retained ? { x: prior.position.x, z: prior.position.z } : candidate;
+       const rotated = Math.abs(grids[z].rotation) % 180 === 90;
+       const footprint = rotated ? { w: spec.footprint.d, d: spec.footprint.w } : spec.footprint;
++      if (!retained) {
++        const band = environmentBands.get(environment)!;
++        pos.x = round(Math.max(band.min + footprint.w / 2, Math.min(band.max - footprint.w / 2, pos.x)));
++      }
+       // New slots extend rather than overlapping an approved position after capacity growth.
+       if (!retained) while ([...rooms, ...priorRooms.values()].some(r => r.asset_id !== p.asset_id && Math.abs(r.position.x - pos.x) < (r.footprint.w + footprint.w) * 0.6 && Math.abs(r.position.z - pos.z) < (r.footprint.d + footprint.d) * 0.6)) pos.z = round(pos.z + CELL_Z);
+       pins[p.asset_id] = { zone_id: z, slot };

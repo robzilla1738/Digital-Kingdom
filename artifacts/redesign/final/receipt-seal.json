@@ -1,0 +1,57 @@
+{
+  "sourceCandidate": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "sealedAt": "2026-10-22T20:56:20.037078+00:00",
+  "files": [
+    {
+      "path": "artifacts/redesign/README.md",
+      "bytes": 6035,
+      "sha256": "8f941bf35fae2f8977a609b140c2ca8b6c45ae6832c1c8983326458e20c3f55e"
+    },
+    {
+      "path": "artifacts/redesign/artifact-safety-audit.json",
+      "bytes": 6749,
+      "sha256": "0f02acadc9b2550d183637adebd1f8fbb3546708047ba5b27132d0f64aecf74f"
+    },
+    {
+      "path": "artifacts/redesign/final/README.md",
+      "bytes": 5402,
+      "sha256": "e9d7e6f2dbca084ff1a8206ce818f07a65a6c63bcf6af1cdf0e09778c716ff3d"
+    },
+    {
+      "path": "artifacts/redesign/final/execution-receipt.json",
+      "bytes": 87568,
+      "sha256": "2bac7722ba119d6e96c4e343d33c4a83524821996248dbd308e27407767be5f1"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshot-index.json",
+      "bytes": 58825,
+      "sha256": "def59dbcc67b3c904f609779a861aabb02a310f83c0e501cfc02251df5d636da"
+    },
+    {
+      "path": "artifacts/redesign/final/SCREENSHOT_INDEX.md",
+      "bytes": 14362,
+      "sha256": "654241c970856b3fdaff0216ab7e4cb41703a029782e953d44e78833b016a800"
+    },
+    {
+      "path": "artifacts/redesign/final/narrow-body-filter-touch-audit.json",
+      "bytes": 55161,
+      "sha256": "d9f64b810a5a41027ca9c7594d4779c6dd13b4265e948dfa21036224e6ff6465"
+    },
+    {
+      "path": "artifacts/redesign/shell/README.md",
+      "bytes": 1273,
+      "sha256": "efd0798e1bd0fdf7da59e9f4b545c1353390a3513dba5a4f2576903b19967c4a"
+    },
+    {
+      "path": "artifacts/redesign/shell/controls-regression.json",
+      "bytes": 1670,
+      "sha256": "3aec8f4734d383533b6eea44ee05f76016454e54b54bbbae0baea9e0b8147151"
+    },
+    {
+      "path": "artifacts/redesign/shell/controls-run.log",
+      "bytes": 1671,
+      "sha256": "6cd880265556c17f34bc9bb94816189b17f1bca38666ae0ef208175cb29d31b5"
+    }
+  ],
+  "scope": "Publication seal for generated receipts. No source change; raw excluded files are not publication artifacts."
+}

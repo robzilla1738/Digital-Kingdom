@@ -1,0 +1,2313 @@
+{
+  "schemaVersion": 1,
+  "sealedAt": "2026-10-22T20:55:58.901450+00:00",
+  "sourceCandidate": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "sourceTree": "57c5399526333d1145e87e5a0941cdffc20d0ad8",
+  "trackedDiffEmpty": true,
+  "baseline": "453b2db522780361405c388f036d7874041cb005",
+  "conditions": {
+    "node": "v24.19.0",
+    "pnpm": "10.12.1",
+    "playwright": "1.56.1",
+    "chromium": "141.0.7390.37",
+    "axe": "4.10.3",
+    "rendering": "Chromium headless-shell, ANGLE/Vulkan SwiftShader; not real GPU",
+    "browserConcurrency": 1,
+    "viewportDefault": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 1
+    },
+    "externalDataServicesUsed": false,
+    "browserGeneratedSecurityWarningsBypassed": false
+  },
+  "commands": {
+    "sourceAndOriginalPilot": "final-commands.log",
+    "redesign": "DK_RED_OFFLINE_DIST=artifacts/redesign/offline-dist VITE_DK_BUILD=5ce7487c76c87be2b53f6520690987d2c5bdd063 PLAYWRIGHT_BROWSERS_PATH=/workspace/shared/dk-playwright node node_modules/@playwright/test/cli.js test -c playwright.redesign.config.ts",
+    "touch": "DK_RED_OFFLINE_DIST=artifacts/redesign/offline-dist VITE_DK_BUILD=5ce7487c76c87be2b53f6520690987d2c5bdd063 PLAYWRIGHT_BROWSERS_PATH=/workspace/shared/dk-playwright node --import tsx artifacts/redesign/reproduction/check-touch-bounds.ts",
+    "shell": "VITE_DK_STATIC_DEMO=1 VITE_DK_BUILD=5ce7487c76c87be2b53f6520690987d2c5bdd063 PLAYWRIGHT_BROWSERS_PATH=/workspace/shared/dk-playwright node apps/web/src/shell/verify-controls.mjs",
+    "index": "node scripts/redesign-artifact-index.mjs 5ce7487c76c87be2b53f6520690987d2c5bdd063",
+    "publicationAudit": "python3 artifacts/redesign/reproduction/audit-artifact-publication.py"
+  },
+  "results": {
+    "unitTests": 376,
+    "unitFailures": 0,
+    "originalPilot": {
+      "startTime": "2026-10-22T20:47:35.808Z",
+      "duration": 32528.766000000003,
+      "expected": 11,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "redesign": {
+      "startTime": "2026-10-22T20:48:38.610Z",
+      "duration": 271097.28599999996,
+      "expected": 77,
+      "skipped": 1,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "redesignTests": [
+      {
+        "file": "announcements-redesign.spec.ts",
+        "title": "A11Y-21.4: local reduced automatic announcements keep sync visible and direct filter/selection feedback live",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1652,
+        "annotations": []
+      },
+      {
+        "file": "camera-redesign.spec.ts",
+        "title": "CASTLE-12: an actual pointer drag cancels active camera focus with no later snap-back",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 4829,
+        "annotations": []
+      },
+      {
+        "file": "camera-redesign.spec.ts",
+        "title": "overlapping graph relationships open a keyboard chooser; cancel/drag do not select or move camera",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1908,
+        "annotations": []
+      },
+      {
+        "file": "camera-redesign.spec.ts",
+        "title": "overlapping 3D connections open the same real-ID chooser without moving camera",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 4798,
+        "annotations": []
+      },
+      {
+        "file": "camera-redesign.spec.ts",
+        "title": "CASTLE-08: clicking a visible architectural roof resolves its canonical parent asset",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 5185,
+        "annotations": []
+      },
+      {
+        "file": "camera-redesign.spec.ts",
+        "title": "CASTLE-11: an unlinked event highlights its asset without inventing or animating a causal trail",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3469,
+        "annotations": []
+      },
+      {
+        "file": "camera-redesign.spec.ts",
+        "title": "PERF-02: genuine background-tab visibility pauses rendering when supported by the browser",
+        "status": "skipped",
+        "expectedStatus": "skipped",
+        "durationMs": 4047,
+        "annotations": [
+          {
+            "type": "skip",
+            "description": "Headless Chromium keeps both real tabs visible; physical hidden-tab lifecycle is not proven.",
+            "location": {
+              "file": "/workspace/scratch/7da97da4048f/digital-kingdom-redesign/e2e/camera-redesign.spec.ts",
+              "line": 105,
+              "column": 309
+            }
+          }
+        ]
+      },
+      {
+        "file": "camera-redesign.spec.ts",
+        "title": "PERF-05: sustained real slow active frames reduce quality without changing evidence or labels",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 11492,
+        "annotations": []
+      },
+      {
+        "file": "evidence-cards-redesign.spec.ts",
+        "title": "EVIDENCE-CARDS-01 both evidence roles expose full context and raw expansion keeps the pinned finding and comparison",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1047,
+        "annotations": []
+      },
+      {
+        "file": "evidence-cards-redesign.spec.ts",
+        "title": "EVIDENCE-CARDS-02 long source and inert raw records wrap at 320px and text paging preserves the exact loaded derivative",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 706,
+        "annotations": []
+      },
+      {
+        "file": "evidence-cards-redesign.spec.ts",
+        "title": "EVIDENCE-CARDS-03 real 5000-record finding retains all exact evidence with bounded display paging and no paging refetch",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2671,
+        "annotations": [
+          {
+            "type": "slow",
+            "location": {
+              "file": "/workspace/scratch/7da97da4048f/digital-kingdom-redesign/e2e/evidence-cards-redesign.spec.ts",
+              "line": 92,
+              "column": 8
+            }
+          }
+        ]
+      },
+      {
+        "file": "evidence-cards-redesign.spec.ts",
+        "title": "EVENT-DISPLAY-01 bounded rows retain loaded pages selection and the opaque cursor across a later fetch failure",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2425,
+        "annotations": [
+          {
+            "type": "slow",
+            "location": {
+              "file": "/workspace/scratch/7da97da4048f/digital-kingdom-redesign/e2e/evidence-cards-redesign.spec.ts",
+              "line": 111,
+              "column": 8
+            }
+          }
+        ]
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 940,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "real opaque pagination stays pinned, retains rows after failure, and discards cursor on filter change",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1087,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "event interval validation rejects more than31days before network and source-local namespace stays explicit",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2005,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "later finding-evidence page failure retains earlier exact records and marks aggregate incomplete",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 886,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "slow finding A evidence cannot appear in selected finding B and replay does not refetch the pinned record",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 665,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1838,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "late real ingestion announces newer records without replacing pinned finding revision or event snapshot",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3211,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1355,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "authoritative422 import paths are displayed after successful local preview; draft and graph remain unchanged",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2138,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3787,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "stale403 from old project reload cannot clear the newly selected project",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 4616,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "pinned finding spanning replay cutoff clearly labels later evidence without silently dropping it",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 596,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "old containment denial while next project snapshot is pending cannot clear the next authorization scope",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2366,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "export response arriving after confirmed role downgrade cannot download stale privileged content",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2624,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "SEM-01 canonical blocked request preserves exact source claim and limitations without downstream success",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 597,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "SEM-05 zero findings with no configured source remains explicitly unobserved rather than secure",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1237,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "SEM-06 shared IP across unrelated actors remains network context with no invented identity or causal map edge",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2753,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "COV-01 mixed source coverage agrees as Partial visibility in Castle Graph list and detail",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3106,
+        "annotations": []
+      },
+      {
+        "file": "evidence-redesign.spec.ts",
+        "title": "TIME-04 live-mode snapshot windows extend only after Load updates or Return live, while pinned replay stays stable",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3931,
+        "annotations": []
+      },
+      {
+        "file": "expanded-investigation-redesign.spec.ts",
+        "title": "Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1460,
+        "annotations": []
+      },
+      {
+        "file": "expanded-investigation-redesign.spec.ts",
+        "title": "Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1385,
+        "annotations": []
+      },
+      {
+        "file": "expanded-investigation-redesign.spec.ts",
+        "title": "Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1121,
+        "annotations": []
+      },
+      {
+        "file": "expanded-investigation-redesign.spec.ts",
+        "title": "Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2533,
+        "annotations": []
+      },
+      {
+        "file": "grouped-focus-redesign.spec.ts",
+        "title": "F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 865,
+        "annotations": []
+      },
+      {
+        "file": "grouped-focus-redesign.spec.ts",
+        "title": "F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 712,
+        "annotations": []
+      },
+      {
+        "file": "grouped-focus-redesign.spec.ts",
+        "title": "F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2237,
+        "annotations": []
+      },
+      {
+        "file": "grouped-focus-redesign.spec.ts",
+        "title": "F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3158,
+        "annotations": []
+      },
+      {
+        "file": "grouped-focus-redesign.spec.ts",
+        "title": "F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1708,
+        "annotations": []
+      },
+      {
+        "file": "grouped-focus-redesign.spec.ts",
+        "title": "F13 graph 320px: explicit path focus retains every cross-district endpoint",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1895,
+        "annotations": []
+      },
+      {
+        "file": "latency-redesign.spec.ts",
+        "title": "PERF-06 local journal SSE snapshot and UI timings are separate; CASTLE-05 event-only update reuses mounted module geometry",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 7051,
+        "annotations": []
+      },
+      {
+        "file": "module-recovery-redesign.spec.ts",
+        "title": "15.3: one invalid visual module becomes a named neutral block without changing canonical evidence",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 6293,
+        "annotations": []
+      },
+      {
+        "file": "module-recovery-redesign.spec.ts",
+        "title": "15.3: a valid scene replacement clears the failed label for the same canonical asset",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 5188,
+        "annotations": []
+      },
+      {
+        "file": "module-recovery-redesign.spec.ts",
+        "title": "15.3: real body GLSL compile failure recovers only its owned module family",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 4392,
+        "annotations": []
+      },
+      {
+        "file": "module-recovery-redesign.spec.ts",
+        "title": "15.3: real roof GLSL compile failure recovers only its owned module family",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 4375,
+        "annotations": []
+      },
+      {
+        "file": "module-recovery-redesign.spec.ts",
+        "title": "15.3: real depth GLSL compile failure recovers only its owned module family",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 4509,
+        "annotations": []
+      },
+      {
+        "file": "module-recovery-redesign.spec.ts",
+        "title": "15.3: one failed shader family notifies every asset owner and a healthy replacement clears only its own marker",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 13902,
+        "annotations": []
+      },
+      {
+        "file": "navigation-redesign.spec.ts",
+        "title": "legacy project relationship view time basis survives reload and browser Back; local navigation search sends no query",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1085,
+        "annotations": []
+      },
+      {
+        "file": "navigation-redesign.spec.ts",
+        "title": "logout clears records and a delayed prior-session export cannot download after same-project sign-in",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1078,
+        "annotations": []
+      },
+      {
+        "file": "navigation-redesign.spec.ts",
+        "title": "a warmed deep link cannot restore evidence after project access is denied",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 609,
+        "annotations": []
+      },
+      {
+        "file": "navigation-redesign.spec.ts",
+        "title": "six project switches retain one live stream and bounded global listeners requests and collected browser heap",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 22583,
+        "annotations": []
+      },
+      {
+        "file": "navigation-redesign.spec.ts",
+        "title": "focused Castle and zoomed Graph each preserve their own camera on two-way return",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 5763,
+        "annotations": []
+      },
+      {
+        "file": "presentation-redesign.spec.ts",
+        "title": "COV-05: canonical source counts and distinct affected asset counts agree across Coverage and header",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 675,
+        "annotations": []
+      },
+      {
+        "file": "presentation-redesign.spec.ts",
+        "title": "COV-06: fault-injected missing assessments remain unknown, never zero gaps or healthy",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 848,
+        "annotations": []
+      },
+      {
+        "file": "presentation-redesign.spec.ts",
+        "title": "COV-06: failed refresh retains confirmed nonzero gaps and visibly marks the snapshot stale",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2424,
+        "annotations": []
+      },
+      {
+        "file": "presentation-redesign.spec.ts",
+        "title": "TIME-03: earlier replay visibly labels later server notes and dispositions as current annotations",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 939,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 4586,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V07\u2013V08: partial source administration stays separate from findings and map hatching",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3082,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V05\u2013V06: deliberate event search and unlinked successful operation are inspectable",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 606,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V11: replay uses explicit known-time basis and keeps source-coverage limitations",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2070,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V09\u2013V10: ten architectural modules and actual roof removal",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 5639,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "stable ID history, hidden filters, and keyboard manual-activation semantics",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1306,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "F11/F14: untrusted text is inert and empty project is not a fabricated kingdom",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3722,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V14: responsive records, close controls, and no document overflow at 320\u20131366",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 7940,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V15: axe DOM accessibility, reduced motion, forced colors, and visible keyboard focus",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 4002,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V16: 50/200 logical assets, grouping, software renderer and bounded demand frames",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 7571,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "V12: actual browser network interruption retains stale records and never claims live",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2688,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "explicit camera focus and context loss preserve stable selection and graph fallback",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 8859,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "resource lifetime: bounded module cache and renderer counts after view and replay cycles",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 15795,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "editing, modal and browser-modifier keys are not intercepted when shortcuts are enabled",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2656,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "controlled replay reaches its end and stays historical until Return to latest",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1651,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "A11Y-03: desktop and narrow inspectors remain nonmodal and keyboard Tab can exit and return",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 690,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "A11Y-05: reduced-motion preference makes focus immediate and leaves no continuous effect or camera frames",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3437,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "CASTLE-10: rendered relationship patterns and labels distinguish evidence without color; hypothetical stays off by default",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 1889,
+        "annotations": []
+      },
+      {
+        "file": "redesign.spec.ts",
+        "title": "default F01 native draw calls include main and shadow passes within the 250-call budget",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 3139,
+        "annotations": []
+      },
+      {
+        "file": "setup-redesign.spec.ts",
+        "title": "PROSE-15: empty inventory, configuration and receipt are separate real server steps",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 2634,
+        "annotations": []
+      },
+      {
+        "file": "setup-redesign.spec.ts",
+        "title": "PROSE-13: cards show scoped configuration and keep absent assessments unknown",
+        "status": "expected",
+        "expectedStatus": "passed",
+        "durationMs": 895,
+        "annotations": []
+      }
+    ],
+    "touch": {
+      "states": 14,
+      "effectiveTargets": 240,
+      "undersized": 0,
+      "harnessSha256": "151f21062330b17c7a79cd684f4f124a1858253ea2a14616f128887729532d2c",
+      "scope": "Read-only Chromium bounding boxes at 390/320 CSS px. Native checkbox/radio associated labels count as their actual click target. Not a physical touch-device test or every possible application state."
+    },
+    "shell": {
+      "checks": 11,
+      "pageErrors": 0,
+      "sourceCandidate": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "condition": "Frozen-source Vite development server with explicit synthetic mode, not the immutable production bundle",
+      "receipt": "../shell/controls-regression.json",
+      "receiptSha256": "3aec8f4734d383533b6eea44ee05f76016454e54b54bbbae0baea9e0b8147151"
+    },
+    "accessibility": {
+      "scans": 8,
+      "violations": 0,
+      "computedContrastChecks": 428,
+      "minimumObservedPassingContrastRatio": 5.09,
+      "incomplete": [
+        {
+          "state": "kingdom",
+          "rule": "color-contrast",
+          "nodes": 59
+        },
+        {
+          "state": "integrations",
+          "rule": "color-contrast",
+          "nodes": 1
+        },
+        {
+          "state": "kingdom-expanded",
+          "rule": "color-contrast",
+          "nodes": 51
+        },
+        {
+          "state": "kingdom-inspector",
+          "rule": "color-contrast",
+          "nodes": 51
+        },
+        {
+          "state": "investigate-primary-detail",
+          "rule": "color-contrast",
+          "nodes": 1
+        }
+      ]
+    },
+    "screenshots": {
+      "count": 77,
+      "bytes": 13002175,
+      "requiredViews": [
+        "V01",
+        "V02",
+        "V03",
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16"
+      ],
+      "allEmbeddedBuildsAndPngHashesVerified": true
+    },
+    "nativeDrawProbe": {
+      "maximumObservedCompleteFrameDrawCalls": 119,
+      "target": 250,
+      "fixture": "Default F01, 13 logical assets, medium quality",
+      "includesOffscreenShadowDraws": true,
+      "publishedGlInfoCountersRemainMainPassOnly": true,
+      "notHardwareOrFiftyAssetCertification": true
+    },
+    "previousNativeContexts": {
+      "measured": 5,
+      "lostOrCollected": 5,
+      "ownershipRegistrationsRemoved": 5,
+      "scope": "WeakRef-only browser instrumentation after real teardown; loss does not imply garbage collection."
+    },
+    "currentRendererPrograms": {
+      "initialPrograms": 33,
+      "expectedModuleOwners": 13,
+      "samples": [
+        {
+          "programs": 33,
+          "owners": 13
+        },
+        {
+          "programs": 33,
+          "owners": 13
+        },
+        {
+          "programs": 33,
+          "owners": 13
+        },
+        {
+          "programs": 33,
+          "owners": 13
+        },
+        {
+          "programs": 33,
+          "owners": 13
+        },
+        {
+          "programs": 33,
+          "owners": 13
+        },
+        {
+          "programs": 33,
+          "owners": 13
+        }
+      ],
+      "scope": "Settled nonzero current-renderer counts across five remounts and replay, not process-wide GPU memory."
+    },
+    "shaderIsolation": {
+      "nativeFaults": [
+        {
+          "part": "body",
+          "driver": {
+            "injections": 1,
+            "compileFailures": 1,
+            "linkFailures": 1,
+            "target": "dk_arch_gatehouse_body"
+          },
+          "pageErrors": [],
+          "remainingShaderOwners": "12",
+          "canonicalRecordsUnchanged": [
+            "graph",
+            "events",
+            "findings",
+            "scene",
+            "evidence"
+          ]
+        },
+        {
+          "part": "roof",
+          "driver": {
+            "injections": 1,
+            "compileFailures": 1,
+            "linkFailures": 1,
+            "target": "dk_arch_gatehouse_roof"
+          },
+          "pageErrors": [],
+          "remainingShaderOwners": "12",
+          "canonicalRecordsUnchanged": [
+            "graph",
+            "events",
+            "findings",
+            "scene",
+            "evidence"
+          ]
+        },
+        {
+          "part": "depth",
+          "driver": {
+            "injections": 1,
+            "compileFailures": 1,
+            "linkFailures": 1,
+            "target": "dk_arch_gatehouse_depth"
+          },
+          "pageErrors": [],
+          "remainingShaderOwners": "12",
+          "canonicalRecordsUnchanged": [
+            "graph",
+            "events",
+            "findings",
+            "scene",
+            "evidence"
+          ]
+        }
+      ],
+      "familyReplacementPrograms": [
+        37,
+        35,
+        35
+      ],
+      "sameCanvasRetainedDuringReplacement": true,
+      "ownersReleasedOnUnmount": true,
+      "nativeContextLostOnUnmount": true,
+      "scope": "Real isolated-family invalid GLSL compilation/link failures and server-accepted module replacement, not driver-wide failure recovery or hardware certification."
+    }
+  },
+  "proofSourceFiles": [
+    {
+      "path": "apps/web/src/shell/verify-controls.mjs",
+      "bytes": 9694,
+      "sha256": "24fea707d0eefb2c17a1dbbf4845a5e3a951be348b1d2705b7429aa8b4d110e8",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "artifacts/redesign/reproduction/audit-artifact-publication.py",
+      "bytes": 4157,
+      "sha256": "0a9f32b5ff024e37d4828ed0b0d19209f32dd547e0b3056f67954c34713f0a19",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "artifacts/redesign/reproduction/check-touch-bounds.ts",
+      "bytes": 6131,
+      "sha256": "151f21062330b17c7a79cd684f4f124a1858253ea2a14616f128887729532d2c",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/announcements-redesign.spec.ts",
+      "bytes": 4103,
+      "sha256": "9f5b255e420ca21b7a1e5fb342a4dad68051f99630802935e820a58b6c55ef04",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/camera-redesign.spec.ts",
+      "bytes": 19669,
+      "sha256": "aa5184810316c8c9de55792b0dfd14ed047a370e6230e8d14f7e2f5977025849",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/evidence-cards-redesign.spec.ts",
+      "bytes": 19368,
+      "sha256": "16053dd526064d5b017ce5eb6e96b292b92571af3e922bb1438df32408d655e1",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/evidence-redesign.spec.ts",
+      "bytes": 43933,
+      "sha256": "2251f4102ed5f69c28230d67a4e0e7bc849b2ce6b0dfe98d8acd95633a563392",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/expanded-investigation-redesign.spec.ts",
+      "bytes": 13726,
+      "sha256": "7bfe806e07723157866746729f8bf33bf771290735856cc3d54cc96f19708a11",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/grouped-focus-redesign.spec.ts",
+      "bytes": 7748,
+      "sha256": "886e4628c42bfada69a594dc3972b839153b83ba5a6e45e90e2a627d020f4161",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/harness.ts",
+      "bytes": 4289,
+      "sha256": "a107d8831e68dddb8108c90a9252fd1813453df4f31afa7f67049d7721298800",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/latency-redesign.spec.ts",
+      "bytes": 11122,
+      "sha256": "43f9b3a15f871890ba973dd55f7f164e4068f1ebe30839f66a3a5e694386d786",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/module-recovery-redesign.spec.ts",
+      "bytes": 22324,
+      "sha256": "1b82aab05df3bdb40f271d85ee38a207700801f8ac5336f1556310288aad6ba6",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/navigation-redesign.spec.ts",
+      "bytes": 13282,
+      "sha256": "a144741def390678a55cadc8cd4392983913ae50970f5e77410fe84994a4cc62",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/pilot.spec.ts",
+      "bytes": 31917,
+      "sha256": "93948d3683b14154f79d822228fb61be530232b303c217d0efeca6a586870e5d",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/presentation-redesign.spec.ts",
+      "bytes": 11094,
+      "sha256": "0fec2fb11936af88093d2ea476ec908c8eebe697c6764dfc49f5d7a8bd68aecb",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/redesign-harness.ts",
+      "bytes": 6975,
+      "sha256": "ef2d33a220dcd615fc99e92db34dc98057a75e7e701e18b84e56ebff2872b262",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/redesign.spec.ts",
+      "bytes": 55126,
+      "sha256": "f38bb49b0e00aa9dcd26a8bf200fd173cc888b68d804b2703fbb3680db745db2",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "e2e/setup-redesign.spec.ts",
+      "bytes": 5728,
+      "sha256": "108710c15928f99bf183def81d8380964f99a1d6f2691f7d0bd89f83872a7060",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "fixtures/redesign/README.md",
+      "bytes": 1709,
+      "sha256": "938c90d45e072e6c1516343906cf9d68b760a6f0892ea1aee670ab16beeb97fb",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "fixtures/redesign/offline.ts",
+      "bytes": 5337,
+      "sha256": "f2be2221fb2e98a58e251f5ba65fe9706092d28a8185a1e6bc1d25f33d87af66",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "playwright.config.ts",
+      "bytes": 950,
+      "sha256": "99792696f1794d700c188f8db5216901f8e942f3d51137e0117c180f3d78b6df",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "playwright.redesign.config.ts",
+      "bytes": 684,
+      "sha256": "2a8b6f595add1cf81d11e4b58956534d5c971e0b1bc1fe08102c689f03aa4840",
+      "matchesFrozenGitBlob": true
+    },
+    {
+      "path": "scripts/redesign-artifact-index.mjs",
+      "bytes": 4568,
+      "sha256": "c071fb8ea6c63469439778a96c408c4e9e14388ddc7fd4a2a192133d30a51d68",
+      "matchesFrozenGitBlob": true
+    }
+  ],
+  "bundles": [
+    {
+      "label": "api-production",
+      "embeddedBuild": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "fileManifestSha256": "cd8fe6f6c204d533ab9fe5024cae784984b60087a86f1b5dfdf55499e05ef46c",
+      "manifestEncoding": "UTF-8 JSON, keys sorted, separators comma/colon, no trailing newline",
+      "files": [
+        {
+          "path": "assets/Castle3D-BOzVSFDU.js",
+          "bytes": 27378,
+          "sha256": "b71368686059ed0824917c2c3afee2f85b4148aa34191aed7d955136be9e49a9"
+        },
+        {
+          "path": "assets/ComponentFixtures-BEwQvQrD.js",
+          "bytes": 3375,
+          "sha256": "bce1bbcc18ffbfe0c6e9a70b2ffe747573e239e45aa698223884805b615baf81"
+        },
+        {
+          "path": "assets/ModuleSheet-BdN3fgem.js",
+          "bytes": 2332,
+          "sha256": "4574cded7d60aacb7a3e17ac9ff72f15691a0c9b1bd307c1621f4ea31358b5f8"
+        },
+        {
+          "path": "assets/index-D2lAxyzJ.css",
+          "bytes": 53551,
+          "sha256": "00771d0021b69d06e49cdad517c186b2607677486ee7a36a48fcf0104fcef201"
+        },
+        {
+          "path": "assets/index-DKHdyell.js",
+          "bytes": 456614,
+          "sha256": "be6d637e1d4b9244e21e81cca4a59b381d5f8825b726b6b915b4eb134b10ae82"
+        },
+        {
+          "path": "assets/modules-BmAe--Ta.js",
+          "bytes": 18554,
+          "sha256": "8b3878250d147dc1f106f231eef9a2e8bd95a6c4dc0ef6568a34a69e40c37020"
+        },
+        {
+          "path": "assets/r3f-Cy3TS7m8.js",
+          "bytes": 385608,
+          "sha256": "ea2ddd5c62043c3c7e181fe5b30f6c5dee4a297cc568c2f8a7cd06158a6aae6d"
+        },
+        {
+          "path": "assets/three-D-fHQp3O.js",
+          "bytes": 698734,
+          "sha256": "426ee7c38e0eaa3607958ea3dc803a616f2e8cb71a01861a3513eb12b901230f"
+        },
+        {
+          "path": "favicon.svg",
+          "bytes": 353,
+          "sha256": "c344c24f6aa9bd6a9c122ac67002e52e4505c4ed3f5f08fcb2aa5bc0c8181c10"
+        },
+        {
+          "path": "index.html",
+          "bytes": 1040,
+          "sha256": "068cf292f6113bda0e2f74c8bcb5342ec213dd5d713f6d57f5705a3959e263c6"
+        }
+      ]
+    },
+    {
+      "label": "offline-production",
+      "embeddedBuild": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "fileManifestSha256": "071cfc4b11825c0b3663d59e6202ec23579a8bb126c465e0455ca8dd4894971f",
+      "manifestEncoding": "UTF-8 JSON, keys sorted, separators comma/colon, no trailing newline",
+      "files": [
+        {
+          "path": "assets/Castle3D-BU1ogo6_.js",
+          "bytes": 27378,
+          "sha256": "89108ad0d0c17e9c4def4ce663f13e41ea867e1fa029bc63bf02d19256f64ab1"
+        },
+        {
+          "path": "assets/ComponentFixtures-DeDLmzsc.js",
+          "bytes": 3375,
+          "sha256": "ba7951dbf56dd8df8ff90a99670f505799a823f8ee8ff1a9af2d41ae1375661c"
+        },
+        {
+          "path": "assets/ModuleSheet-DGrFT-tD.js",
+          "bytes": 2332,
+          "sha256": "b6bcfb495ca3c4db3ff4f44d50f99ba23dd80ac26d1c76a9fd08447fe9805d2c"
+        },
+        {
+          "path": "assets/index-7h5O8oRq.js",
+          "bytes": 453862,
+          "sha256": "42b28c3ace089a1e4042b2fd6c551c07000366f22e20aae283aafa0dd191f440"
+        },
+        {
+          "path": "assets/index-D2lAxyzJ.css",
+          "bytes": 53551,
+          "sha256": "00771d0021b69d06e49cdad517c186b2607677486ee7a36a48fcf0104fcef201"
+        },
+        {
+          "path": "assets/modules-4tP4_J1M.js",
+          "bytes": 18554,
+          "sha256": "9e0ddbf9a5b1a075468b8156f804f6c63ec56330399253a81944eae5b062534b"
+        },
+        {
+          "path": "assets/r3f-Cy3TS7m8.js",
+          "bytes": 385608,
+          "sha256": "ea2ddd5c62043c3c7e181fe5b30f6c5dee4a297cc568c2f8a7cd06158a6aae6d"
+        },
+        {
+          "path": "assets/three-D-fHQp3O.js",
+          "bytes": 698734,
+          "sha256": "426ee7c38e0eaa3607958ea3dc803a616f2e8cb71a01861a3513eb12b901230f"
+        },
+        {
+          "path": "favicon.svg",
+          "bytes": 353,
+          "sha256": "c344c24f6aa9bd6a9c122ac67002e52e4505c4ed3f5f08fcb2aa5bc0c8181c10"
+        },
+        {
+          "path": "index.html",
+          "bytes": 1040,
+          "sha256": "54ace7153109258a7f8a9c8428561ea372c59e97336fd23d2a12630a296f122d"
+        }
+      ]
+    },
+    {
+      "label": "clean-archive-api-production",
+      "embeddedBuild": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "fileManifestSha256": "cd8fe6f6c204d533ab9fe5024cae784984b60087a86f1b5dfdf55499e05ef46c",
+      "manifestEncoding": "UTF-8 JSON, keys sorted, separators comma/colon, no trailing newline",
+      "files": [
+        {
+          "path": "assets/Castle3D-BOzVSFDU.js",
+          "bytes": 27378,
+          "sha256": "b71368686059ed0824917c2c3afee2f85b4148aa34191aed7d955136be9e49a9"
+        },
+        {
+          "path": "assets/ComponentFixtures-BEwQvQrD.js",
+          "bytes": 3375,
+          "sha256": "bce1bbcc18ffbfe0c6e9a70b2ffe747573e239e45aa698223884805b615baf81"
+        },
+        {
+          "path": "assets/ModuleSheet-BdN3fgem.js",
+          "bytes": 2332,
+          "sha256": "4574cded7d60aacb7a3e17ac9ff72f15691a0c9b1bd307c1621f4ea31358b5f8"
+        },
+        {
+          "path": "assets/index-D2lAxyzJ.css",
+          "bytes": 53551,
+          "sha256": "00771d0021b69d06e49cdad517c186b2607677486ee7a36a48fcf0104fcef201"
+        },
+        {
+          "path": "assets/index-DKHdyell.js",
+          "bytes": 456614,
+          "sha256": "be6d637e1d4b9244e21e81cca4a59b381d5f8825b726b6b915b4eb134b10ae82"
+        },
+        {
+          "path": "assets/modules-BmAe--Ta.js",
+          "bytes": 18554,
+          "sha256": "8b3878250d147dc1f106f231eef9a2e8bd95a6c4dc0ef6568a34a69e40c37020"
+        },
+        {
+          "path": "assets/r3f-Cy3TS7m8.js",
+          "bytes": 385608,
+          "sha256": "ea2ddd5c62043c3c7e181fe5b30f6c5dee4a297cc568c2f8a7cd06158a6aae6d"
+        },
+        {
+          "path": "assets/three-D-fHQp3O.js",
+          "bytes": 698734,
+          "sha256": "426ee7c38e0eaa3607958ea3dc803a616f2e8cb71a01861a3513eb12b901230f"
+        },
+        {
+          "path": "favicon.svg",
+          "bytes": 353,
+          "sha256": "c344c24f6aa9bd6a9c122ac67002e52e4505c4ed3f5f08fcb2aa5bc0c8181c10"
+        },
+        {
+          "path": "index.html",
+          "bytes": 1040,
+          "sha256": "068cf292f6113bda0e2f74c8bcb5342ec213dd5d713f6d57f5705a3959e263c6"
+        }
+      ]
+    }
+  ],
+  "apiBundleByteIdenticalToCleanArchive": true,
+  "artifacts": [
+    {
+      "path": "artifacts/redesign/final/1280-panel-layout.json",
+      "bytes": 292,
+      "sha256": "b768252e28fc9679b6ed06a41bd599aa3f482dab0fe1962c888719996ea35e9e"
+    },
+    {
+      "path": "artifacts/redesign/final/README.md",
+      "bytes": 5402,
+      "sha256": "e9d7e6f2dbca084ff1a8206ce818f07a65a6c63bcf6af1cdf0e09778c716ff3d"
+    },
+    {
+      "path": "artifacts/redesign/final/SCREENSHOT_INDEX.md",
+      "bytes": 14362,
+      "sha256": "654241c970856b3fdaff0216ab7e4cb41703a029782e953d44e78833b016a800"
+    },
+    {
+      "path": "artifacts/redesign/final/adaptive-quality-fault-injection.json",
+      "bytes": 975,
+      "sha256": "13b209b31d4eb8b26efa7248c31da94ac9eaabf0d3f720b529584e2b135dda51"
+    },
+    {
+      "path": "artifacts/redesign/final/automatic-announcement-preference.json",
+      "bytes": 438,
+      "sha256": "62ad2820659c90378be3331b93aecbb4d64ea97abe34e997d5cb1b2344c45c13"
+    },
+    {
+      "path": "artifacts/redesign/final/axe-dom-results.json",
+      "bytes": 481628,
+      "sha256": "ff194c6c13fcbfe97522f17c7582d713f736a7baad486a77a37f67ed300e1428"
+    },
+    {
+      "path": "artifacts/redesign/final/build-final.log",
+      "bytes": 803,
+      "sha256": "47f1661e2bbb77773da3e19efa8039a97e7e9ab728a0a7952ce59d3689032d4e"
+    },
+    {
+      "path": "artifacts/redesign/final/camera-and-picking-verification.json",
+      "bytes": 2095,
+      "sha256": "6862944d979c83d2020ca7330091927617e1085757a81ef258cbd74ff0d50ab1"
+    },
+    {
+      "path": "artifacts/redesign/final/clean-archive-build.log",
+      "bytes": 803,
+      "sha256": "27557ad9a7d48d763a9583c8117cddacdc9a53e7579a32862ab85616d0e034d5"
+    },
+    {
+      "path": "artifacts/redesign/final/clean-archive-fixtures.log",
+      "bytes": 1104,
+      "sha256": "9c569e172ea6027d479142df15a2776a3462467cd0e31eb5b2fe233bc6c2543c"
+    },
+    {
+      "path": "artifacts/redesign/final/clean-archive-receipt.json",
+      "bytes": 1532,
+      "sha256": "71165279b958f0c238c816c996d3a03e8a31baae7791e60531890561d00a70b9"
+    },
+    {
+      "path": "artifacts/redesign/final/clean-archive-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/redesign/final/clean-archive-unit.log",
+      "bytes": 5256,
+      "sha256": "03eec8c7793002f55e960ab4d237eb756c439cf27119a49f0ecdc835dadf7272"
+    },
+    {
+      "path": "artifacts/redesign/final/context-loss-retained-evidence.json",
+      "bytes": 2984,
+      "sha256": "00b3bca715f1b990773c91e67490813ada9be288e2720df9668f426ddb3a339a"
+    },
+    {
+      "path": "artifacts/redesign/final/event-display-bounds.json",
+      "bytes": 363,
+      "sha256": "c512e37c4b91e29b1bce46637b226320b0af94a19378f97a7d016f880c169bc8"
+    },
+    {
+      "path": "artifacts/redesign/final/evidence-card-display-bounds.json",
+      "bytes": 410,
+      "sha256": "01a2a9f6137ee6404cb475c34f6417b14105ebfc0594dcb5f61c470c299ab692"
+    },
+    {
+      "path": "artifacts/redesign/final/evidence-card-readability.json",
+      "bytes": 598,
+      "sha256": "0ffc217ae72b4709b755bf2625e8fb80346cddb987d3956db7c43f7996647e83"
+    },
+    {
+      "path": "artifacts/redesign/final/expanded-finding-card-readability.json",
+      "bytes": 6030,
+      "sha256": "4a6a800a54ce5ac61099d2752faf5e93fb6edb82d8a044149ec5cd1a2c60b4de"
+    },
+    {
+      "path": "artifacts/redesign/final/expanded-investigation-verification.json",
+      "bytes": 3509,
+      "sha256": "d8b3bc51b236dd79e6756f6015e1ba6209bf33a43e2e0ab4adbff838e9581d96"
+    },
+    {
+      "path": "artifacts/redesign/final/final-commands.log",
+      "bytes": 2154,
+      "sha256": "5d053137f55062562cdabfeb1181b9a8bec548bf0b84bf671f87676dc1c4544c"
+    },
+    {
+      "path": "artifacts/redesign/final/fixtures-final.log",
+      "bytes": 1104,
+      "sha256": "9c569e172ea6027d479142df15a2776a3462467cd0e31eb5b2fe233bc6c2543c"
+    },
+    {
+      "path": "artifacts/redesign/final/grouped-focus-verification.json",
+      "bytes": 6108,
+      "sha256": "774545c20d92015e3fb1e91dae6282c6b44a68df0c228d777e75a58467fca5b3"
+    },
+    {
+      "path": "artifacts/redesign/final/immutable-offline-build.log",
+      "bytes": 1100,
+      "sha256": "6710783816319e65272f9a21d0be6464f5e5cf0fb6db9fdd0db5f6244e28cc4c"
+    },
+    {
+      "path": "artifacts/redesign/final/index-verification.log",
+      "bytes": 113,
+      "sha256": "ee97977185393b33e8906eba24466e248fd6e202a91497c571403c51d9245c52"
+    },
+    {
+      "path": "artifacts/redesign/final/inspector-nonmodal-keyboard.json",
+      "bytes": 33402,
+      "sha256": "2d65f08ef7f379a511ab5eadf4e0634bc907d324b3945e7bfffc08e2c4b79e61"
+    },
+    {
+      "path": "artifacts/redesign/final/keyboard-focus.json",
+      "bytes": 183,
+      "sha256": "a20bb05d09e8a91432c8f5d42658e0f79e82133976d864183829f70a6bd45e22"
+    },
+    {
+      "path": "artifacts/redesign/final/module-geometry-failure.json",
+      "bytes": 1318,
+      "sha256": "e66d1f9c12eff554776c2914e9102b3b4a222d6cc3c895b9c741746370e8366f"
+    },
+    {
+      "path": "artifacts/redesign/final/module-geometry-replacement.json",
+      "bytes": 496,
+      "sha256": "10964beefc676da7be4c5d5815121a4077da640302bf1089d515ad600e3c33bd"
+    },
+    {
+      "path": "artifacts/redesign/final/module-shader-body-failure.json",
+      "bytes": 799,
+      "sha256": "a44d4a0386cd760d2e935afbceec35b2c7b7ed2ebc5f8de2d2179c63734a87ca"
+    },
+    {
+      "path": "artifacts/redesign/final/module-shader-depth-failure.json",
+      "bytes": 801,
+      "sha256": "88ee1757f8896401ae6cb90205192b01fd1f36d1de766408c1b4dd2103d1e27f"
+    },
+    {
+      "path": "artifacts/redesign/final/module-shader-family-replacement.json",
+      "bytes": 1007,
+      "sha256": "4eb426b9c79c23a894c939c10bbd5247ae44c9f170d2ca397a5e41ef6c8d0288"
+    },
+    {
+      "path": "artifacts/redesign/final/module-shader-roof-failure.json",
+      "bytes": 799,
+      "sha256": "0d6ac7700d019ea8046a286955e6366e15695d6044496b3735371abf47fc0970"
+    },
+    {
+      "path": "artifacts/redesign/final/narrow-body-filter-touch-audit.json",
+      "bytes": 55161,
+      "sha256": "d9f64b810a5a41027ca9c7594d4779c6dd13b4265e948dfa21036224e6ff6465"
+    },
+    {
+      "path": "artifacts/redesign/final/narrow-timeline-clock-bounds.json",
+      "bytes": 2524,
+      "sha256": "fe3bdee5939ba6465f13892076fe4573320c5d30ba1c5d8f821c0ffd3271f324"
+    },
+    {
+      "path": "artifacts/redesign/final/native-draw-budget.json",
+      "bytes": 2975,
+      "sha256": "a480d31004114c646dac4f347d2db9c579ac25f45d66591be58973d21437857f"
+    },
+    {
+      "path": "artifacts/redesign/final/network-allowlist.json",
+      "bytes": 680,
+      "sha256": "4afbd55384089511d5b20b1991deadddf1392cb162954f50fdb5424549192798"
+    },
+    {
+      "path": "artifacts/redesign/final/pilot-final.log",
+      "bytes": 1831,
+      "sha256": "30f89df48c41b108ed5571ef28127d5795432c86f47f56797c87650d6e6f2208"
+    },
+    {
+      "path": "artifacts/redesign/final/pilot-observations.json",
+      "bytes": 1863,
+      "sha256": "de17740657bff8a0fc1d17727ffd5ce83229da249cb43ce5c136b89572b74e56"
+    },
+    {
+      "path": "artifacts/redesign/final/pilot-results.json",
+      "bytes": 13500,
+      "sha256": "1d0e7812e036acf38b7abcf673db19a97200324b21a8253876099ab0c138f4ef"
+    },
+    {
+      "path": "artifacts/redesign/final/pixel-review.json",
+      "bytes": 2033,
+      "sha256": "a9d38872466808f676a1a5fef5740d94b85aadc0612c854f1c367bffd1aa0726"
+    },
+    {
+      "path": "artifacts/redesign/final/presentation-acceptance.json",
+      "bytes": 1295,
+      "sha256": "57f34624841d4e0a5c967f3d2530db3ced4c9df2d8de31cf6e5d9ef26a27f9a9"
+    },
+    {
+      "path": "artifacts/redesign/final/preserved-tree-hashes.json",
+      "bytes": 2162,
+      "sha256": "2b7fde96db31cb36e363453254c713a831aca5c75ead863da5783fa30da97575"
+    },
+    {
+      "path": "artifacts/redesign/final/project-switch-resource-check.json",
+      "bytes": 6232,
+      "sha256": "1a9fc68a2417d3347e89eb570a4e6711ef3816c89d6edd339b642f78bf9183b2"
+    },
+    {
+      "path": "artifacts/redesign/final/publication-audit.log",
+      "bytes": 135,
+      "sha256": "75a397cb92df20ebf783efc22c67eb476c67b4ed6d8390db6b2f3d7904c36334"
+    },
+    {
+      "path": "artifacts/redesign/final/redesign-case-list.txt",
+      "bytes": 10383,
+      "sha256": "44c056e7070e9ff1dc155c40056918a7433fa78da16ee2fdf7b05c5fffd91bf1"
+    },
+    {
+      "path": "artifacts/redesign/final/redesign-suite.log",
+      "bytes": 12220,
+      "sha256": "90088fafc71bac4d168029779d6dd9f009c1c959bc70fda4427a1e215d0ae7a6"
+    },
+    {
+      "path": "artifacts/redesign/final/reduced-motion-behavior.json",
+      "bytes": 501,
+      "sha256": "22166f96f3fd8ab8e56e9abdfb9c481da0df2b1d1b54c2f32d940f7114f24907"
+    },
+    {
+      "path": "artifacts/redesign/final/relationship-rendered-patterns.json",
+      "bytes": 981,
+      "sha256": "4e40af97c7b2b98a473b213fdba56dcca2290b32d2759bc958b2ca7a1bf85ec4"
+    },
+    {
+      "path": "artifacts/redesign/final/replay-end.json",
+      "bytes": 210,
+      "sha256": "37e4a3b90985bb843baefcb072405ffa41a791ba56fb98a739f3516dcf2dd6ad"
+    },
+    {
+      "path": "artifacts/redesign/final/replay-visible-scope.json",
+      "bytes": 276,
+      "sha256": "5bfb0e90b678ec251a00098a6f8605132544b4566892eb82d465919189f779ab"
+    },
+    {
+      "path": "artifacts/redesign/final/resource-lifetime.json",
+      "bytes": 4774,
+      "sha256": "b5a6365378bff2422afaf5aca2bf7d9ff10f275ab5d6454aac4e6e465d06be24"
+    },
+    {
+      "path": "artifacts/redesign/final/results.json",
+      "bytes": 90900,
+      "sha256": "e1ce8ea46bec5fe62b948d0afdc4bd4ce7d36a6e69c7eeea4502777c44c2518d"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshot-index.json",
+      "bytes": 58825,
+      "sha256": "def59dbcc67b3c904f609779a861aabb02a310f83c0e501cfc02251df5d636da"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/3d-overlapping-relationship-chooser.meta.json",
+      "bytes": 667,
+      "sha256": "0dffa09033ace14820d5ff9d23252515f2f103a0cdda5f89c3b64f2c600871cd"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/3d-overlapping-relationship-chooser.png",
+      "bytes": 226279,
+      "sha256": "c2ba4212479de57f0acf7382c6ea549c161a2277f4dab7b1e417a6a09b5f4d3b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/COV05-distinct-sources-and-assets.meta.json",
+      "bytes": 701,
+      "sha256": "da2c0b7c95452a2c4002f44ef4a00f8f418afa6038342b02791b5e1ffa13cfa3"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/COV05-distinct-sources-and-assets.png",
+      "bytes": 116300,
+      "sha256": "a1b309cd79db6220e0bb05c006d36a1cab1f095b02730094b30d5aecef80916c"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/COV06-failed-snapshot-retains-known-gaps.meta.json",
+      "bytes": 715,
+      "sha256": "baabf520ccb86a8bf3e3bad9583da2b8c944dac66b2dd35ee7f658c9ded2b183"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/COV06-failed-snapshot-retains-known-gaps.png",
+      "bytes": 142355,
+      "sha256": "12000bbdb6c3c82e9a0de0c78a0457c79d82fe4011e16195888a0c6486bbaa70"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/COV06-missing-assessment-explicit-fault.meta.json",
+      "bytes": 713,
+      "sha256": "08db0db4f1619d923d72940530b06073230ed5698150ffb2747705ff65f4909d"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/COV06-missing-assessment-explicit-fault.png",
+      "bytes": 123155,
+      "sha256": "82026277347441e1e512864687876a157885adec569ab6fbc98303e3011c8407"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/F11-untrusted-text.meta.json",
+      "bytes": 633,
+      "sha256": "d3cdbc350bc32003d7bb1f71e738a5061ecc53c13f43db4134991c2531ec8edf"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/F11-untrusted-text.png",
+      "bytes": 244034,
+      "sha256": "8378137f784f16630f7a965353e739f787fbb276511f8b17e45b867908386828"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/F14-empty-inventory.meta.json",
+      "bytes": 634,
+      "sha256": "be2ba08aaf10828f48504e0459aaaa228207b91a37c61d0c1b80bc3d20d94793"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/F14-empty-inventory.png",
+      "bytes": 75431,
+      "sha256": "b3dd00515b99f6c76cd0c9c199e040b8d2a8429b471bc2189488edc362abda37"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/TIME03-current-disposition-during-earlier-replay.meta.json",
+      "bytes": 731,
+      "sha256": "a52d084157f740d75555fa2164a46d7def7d1cd5275b64c285e5b80fd6c0278b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/TIME03-current-disposition-during-earlier-replay.png",
+      "bytes": 230083,
+      "sha256": "0af018eeaa9f10857099fc1cee85f3f03fca6994565af5b3c1bb49be5685e604"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/TIME03-current-notes-during-earlier-replay.meta.json",
+      "bytes": 719,
+      "sha256": "956abe13fdbfc711797d945eb3d62b56594cb2ee705dece7a10d426204f204b2"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/TIME03-current-notes-during-earlier-replay.png",
+      "bytes": 237747,
+      "sha256": "986ce6bab0ab72bc8614d0a0e71e567212b36a11deabd78b5905e51032bc7acd"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V01-kingdom-overview-1440.meta.json",
+      "bytes": 647,
+      "sha256": "4dc8fd0ca2bed50e0ed9deb1d5a61ee1fab0bc23ee081b4ae3c38b9dab0bad62"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V01-kingdom-overview-1440.png",
+      "bytes": 260616,
+      "sha256": "b5f92866634c667d6ba16ef74100141ab6525312fbd98d46b42c30032de2a232"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V02-kingdom-selected-1440.meta.json",
+      "bytes": 647,
+      "sha256": "08d17ab5e08ae69132514b063bfef5a198811af07cc54f74016bf19b6e1e9d7c"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V02-kingdom-selected-1440.png",
+      "bytes": 328915,
+      "sha256": "8603f01c96c5a4f71a8a1e067e20887c480c2052dc922081eac0e3e672096089"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V03-graph-same-selection-1440.meta.json",
+      "bytes": 655,
+      "sha256": "67301b25f83b1b54a70ac293bdc14377414a7453ac5191cd67a7015d634ec990"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V03-graph-same-selection-1440.png",
+      "bytes": 239963,
+      "sha256": "85f5e6f45bad315a475998d39916c1ddad36a9f3df3163c13e053d64b38e139c"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V04a-expanded-contradiction-claim.meta.json",
+      "bytes": 662,
+      "sha256": "8ecebda0cd347c4253e3a0db822453db01684481186551451eec5f154120c0bb"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V04a-expanded-contradiction-claim.png",
+      "bytes": 96157,
+      "sha256": "315d3eb3f370ae3b1ad7f15c81f91319299dcf511d04a84b2eb1955b97672d8e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V04b-contradiction-supporting-counter.meta.json",
+      "bytes": 671,
+      "sha256": "2744410f4a4d3a22c3f1776a9caee0e9f996e565c18596e0e0de80557b8de9ee"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V04b-contradiction-supporting-counter.png",
+      "bytes": 140577,
+      "sha256": "fd85fae96950b885789ef0039cc485f2853ed17f769f9a5376c4d0562460b33e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V04c-evidence-card-raw-320.meta.json",
+      "bytes": 692,
+      "sha256": "767a91ddab5232e3a266f834b51cf9a0c35f5b0a74b309a49cbb9dc8f4ed3954"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V04c-evidence-card-raw-320.png",
+      "bytes": 48833,
+      "sha256": "c8d47c8ef5c2c82c280fe704eb309fc98657ee28cb3724b00cca867f6f8b3d89"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V04c-in-context-raw-evidence.meta.json",
+      "bytes": 653,
+      "sha256": "ac24a562f70f26bb26dd0e6982b7f6d288d15fecc1d69718b50bc0a971a50efb"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V04c-in-context-raw-evidence.png",
+      "bytes": 109300,
+      "sha256": "d06c5dc03fa8d83153efbf5fd3101f5701e710958f37644a7569b1f122bd422c"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V05-event-search-separate-completeness.meta.json",
+      "bytes": 673,
+      "sha256": "eb1d1a689c78c3c87992cc58fe19e2dcbab050be555982e96f8057e9d7a6bf2d"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V05-event-search-separate-completeness.png",
+      "bytes": 100165,
+      "sha256": "42d8293f561e52a80f4342db4afcbeb976f4bb824e0100447a965755617176a7"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V06-unlinked-event.meta.json",
+      "bytes": 633,
+      "sha256": "c9819b6782ae6936156f3025f45ee99077bc95fcb33da93e138143fb04c01ab1"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V06-unlinked-event.png",
+      "bytes": 186698,
+      "sha256": "c2619ff52c82c623d36d227885b8263c9739929de5478d09c3a62cba0d90b6a8"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V07a-coverage-sources.meta.json",
+      "bytes": 639,
+      "sha256": "8e6765021cc897402f06d2913fa787e60397f63b25cde3b06804eecd4788c600"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V07a-coverage-sources.png",
+      "bytes": 132118,
+      "sha256": "4c53c53907fcaa2e41cc1a720bf38b8335eff00ea85433aa22279934d9dcad34"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V07b-partial-unobserved-assets.meta.json",
+      "bytes": 657,
+      "sha256": "938f9f2d04299a27edaa5dc0eec5178d25eaea7e1e4451d57db1367a47228bbf"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V07b-partial-unobserved-assets.png",
+      "bytes": 120609,
+      "sha256": "7e3ff8ae5f3292836ec3080e1c77e8511a81cf854aca453b217a9d6c9a6c625e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V08-3d-partial-coverage-selection.meta.json",
+      "bytes": 663,
+      "sha256": "9b71199afb2243dde5e36c65e1aefec3db23be855e2cd0f23e6859f94c7da57b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V08-3d-partial-coverage-selection.png",
+      "bytes": 306546,
+      "sha256": "4e13699cf1a3ca10458d1f177a2f7db5f398c3d557384e59f013992f258f8e7b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V09-ten-module-sheet.meta.json",
+      "bytes": 641,
+      "sha256": "024c43e221d7ffbe5fe5a929b49f6fc9a87d3edca5d86f4085c1bd1502375d77"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V09-ten-module-sheet.png",
+      "bytes": 213589,
+      "sha256": "845ac51578883edf94706867bb918ace8a305a2b92bcbe56ddec4f00b0529279"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V10a-four-module-near.meta.json",
+      "bytes": 644,
+      "sha256": "9e22d30ca7a92d42b8ffcae877950501b7858a4d4a8ae64dbd78fdd1e1e31cd0"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V10a-four-module-near.png",
+      "bytes": 149921,
+      "sha256": "2ac738d0707fa7da523e450c3a1587360aa7d9ee3b6192650218152c4b434e68"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V10b-four-module-roofs-off.meta.json",
+      "bytes": 654,
+      "sha256": "e6458a6a8244f350574e8af3164a206a31acc461cd0eee8a01426a3477e20d29"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V10b-four-module-roofs-off.png",
+      "bytes": 144513,
+      "sha256": "2802cf276bc70c3955d36cc5c1da8e31a636155b2d0c26df2696017fb111c6a4"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V10c-roofs-off-elevated-floor-inspection.meta.json",
+      "bytes": 682,
+      "sha256": "ad8160d5c585bfe3e32aa96a0e4e9638bb0b5a5b73526bfe5b583485691919d5"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V10c-roofs-off-elevated-floor-inspection.png",
+      "bytes": 165207,
+      "sha256": "9635fa6da8aef6620a457ca3f604efffb040ccdcb6de2a556a2af181c6542420"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V11a-known-time-replay-scope.meta.json",
+      "bytes": 653,
+      "sha256": "73b317ad527d2439c5ec90e7faf469431a98c66df1a2729ddad4395d8e8374ef"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V11a-known-time-replay-scope.png",
+      "bytes": 222981,
+      "sha256": "a61e56021750a4caef56a45db7fb3502df2a72a78ecc6dce34e32c5922a22f80"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V11b-late-record-known-time.meta.json",
+      "bytes": 651,
+      "sha256": "0f3446d27b784d0a48d2589895c7f93ec95edab5de41b477504ad8a9fe160049"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V11b-late-record-known-time.png",
+      "bytes": 226875,
+      "sha256": "329a94f7bd2d71762ce3a403973f4d882ecac1ffa12c3c3da51085435041c15b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V11c-expanded-exact-record-lanes.meta.json",
+      "bytes": 661,
+      "sha256": "950321faa14590199dc0808001d4faecabc42cbca909a341b3b1289f06e2782e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V11c-expanded-exact-record-lanes.png",
+      "bytes": 244445,
+      "sha256": "16b32577be8274588d3e9ffba7a9f54886611449de54b34186825b4b0027ebc8"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V12-network-interruption-stale-records.meta.json",
+      "bytes": 711,
+      "sha256": "ac1131057d40e80094c136a41e263c8e624aded4a59b06da7052ef3947335be1"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V12-network-interruption-stale-records.png",
+      "bytes": 157170,
+      "sha256": "7bdf0f13a5a5cd7c33b8a1260d9d13d72ce2ca0cc37d7092c6ebe1a3b2e0815f"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V13-evidence-partial-retained.meta.json",
+      "bytes": 693,
+      "sha256": "8d9d6389b32596561a76b683d74d0a49ffd9e22939abd292b0777a841c4ff6dc"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V13-evidence-partial-retained.png",
+      "bytes": 136031,
+      "sha256": "4c5939e4baf4a535827f54f88a7b57721b4129efa49f08bb957a6f8f1f713cb8"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1024-detail.meta.json",
+      "bytes": 626,
+      "sha256": "02f9b7bb87831c72b10aa1f89500bd18855858f1c248b2590eed674d9e201d46"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1024-detail.png",
+      "bytes": 72561,
+      "sha256": "5c1473c829d665c96d1beb82a4abae4067ec169d705a6704a969c9fdbad39900"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1024-findings.meta.json",
+      "bytes": 631,
+      "sha256": "8546621d38847c747cc45f79713f3278ca5200219ef411cd611e09c5c25f3456"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1024-findings.png",
+      "bytes": 113729,
+      "sha256": "d4947aef2afa4e78a3fb4f091bf6e23c199da7f35d6257877c67b438b3e812c6"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1280-detail.meta.json",
+      "bytes": 627,
+      "sha256": "a3812e915a2fdb2103f479c51a842a219a3672c887781ae03204412dfa2e1f38"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1280-detail.png",
+      "bytes": 133627,
+      "sha256": "a0a8c09b26ec9982f65217fcbaf16ff4c3080f9a52c43d45ec268e70d70ee6c5"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1280-findings.meta.json",
+      "bytes": 631,
+      "sha256": "eeab6812839ceb5f8b60160d9772a0274619958532966335b14f10db006d6d93"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1280-findings.png",
+      "bytes": 109785,
+      "sha256": "4dc004cb2065cb196fa266fc2f3ad47926f161df4ca3fb37982a54ecc0fa15e3"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1280-kingdom-detail.meta.json",
+      "bytes": 643,
+      "sha256": "f107a5bcf8a694f5ce04f8a1a5f36a1f88834b5280fbd5458539981dfa194676"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1280-kingdom-detail.png",
+      "bytes": 195963,
+      "sha256": "a25c41e08b2538be563628d584a68e686751887743eface33bc031af759bc553"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1280-resized-inspector.meta.json",
+      "bytes": 649,
+      "sha256": "9c64eaa1b398253482d307566da6a60cc698f043103aaeb3fca7990ba44d6dba"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1280-resized-inspector.png",
+      "bytes": 202528,
+      "sha256": "d9e1f418d8afbaed3cf6ea80919f844e2f1af9b14b12f6d5bda26bd01cf1f78a"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1366-detail.meta.json",
+      "bytes": 627,
+      "sha256": "6cfac87239a4823fac44f70209ba7cdf7ea5f85c1cec12969674a2fc165bfbfa"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1366-detail.png",
+      "bytes": 137779,
+      "sha256": "6452556a97d9fc7db6692fb68902d27155d73acd4f5915d461ecf5c95a2487c4"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1366-findings.meta.json",
+      "bytes": 630,
+      "sha256": "213c7e07a5606b94c88b507184dad966717ae55f8bdf23cb604ca9e8b76cfbfe"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-1366-findings.png",
+      "bytes": 93776,
+      "sha256": "b4316799e006d53004a6a4565e5b4b2c643dcabe7648e0683b6a7318151cd2e6"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-200percent-css-zoom.meta.json",
+      "bytes": 722,
+      "sha256": "b1e8b7f329232b334fae75daf6c0ca54007e2e81126613e1ae42fae93d593351"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-200percent-css-zoom.png",
+      "bytes": 120274,
+      "sha256": "c86b1e5cfb5fb5125c841ed2f7d4389808279e6a828f998028d1f722feccb7c5"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-320-detail.meta.json",
+      "bytes": 623,
+      "sha256": "0306696156c97157271eba12281578431f21a5863516a8f6c9baf34d1dbdec6e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-320-detail.png",
+      "bytes": 52854,
+      "sha256": "10c57256185bb7ea871607a85e935bc607a1c9a3bbf88f42b8f4c4a268b0ed2e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-320-findings.meta.json",
+      "bytes": 627,
+      "sha256": "7614be04cb29ab78960598ac39b945f90f0a992f3c297a4b01d938e54916d84d"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-320-findings.png",
+      "bytes": 50099,
+      "sha256": "d4ca8bc2758f4ae1d5d4374dbc2e3d7ca7b4da73d293c3230a782d47c20316bf"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-320-timeline-historical.meta.json",
+      "bytes": 649,
+      "sha256": "bcecdd43ba66fbdfaba84c4d3791aded3274412d5c793c4d306370df9ff9dc58"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-320-timeline-historical.png",
+      "bytes": 61231,
+      "sha256": "efeb1aff32d71a7d37808cb253d89276d2bf5020b00d081b4c0151b0adad2f5e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-320-timeline-live.meta.json",
+      "bytes": 637,
+      "sha256": "ca4e53086898678edbc36c6dd7990c871fae5227c4c859acefecfa9f46c729e7"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-320-timeline-live.png",
+      "bytes": 50755,
+      "sha256": "076675f170100c2c532d1e4c8032ef2073a4a380261c5c4a71330288203f0f19"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-390-detail.meta.json",
+      "bytes": 623,
+      "sha256": "a6c8aa2b342fea05b823521198c9d9def74997b57e4ed9e44ad334bf0c84824b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-390-detail.png",
+      "bytes": 53768,
+      "sha256": "947ba677a105e13e5cd2b3d5199f32e45fe4a9cdbf495ba93162defe133dce94"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-390-findings.meta.json",
+      "bytes": 627,
+      "sha256": "ac1189c5be6478d78af8e1e965300569f8ded562aaebf7b06b3949ce9902ddf3"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-390-findings.png",
+      "bytes": 54529,
+      "sha256": "519ef82b655c69980a7e63d9d0aadb2c17e9100c0bd169c7957b053b1032b487"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-390-timeline-historical.meta.json",
+      "bytes": 649,
+      "sha256": "945314b6a78c156fbf5010c1464667e1c43decaa0712d4a09148f7a20c2f9fe9"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-390-timeline-historical.png",
+      "bytes": 67103,
+      "sha256": "e0c5fa0c80a42d934f305fa00f71dc8288170f79dd2792731c2ac2791f5a3704"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-390-timeline-live.meta.json",
+      "bytes": 637,
+      "sha256": "37bd296b6464e00404974a5e662ab1d3da6086864f4711b114c0c9ff3e912d6a"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-390-timeline-live.png",
+      "bytes": 61081,
+      "sha256": "bb473f45f9f3ad52aef130dd178ef7f7c977787da2ea870e483876de95404032"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-768-detail.meta.json",
+      "bytes": 623,
+      "sha256": "bd75f0edd8d077590f6a9e8f339265721c2dcec215463616772fe28b4c359cba"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-768-detail.png",
+      "bytes": 61095,
+      "sha256": "5d57d7341fb018ad3b554d70674f8b4a33767a65ffb0be817f533cb224402e9b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-768-findings.meta.json",
+      "bytes": 627,
+      "sha256": "00c703f7bd96b3f28ff56ae19af4e1271d2b2e1ab4b0f5c2d354da4ffcff9b88"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V14-768-findings.png",
+      "bytes": 81318,
+      "sha256": "cd3da0449cf4b167c8760f82e7b6a9167eda42c288123f3c8aa83471de59634f"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V15-forced-colors-reduced-motion.meta.json",
+      "bytes": 659,
+      "sha256": "fcd45c07c57a649ab6a0d91206a5c89aeb8b08e78f5c5d878c623263f6e2fb88"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V15-forced-colors-reduced-motion.png",
+      "bytes": 119758,
+      "sha256": "2839ed2c2ce1ea8bb9932cf2d6e922f168d0c43cf0c89f2cc6515f78c519d54f"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V16-200-graph.meta.json",
+      "bytes": 623,
+      "sha256": "480e1e8b01beab1441562c9de912008fd902dd9b3badfd87c079c211d0a8d451"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V16-200-graph.png",
+      "bytes": 170283,
+      "sha256": "2ec8a06115f81600bf97812993564a8f1abdc5a0f5776feb9cf2c5d7b12727ec"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V16-200-overview.meta.json",
+      "bytes": 629,
+      "sha256": "931033ed40018aeccda81a8c9260fc94a13b5cd26accc74684a0868602d72c47"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V16-200-overview.png",
+      "bytes": 166582,
+      "sha256": "afae099f2c4f9e83197850715b420f448897b14b53b8cc1f7658b27980bfe29d"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V16-50-graph.meta.json",
+      "bytes": 621,
+      "sha256": "5dfe13ba714a90d6e4288b2b3896b096673f985f55506f72f4989943540c24ca"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V16-50-graph.png",
+      "bytes": 257080,
+      "sha256": "ff1636eb36cb5aed0c05d4e05bcc4ec7a2fbd9bb4c0b9365cb3228a3ac30a7c9"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V16-50-overview.meta.json",
+      "bytes": 627,
+      "sha256": "faa7ed925ae533cb42d3f56ebce662bf4e8c00b2f96c2469da1f7c113333bdf4"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/V16-50-overview.png",
+      "bytes": 182998,
+      "sha256": "b1f58130d4e7d2efa700e70df623492068d1253f489913844974fd974b41c8db"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/camera-user-drag-interrupts-focus.meta.json",
+      "bytes": 663,
+      "sha256": "dd1b31ff1ba27c93450aab2b2097fd1274b1ce360ae964c07fa7c260f9f06da7"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/camera-user-drag-interrupts-focus.png",
+      "bytes": 275195,
+      "sha256": "858e7b37857f7596bbe37eae244230cc15a0fd6a77c6340ca91bd7ad9ea8255a"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/decorative-roof-selects-canonical-parent.meta.json",
+      "bytes": 677,
+      "sha256": "d9a565b8b4b053c7d26ca29788613df58639fe74d9e85b05d8becda0e101d01d"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/decorative-roof-selects-canonical-parent.png",
+      "bytes": 324273,
+      "sha256": "0724067537b842919e46da7f17f970fa83e1a5e583bbc3860f786c02e84f5030"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/expanded-investigation-1440.meta.json",
+      "bytes": 688,
+      "sha256": "d8b7d705733a51c122ac79c7ce93c738eae761f4a18eecc77a7f5452329cd871"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/expanded-investigation-1440.png",
+      "bytes": 98262,
+      "sha256": "02c16621a83e81a78d3dd665f760c16dd31cc0f4159634727756993221279ef3"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/expanded-investigation-320.meta.json",
+      "bytes": 685,
+      "sha256": "a194ffabd57f2c06af8b02b82c0f069f8ac0f5e009505d9b111bc7bb8b715f60"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/expanded-investigation-320.png",
+      "bytes": 57321,
+      "sha256": "6ce53c0325752333b0e1f24dae581500e194aaea2b2bf5388da14db4386f0e8b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/expanded-investigation-390.meta.json",
+      "bytes": 685,
+      "sha256": "c851e1da1a52a73e04221aad3be0bb0d7a38cdd24f05ffe7d3008a6c73f86797"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/expanded-investigation-390.png",
+      "bytes": 59173,
+      "sha256": "9f1594ebd22f8d79294e63ad2ca272e33485399e56c8a4c46a3c1927c409bdbd"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/fresh-project-empty-inventory-checklist.meta.json",
+      "bytes": 719,
+      "sha256": "b01f5967fbf24a896f6f7158f629c4c2905e7b25319348c7dd6b9d099981d1a7"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/fresh-project-empty-inventory-checklist.png",
+      "bytes": 109196,
+      "sha256": "453c0cd2554eae1ee5f5613cf9360a63b137194abad99885f768d469f4945548"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-castle-finding.meta.json",
+      "bytes": 653,
+      "sha256": "8f9d55995feddea678753a43b6e198f1801f8c6c40230727fabfa5b4337f0c4c"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-castle-finding.png",
+      "bytes": 254463,
+      "sha256": "9bcf04d75fbb9e265e290f65ff8e52ac42c3f7ac4d03675480b68a7b1a36bb13"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-castle-path.meta.json",
+      "bytes": 647,
+      "sha256": "a10e16d38bcf984032eea6e1e988813fd33f2f19f50d80b5510a1380ab1b96c7"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-castle-path.png",
+      "bytes": 255774,
+      "sha256": "9bdc7d6de2163ede34d30b748048a731dd7b9a7343b3d5ee0f54cf69dc3cff4c"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-graph-finding-320.meta.json",
+      "bytes": 657,
+      "sha256": "bc46d514276a31014ef77b39d68cd4b4b426d7b65cb9f2677976b601aed11a99"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-graph-finding-320.png",
+      "bytes": 59782,
+      "sha256": "7a4b748a9895755cfa10b29dfb9b78c134224167f06ab80e099ab2a8e554c28e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-graph-finding.meta.json",
+      "bytes": 651,
+      "sha256": "9bf2e8548c259d6554ccc91afa12b78979680ccbb54a51c91f244de259bd7e5b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-graph-finding.png",
+      "bytes": 229655,
+      "sha256": "9b32347e965a2fd8b23cd1dfbb04afe73d83b737d25bfb88c9d393c98c316894"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-graph-path-320.meta.json",
+      "bytes": 651,
+      "sha256": "09870ded294c038618d1d1c9664808a3fbdc1940d5d103909bbcab2499af5547"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-graph-path-320.png",
+      "bytes": 60208,
+      "sha256": "479d87022b130281d98a0e6a905b358ab9606a04cd54af5b4ff5de09a21eab07"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-graph-path.meta.json",
+      "bytes": 645,
+      "sha256": "391a28f5e6e4e773c4f1b45f7570cfcc05d04cb0760c365760f1211dedcea0f2"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/grouped-focus-graph-path.png",
+      "bytes": 210972,
+      "sha256": "5ab6324e6e20c4d5176233d2b46487d3e21d2f036b741128fe15208d6d16a7ef"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-geometry-failure-canonical-focus.meta.json",
+      "bytes": 713,
+      "sha256": "6c549594a7150b342cfaf25a131ad9fa9d074472e9443eadf87e6f8fa8384072"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-geometry-failure-canonical-focus.png",
+      "bytes": 260858,
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-geometry-failure-one-neutral-block.meta.json",
+      "bytes": 717,
+      "sha256": "351d10de1011827ea9b3090b8df4a4572ec1c87f1ecb3c4de2e477afe7577aa5"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-geometry-failure-one-neutral-block.png",
+      "bytes": 296465,
+      "sha256": "ce5cb2388f6f9094034f744e0b8ef8d30f1285156c8766fcdda197c6e4ea3177"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-geometry-replacement-healthy-same-asset.meta.json",
+      "bytes": 727,
+      "sha256": "ca38517daa1820a17c6aa72b675beb6af0a5b741777d9f994833018cfb956c9b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-geometry-replacement-healthy-same-asset.png",
+      "bytes": 298951,
+      "sha256": "b8d46ae283cd46c2aa19d1436da629347dfcf286ad2ab4ddc5b0c1dd2ca601f7"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-shader-body-neutral-recovery.meta.json",
+      "bytes": 705,
+      "sha256": "5b4e0ec904d777c30d366cdbde34c3aa64a1d8f7004056a74db2a653c32d41ab"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-shader-body-neutral-recovery.png",
+      "bytes": 260858,
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-shader-depth-neutral-recovery.meta.json",
+      "bytes": 707,
+      "sha256": "cb1cd4d6225f8ed46b1ab140ca135b52f9ebc07c18ac791a2e70d33d4ac3455b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-shader-depth-neutral-recovery.png",
+      "bytes": 260858,
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-shader-family-healthy-replacement.meta.json",
+      "bytes": 715,
+      "sha256": "a33c02f4fa7b6b11b96fdcf741e16f74f1645dfc559fbcc6e05de757ca34940c"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-shader-family-healthy-replacement.png",
+      "bytes": 288784,
+      "sha256": "1eb6a77ce2608752fa429090a7a15ee54b668da0d5b41c75e1d2a6e468b968b8"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-shader-roof-neutral-recovery.meta.json",
+      "bytes": 705,
+      "sha256": "acbe37a10ebe05f31f2eb1739d2ab4fb16d6c11779290bd4bc42975d986c834e"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/module-shader-roof-neutral-recovery.png",
+      "bytes": 260858,
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/overlapping-relationship-keyboard-chooser.meta.json",
+      "bytes": 679,
+      "sha256": "d1a5bc27f73f0243f3c51d225ba687a438889b9948934e2ffee620519906bf0b"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/overlapping-relationship-keyboard-chooser.png",
+      "bytes": 168432,
+      "sha256": "c6b5f265c84d3db3687570fcbda43425bfc461eb8e629523ce2fe6b793751a98"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/relationship-patterns-hypothetical-opt-in.meta.json",
+      "bytes": 679,
+      "sha256": "c4b73efa31aaa39efb3cf7f311c9cca136e20629efb6706fcd88af010917cf31"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/relationship-patterns-hypothetical-opt-in.png",
+      "bytes": 234367,
+      "sha256": "3f2bf8e4236777276cd9689d2516ebd8343148c7de270a782f9930c9aa3c2de7"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/unlinked-event-static-asset-highlight.meta.json",
+      "bytes": 671,
+      "sha256": "1d2f88210d09ed1b12fe2870e5c839fb8decd148700d9a58d3b7420618c07aff"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/unlinked-event-static-asset-highlight.png",
+      "bytes": 312088,
+      "sha256": "b9fe1ca6a84c440a0203eb0bb3ba59bd52064b265c63c324210bab6646042490"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/webgl-context-loss-selection-retained.meta.json",
+      "bytes": 671,
+      "sha256": "43362e1e80807b02ec5330915dc4322af00de125d21dc325a97ef078b62e26b1"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/webgl-context-loss-selection-retained.png",
+      "bytes": 252991,
+      "sha256": "85ce19eb1a17c0ba7533dcdb744641f9aee170d8d6446ff780e3d013a172e113"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/webgl-retry-selection-retained.meta.json",
+      "bytes": 657,
+      "sha256": "dd456833e29f0f3fc6a5496bda8e402e22a75532ef51b371a96e3c3262f70652"
+    },
+    {
+      "path": "artifacts/redesign/final/screenshots/webgl-retry-selection-retained.png",
+      "bytes": 315222,
+      "sha256": "7416c59de3d78ffa756624d6cd967428ed94eec17efd738c87fd56faadfcb4fa"
+    },
+    {
+      "path": "artifacts/redesign/final/setup-capability-verification.json",
+      "bytes": 712,
+      "sha256": "76da1a65a9b11fdabacc36287e91dde5e9bfbc5c9a9648e54457d33356d11e46"
+    },
+    {
+      "path": "artifacts/redesign/final/shortcut-noninterception.json",
+      "bytes": 616,
+      "sha256": "b85883feb1432494e1dadfc21c5303c0fafd04e13837f0a246059570df574102"
+    },
+    {
+      "path": "artifacts/redesign/final/software-performance.json",
+      "bytes": 2953,
+      "sha256": "a3aed217c03b3c4e25bce77e47bf5f05b1e625be55617a36aad96b280ee31ea3"
+    },
+    {
+      "path": "artifacts/redesign/final/source-to-display-local.json",
+      "bytes": 3339,
+      "sha256": "5eaf0cc324f7faead8aea39a64472a2ab28740bb7c5f2fa4fab1083b6701f188"
+    },
+    {
+      "path": "artifacts/redesign/final/supplemental-commands.log",
+      "bytes": 1222,
+      "sha256": "cdb27c2f0c5a18aa23fea3ee112213e3b901eb2c7f7c72022b3ad59ebbae3ff6"
+    },
+    {
+      "path": "artifacts/redesign/final/touch-audit.log",
+      "bytes": 1625,
+      "sha256": "c84741348aa5829e347cc1800ceda2aadcae6c859a5a10694dfd0d694e8c346b"
+    },
+    {
+      "path": "artifacts/redesign/final/touch-targets.json",
+      "bytes": 1161,
+      "sha256": "b7a27aad3ab0a0ec1e4c622ffba45f01fdbbd6da40abb9aa6a99000bda2c4134"
+    },
+    {
+      "path": "artifacts/redesign/final/typecheck-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifacts/redesign/final/unit-final.log",
+      "bytes": 4123,
+      "sha256": "77fdcf4681a5b5f176533726578ce227daf67eb86cfc00720a0413339cca3193"
+    },
+    {
+      "path": "artifacts/redesign/final/unit-results.json",
+      "bytes": 133918,
+      "sha256": "b3e85acb62545cf917ef9d415e63cbd35e98a1439308a672732dc08dd0020172"
+    },
+    {
+      "path": "artifacts/redesign/final/visual-verification.json",
+      "bytes": 8355,
+      "sha256": "6d7a16b6b21effca010c8122e0faf7da1e0eff9a65a0dcfb57341d1cda61d5b8"
+    }
+  ],
+  "limitations": [
+    "All screenshots and redesigned server-backed cases use explicit synthetic data or isolated local faults, not production customer telemetry.",
+    "The original SDK ingestion pilot is an independent controlled local reference-app run.",
+    "Genuine second-tab visibility remained visible in headless Chromium. PERF-02 is skipped, not simulated or passed.",
+    "Axe color-contrast incompletes are retained for manual follow-up; this is not full WCAG or assistive-technology certification.",
+    "The 200% view is CSS zoom emulation, not browser-chrome zoom or human approval.",
+    "Software-renderer timings and native draw instrumentation do not establish physical GPU/mobile performance, cross-browser support, or the 50-asset hardware budget.",
+    "Intentionally injected geometry faults emit explicitly classified sanitized React/R3F errors. Attributable body, roof and depth shader faults are separate native compiler tests with classified diagnostics; their exact page-error arrays are retained. No silent global error suppression is claimed.",
+    "Standalone warmed-memory diagnostics are earlier working-tree evidence, not this final release run.",
+    "Human release gates, merge, deployment and paid evaluation were not performed."
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "status": "passed",
+  "runAt": "2026-10-22T20:53:32.212Z",
+  "mode": "Synthetic Chromium with software rendering; not hardware or human acceptance",
+  "checks": [
+    {
+      "name": "Keyboard Home/End/Arrow clamps 360–520 and collapses context before map falls below 560",
+      "passed": true
+    },
+    {
+      "name": "1024px width clamps inspector 392 and preserves 560px primary map",
+      "passed": true
+    },
+    {
+      "name": "Pointer resize retains one mounted inspector and exact selected record",
+      "passed": true
+    },
+    {
+      "name": "390/320 full-page inspector hides resize separator, Close 44px and no root overflow",
+      "passed": true
+    },
+    {
+      "name": "Finding source limitation is visible and its supported Events link works",
+      "passed": true
+    },
+    {
+      "name": "Escape respects native chooser and disclosure priority without clearing selected record",
+      "passed": true
+    },
+    {
+      "name": "Narrow detail initially focuses Close; Close and Escape restore the original visible result",
+      "passed": true
+    },
+    {
+      "name": "Explicit narrow Focus reveals map and moves keyboard focus out of hidden inspector",
+      "passed": true
+    },
+    {
+      "name": "Failed 3D capability recheck leaves graph and selected evidence intact",
+      "passed": true
+    },
+    {
+      "name": "Deliberate successful 3D recheck restores Castle without selection loss or page reload",
+      "passed": true
+    },
+    {
+      "name": "Controlled WebGL context loss exposes Retry 3D and deliberate retry creates a new canvas with selection retained",
+      "passed": true
+    }
+  ],
+  "pageErrors": []
+}

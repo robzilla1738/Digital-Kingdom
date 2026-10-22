@@ -1,0 +1,22 @@
+{
+  "name": "relationship-patterns-hypothetical-opt-in",
+  "file": "relationship-patterns-hypothetical-opt-in.png",
+  "sha256": "3f2bf8e4236777276cd9689d2516ebd8343148c7de270a782f9930c9aa3c2de7",
+  "bytes": 234367,
+  "capturedAt": "2026-10-22T20:53:02.751Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,0 +1,1727 @@
+{
+  "sourceSha": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "generatedAt": "2026-10-22T20:54:19.691Z",
+  "requiredViews": [
+    "V01",
+    "V02",
+    "V03",
+    "V04",
+    "V05",
+    "V06",
+    "V07",
+    "V08",
+    "V09",
+    "V10",
+    "V11",
+    "V12",
+    "V13",
+    "V14",
+    "V15",
+    "V16"
+  ],
+  "totalScreenshots": 77,
+  "totalPngBytes": 13002175,
+  "screenshots": [
+    {
+      "name": "3d-overlapping-relationship-chooser",
+      "file": "3d-overlapping-relationship-chooser.png",
+      "sha256": "c2ba4212479de57f0acf7382c6ea549c161a2277f4dab7b1e417a6a09b5f4d3b",
+      "bytes": 226279,
+      "capturedAt": "2026-10-22T20:48:53.251Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "COV05-distinct-sources-and-assets",
+      "file": "COV05-distinct-sources-and-assets.png",
+      "sha256": "a1b309cd79db6220e0bb05c006d36a1cab1f095b02730094b30d5aecef80916c",
+      "bytes": 116300,
+      "capturedAt": "2026-10-22T20:51:40.048Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "COV06-failed-snapshot-retains-known-gaps",
+      "file": "COV06-failed-snapshot-retains-known-gaps.png",
+      "sha256": "12000bbdb6c3c82e9a0de0c78a0457c79d82fe4011e16195888a0c6486bbaa70",
+      "bytes": 142355,
+      "capturedAt": "2026-10-22T20:51:43.340Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "COV06-missing-assessment-explicit-fault",
+      "file": "COV06-missing-assessment-explicit-fault.png",
+      "sha256": "82026277347441e1e512864687876a157885adec569ab6fbc98303e3011c8407",
+      "bytes": 123155,
+      "capturedAt": "2026-10-22T20:51:40.904Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "F11-untrusted-text",
+      "file": "F11-untrusted-text.png",
+      "sha256": "8378137f784f16630f7a965353e739f787fbb276511f8b17e45b867908386828",
+      "bytes": 244034,
+      "capturedAt": "2026-10-22T20:52:02.679Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F11"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "F14-empty-inventory",
+      "file": "F14-empty-inventory.png",
+      "sha256": "b3dd00515b99f6c76cd0c9c199e040b8d2a8429b471bc2189488edc362abda37",
+      "bytes": 75431,
+      "capturedAt": "2026-10-22T20:52:05.452Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F14"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "TIME03-current-disposition-during-earlier-replay",
+      "file": "TIME03-current-disposition-during-earlier-replay.png",
+      "sha256": "0af018eeaa9f10857099fc1cee85f3f03fca6994565af5b3c1bb49be5685e604",
+      "bytes": 230083,
+      "capturedAt": "2026-10-22T20:51:44.253Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "TIME03-current-notes-during-earlier-replay",
+      "file": "TIME03-current-notes-during-earlier-replay.png",
+      "sha256": "986ce6bab0ab72bc8614d0a0e71e567212b36a11deabd78b5905e51032bc7acd",
+      "bytes": 237747,
+      "capturedAt": "2026-10-22T20:51:44.105Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V01-kingdom-overview-1440",
+      "file": "V01-kingdom-overview-1440.png",
+      "sha256": "b5f92866634c667d6ba16ef74100141ab6525312fbd98d46b42c30032de2a232",
+      "bytes": 260616,
+      "capturedAt": "2026-10-22T20:51:47.034Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V02-kingdom-selected-1440",
+      "file": "V02-kingdom-selected-1440.png",
+      "sha256": "8603f01c96c5a4f71a8a1e067e20887c480c2052dc922081eac0e3e672096089",
+      "bytes": 328915,
+      "capturedAt": "2026-10-22T20:51:47.835Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V03-graph-same-selection-1440",
+      "file": "V03-graph-same-selection-1440.png",
+      "sha256": "85f5e6f45bad315a475998d39916c1ddad36a9f3df3163c13e053d64b38e139c",
+      "bytes": 239963,
+      "capturedAt": "2026-10-22T20:51:48.083Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V04a-expanded-contradiction-claim",
+      "file": "V04a-expanded-contradiction-claim.png",
+      "sha256": "315d3eb3f370ae3b1ad7f15c81f91319299dcf511d04a84b2eb1955b97672d8e",
+      "bytes": 96157,
+      "capturedAt": "2026-10-22T20:51:48.344Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V04b-contradiction-supporting-counter",
+      "file": "V04b-contradiction-supporting-counter.png",
+      "sha256": "fd85fae96950b885789ef0039cc485f2853ed17f769f9a5376c4d0562460b33e",
+      "bytes": 140577,
+      "capturedAt": "2026-10-22T20:51:48.688Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V04c-evidence-card-raw-320",
+      "file": "V04c-evidence-card-raw-320.png",
+      "sha256": "c8d47c8ef5c2c82c280fe704eb309fc98657ee28cb3724b00cca867f6f8b3d89",
+      "bytes": 48833,
+      "capturedAt": "2026-10-22T20:49:19.672Z",
+      "viewport": {
+        "width": 320,
+        "height": 860
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "cards-long-payload"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V04c-in-context-raw-evidence",
+      "file": "V04c-in-context-raw-evidence.png",
+      "sha256": "d06c5dc03fa8d83153efbf5fd3101f5701e710958f37644a7569b1f122bd422c",
+      "bytes": 109300,
+      "capturedAt": "2026-10-22T20:51:48.959Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V05-event-search-separate-completeness",
+      "file": "V05-event-search-separate-completeness.png",
+      "sha256": "42d8293f561e52a80f4342db4afcbeb976f4bb824e0100447a965755617176a7",
+      "bytes": 100165,
+      "capturedAt": "2026-10-22T20:51:52.518Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F06"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V06-unlinked-event",
+      "file": "V06-unlinked-event.png",
+      "sha256": "c2619ff52c82c623d36d227885b8263c9739929de5478d09c3a62cba0d90b6a8",
+      "bytes": 186698,
+      "capturedAt": "2026-10-22T20:51:52.675Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F06"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V07a-coverage-sources",
+      "file": "V07a-coverage-sources.png",
+      "sha256": "4c53c53907fcaa2e41cc1a720bf38b8335eff00ea85433aa22279934d9dcad34",
+      "bytes": 132118,
+      "capturedAt": "2026-10-22T20:51:49.401Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F04"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V07b-partial-unobserved-assets",
+      "file": "V07b-partial-unobserved-assets.png",
+      "sha256": "7e3ff8ae5f3292836ec3080e1c77e8511a81cf854aca453b217a9d6c9a6c625e",
+      "bytes": 120609,
+      "capturedAt": "2026-10-22T20:51:49.531Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F04"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V08-3d-partial-coverage-selection",
+      "file": "V08-3d-partial-coverage-selection.png",
+      "sha256": "4e13699cf1a3ca10458d1f177a2f7db5f398c3d557384e59f013992f258f8e7b",
+      "bytes": 306546,
+      "capturedAt": "2026-10-22T20:51:52.050Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F04"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V09-ten-module-sheet",
+      "file": "V09-ten-module-sheet.png",
+      "sha256": "845ac51578883edf94706867bb918ace8a305a2b92bcbe56ddec4f00b0529279",
+      "bytes": 213589,
+      "capturedAt": "2026-10-22T20:51:57.425Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "moduleSheet": "all"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V10a-four-module-near",
+      "file": "V10a-four-module-near.png",
+      "sha256": "2ac738d0707fa7da523e450c3a1587360aa7d9ee3b6192650218152c4b434e68",
+      "bytes": 149921,
+      "capturedAt": "2026-10-22T20:51:58.699Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "moduleSheet": "near"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V10b-four-module-roofs-off",
+      "file": "V10b-four-module-roofs-off.png",
+      "sha256": "2802cf276bc70c3955d36cc5c1da8e31a636155b2d0c26df2696017fb111c6a4",
+      "bytes": 144513,
+      "capturedAt": "2026-10-22T20:51:59.692Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "moduleSheet": "near"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V10c-roofs-off-elevated-floor-inspection",
+      "file": "V10c-roofs-off-elevated-floor-inspection.png",
+      "sha256": "9635fa6da8aef6620a457ca3f604efffb040ccdcb6de2a556a2af181c6542420",
+      "bytes": 165207,
+      "capturedAt": "2026-10-22T20:52:00.406Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "moduleSheet": "near"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V11a-known-time-replay-scope",
+      "file": "V11a-known-time-replay-scope.png",
+      "sha256": "a61e56021750a4caef56a45db7fb3502df2a72a78ecc6dce34e32c5922a22f80",
+      "bytes": 222981,
+      "capturedAt": "2026-10-22T20:51:53.285Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V11b-late-record-known-time",
+      "file": "V11b-late-record-known-time.png",
+      "sha256": "329a94f7bd2d71762ce3a403973f4d882ecac1ffa12c3c3da51085435041c15b",
+      "bytes": 226875,
+      "capturedAt": "2026-10-22T20:51:53.461Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V11c-expanded-exact-record-lanes",
+      "file": "V11c-expanded-exact-record-lanes.png",
+      "sha256": "16b32577be8274588d3e9ffba7a9f54886611449de54b34186825b4b0027ebc8",
+      "bytes": 244445,
+      "capturedAt": "2026-10-22T20:51:54.215Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V12-network-interruption-stale-records",
+      "file": "V12-network-interruption-stale-records.png",
+      "sha256": "7bdf0f13a5a5cd7c33b8a1260d9d13d72ce2ca0cc37d7092c6ebe1a3b2e0815f",
+      "bytes": 157170,
+      "capturedAt": "2026-10-22T20:52:26.358Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V13-evidence-partial-retained",
+      "file": "V13-evidence-partial-retained.png",
+      "sha256": "4c5939e4baf4a535827f54f88a7b57721b4129efa49f08bb957a6f8f1f713cb8",
+      "bytes": 136031,
+      "capturedAt": "2026-10-22T20:49:29.784Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-1024-detail",
+      "file": "V14-1024-detail.png",
+      "sha256": "5c1473c829d665c96d1beb82a4abae4067ec169d705a6704a969c9fdbad39900",
+      "bytes": 72561,
+      "capturedAt": "2026-10-22T20:52:06.513Z",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-1024-findings",
+      "file": "V14-1024-findings.png",
+      "sha256": "d4947aef2afa4e78a3fb4f091bf6e23c199da7f35d6257877c67b438b3e812c6",
+      "bytes": 113729,
+      "capturedAt": "2026-10-22T20:52:06.397Z",
+      "viewport": {
+        "width": 1024,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-1280-detail",
+      "file": "V14-1280-detail.png",
+      "sha256": "a0a8c09b26ec9982f65217fcbaf16ff4c3080f9a52c43d45ec268e70d70ee6c5",
+      "bytes": 133627,
+      "capturedAt": "2026-10-22T20:52:06.267Z",
+      "viewport": {
+        "width": 1280,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-1280-findings",
+      "file": "V14-1280-findings.png",
+      "sha256": "4dc004cb2065cb196fa266fc2f3ad47926f161df4ca3fb37982a54ecc0fa15e3",
+      "bytes": 109785,
+      "capturedAt": "2026-10-22T20:52:06.114Z",
+      "viewport": {
+        "width": 1280,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-1280-kingdom-detail",
+      "file": "V14-1280-kingdom-detail.png",
+      "sha256": "a25c41e08b2538be563628d584a68e686751887743eface33bc031af759bc553",
+      "bytes": 195963,
+      "capturedAt": "2026-10-22T20:52:11.547Z",
+      "viewport": {
+        "width": 1280,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-1280-resized-inspector",
+      "file": "V14-1280-resized-inspector.png",
+      "sha256": "d9e1f418d8afbaed3cf6ea80919f844e2f1af9b14b12f6d5bda26bd01cf1f78a",
+      "bytes": 202528,
+      "capturedAt": "2026-10-22T20:52:13.275Z",
+      "viewport": {
+        "width": 1280,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-1366-detail",
+      "file": "V14-1366-detail.png",
+      "sha256": "6452556a97d9fc7db6692fb68902d27155d73acd4f5915d461ecf5c95a2487c4",
+      "bytes": 137779,
+      "capturedAt": "2026-10-22T20:52:05.968Z",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-1366-findings",
+      "file": "V14-1366-findings.png",
+      "sha256": "b4316799e006d53004a6a4565e5b4b2c643dcabe7648e0683b6a7318151cd2e6",
+      "bytes": 93776,
+      "capturedAt": "2026-10-22T20:52:05.841Z",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-200percent-css-zoom",
+      "file": "V14-200percent-css-zoom.png",
+      "sha256": "c86b1e5cfb5fb5125c841ed2f7d4389808279e6a828f998028d1f722feccb7c5",
+      "bytes": 120274,
+      "capturedAt": "2026-10-22T20:52:13.434Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "2",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "zoomNote": "CSS 200% emulation, not browser-chrome zoom or human approval",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-320-detail",
+      "file": "V14-320-detail.png",
+      "sha256": "10c57256185bb7ea871607a85e935bc607a1c9a3bbf88f42b8f4c4a268b0ed2e",
+      "bytes": 52854,
+      "capturedAt": "2026-10-22T20:52:08.013Z",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-320-findings",
+      "file": "V14-320-findings.png",
+      "sha256": "d4ca8bc2758f4ae1d5d4374dbc2e3d7ca7b4da73d293c3230a782d47c20316bf",
+      "bytes": 50099,
+      "capturedAt": "2026-10-22T20:52:07.930Z",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-320-timeline-historical",
+      "file": "V14-320-timeline-historical.png",
+      "sha256": "efeb1aff32d71a7d37808cb253d89276d2bf5020b00d081b4c0151b0adad2f5e",
+      "bytes": 61231,
+      "capturedAt": "2026-10-22T20:52:08.705Z",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-320-timeline-live",
+      "file": "V14-320-timeline-live.png",
+      "sha256": "076675f170100c2c532d1e4c8032ef2073a4a380261c5c4a71330288203f0f19",
+      "bytes": 50755,
+      "capturedAt": "2026-10-22T20:52:08.535Z",
+      "viewport": {
+        "width": 320,
+        "height": 844
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-390-detail",
+      "file": "V14-390-detail.png",
+      "sha256": "947ba677a105e13e5cd2b3d5199f32e45fe4a9cdbf495ba93162defe133dce94",
+      "bytes": 53768,
+      "capturedAt": "2026-10-22T20:52:07.079Z",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-390-findings",
+      "file": "V14-390-findings.png",
+      "sha256": "519ef82b655c69980a7e63d9d0aadb2c17e9100c0bd169c7957b053b1032b487",
+      "bytes": 54529,
+      "capturedAt": "2026-10-22T20:52:06.999Z",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-390-timeline-historical",
+      "file": "V14-390-timeline-historical.png",
+      "sha256": "e0c5fa0c80a42d934f305fa00f71dc8288170f79dd2792731c2ac2791f5a3704",
+      "bytes": 67103,
+      "capturedAt": "2026-10-22T20:52:07.842Z",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-390-timeline-live",
+      "file": "V14-390-timeline-live.png",
+      "sha256": "bb473f45f9f3ad52aef130dd178ef7f7c977787da2ea870e483876de95404032",
+      "bytes": 61081,
+      "capturedAt": "2026-10-22T20:52:07.629Z",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-768-detail",
+      "file": "V14-768-detail.png",
+      "sha256": "5d57d7341fb018ad3b554d70674f8b4a33767a65ffb0be817f533cb224402e9b",
+      "bytes": 61095,
+      "capturedAt": "2026-10-22T20:52:06.724Z",
+      "viewport": {
+        "width": 768,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V14-768-findings",
+      "file": "V14-768-findings.png",
+      "sha256": "cd3da0449cf4b167c8760f82e7b6a9167eda42c288123f3c8aa83471de59634f",
+      "bytes": 81318,
+      "capturedAt": "2026-10-22T20:52:06.630Z",
+      "viewport": {
+        "width": 768,
+        "height": 768
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V15-forced-colors-reduced-motion",
+      "file": "V15-forced-colors-reduced-motion.png",
+      "sha256": "2839ed2c2ce1ea8bb9932cf2d6e922f168d0c43cf0c89f2cc6515f78c519d54f",
+      "bytes": 119758,
+      "capturedAt": "2026-10-22T20:52:17.422Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": true,
+      "forcedColors": true,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V16-200-graph",
+      "file": "V16-200-graph.png",
+      "sha256": "2ec8a06115f81600bf97812993564a8f1abdc5a0f5776feb9cf2c5d7b12727ec",
+      "bytes": 170283,
+      "capturedAt": "2026-10-22T20:52:24.981Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F13"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V16-200-overview",
+      "file": "V16-200-overview.png",
+      "sha256": "afae099f2c4f9e83197850715b420f448897b14b53b8cc1f7658b27980bfe29d",
+      "bytes": 166582,
+      "capturedAt": "2026-10-22T20:52:23.615Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F13"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V16-50-graph",
+      "file": "V16-50-graph.png",
+      "sha256": "ff1636eb36cb5aed0c05d4e05bcc4ec7a2fbd9bb4c0b9365cb3228a3ac30a7c9",
+      "bytes": 257080,
+      "capturedAt": "2026-10-22T20:52:22.320Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F12"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "V16-50-overview",
+      "file": "V16-50-overview.png",
+      "sha256": "b1f58130d4e7d2efa700e70df623492068d1253f489913844974fd974b41c8db",
+      "bytes": 182998,
+      "capturedAt": "2026-10-22T20:52:20.185Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F12"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "camera-user-drag-interrupts-focus",
+      "file": "camera-user-drag-interrupts-focus.png",
+      "sha256": "858e7b37857f7596bbe37eae244230cc15a0fd6a77c6340ca91bd7ad9ea8255a",
+      "bytes": 275195,
+      "capturedAt": "2026-10-22T20:48:46.775Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "decorative-roof-selects-canonical-parent",
+      "file": "decorative-roof-selects-canonical-parent.png",
+      "sha256": "0724067537b842919e46da7f17f970fa83e1a5e583bbc3860f786c02e84f5030",
+      "bytes": 324273,
+      "capturedAt": "2026-10-22T20:48:58.704Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "expanded-investigation-1440",
+      "file": "expanded-investigation-1440.png",
+      "sha256": "02c16621a83e81a78d3dd665f760c16dd31cc0f4159634727756993221279ef3",
+      "bytes": 98262,
+      "capturedAt": "2026-10-22T20:50:05.986Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "expanded-investigation-320",
+      "file": "expanded-investigation-320.png",
+      "sha256": "6ce53c0325752333b0e1f24dae581500e194aaea2b2bf5388da14db4386f0e8b",
+      "bytes": 57321,
+      "capturedAt": "2026-10-22T20:50:08.567Z",
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "expanded-investigation-390",
+      "file": "expanded-investigation-390.png",
+      "sha256": "9f1594ebd22f8d79294e63ad2ca272e33485399e56c8a4c46a3c1927c409bdbd",
+      "bytes": 59173,
+      "capturedAt": "2026-10-22T20:50:07.354Z",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "fresh-project-empty-inventory-checklist",
+      "file": "fresh-project-empty-inventory-checklist.png",
+      "sha256": "453c0cd2554eae1ee5f5613cf9360a63b137194abad99885f768d469f4945548",
+      "bytes": 109196,
+      "capturedAt": "2026-10-22T20:53:07.196Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "fresh-setup-proof"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "grouped-focus-castle-finding",
+      "file": "grouped-focus-castle-finding.png",
+      "sha256": "9bcf04d75fbb9e265e290f65ff8e52ac42c3f7ac4d03675480b68a7b1a36bb13",
+      "bytes": 254463,
+      "capturedAt": "2026-10-22T20:50:14.925Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F13"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "grouped-focus-castle-path",
+      "file": "grouped-focus-castle-path.png",
+      "sha256": "9bdc7d6de2163ede34d30b748048a731dd7b9a7343b3d5ee0f54cf69dc3cff4c",
+      "bytes": 255774,
+      "capturedAt": "2026-10-22T20:50:17.859Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F13"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "grouped-focus-graph-finding-320",
+      "file": "grouped-focus-graph-finding-320.png",
+      "sha256": "7a4b748a9895755cfa10b29dfb9b78c134224167f06ab80e099ab2a8e554c28e",
+      "bytes": 59782,
+      "capturedAt": "2026-10-22T20:50:19.951Z",
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F13"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "grouped-focus-graph-finding",
+      "file": "grouped-focus-graph-finding.png",
+      "sha256": "9b32347e965a2fd8b23cd1dfbb04afe73d83b737d25bfb88c9d393c98c316894",
+      "bytes": 229655,
+      "capturedAt": "2026-10-22T20:50:12.148Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F13"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "grouped-focus-graph-path-320",
+      "file": "grouped-focus-graph-path-320.png",
+      "sha256": "479d87022b130281d98a0e6a905b358ab9606a04cd54af5b4ff5de09a21eab07",
+      "bytes": 60208,
+      "capturedAt": "2026-10-22T20:50:21.831Z",
+      "viewport": {
+        "width": 320,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F13"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "grouped-focus-graph-path",
+      "file": "grouped-focus-graph-path.png",
+      "sha256": "5ab6324e6e20c4d5176233d2b46487d3e21d2f036b741128fe15208d6d16a7ef",
+      "bytes": 210972,
+      "capturedAt": "2026-10-22T20:50:12.858Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F13"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "module-geometry-failure-canonical-focus",
+      "file": "module-geometry-failure-canonical-focus.png",
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57",
+      "bytes": 260858,
+      "capturedAt": "2026-10-22T20:50:33.802Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "module-geometry-failure-one-neutral-block",
+      "file": "module-geometry-failure-one-neutral-block.png",
+      "sha256": "ce5cb2388f6f9094034f744e0b8ef8d30f1285156c8766fcdda197c6e4ea3177",
+      "bytes": 296465,
+      "capturedAt": "2026-10-22T20:50:32.387Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "module-geometry-replacement-healthy-same-asset",
+      "file": "module-geometry-replacement-healthy-same-asset.png",
+      "sha256": "b8d46ae283cd46c2aa19d1436da629347dfcf286ad2ab4ddc5b0c1dd2ca601f7",
+      "bytes": 298951,
+      "capturedAt": "2026-10-22T20:50:40.748Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "module-shader-body-neutral-recovery",
+      "file": "module-shader-body-neutral-recovery.png",
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57",
+      "bytes": 260858,
+      "capturedAt": "2026-10-22T20:50:45.140Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "module-shader-depth-neutral-recovery",
+      "file": "module-shader-depth-neutral-recovery.png",
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57",
+      "bytes": 260858,
+      "capturedAt": "2026-10-22T20:50:54.038Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "module-shader-family-healthy-replacement",
+      "file": "module-shader-family-healthy-replacement.png",
+      "sha256": "1eb6a77ce2608752fa429090a7a15ee54b668da0d5b41c75e1d2a6e468b968b8",
+      "bytes": 288784,
+      "capturedAt": "2026-10-22T20:51:07.015Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "module-shader-roof-neutral-recovery",
+      "file": "module-shader-roof-neutral-recovery.png",
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57",
+      "bytes": 260858,
+      "capturedAt": "2026-10-22T20:50:49.527Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "project": "demo-castle"
+      },
+      "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "overlapping-relationship-keyboard-chooser",
+      "file": "overlapping-relationship-keyboard-chooser.png",
+      "sha256": "c6b5f265c84d3db3687570fcbda43425bfc461eb8e629523ce2fe6b793751a98",
+      "bytes": 168432,
+      "capturedAt": "2026-10-22T20:48:48.256Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "relationship-patterns-hypothetical-opt-in",
+      "file": "relationship-patterns-hypothetical-opt-in.png",
+      "sha256": "3f2bf8e4236777276cd9689d2516ebd8343148c7de270a782f9930c9aa3c2de7",
+      "bytes": 234367,
+      "capturedAt": "2026-10-22T20:53:02.751Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "unlinked-event-static-asset-highlight",
+      "file": "unlinked-event-static-asset-highlight.png",
+      "sha256": "b9fe1ca6a84c440a0203eb0bb3ba59bd52064b265c63c324210bab6646042490",
+      "bytes": 312088,
+      "capturedAt": "2026-10-22T20:49:02.191Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F06"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "webgl-context-loss-selection-retained",
+      "file": "webgl-context-loss-selection-retained.png",
+      "sha256": "85ce19eb1a17c0ba7533dcdb744641f9aee170d8d6446ff780e3d013a172e113",
+      "bytes": 252991,
+      "capturedAt": "2026-10-22T20:52:34.600Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    },
+    {
+      "name": "webgl-retry-selection-retained",
+      "file": "webgl-retry-selection-retained.png",
+      "sha256": "7416c59de3d78ffa756624d6cd967428ed94eec17efd738c87fd56faadfcb4fa",
+      "bytes": 315222,
+      "capturedAt": "2026-10-22T20:52:36.538Z",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "browser": "141.0.7390.37",
+      "dpr": 1,
+      "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+      "reducedMotion": false,
+      "forcedColors": false,
+      "cssZoom": "1",
+      "query": {
+        "fixture": "F01"
+      },
+      "evidenceClass": "explicit offline synthetic design fixture",
+      "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+    }
+  ],
+  "limitations": [
+    "All design screenshots contain synthetic data. API-backed isolated fault-injection fixtures are not production/live-customer evidence.",
+    "Chromium headless uses SwiftShader. No real-GPU performance, cross-browser, physical-device or human approval is asserted.",
+    "The 200% capture uses CSS zoom emulation, not browser-chrome zoom.",
+    "Automated axe results require manual follow-up for incompletes and do not certify WCAG conformance."
+  ]
+}

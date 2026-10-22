@@ -1,0 +1,12 @@
+command	started_utc	finished_utc	exit_code
+pnpm typecheck	2026-10-22T17:51:18Z	2026-10-22T17:51:25Z	2
+pnpm test	2026-10-22T17:51:25Z	2026-10-22T17:51:32Z	1
+pnpm validate:fixtures	2026-10-22T17:51:32Z	2026-10-22T17:51:33Z	1
+pnpm build	2026-10-22T17:51:33Z	2026-10-22T17:51:38Z	0
+pnpm pilot --config playwright.baseline.config.ts	2026-10-22T17:51:38Z	2026-10-22T17:51:40Z	1
+pnpm typecheck	2026-10-22T17:52:13Z	2026-10-22T17:52:20Z	0
+pnpm test	2026-10-22T17:52:20Z	2026-10-22T17:52:27Z	1
+node --import tsx scripts/validate-fixtures.ts	2026-10-22T17:52:27Z	2026-10-22T17:52:28Z	0
+pnpm pilot --config playwright.baseline.config.ts	2026-10-22T17:52:28Z	2026-10-22T17:52:31Z	1
+OTEL_TRACES_SAMPLER=always_on OTEL_TRACES_SAMPLER_ARG=1 pnpm test	2026-10-22T17:53:14Z	2026-10-22T17:53:22Z	0
+PLAYWRIGHT_BROWSERS_PATH=/workspace/shared/dk-playwright OTEL_TRACES_SAMPLER=always_on OTEL_TRACES_SAMPLER_ARG=1 pnpm pilot	2026-10-22T17:56:40Z	2026-10-22T17:57:49Z	0

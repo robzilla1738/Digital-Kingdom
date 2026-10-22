@@ -1,0 +1,94 @@
+{
+  "test": "PERF-06 local journal SSE snapshot and UI timings are separate; CASTLE-05 event-only update reuses mounted module geometry",
+  "recordedAt": "2026-10-22T20:50:29.110Z",
+  "conditions": {
+    "evidenceClass": "isolated canonical synthetic project, actual local journal/normalizer/SSE/snapshot/UI",
+    "browser": "141.0.7390.37",
+    "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+    "renderer": {
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "vendor": "Google Inc. (Google)"
+    },
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "dpr": 1,
+    "quality": "low",
+    "reducedMotion": true,
+    "sourceTransport": "in-process Store.receive test input, not external source network",
+    "ssePollMs": 50,
+    "sampleCount": 1,
+    "warmup": "750ms quality settling, fit camera, then unchanged render count over two150ms intervals"
+  },
+  "journalReceiveMs": 0.4411790000012843,
+  "normalizationDetectionAndPersistenceMs": 2.407460999995237,
+  "totalSynchronousBackendMs": 2.8486399999965215,
+  "snapshotHttp": {
+    "requestToFirstByteMs": 5.521,
+    "requestToResponseEndMs": 6.561,
+    "rawBrowserRequestTiming": {
+      "startTime": 1792702226252.034,
+      "domainLookupStart": -1,
+      "domainLookupEnd": -1,
+      "connectStart": -1,
+      "secureConnectionStart": -1,
+      "connectEnd": -1,
+      "requestStart": 0.103,
+      "responseStart": 5.624,
+      "responseEnd": 6.664
+    }
+  },
+  "driverSourceToSnapshotObservedMs": 1234.3032229999953,
+  "driverSourceToUiObservedMs": 1277.7898799999966,
+  "browserTiming": {
+    "sourceToUiObservedMs": 1268.7000000476837,
+    "sourceToRendererInstrumentationMs": 1275,
+    "uiToRendererInstrumentationMs": 6.299999952316284,
+    "displayedTitle": "14 requests blocked at public-edge"
+  },
+  "geometry": {
+    "sameCanvasRemainedMounted": true,
+    "before": {
+      "moduleGeometryBuilds": 18,
+      "gpuGeometries": 79,
+      "gpuTextures": 2,
+      "renderCount": 8,
+      "drawCalls": 57,
+      "triangles": 3516,
+      "quality": "low"
+    },
+    "after": {
+      "moduleGeometryBuilds": 18,
+      "gpuGeometries": 79,
+      "gpuTextures": 2,
+      "renderCount": 11,
+      "drawCalls": 57,
+      "triangles": 3516,
+      "quality": "low"
+    },
+    "repeatedUpdates": [
+      {
+        "moduleGeometryBuilds": 18,
+        "gpuGeometries": 79,
+        "gpuTextures": 2,
+        "renderCount": 16
+      },
+      {
+        "moduleGeometryBuilds": 18,
+        "gpuGeometries": 79,
+        "gpuTextures": 2,
+        "renderCount": 19
+      }
+    ],
+    "graphRevisionUnchanged": true,
+    "sceneDigestUnchanged": true,
+    "sceneRoomsUnchanged": true
+  },
+  "limitations": [
+    "One local synthetic timing sample and three event-only cache observations, not a production SLA, network benchmark or process-heap leak proof.",
+    "Browser timestamps include configured SSE polling, snapshot scheduling, client reconciliation and observer overhead; they are not summed with the separate backend/network measurements.",
+    "Renderer instrumentation records the next observed canvas render-count mutation, not GPU presentation or monitor scanout.",
+    "Headless Chromium uses software rendering; this does not satisfy the required reference-laptop real-GPU benchmark."
+  ]
+}

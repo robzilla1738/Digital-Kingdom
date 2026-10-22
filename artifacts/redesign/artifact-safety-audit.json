@@ -1,0 +1,204 @@
+{
+  "capturedAt": "2026-10-22T20:56:19.999978+00:00",
+  "scriptSha256": "0a9f32b5ff024e37d4828ed0b0d19209f32dd547e0b3056f67954c34713f0a19",
+  "scan": "Known credential-prefix counts only; no credential values emitted. This does not detect every possible secret.",
+  "publicationPolicy": "Publish reviewed synthetic screenshots, sanitized logs/results, metadata and reproduction scripts. Raw traces, HAR, video, heaps, databases and ephemeral test-results stay ignored and untracked.",
+  "rawArtifacts": [
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot/test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-confirmed/test-results/.last-run.json",
+      "bytes": 96,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-A-controlled-activity-in-the-reference-a.zip",
+      "bytes": 320418,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {}
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-B-a-protocol-level-MCP-client-stdio-laun.zip",
+      "bytes": 643,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {}
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-C-3D-and-2D-resolve-the-same-identifiers.zip",
+      "bytes": 2487403,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {}
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-C2-a-failed-evidence-fetch-is-shown-as-i.zip",
+      "bytes": 4984542,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {}
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-C2-evidence-fault.zip",
+      "bytes": 1430533,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {
+        "session": 54
+      }
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-C3-WebGL-unavailable-explicit-fallback-t.zip",
+      "bytes": 555307,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {}
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-C3-webgl-fallback.zip",
+      "bytes": 134030,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {
+        "session": 22
+      }
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-D-a-stale-source-and-unknown-targets-sta.zip",
+      "bytes": 2300814,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {
+        "session": 12
+      }
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-E-an-acknowledged-but-unprocessed-event-.zip",
+      "bytes": 1642224,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {
+        "session": 8
+      }
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-E2-SSE-reconnects-but-the-catch-up-snaps.zip",
+      "bytes": 1814385,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {
+        "session": 22
+      }
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-E3-snapshot-fails-while-SSE-stays-connec.zip",
+      "bytes": 2037434,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {
+        "session": 18
+      }
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-F-containment-stays-proposal-only-servic.zip",
+      "bytes": 546303,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {
+        "session": 12
+      }
+    },
+    {
+      "path": "artifacts/redesign/baseline/isolated-live-pilot-headless-shell/trace-G-instruction-like-evidence-text-is-disp.zip",
+      "bytes": 750324,
+      "gitIgnored": true,
+      "gitTracked": false,
+      "credentialMarkerCounts": {
+        "session": 6
+      }
+    },
+    {
+      "path": "artifacts/redesign/diagnostics/expanded-cards-setup-test-results/.last-run.json",
+      "bytes": 96,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/diagnostics/expanded-cards-setup-test-results/evidence-cards-redesign-EV-83f37-the-exact-loaded-derivative/test-failed-1.png",
+      "bytes": 48838,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/diagnostics/expanded-test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/final/test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/nonfinal/pre-3e0a0f0/grouped-focus-test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/nonfinal/pre-3e0a0f0/presentation-test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/nonfinal/pre-3e0a0f0/test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/nonfinal/pre-shader-freeze-20261022T2045/final/test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/nonfinal/prior-3e0a0f0/test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/nonfinal/prior-66ce8f3/final/test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    },
+    {
+      "path": "artifacts/redesign/nonfinal/working-expanded-before-freeze-20261022T201603Z/test-results/.last-run.json",
+      "bytes": 45,
+      "gitIgnored": true,
+      "gitTracked": false
+    }
+  ],
+  "rawArtifactBytes": 19053885,
+  "publicTextFindings": [],
+  "ignoredTextFindings": [],
+  "publicationBoundaryViolations": [],
+  "passed": true
+}

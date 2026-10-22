@@ -1,0 +1,22 @@
+{
+  "name": "grouped-focus-graph-path",
+  "file": "grouped-focus-graph-path.png",
+  "sha256": "5ab6324e6e20c4d5176233d2b46487d3e21d2f036b741128fe15208d6d16a7ef",
+  "bytes": 210972,
+  "capturedAt": "2026-10-22T20:50:12.858Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F13"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

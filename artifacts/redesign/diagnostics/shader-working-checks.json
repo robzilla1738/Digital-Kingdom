@@ -1,0 +1,79 @@
+{
+  "build": "working-shader-recovery-20261022T2038",
+  "status": "Working-source focused validation, not a sealed candidate or final release proof",
+  "baseCommit": "66ce8f347fe60bba34b87e7d1b089183e78643cb",
+  "sourceFiles": [
+    {
+      "path": "apps/web/src/castle/Castle3D.tsx",
+      "sha256": "d88d10a2889a4ad3b076e5fbe3f056631a39747f18a142b8624955c1e14085a7"
+    },
+    {
+      "path": "apps/web/src/castle/geometry.ts",
+      "sha256": "a4e1493819d2f7e675a9960385062135fcdb7ed7922712a182b84a8ee4227e79"
+    },
+    {
+      "path": "apps/web/src/castle/modules.tsx",
+      "sha256": "b578152c2c9ee3c4aabd913ed5278e0e1a628bea9ac92ae3453bd134f83178b8"
+    },
+    {
+      "path": "apps/web/src/castle/moduleRecovery.ts",
+      "sha256": "88f3dbed113755bd7f9123aa71edeaffe5e3b6d43f92801ec58be6edcb0d9dc1"
+    },
+    {
+      "path": "apps/web/src/castle/shaderRecovery.ts",
+      "sha256": "fc8b71170d02331c2931a3919e7126c4b3cbf19b341e2465873b601b9c60c81b"
+    },
+    {
+      "path": "apps/web/src/castle/moduleRecovery.test.ts",
+      "sha256": "a5131b0b7df8c90db673b820eaebc23e9752c35dc8ae693d94eede744416be4a"
+    },
+    {
+      "path": "assets/castle-kit/MANIFEST.json",
+      "sha256": "7efa6ac7a47dbd4a64e07b2306f066bc78d8382b0afb38ece78c5ccf5fccabc4"
+    },
+    {
+      "path": "e2e/module-recovery-redesign.spec.ts",
+      "sha256": "1b82aab05df3bdb40f271d85ee38a207700801f8ac5336f1556310288aad6ba6"
+    },
+    {
+      "path": "e2e/redesign.spec.ts",
+      "sha256": "f38bb49b0e00aa9dcd26a8bf200fd173cc888b68d804b2703fbb3680db745db2"
+    }
+  ],
+  "manifestContentHash": "sha256:2ff6c6bb978e24d75cbc6fe1eea7a06eb19dd9bd7ed922183ea4af2d7e098389",
+  "apiIndexSha256": "8c6406241be158899d1d9515b11b82a07fd92802d75b15de722e84c858ef90fd",
+  "staticIndexSha256": "6ba6f08d8201b227db6540d45252577fbe681b435361344a20cc5fd3bf9f1c0b",
+  "checks": {
+    "unitGeometryRecovery": {
+      "passed": 57,
+      "failed": 0
+    },
+    "webTypecheck": "pass",
+    "browserFocused": {
+      "passed": 8,
+      "failed": 0
+    },
+    "diffWhitespace": "pass",
+    "nativeDraws": {
+      "maximum": 119,
+      "target": 250,
+      "includesDirectionalShadow": true
+    },
+    "fiveRendererRemountsAndReplay": {
+      "programs": 33,
+      "owners": 13,
+      "geometries": 57,
+      "textures": 2,
+      "retiredContextsNativelyLost": 5,
+      "retiredOwnershipRegistrationsRemoved": 5
+    }
+  },
+  "architecture": "Ten canonical module families each own a body, roof and RGBADepthPacking directional-depth material with unique program cache keys and matching fixed shader headers. A renderer-local registry notifies every live proven owner of a failed family program. Geometry remains shared. Recovery is deferred until the render stack returns; no raw source, shader, driver or asset payload enters diagnostics. Materials and hooks join existing renderer lifetime cleanup.",
+  "limits": [
+    "Current kit directional shadows are covered; no point-light distance or VSM ownership is asserted.",
+    "Unowned, mismatched or known-but-unregistered shader markers use renderer-level recovery, never arbitrary asset attribution.",
+    "Native context loss remains separately classified. Arbitrary asynchronous GPU/driver failures are not inferred from asset identity.",
+    "Counts are current-renderer resources in Chromium SwiftShader, not process-wide GPU memory, real-GPU performance or a new heap-leak proof.",
+    "Unsupported stored module IDs are not covered end-to-end because current canonical scene contracts constrain IDs before Room mounts."
+  ]
+}

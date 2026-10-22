@@ -1,0 +1,41 @@
+import { createServer } from 'node:http';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { chromium, expect } from '@playwright/test';
+const OUT='/workspace/scratch/7da97da4048f/digital-kingdom-redesign/artifacts/redesign/baseline';
+const html=await readFile('./capture-dist/baseline-offline.html');
+const server=createServer((req,res)=>{res.writeHead(200, {'Content-Type':'text/html'});res.end(html);});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+let browser;
+const metadata={commit:'453b2db522780361405c388f036d7874041cb005',dataset:'bundled offline synthetic demo',viewport:{width:1440,height:900},screenshots:[],console:[],pageErrors:[]};
+try {
+ browser=await chromium.launch({headless:true,args:['--enable-unsafe-swiftshader','--use-angle=swiftshader','--ignore-gpu-blocklist']});
+ metadata.browser=browser.version();
+ const page=await browser.newPage({viewport:metadata.viewport, deviceScaleFactor:1});
+ page.on('pageerror',e=>metadata.pageErrors.push(e.message));
+ page.on('console',m=>{if(m.type()==='error')metadata.console.push(m.text())});
+ await page.goto(`http://127.0.0.1:${server.address().port}`);
+ await expect(page.getByRole('radio',{name:'3D',exact:true})).toBeChecked();
+ await expect(page.locator('main.stage canvas')).toBeVisible({timeout:30000});
+ await expect.poll(async()=>(await page.locator('main.stage canvas').screenshot()).length,{timeout:30000}).toBeGreaterThan(25000);
+ metadata.webgl=await page.evaluate(()=>{const c=document.createElement('canvas');const gl=c.getContext('webgl2')||c.getContext('webgl');const e=gl.getExtension('WEBGL_debug_renderer_info');return {renderer:e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER),vendor:e?gl.getParameter(e.UNMASKED_VENDOR_WEBGL):gl.getParameter(gl.VENDOR)}});
+ await mkdir(`${OUT}/synthetic-screenshots`,{recursive:true});
+ const shot=async(name)=>{await page.screenshot({path:`${OUT}/synthetic-screenshots/${name}.png`});metadata.screenshots.push(name);console.log('CAPTURED '+name)};
+ await shot('before-kingdom-overview');
+ await page.locator('[data-finding-id]').first().click();
+ await expect(page.locator('aside.evidence')).toHaveAttribute('data-selection-kind','finding');
+ metadata.selectedFinding=await page.locator('aside.evidence').getAttribute('data-selection-id');
+ await shot('before-kingdom-finding-selection');
+ await page.getByRole('radio',{name:'2D',exact:true}).click();
+ await expect(page.locator('aside.evidence')).toHaveAttribute('data-selection-id',metadata.selectedFinding);
+ await shot('before-graph-finding-selection');
+ await page.getByRole('tab',{name:/Assets/}).click();
+ await page.locator('ul[aria-label="Assets"] button').first().click();
+ await shot('before-graph-asset-selection');
+ await page.getByRole('radio',{name:'3D',exact:true}).click();
+ await expect(page.locator('main.stage canvas')).toBeVisible();
+ await shot('before-kingdom-asset-selection');
+ await page.getByRole('tab',{name:/Coverage/}).click();
+ await shot('before-source-coverage');
+ metadata.outcome='captured';
+} catch(e) {metadata.outcome='blocked';metadata.error=String(e);console.error(e);process.exitCode=1}
+finally {await writeFile(`${OUT}/screenshot-metadata.json`,JSON.stringify(metadata,null,2));await browser?.close();server.close();}

@@ -1,0 +1,37 @@
+{
+  "sourceCandidate": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reviewedAt": "2026-10-22T20:55:27.607460+00:00",
+  "reviewerCondition": "AI inspection of actual rendered PNG pixels, not human design approval or a new browser run",
+  "samples": [
+    {
+      "file": "V01-kingdom-overview-1440.png",
+      "sha256": "b5f92866634c667d6ba16ef74100141ab6525312fbd98d46b42c30032de2a232",
+      "observation": "Rendered architectural overview, readable priority cards and labels, explicit synthetic badge and timeline are present."
+    },
+    {
+      "file": "V04b-contradiction-supporting-counter.png",
+      "sha256": "fd85fae96950b885789ef0039cc485f2853ed17f769f9a5376c4d0562460b33e",
+      "observation": "Primary-width supporting/counter cards visibly show complete source/action/outcome, both timestamps, redaction wording and raw disclosures side by side."
+    },
+    {
+      "file": "V10b-four-module-roofs-off.png",
+      "sha256": "2802cf276bc70c3955d36cc5c1da8e31a636155b2d0c26df2696017fb111c6a4",
+      "observation": "Roofs are visibly absent, with open wall perimeters rather than solid top slabs."
+    },
+    {
+      "file": "V10c-roofs-off-elevated-floor-inspection.png",
+      "sha256": "9635fa6da8aef6620a457ca3f604efffb040ccdcb6de2a556a2af181c6542420",
+      "observation": "Elevated cutaway visibly exposes the hall floor and vault aisle/bays."
+    },
+    {
+      "file": "V14-320-timeline-live.png",
+      "sha256": "076675f170100c2c532d1e4c8032ef2073a4a380261c5c4a71330288203f0f19",
+      "observation": "The complete 14:13:00 UTC timestamp is visible without play-control overlap at 320 CSS px. Overview labels are small at this fit scale; this is not a claim of physical-device readability."
+    },
+    {
+      "file": "module-shader-body-neutral-recovery.png",
+      "sha256": "554e5ed5d3a08bcbd1c7266b23cb2f63b8c001d747dbe60db678dc91253b6f57",
+      "observation": "The selected canonical public-edge has a visibly labeled neutral block, while other buildings and its inspector remain visible."
+    }
+  ]
+}

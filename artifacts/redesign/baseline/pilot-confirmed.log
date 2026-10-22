@@ -1,0 +1,55 @@
+
+> digital-kingdom@0.3.2 pilot /tmp/dk-redesign-baseline-453b2db
+> playwright test --config playwright.baseline.config.ts
+
+
+Running 11 tests using 1 worker
+
+(node:867) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:867) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 e2e/pilot.spec.ts:136:1 › A. controlled activity in the reference app becomes an evidence-backed finding in the browser (1ms)
+  -   2 e2e/pilot.spec.ts:207:1 › B. a protocol-level MCP client (stdio launch path) receives the same evidence
+  -   3 e2e/pilot.spec.ts:239:1 › C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest
+  -   4 e2e/pilot.spec.ts:323:1 › C2. a failed evidence fetch is shown as incomplete, distinct from an empty result
+  -   5 e2e/pilot.spec.ts:369:1 › C3. WebGL unavailable: explicit fallback to the 2D graph (this is NOT a 3D pass)
+  -   6 e2e/pilot.spec.ts:400:1 › D. a stale source and unknown targets stay explicitly uncertain in browser and MCP
+  -   7 e2e/pilot.spec.ts:471:1 › E. an acknowledged-but-unprocessed event survives restart; the browser shows the lost stream honestly
+  -   8 e2e/pilot.spec.ts:570:1 › E2. SSE reconnects but the catch-up snapshot fails, then is delayed: never Live until it is applied
+  -   9 e2e/pilot.spec.ts:633:1 › E3. snapshot fails while SSE stays connected, then recovers on retry
+  -  10 e2e/pilot.spec.ts:672:1 › F. containment stays proposal-only: service proposes, cannot approve; human approval executes nothing
+  -  11 e2e/pilot.spec.ts:738:1 › G. instruction-like evidence text is displayed as data and authorizes nothing
+
+
+  1) e2e/pilot.spec.ts:136:1 › A. controlled activity in the reference app becomes an evidence-backed finding in the browser 
+
+    Error: browserType.launch: Target page, context or browser has been closed
+    Browser logs:
+
+    <launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --enable-unsafe-swiftshader --use-angle=swiftshader --ignore-gpu-blocklist --user-data-dir=/tmp/playwright_chromiumdev_profile-4VxK2G --remote-debugging-pipe --no-startup-window
+    <launched> pid=888
+    [pid=888][err] [888:888:1022/105230.879358:ERROR:third_party/crashpad/crashpad/util/file/filesystem_posix.cc:63] mkdir : No such file or directory (2)
+    [pid=888][err] chrome_crashpad_handler: --database is required
+    [pid=888][err] Try 'chrome_crashpad_handler --help' for more information.
+    [pid=888][err] [888:888:1022/105230.933106:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)
+    Call log:
+    [2m  - <launching> /usr/bin/chromium --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AcceptCHFrame,AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --enable-unsafe-swiftshader --use-angle=swiftshader --ignore-gpu-blocklist --user-data-dir=/tmp/playwright_chromiumdev_profile-4VxK2G --remote-debugging-pipe --no-startup-window[22m
+    [2m  - <launched> pid=888[22m
+    [2m  - [pid=888][err] [888:888:1022/105230.879358:ERROR:third_party/crashpad/crashpad/util/file/filesystem_posix.cc:63] mkdir : No such file or directory (2)[22m
+    [2m  - [pid=888][err] chrome_crashpad_handler: --database is required[22m
+    [2m  - [pid=888][err] Try 'chrome_crashpad_handler --help' for more information.[22m
+    [2m  - [pid=888][err] [888:888:1022/105230.933106:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)[22m
+    [2m  - [pid=888] <gracefully close start>[22m
+    [2m  - [pid=888] <kill>[22m
+    [2m  - [pid=888] <will force kill>[22m
+    [2m  - [pid=888] <process did exit: exitCode=null, signal=SIGABRT>[22m
+    [2m  - [pid=888] starting temporary directories cleanup[22m
+    [2m  - [pid=888] finished temporary directories cleanup[22m
+    [2m  - [pid=888] <gracefully close end>[22m
+
+
+  1 failed
+    e2e/pilot.spec.ts:136:1 › A. controlled activity in the reference app becomes an evidence-backed finding in the browser 
+  10 did not run
+ ELIFECYCLE  Command failed with exit code 1.

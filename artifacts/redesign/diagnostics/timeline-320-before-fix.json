@@ -1,0 +1,123 @@
+{
+  "build": "3e0a0f0c6423b6b3645c0397f30b59d617edb8c8",
+  "viewport": {
+    "width": 320,
+    "height": 900
+  },
+  "text": "14:13:00 UTC",
+  "clock": {
+    "x": 152,
+    "y": 745.625,
+    "width": 23.578125,
+    "height": 36.375,
+    "top": 745.625,
+    "right": 175.578125,
+    "bottom": 782,
+    "left": 152
+  },
+  "container": {
+    "x": 152,
+    "y": 745.625,
+    "width": 23.578125,
+    "height": 56.375,
+    "top": 745.625,
+    "right": 175.578125,
+    "bottom": 802,
+    "left": 152
+  },
+  "clientWidth": 24,
+  "scrollWidth": 62,
+  "textRects": [
+    {
+      "x": 152,
+      "y": 746.625,
+      "width": 62.421875,
+      "height": 15,
+      "top": 746.625,
+      "right": 214.421875,
+      "bottom": 761.625,
+      "left": 152
+    },
+    {
+      "x": 152,
+      "y": 764.8125,
+      "width": 23.40625,
+      "height": 15,
+      "top": 764.8125,
+      "right": 175.40625,
+      "bottom": 779.8125,
+      "left": 152
+    }
+  ],
+  "overlappingControls": [
+    {
+      "name": "Expand timeline",
+      "rect": {
+        "x": 179.578125,
+        "y": 751.8125,
+        "width": 124.421875,
+        "height": 44,
+        "top": 751.8125,
+        "right": 304,
+        "bottom": 795.8125,
+        "left": 179.578125
+      }
+    }
+  ],
+  "hitTests": [
+    {
+      "point": [
+        164.484375,
+        754.125
+      ],
+      "hit": "B",
+      "text": "14:13:00 UTC",
+      "clockReceivesHit": true
+    },
+    {
+      "point": [
+        183.2109375,
+        754.125
+      ],
+      "hit": "BUTTON",
+      "text": "Expand timeline",
+      "clockReceivesHit": false
+    },
+    {
+      "point": [
+        201.9375,
+        754.125
+      ],
+      "hit": "BUTTON",
+      "text": "Expand timeline",
+      "clockReceivesHit": false
+    },
+    {
+      "point": [
+        156.68125,
+        772.3125
+      ],
+      "hit": "B",
+      "text": "14:13:00 UTC",
+      "clockReceivesHit": true
+    },
+    {
+      "point": [
+        163.703125,
+        772.3125
+      ],
+      "hit": "B",
+      "text": "14:13:00 UTC",
+      "clockReceivesHit": true
+    },
+    {
+      "point": [
+        170.725,
+        772.3125
+      ],
+      "hit": "B",
+      "text": "14:13:00 UTC",
+      "clockReceivesHit": true
+    }
+  ]
+}

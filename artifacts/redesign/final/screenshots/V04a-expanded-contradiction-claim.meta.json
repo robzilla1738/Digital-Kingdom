@@ -1,0 +1,22 @@
+{
+  "name": "V04a-expanded-contradiction-claim",
+  "file": "V04a-expanded-contradiction-claim.png",
+  "sha256": "315d3eb3f370ae3b1ad7f15c81f91319299dcf511d04a84b2eb1955b97672d8e",
+  "bytes": 96157,
+  "capturedAt": "2026-10-22T20:51:48.344Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

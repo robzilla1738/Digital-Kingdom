@@ -1,0 +1,27 @@
+{
+  "scope": "Actual production bundle, isolated synthetic API project; one constructor corrupted through an explicit Playwright asset-response injection.",
+  "injectedBundle": "modules-BmAe--Ta.js",
+  "fault": "gatehouse construction throws; original payload is sanitized",
+  "affectedAsset": {
+    "id": "edge",
+    "name": "public-edge"
+  },
+  "classifiedDiagnosticCount": 1,
+  "expectedSanitizedFrameworkErrors": [
+    "The local architectural module geometry is unavailable."
+  ],
+  "canonicalRecordsUnchanged": [
+    "graph",
+    "events",
+    "findings",
+    "scene",
+    "evidence"
+  ],
+  "mutationRequests": [],
+  "beforeEvidenceSha256": "97f88b28764b4f436ec687f2f9cb0877cc821e0118d8b4bac96c71a82cafb227",
+  "selectionPreserved": true,
+  "explicitFocusWorks": true,
+  "otherBuildingSelectable": "agent",
+  "remainsIn3D": true,
+  "limitations": "This geometry-only test does not cover shader faults; separate owned body/roof/directional-depth shader tests cover attributable compilation failures. Unowned/global shader and WebGL context-loss failures retain separate renderer recovery. Arbitrary asynchronous driver failures are not inferred from module identity. Unsupported stored scene metadata is not tested; the injected module ID is valid. No API or authorization failure was injected or reclassified."
+}

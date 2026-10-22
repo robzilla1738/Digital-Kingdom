@@ -1,0 +1,22 @@
+{
+  "scope": "Real empty synthetic server project, journal-normalized receipt and current source metadata. No external systems or persistent account access are configured.",
+  "checks": [
+    {
+      "project": "fresh-setup-proof",
+      "graphRevision": "setup-proof-r1",
+      "configuredSources": 1,
+      "canonicalStoredEventCount": 1,
+      "eventId": "ev-11ah1tp123hts1"
+    },
+    {
+      "name": "PROSE-15: empty inventory, configuration and receipt are separate real server steps",
+      "status": "passed",
+      "durationMs": 2633
+    },
+    {
+      "name": "PROSE-13: cards show scoped configuration and keep absent assessments unknown",
+      "status": "passed",
+      "durationMs": 895
+    }
+  ]
+}

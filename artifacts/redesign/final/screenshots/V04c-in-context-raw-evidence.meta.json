@@ -1,0 +1,22 @@
+{
+  "name": "V04c-in-context-raw-evidence",
+  "file": "V04c-in-context-raw-evidence.png",
+  "sha256": "d06c5dc03fa8d83153efbf5fd3101f5701e710958f37644a7569b1f122bd422c",
+  "bytes": 109300,
+  "capturedAt": "2026-10-22T20:51:48.959Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

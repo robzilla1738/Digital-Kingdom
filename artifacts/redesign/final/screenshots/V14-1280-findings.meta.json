@@ -1,0 +1,22 @@
+{
+  "name": "V14-1280-findings",
+  "file": "V14-1280-findings.png",
+  "sha256": "4dc004cb2065cb196fa266fc2f3ad47926f161df4ca3fb37982a54ecc0fa15e3",
+  "bytes": 109785,
+  "capturedAt": "2026-10-22T20:52:06.114Z",
+  "viewport": {
+    "width": 1280,
+    "height": 768
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

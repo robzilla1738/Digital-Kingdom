@@ -1,0 +1,22 @@
+{
+  "name": "V16-200-overview",
+  "file": "V16-200-overview.png",
+  "sha256": "afae099f2c4f9e83197850715b420f448897b14b53b8cc1f7658b27980bfe29d",
+  "bytes": 166582,
+  "capturedAt": "2026-10-22T20:52:23.615Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F13"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

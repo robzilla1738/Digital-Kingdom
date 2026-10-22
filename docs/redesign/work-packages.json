@@ -1,0 +1,2265 @@
+{
+  "spec_version": "1.0.0",
+  "status": "not_release_ready",
+  "work_packages": [
+    {
+      "id": "WP01",
+      "phase": "P0",
+      "title": "Inspect base and capture baseline",
+      "depends_on": [],
+      "deliverables": [
+        "Record HEAD, working tree and PR dependencies",
+        "Run current checks and capture baseline UI",
+        "Inventory supported API/scene contracts"
+      ],
+      "acceptance_refs": [
+        "REL-01",
+        "REL-02"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 2
+      },
+      "evidence": {
+        "implementation_files": [
+          "assets/castle-kit/MANIFEST.json",
+          "docs/redesign/CAPABILITIES.md",
+          "docs/redesign/IMPLEMENTATION.md",
+          "scripts/redesign-artifact-index.mjs"
+        ],
+        "test_references": [
+          "e2e/pilot.spec.ts :: A. controlled activity in the reference app becomes an evidence-backed finding in the browser",
+          "e2e/pilot.spec.ts :: C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest",
+          "e2e/pilot.spec.ts :: G. instruction-like evidence text is displayed as data and authorizes nothing"
+        ],
+        "screenshots": [],
+        "execution_receipts": [
+          "artifacts/redesign/baseline/README.md",
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json"
+        ]
+      },
+      "notes": [
+        "Baseline captured and checked; exact baseline receipt exists. Final regression preservation still required.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP02",
+      "phase": "P1",
+      "title": "Define shared presentation and query state",
+      "depends_on": [
+        "WP01"
+      ],
+      "deliverables": [
+        "Typed selectors for severity/outcome/coverage",
+        "Request keys and stale response guards",
+        "Versioned deep-link compatibility"
+      ],
+      "acceptance_refs": [
+        "SEM-04",
+        "NAV-01",
+        "NAV-06",
+        "INV-08"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 4
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/components/ui/SplitPane.tsx",
+          "apps/web/src/components/ui/Status.tsx",
+          "apps/web/src/inspector/EventView.tsx",
+          "apps/web/src/inspector/FindingView.tsx",
+          "apps/web/src/lib/evidence-loader.ts",
+          "apps/web/src/lib/investigation.ts",
+          "apps/web/src/lib/navigation.ts",
+          "apps/web/src/lib/presentation.ts",
+          "apps/web/src/lib/state.tsx",
+          "apps/web/src/lib/vocab.ts",
+          "apps/web/src/panels/TopBar.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "apps/web/src/workspaces/investigate/EventWorkspace.tsx"
+        ],
+        "test_references": [
+          "apps/web/src/lib/data-security.test.ts :: passes cancellation through every snapshot request and encodes project paths",
+          "apps/web/src/lib/data-security.test.ts :: tags denial with the authorization scope captured before a delayed response",
+          "apps/web/src/lib/evidence-loader.test.ts :: retains first page when second fails and never mutates dataset evidence",
+          "apps/web/src/lib/redesign-state.test.ts :: accepts legacy path, occurred/known basis and serializes only allowed references",
+          "apps/web/src/lib/redesign-state.test.ts :: actual severity outranks outcome and records count once across assets",
+          "apps/web/src/lib/redesign-state.test.ts :: new workspace/source links round-trip and malformed navigation is bounded",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-01 both evidence roles expose full context and raw expansion keeps the pinned finding and comparison",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-03 real 5000-record finding retains all exact evidence with bounded display paging and no paging refetch",
+          "e2e/evidence-redesign.spec.ts :: old containment denial while next project snapshot is pending cannot clear the next authorization scope",
+          "e2e/evidence-redesign.spec.ts :: slow finding A evidence cannot appear in selected finding B and replay does not refetch the pinned record",
+          "e2e/evidence-redesign.spec.ts :: stale403 from old project reload cannot clear the newly selected project",
+          "e2e/navigation-redesign.spec.ts :: legacy project relationship view time basis survives reload and browser Back; local navigation search sends no query"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V02-kingdom-selected-1440.png",
+          "artifacts/redesign/final/screenshots/V03-graph-same-selection-1440.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP03",
+      "phase": "P1",
+      "title": "Implement tokens and typography",
+      "depends_on": [
+        "WP01"
+      ],
+      "deliverables": [
+        "Local token layer",
+        "No external fonts/resources",
+        "Actual contrast checks"
+      ],
+      "acceptance_refs": [
+        "A11Y-04",
+        "SEC-05"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "blocked": 1,
+        "passed": 1
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/App.tsx",
+          "apps/web/src/components/ui/Tabs.tsx",
+          "apps/web/src/inspector/actions.tsx",
+          "apps/web/src/lib/data.ts",
+          "apps/web/src/lib/investigation.ts",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "apps/web/src/styles/base.css",
+          "apps/web/src/styles/components.css",
+          "apps/web/src/styles/workspaces.css",
+          "apps/web/src/workspaces/integrations/IntegrationsWorkspace.tsx"
+        ],
+        "test_references": [
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-02 long source and inert raw records wrap at 320px and text paging preserves the exact loaded derivative",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/redesign.spec.ts :: F11/F14: untrusted text is inert and empty project is not a fabricated kingdom",
+          "e2e/redesign.spec.ts :: V15: axe DOM accessibility, reduced motion, forced colors, and visible keyboard focus"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V15-forced-colors-reduced-motion.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP04",
+      "phase": "P1",
+      "title": "Accessible component states",
+      "depends_on": [
+        "WP03"
+      ],
+      "deliverables": [
+        "Buttons/tabs/dialogs/badges/tables",
+        "Component state fixtures",
+        "Focus and keyboard behavior"
+      ],
+      "acceptance_refs": [
+        "A11Y-01",
+        "A11Y-02",
+        "A11Y-03",
+        "A11Y-08"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "blocked": 2,
+        "passed": 2
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/components/ui/Tabs.tsx",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "apps/web/src/styles/base.css",
+          "apps/web/src/styles/components.css",
+          "apps/web/src/styles/workspaces.css"
+        ],
+        "test_references": [
+          "apps/web/src/components/ui/primitives.test.ts :: has one sequential tab stop and explicit selected state",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/pilot.spec.ts :: C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest",
+          "e2e/redesign.spec.ts :: A11Y-03: desktop and narrow inspectors remain nonmodal and keyboard Tab can exit and return",
+          "e2e/redesign.spec.ts :: V14: responsive records, close controls, and no document overflow at 320\u20131366",
+          "e2e/redesign.spec.ts :: V15: axe DOM accessibility, reduced motion, forced colors, and visible keyboard focus",
+          "e2e/redesign.spec.ts :: editing, modal and browser-modifier keys are not intercepted when shortcuts are enabled",
+          "e2e/redesign.spec.ts :: stable ID history, hidden filters, and keyboard manual-activation semantics"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V14-1024-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1024-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-kingdom-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-resized-inspector.png",
+          "artifacts/redesign/final/screenshots/V14-1366-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1366-findings.png",
+          "artifacts/redesign/final/screenshots/V14-200percent-css-zoom.png",
+          "artifacts/redesign/final/screenshots/V14-320-detail.png",
+          "artifacts/redesign/final/screenshots/V14-320-findings.png",
+          "artifacts/redesign/final/screenshots/V14-390-detail.png",
+          "artifacts/redesign/final/screenshots/V14-390-findings.png",
+          "artifacts/redesign/final/screenshots/V14-768-detail.png",
+          "artifacts/redesign/final/screenshots/V14-768-findings.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Tabs, badges, dialogs, copy controls and component fixture route implemented; manual keyboard/AT and shortcut matrix remain open.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP05",
+      "phase": "P2",
+      "title": "Application shell and navigation",
+      "depends_on": [
+        "WP02",
+        "WP04"
+      ],
+      "deliverables": [
+        "Four workspaces",
+        "Responsive split panes",
+        "Project/connection state preservation"
+      ],
+      "acceptance_refs": [
+        "NAV-01",
+        "NAV-04",
+        "NAV-05",
+        "NAV-06",
+        "NAV-07",
+        "SEC-06"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 6
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/App.tsx",
+          "apps/web/src/components/ui/SplitPane.tsx",
+          "apps/web/src/inspector/actions.tsx",
+          "apps/web/src/lib/data.ts",
+          "apps/web/src/lib/investigation.ts",
+          "apps/web/src/lib/navigation.ts",
+          "apps/web/src/lib/state.tsx",
+          "apps/web/src/panels/Sidebar.tsx",
+          "apps/web/src/panels/TopBar.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "apps/web/src/workspaces/integrations/IntegrationsWorkspace.tsx",
+          "apps/web/src/workspaces/integrations/SetupChecklist.tsx",
+          "apps/web/src/workspaces/integrations/setupProgress.ts"
+        ],
+        "test_references": [
+          "apps/web/src/lib/data-security.test.ts :: does not silently fall back to another project when the requested project is forbidden",
+          "apps/web/src/lib/data-security.test.ts :: does not substitute synthetic data on a server error",
+          "apps/web/src/lib/data-security.test.ts :: passes cancellation through every snapshot request and encodes project paths",
+          "apps/web/src/lib/data-security.test.ts :: tags denial with the authorization scope captured before a delayed response",
+          "apps/web/src/lib/investigation.test.ts :: cannot become a live-data fallback",
+          "apps/web/src/lib/redesign-state.test.ts :: accepts legacy path, occurred/known basis and serializes only allowed references",
+          "apps/web/src/lib/redesign-state.test.ts :: continuous replay writes replace history and explicit live is separate",
+          "apps/web/src/lib/redesign-state.test.ts :: new workspace/source links round-trip and malformed navigation is bounded",
+          "apps/web/src/workspaces/integrations/setupProgress.test.ts :: does not treat configuration or a healthy flag alone as receipt, and accepts an actual server timestamp",
+          "apps/web/src/workspaces/integrations/setupProgress.test.ts :: has three incomplete steps for an empty server, with no click-driven completion",
+          "e2e/evidence-redesign.spec.ts :: old containment denial while next project snapshot is pending cannot clear the next authorization scope",
+          "e2e/evidence-redesign.spec.ts :: stale403 from old project reload cannot clear the newly selected project",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/navigation-redesign.spec.ts :: legacy project relationship view time basis survives reload and browser Back; local navigation search sends no query",
+          "e2e/pilot.spec.ts :: C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest",
+          "e2e/pilot.spec.ts :: E3. snapshot fails while SSE stays connected, then recovers on retry",
+          "e2e/redesign.spec.ts :: V12: actual browser network interruption retains stale records and never claims live",
+          "e2e/redesign.spec.ts :: V14: responsive records, close controls, and no document overflow at 320\u20131366",
+          "e2e/redesign.spec.ts :: stable ID history, hidden filters, and keyboard manual-activation semantics",
+          "e2e/setup-redesign.spec.ts :: PROSE-15: empty inventory, configuration and receipt are separate real server steps"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V03-graph-same-selection-1440.png",
+          "artifacts/redesign/final/screenshots/V12-network-interruption-stale-records.png",
+          "artifacts/redesign/final/screenshots/V14-1024-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1024-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-kingdom-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-resized-inspector.png",
+          "artifacts/redesign/final/screenshots/V14-1366-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1366-findings.png",
+          "artifacts/redesign/final/screenshots/V14-200percent-css-zoom.png",
+          "artifacts/redesign/final/screenshots/V14-320-detail.png",
+          "artifacts/redesign/final/screenshots/V14-320-findings.png",
+          "artifacts/redesign/final/screenshots/V14-390-detail.png",
+          "artifacts/redesign/final/screenshots/V14-390-findings.png",
+          "artifacts/redesign/final/screenshots/V14-768-detail.png",
+          "artifacts/redesign/final/screenshots/V14-768-findings.png"
+        ],
+        "additional_prose_gates": [
+          "PROSE-15.1-15.2"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/supplemental-commands.log",
+          "artifacts/redesign/final/unit-results.json",
+          "artifacts/redesign/shell/README.md",
+          "artifacts/redesign/shell/controls-regression.json"
+        ]
+      },
+      "notes": [
+        "Four workspaces, responsive layout and keyboard/pointer resizable inspector implemented; exact 1280 browser assertions await final run.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_refs": [
+        "PROSE-15.1-15.2"
+      ],
+      "additional_acceptance_counts": {
+        "passed": 1
+      },
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP06",
+      "phase": "P2",
+      "title": "Shared evidence status presentation",
+      "depends_on": [
+        "WP02",
+        "WP04"
+      ],
+      "deliverables": [
+        "Six separate status dimensions",
+        "Partial coverage aggregation",
+        "Distinct-unit counts"
+      ],
+      "acceptance_refs": [
+        "SEM-01",
+        "SEM-02",
+        "SEM-03",
+        "SEM-08",
+        "SEM-09",
+        "SEM-10",
+        "COV-01",
+        "COV-05",
+        "SEM-05"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 9
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/components/ui/Status.tsx",
+          "apps/web/src/inspector/FindingView.tsx",
+          "apps/web/src/lib/presentation.ts",
+          "apps/web/src/lib/vocab.ts",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/workspaces/coverage/CoverageWorkspace.tsx"
+        ],
+        "test_references": [
+          "apps/server/test/investigation.test.ts :: a silent or stale source is reported as a coverage gap, separate from query completeness",
+          "apps/web/src/castle/architecture.test.ts :: group summaries count distinct findings and never erase partial coverage",
+          "apps/web/src/components/ui/primitives.test.ts :: always renders every outcome as text",
+          "apps/web/src/components/ui/primitives.test.ts :: does not collapse missing evidence or partial/unobserved coverage into safe",
+          "apps/web/src/lib/data-security.test.ts :: represents an empty real project honestly instead of synthetic inventory",
+          "apps/web/src/lib/investigation.test.ts :: a page failure or revision change keeps loaded records but cannot be complete",
+          "apps/web/src/lib/investigation.test.ts :: can inspect an event with no finding and distinguishes normalized-only from missing evidence",
+          "apps/web/src/lib/investigation.test.ts :: deduplicates shared supporting/counter references and requires both evidence sides",
+          "apps/web/src/lib/redesign-state.test.ts :: actual severity outranks outcome and records count once across assets",
+          "apps/web/src/lib/redesign-state.test.ts :: keeps current coverage separate from a pinned evidence dataset",
+          "apps/web/src/lib/redesign-state.test.ts :: keeps mixed coverage partial and disabled sources nonreporting",
+          "apps/web/src/workspaces/coverage/currentSources.test.ts :: uses current source administration, not the pinned source array",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-01 both evidence roles expose full context and raw expansion keeps the pinned finding and comparison",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-03 real 5000-record finding retains all exact evidence with bounded display paging and no paging refetch",
+          "e2e/evidence-redesign.spec.ts :: COV-01 mixed source coverage agrees as Partial visibility in Castle Graph list and detail",
+          "e2e/evidence-redesign.spec.ts :: SEM-01 canonical blocked request preserves exact source claim and limitations without downstream success",
+          "e2e/evidence-redesign.spec.ts :: SEM-05 zero findings with no configured source remains explicitly unobserved rather than secure",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/pilot.spec.ts :: G. instruction-like evidence text is displayed as data and authorizes nothing",
+          "e2e/presentation-redesign.spec.ts :: COV-05: canonical source counts and distinct affected asset counts agree across Coverage and header",
+          "e2e/redesign.spec.ts :: F11/F14: untrusted text is inert and empty project is not a fabricated kingdom",
+          "e2e/redesign.spec.ts :: V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+          "e2e/redesign.spec.ts :: V05\u2013V06: deliberate event search and unlinked successful operation are inspectable",
+          "e2e/redesign.spec.ts :: V07\u2013V08: partial source administration stays separate from findings and map hatching",
+          "e2e/setup-redesign.spec.ts :: PROSE-13: cards show scoped configuration and keep absent assessments unknown",
+          "e2e/setup-redesign.spec.ts :: PROSE-15: empty inventory, configuration and receipt are separate real server steps"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/F14-empty-inventory.png",
+          "artifacts/redesign/final/screenshots/V02-kingdom-selected-1440.png",
+          "artifacts/redesign/final/screenshots/V04a-expanded-contradiction-claim.png",
+          "artifacts/redesign/final/screenshots/V04b-contradiction-supporting-counter.png",
+          "artifacts/redesign/final/screenshots/V04c-in-context-raw-evidence.png",
+          "artifacts/redesign/final/screenshots/V05-event-search-separate-completeness.png",
+          "artifacts/redesign/final/screenshots/V06-unlinked-event.png",
+          "artifacts/redesign/final/screenshots/V07a-coverage-sources.png",
+          "artifacts/redesign/final/screenshots/V07b-partial-unobserved-assets.png",
+          "artifacts/redesign/final/screenshots/V08-3d-partial-coverage-selection.png",
+          "artifacts/redesign/final/screenshots/V13-evidence-partial-retained.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP07",
+      "phase": "P2",
+      "title": "Finding detail and evidence inspection",
+      "depends_on": [
+        "WP05",
+        "WP06"
+      ],
+      "deliverables": [
+        "Complete/paginated evidence",
+        "Supporting/counter/revision/note views",
+        "Role-safe actions and race protection"
+      ],
+      "acceptance_refs": [
+        "INV-01",
+        "INV-02",
+        "INV-03",
+        "INV-08",
+        "INV-10",
+        "SEM-07"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 6
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/components/ui/Status.tsx",
+          "apps/web/src/inspector/EventView.tsx",
+          "apps/web/src/inspector/FindingEvidenceCards.tsx",
+          "apps/web/src/inspector/FindingView.tsx",
+          "apps/web/src/inspector/evidenceCards.ts",
+          "apps/web/src/lib/evidence-loader.ts",
+          "apps/web/src/lib/investigation.ts",
+          "apps/web/src/lib/presentation.ts",
+          "apps/web/src/lib/vocab.ts",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "apps/web/src/styles/inspector.css",
+          "apps/web/src/workspaces/investigate/EventWorkspace.tsx",
+          "apps/web/src/workspaces/investigate/FindingsWorkspace.tsx"
+        ],
+        "test_references": [
+          "apps/mcp/test/evidence.test.ts :: evidence for an old finding survives 5,000+ later events; >50 records; partial failures are explicit",
+          "apps/mcp/test/mcp.test.ts :: a viewer-token agent cannot propose containment; an analyst can, and it stays pending",
+          "apps/web/src/inspector/evidenceCards.test.ts :: bounds long raw text while reconstructing it exactly, including surrogate pairs at boundaries",
+          "apps/web/src/inspector/evidenceCards.test.ts :: renders at most 20 of 5000 loaded records while every ordered record remains reachable",
+          "apps/web/src/inspector/evidenceCards.test.ts :: serializes only the selected event's stored references and distinguishes missing/native references",
+          "apps/web/src/lib/evidence-loader.test.ts :: detects a finding revision changing during paging",
+          "apps/web/src/lib/evidence-loader.test.ts :: marks exact missing references incomplete and propagates cancellation",
+          "apps/web/src/lib/evidence-loader.test.ts :: retains first page when second fails and never mutates dataset evidence",
+          "apps/web/src/lib/investigation.test.ts :: a page failure or revision change keeps loaded records but cannot be complete",
+          "e2e/evidence-cards-redesign.spec.ts :: EVENT-DISPLAY-01 bounded rows retain loaded pages selection and the opaque cursor across a later fetch failure",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-01 both evidence roles expose full context and raw expansion keeps the pinned finding and comparison",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-02 long source and inert raw records wrap at 320px and text paging preserves the exact loaded derivative",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-03 real 5000-record finding retains all exact evidence with bounded display paging and no paging refetch",
+          "e2e/evidence-redesign.spec.ts :: late real ingestion announces newer records without replacing pinned finding revision or event snapshot",
+          "e2e/evidence-redesign.spec.ts :: later finding-evidence page failure retains earlier exact records and marks aggregate incomplete",
+          "e2e/evidence-redesign.spec.ts :: review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+          "e2e/evidence-redesign.spec.ts :: slow finding A evidence cannot appear in selected finding B and replay does not refetch the pinned record",
+          "e2e/evidence-redesign.spec.ts :: viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/pilot.spec.ts :: F. containment stays proposal-only: service proposes, cannot approve; human approval executes nothing",
+          "e2e/redesign.spec.ts :: V01\u2013V04: reference overview, stable selection across views, expanded contradiction"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V04a-expanded-contradiction-claim.png",
+          "artifacts/redesign/final/screenshots/V04c-in-context-raw-evidence.png",
+          "artifacts/redesign/final/screenshots/V13-evidence-partial-retained.png"
+        ],
+        "additional_prose_gates": [
+          "PROSE-9.1",
+          "PROSE-9.4",
+          "PROSE-6.3"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Exact paginated evidence, counterevidence, notes, role-safe actions and revision drift protections implemented. Arbitrary historic revisions and optimistic mutation concurrency are unsupported by backend and explicitly disclosed.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_refs": [
+        "PROSE-9.1",
+        "PROSE-9.4",
+        "PROSE-6.3"
+      ],
+      "additional_acceptance_counts": {
+        "passed": 3
+      },
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP08",
+      "phase": "P2",
+      "title": "Event browser and event detail",
+      "depends_on": [
+        "WP05",
+        "WP06"
+      ],
+      "deliverables": [
+        "Explicit bounded interval exact-filter query builder",
+        "Opaque pinned pagination",
+        "Current coverage caveat and unlinked event access"
+      ],
+      "acceptance_refs": [
+        "INV-04",
+        "INV-05",
+        "INV-06",
+        "INV-07",
+        "COV-04"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 5
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/inspector/EventView.tsx",
+          "apps/web/src/inspector/FindingView.tsx",
+          "apps/web/src/inspector/evidenceCards.ts",
+          "apps/web/src/lib/evidence-loader.ts",
+          "apps/web/src/lib/investigation.ts",
+          "apps/web/src/lib/presentation.ts",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/workspaces/coverage/CoverageWorkspace.tsx",
+          "apps/web/src/workspaces/investigate/EventWorkspace.tsx"
+        ],
+        "test_references": [
+          "apps/mcp/test/quality-gates-stdio.test.ts :: pins event pages but reports CURRENT coverage, and denies unknown/cross-project targets",
+          "apps/mcp/test/readonly-profile.test.ts :: event search and event detail work in the read-only profile and stay project-scoped",
+          "apps/server/test/investigation.test.ts :: an empty result on an unobserved asset is complete for the query but flags absent coverage",
+          "apps/server/test/investigation.test.ts :: is pinned to a snapshot: events arriving mid-pagination cause no duplicate or silent gap and are reported",
+          "apps/server/test/investigation.test.ts :: returns every match exactly once across pages, including ties on occurred_at",
+          "apps/web/src/inspector/evidenceCards.test.ts :: bounds event rows independently of the loaded server pages",
+          "apps/web/src/inspector/evidenceCards.test.ts :: clamps display offsets after shorter revisions and handles an empty loaded collection",
+          "apps/web/src/lib/investigation.test.ts :: can inspect an event with no finding and distinguishes normalized-only from missing evidence",
+          "apps/web/src/lib/investigation.test.ts :: normalizes UTC while preserving exact filter text and opaque cursor bytes",
+          "apps/web/src/lib/investigation.test.ts :: provides exact local results, pagination and explicit current/historical coverage separation",
+          "apps/web/src/lib/redesign-state.test.ts :: keeps current coverage separate from a pinned evidence dataset",
+          "e2e/evidence-cards-redesign.spec.ts :: EVENT-DISPLAY-01 bounded rows retain loaded pages selection and the opaque cursor across a later fetch failure",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/evidence-redesign.spec.ts :: exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+          "e2e/evidence-redesign.spec.ts :: late real ingestion announces newer records without replacing pinned finding revision or event snapshot",
+          "e2e/evidence-redesign.spec.ts :: real opaque pagination stays pinned, retains rows after failure, and discards cursor on filter change"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V05-event-search-separate-completeness.png",
+          "artifacts/redesign/final/screenshots/V06-unlinked-event.png",
+          "artifacts/redesign/final/screenshots/V11a-known-time-replay-scope.png"
+        ],
+        "additional_prose_gates": [
+          "PROSE-10.4"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_refs": [
+        "PROSE-10.4"
+      ],
+      "additional_acceptance_counts": {
+        "passed": 1
+      },
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP09",
+      "phase": "P2",
+      "title": "Coverage workspace",
+      "depends_on": [
+        "WP05",
+        "WP06"
+      ],
+      "deliverables": [
+        "Sources and affected-assets views",
+        "Disabled/partial/unobserved distinctions",
+        "No invented repair action"
+      ],
+      "acceptance_refs": [
+        "COV-01",
+        "COV-02",
+        "COV-03",
+        "COV-05",
+        "COV-06"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 5
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/lib/presentation.ts",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/workspaces/coverage/CoverageWorkspace.tsx"
+        ],
+        "test_references": [
+          "apps/server/test/quality-gates.test.ts :: recent successful telemetry does not make a disabled source healthy",
+          "apps/web/src/castle/architecture.test.ts :: group summaries count distinct findings and never erase partial coverage",
+          "apps/web/src/lib/redesign-state.test.ts :: actual severity outranks outcome and records count once across assets",
+          "apps/web/src/lib/redesign-state.test.ts :: keeps current coverage separate from a pinned evidence dataset",
+          "apps/web/src/lib/redesign-state.test.ts :: keeps mixed coverage partial and disabled sources nonreporting",
+          "apps/web/src/workspaces/coverage/currentSources.test.ts :: uses current source administration, not the pinned source array",
+          "apps/web/src/workspaces/integrations/setupProgress.test.ts :: separates missing assessments, gaps, administrative disablement and reporting without inventing connections",
+          "e2e/evidence-redesign.spec.ts :: COV-01 mixed source coverage agrees as Partial visibility in Castle Graph list and detail",
+          "e2e/presentation-redesign.spec.ts :: COV-05: canonical source counts and distinct affected asset counts agree across Coverage and header",
+          "e2e/presentation-redesign.spec.ts :: COV-06: failed refresh retains confirmed nonzero gaps and visibly marks the snapshot stale",
+          "e2e/presentation-redesign.spec.ts :: COV-06: fault-injected missing assessments remain unknown, never zero gaps or healthy",
+          "e2e/redesign.spec.ts :: V07\u2013V08: partial source administration stays separate from findings and map hatching",
+          "e2e/setup-redesign.spec.ts :: PROSE-13: cards show scoped configuration and keep absent assessments unknown"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V07a-coverage-sources.png",
+          "artifacts/redesign/final/screenshots/V07b-partial-unobserved-assets.png",
+          "artifacts/redesign/final/screenshots/V08-3d-partial-coverage-selection.png"
+        ],
+        "additional_prose_gates": [
+          "PROSE-12.1"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_refs": [
+        "PROSE-12.1"
+      ],
+      "additional_acceptance_counts": {
+        "passed": 1
+      },
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP10",
+      "phase": "P2",
+      "title": "Integrations and MCP setup guidance",
+      "depends_on": [
+        "WP05"
+      ],
+      "deliverables": [
+        "Supported capability cards",
+        "Placeholder-only config templates",
+        "No pretend live-agent or chat metrics"
+      ],
+      "acceptance_refs": [
+        "SEC-04",
+        "SEC-05",
+        "REL-07"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 3
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/App.tsx",
+          "apps/web/src/inspector/actions.tsx",
+          "apps/web/src/lib/data.ts",
+          "apps/web/src/lib/investigation.ts",
+          "apps/web/src/workspaces/integrations/IntegrationStatus.tsx",
+          "apps/web/src/workspaces/integrations/IntegrationsWorkspace.tsx",
+          "assets/castle-kit/MANIFEST.json",
+          "docs/redesign/CAPABILITIES.md",
+          "docs/redesign/IMPLEMENTATION.md",
+          "scripts/redesign-artifact-index.mjs"
+        ],
+        "test_references": [
+          "apps/web/src/lib/investigation.test.ts :: copies only allowlisted project/object/navigation fields, never the current sensitive URL",
+          "apps/web/src/lib/redesign-state.test.ts :: accepts legacy path, occurred/known basis and serializes only allowed references",
+          "apps/web/src/workspaces/integrations/setupProgress.test.ts :: separates missing assessments, gaps, administrative disablement and reporting without inventing connections",
+          "apps/web/src/workspaces/integrations/setupProgress.test.ts :: shows unconfigured status and does not infer SDK installation from arbitrary kinds",
+          "e2e/evidence-redesign.spec.ts :: authoritative422 import paths are displayed after successful local preview; draft and graph remain unchanged",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/evidence-redesign.spec.ts :: review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+          "e2e/evidence-redesign.spec.ts :: viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit path focus retains every cross-district endpoint",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: a valid scene replacement clears the failed label for the same canonical asset",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one failed shader family notifies every asset owner and a healthy replacement clears only its own marker",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one invalid visual module becomes a named neutral block without changing canonical evidence",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real body GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real depth GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real roof GLSL compile failure recovers only its owned module family",
+          "e2e/redesign.spec.ts :: F11/F14: untrusted text is inert and empty project is not a fabricated kingdom",
+          "e2e/redesign.spec.ts :: explicit camera focus and context loss preserve stable selection and graph fallback",
+          "e2e/setup-redesign.spec.ts :: PROSE-13: cards show scoped configuration and keep absent assessments unknown",
+          "e2e/setup-redesign.spec.ts :: PROSE-15: empty inventory, configuration and receipt are separate real server steps"
+        ],
+        "screenshots": [],
+        "additional_prose_gates": [
+          "PROSE-13.1"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/artifact-safety-audit.json",
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/supplemental-commands.log",
+          "artifacts/redesign/final/unit-results.json",
+          "artifacts/redesign/shell/README.md",
+          "artifacts/redesign/shell/controls-regression.json"
+        ]
+      },
+      "notes": [
+        "Supported integration and MCP setup guidance implemented with placeholders only; no pretend chat/agent metrics.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_refs": [
+        "PROSE-13.1"
+      ],
+      "additional_acceptance_counts": {
+        "passed": 1
+      },
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP11",
+      "phase": "P3",
+      "title": "Three representative architectural modules",
+      "depends_on": [
+        "WP01",
+        "WP03"
+      ],
+      "deliverables": [
+        "Gatehouse/hall/observatory prototypes",
+        "Shared materials and local resource policy",
+        "Module sheet for review"
+      ],
+      "acceptance_refs": [
+        "CASTLE-01",
+        "CASTLE-02",
+        "REL-06"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "blocked": 2,
+        "passed": 1
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/castle/Castle3D.tsx",
+          "apps/web/src/castle/EdgeChooser.tsx",
+          "apps/web/src/castle/geometry.ts",
+          "apps/web/src/castle/labels.tsx",
+          "apps/web/src/castle/scenePresentation.ts",
+          "assets/castle-kit/MANIFEST.json",
+          "docs/redesign/CAPABILITIES.md",
+          "docs/redesign/IMPLEMENTATION.md",
+          "packages/scene-compiler/src/compile.ts",
+          "scripts/redesign-artifact-index.mjs"
+        ],
+        "test_references": [
+          "apps/web/src/castle/architecture.test.ts :: forge high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse and portal have physical open passages through the masonry",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: matches checked-in content hashes and all actual LOD triangle counts",
+          "apps/web/src/castle/architecture.test.ts :: observatory high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop medium is within actual declared bounds and budget",
+          "e2e/redesign.spec.ts :: V09\u2013V10: ten architectural modules and actual roof removal"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V09-ten-module-sheet.png",
+          "artifacts/redesign/final/screenshots/V10a-four-module-near.png",
+          "artifacts/redesign/final/screenshots/V10b-four-module-roofs-off.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/artifact-safety-audit.json",
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP12",
+      "phase": "P3",
+      "title": "Complete ten-module kit",
+      "depends_on": [
+        "WP11"
+      ],
+      "deliverables": [
+        "All stable IDs upgraded",
+        "Bounds/hit/roof/anchor/LOD manifest",
+        "No shared-material selection pollution"
+      ],
+      "acceptance_refs": [
+        "CASTLE-01",
+        "CASTLE-07",
+        "CASTLE-08",
+        "REL-06"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "blocked": 2,
+        "passed": 2
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/castle/Castle3D.tsx",
+          "apps/web/src/castle/EdgeChooser.tsx",
+          "apps/web/src/castle/geometry.ts",
+          "apps/web/src/castle/labels.tsx",
+          "apps/web/src/castle/scenePresentation.ts",
+          "assets/castle-kit/MANIFEST.json",
+          "docs/redesign/CAPABILITIES.md",
+          "docs/redesign/IMPLEMENTATION.md",
+          "packages/scene-compiler/src/compile.ts",
+          "scripts/redesign-artifact-index.mjs"
+        ],
+        "test_references": [
+          "apps/web/src/castle/architecture.test.ts :: all assets have explicit environment+zone memberships and noncolliding geometry",
+          "apps/web/src/castle/architecture.test.ts :: forge high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: matches checked-in content hashes and all actual LOD triangle counts",
+          "apps/web/src/castle/architecture.test.ts :: observatory high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: roof-off high exposes neutral floors, not hidden solid ceilings",
+          "apps/web/src/castle/architecture.test.ts :: roof-off low exposes neutral floors, not hidden solid ceilings",
+          "apps/web/src/castle/architecture.test.ts :: roof-off medium exposes neutral floors, not hidden solid ceilings",
+          "apps/web/src/castle/architecture.test.ts :: roof-off retains architecture, without new logical assets",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop medium is within actual declared bounds and budget",
+          "e2e/camera-redesign.spec.ts :: CASTLE-08: clicking a visible architectural roof resolves its canonical parent asset",
+          "e2e/camera-redesign.spec.ts :: overlapping 3D connections open the same real-ID chooser without moving camera",
+          "e2e/camera-redesign.spec.ts :: overlapping graph relationships open a keyboard chooser; cancel/drag do not select or move camera",
+          "e2e/evidence-redesign.spec.ts :: exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+          "e2e/pilot.spec.ts :: C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest",
+          "e2e/redesign.spec.ts :: V09\u2013V10: ten architectural modules and actual roof removal",
+          "packages/scene-compiler/test/redesign-layout.test.ts :: uses rotated world footprints and truthful actual heights"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V09-ten-module-sheet.png",
+          "artifacts/redesign/final/screenshots/V10b-four-module-roofs-off.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/artifact-safety-audit.json",
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP13",
+      "phase": "P4",
+      "title": "Stable courtyard and district composition",
+      "depends_on": [
+        "WP12",
+        "WP02"
+      ],
+      "deliverables": [
+        "Deterministic seeded decoration",
+        "Placement stability and collision checks",
+        "Explicit grouping for larger inventory"
+      ],
+      "acceptance_refs": [
+        "CASTLE-03",
+        "CASTLE-04",
+        "CASTLE-06",
+        "CASTLE-07",
+        "CASTLE-14"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "blocked": 3,
+        "passed": 2
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/castle/Castle3D.tsx",
+          "apps/web/src/castle/EdgeChooser.tsx",
+          "apps/web/src/castle/geometry.ts",
+          "apps/web/src/castle/labels.tsx",
+          "apps/web/src/castle/scenePresentation.ts",
+          "assets/castle-kit/MANIFEST.json",
+          "packages/scene-compiler/src/compile.ts"
+        ],
+        "test_references": [
+          "apps/web/src/castle/architecture.test.ts :: all assets have explicit environment+zone memberships and noncolliding geometry",
+          "apps/web/src/castle/architecture.test.ts :: forge high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: roof-off high exposes neutral floors, not hidden solid ceilings",
+          "apps/web/src/castle/architecture.test.ts :: roof-off low exposes neutral floors, not hidden solid ceilings",
+          "apps/web/src/castle/architecture.test.ts :: roof-off medium exposes neutral floors, not hidden solid ceilings",
+          "apps/web/src/castle/architecture.test.ts :: roof-off retains architecture, without new logical assets",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop medium is within actual declared bounds and budget",
+          "apps/web/src/castle/groupSelection.test.ts :: exposes deterministic overflow when selected assets alone exceed the 50-member cap",
+          "apps/web/src/castle/groupSelection.test.ts :: retains every endpoint of cross-district path and relationship selections",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit path focus retains every cross-district endpoint",
+          "e2e/redesign.spec.ts :: V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+          "e2e/redesign.spec.ts :: V16: 50/200 logical assets, grouping, software renderer and bounded demand frames",
+          "packages/scene-compiler/test/redesign-layout.test.ts :: adds subsequent rooms to the original environment rather than its new sorted index",
+          "packages/scene-compiler/test/redesign-layout.test.ts :: compiles 200 real logical asset memberships without collisions",
+          "packages/scene-compiler/test/redesign-layout.test.ts :: keeps capacity growth inside its environment band while preserving both environments' pins",
+          "packages/scene-compiler/test/redesign-layout.test.ts :: preserves approved coordinates even when capacity grows",
+          "packages/scene-compiler/test/redesign-layout.test.ts :: remains deterministic after input order and display-name changes",
+          "packages/scene-compiler/test/redesign-layout.test.ts :: uses rotated world footprints and truthful actual heights",
+          "packages/scene-compiler/test/scene.test.ts :: V01: same inputs give identical scenes",
+          "packages/scene-compiler/test/scene.test.ts :: V02: adding a service does not move existing rooms"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V01-kingdom-overview-1440.png",
+          "artifacts/redesign/final/screenshots/V09-ten-module-sheet.png",
+          "artifacts/redesign/final/screenshots/V10b-four-module-roofs-off.png",
+          "artifacts/redesign/final/screenshots/V16-200-graph.png",
+          "artifacts/redesign/final/screenshots/V16-200-overview.png",
+          "artifacts/redesign/final/screenshots/V16-50-graph.png",
+          "artifacts/redesign/final/screenshots/V16-50-overview.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Environment/zone districts and grouping implemented; incremental-layout stability remains subject to final compiler regression. Saved-layout upgraded-footprint collisions are flagged for explicit reflow instead of silently moving approved buildings.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP14",
+      "phase": "P4",
+      "title": "Camera and picking",
+      "depends_on": [
+        "WP13",
+        "WP05"
+      ],
+      "deliverables": [
+        "Safe-rectangle focus",
+        "Cancelable controlled motion",
+        "Stable selection and navigation history"
+      ],
+      "acceptance_refs": [
+        "NAV-03",
+        "CASTLE-08",
+        "CASTLE-12"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 3
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/castle/Castle3D.tsx",
+          "apps/web/src/castle/EdgeChooser.tsx",
+          "apps/web/src/castle/geometry.ts",
+          "apps/web/src/castle/labels.tsx",
+          "apps/web/src/castle/moduleRecovery.ts",
+          "apps/web/src/castle/modules.tsx",
+          "apps/web/src/castle/scenePresentation.ts",
+          "apps/web/src/castle/shaderRecovery.ts",
+          "apps/web/src/components/ui/SplitPane.tsx",
+          "apps/web/src/lib/navigation.ts",
+          "apps/web/src/lib/state.tsx",
+          "apps/web/src/panels/TopBar.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "assets/castle-kit/MANIFEST.json",
+          "packages/scene-compiler/src/compile.ts"
+        ],
+        "test_references": [
+          "apps/web/src/castle/moduleRecovery.test.ts :: accepts all ten cached models and preserves reusable geometry identity",
+          "apps/web/src/castle/moduleRecovery.test.ts :: bounds and deduplicates classified diagnostics without source/asset/error text",
+          "apps/web/src/castle/moduleRecovery.test.ts :: cancels deferred callbacks on unmount and releases every new material registration",
+          "apps/web/src/castle/moduleRecovery.test.ts :: keeps lost contexts and unowned shaders out of local asset recovery and logs no raw payload",
+          "apps/web/src/castle/moduleRecovery.test.ts :: notifies all proven same-family owners once, including depth failures, but no healthy family",
+          "apps/web/src/castle/moduleRecovery.test.ts :: rejects nonfinite vertices, invalid indexes and empty model structure before WebGL",
+          "apps/web/src/castle/moduleRecovery.test.ts :: rejects unknown models and sanitizes construction failures without exposing their payload",
+          "apps/web/src/castle/moduleRecovery.test.ts :: replays a failed family to later owners but cancels removed owner callbacks",
+          "apps/web/src/castle/moduleRecovery.test.ts :: reuses a bounded 30-material pool with unique programs and matching default shadow packing",
+          "apps/web/src/castle/moduleRecovery.test.ts :: routes known-but-unregistered callback ownership to renderer fallback, never an arbitrary asset",
+          "apps/web/src/castle/moduleRecovery.test.ts :: routes mismatched-stages callback ownership to renderer fallback, never an arbitrary asset",
+          "apps/web/src/lib/redesign-state.test.ts :: selection opens detail without moving camera; explicit focus does; navigation preserves context",
+          "e2e/camera-redesign.spec.ts :: CASTLE-08: clicking a visible architectural roof resolves its canonical parent asset",
+          "e2e/camera-redesign.spec.ts :: CASTLE-12: an actual pointer drag cancels active camera focus with no later snap-back",
+          "e2e/camera-redesign.spec.ts :: overlapping 3D connections open the same real-ID chooser without moving camera",
+          "e2e/camera-redesign.spec.ts :: overlapping graph relationships open a keyboard chooser; cancel/drag do not select or move camera",
+          "e2e/evidence-redesign.spec.ts :: exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit path focus retains every cross-district endpoint",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: a valid scene replacement clears the failed label for the same canonical asset",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one failed shader family notifies every asset owner and a healthy replacement clears only its own marker",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one invalid visual module becomes a named neutral block without changing canonical evidence",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real body GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real depth GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real roof GLSL compile failure recovers only its owned module family",
+          "e2e/navigation-redesign.spec.ts :: focused Castle and zoomed Graph each preserve their own camera on two-way return",
+          "e2e/pilot.spec.ts :: C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest",
+          "e2e/redesign.spec.ts :: explicit camera focus and context loss preserve stable selection and graph fallback"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/module-geometry-failure-canonical-focus.png",
+          "artifacts/redesign/final/screenshots/module-geometry-failure-one-neutral-block.png",
+          "artifacts/redesign/final/screenshots/module-geometry-replacement-healthy-same-asset.png",
+          "artifacts/redesign/final/screenshots/module-shader-body-neutral-recovery.png",
+          "artifacts/redesign/final/screenshots/module-shader-depth-neutral-recovery.png",
+          "artifacts/redesign/final/screenshots/module-shader-family-healthy-replacement.png",
+          "artifacts/redesign/final/screenshots/module-shader-roof-neutral-recovery.png"
+        ],
+        "additional_prose_gates": [
+          "PROSE-15.3"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Camera focus/history, stable picking and shared 2D/3D overlapping-edge chooser implemented; actual pointer-interruption and chooser checks await final run.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_refs": [
+        "PROSE-15.3"
+      ],
+      "additional_acceptance_counts": {
+        "passed": 1
+      },
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP15",
+      "phase": "P4",
+      "title": "Labels and evidence overlays",
+      "depends_on": [
+        "WP14",
+        "WP06"
+      ],
+      "deliverables": [
+        "Opaque collision-managed labels",
+        "Typed/patterned relationship layers",
+        "Bounded nonfabricated markers"
+      ],
+      "acceptance_refs": [
+        "SEM-06",
+        "CASTLE-05",
+        "CASTLE-09",
+        "CASTLE-10",
+        "CASTLE-11"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "passed": 4,
+        "blocked": 1
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/castle/Castle3D.tsx",
+          "apps/web/src/castle/EdgeChooser.tsx",
+          "apps/web/src/castle/geometry.ts",
+          "apps/web/src/castle/labels.tsx",
+          "apps/web/src/castle/scenePresentation.ts",
+          "apps/web/src/components/ui/Status.tsx",
+          "apps/web/src/inspector/FindingView.tsx",
+          "apps/web/src/lib/presentation.ts",
+          "apps/web/src/lib/vocab.ts",
+          "assets/castle-kit/MANIFEST.json",
+          "packages/scene-compiler/src/compile.ts"
+        ],
+        "test_references": [
+          "apps/web/src/castle/architecture.test.ts :: an event-only update reuses compiled positions and immutable module geometry",
+          "apps/web/src/castle/architecture.test.ts :: observed/declared/inferred/hypothetical pattern vocabulary is distinct",
+          "apps/web/src/castle/groupSelection.test.ts :: remembers focused group membership until explicit scope change, not incidental selection",
+          "apps/web/src/castle/groupSelection.test.ts :: retains every endpoint of cross-district path and relationship selections",
+          "apps/web/src/lib/investigation.test.ts :: matches exact asset/source/action/outcome and never promotes a network locator to identity",
+          "e2e/camera-redesign.spec.ts :: CASTLE-11: an unlinked event highlights its asset without inventing or animating a causal trail",
+          "e2e/evidence-redesign.spec.ts :: SEM-06 shared IP across unrelated actors remains network context with no invented identity or causal map edge",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/evidence-redesign.spec.ts :: exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit path focus retains every cross-district endpoint",
+          "e2e/latency-redesign.spec.ts :: PERF-06 local journal SSE snapshot and UI timings are separate; CASTLE-05 event-only update reuses mounted module geometry",
+          "e2e/redesign.spec.ts :: CASTLE-10: rendered relationship patterns and labels distinguish evidence without color; hypothetical stays off by default",
+          "e2e/redesign.spec.ts :: resource lifetime: bounded module cache and renderer counts after view and replay cycles"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V05-event-search-separate-completeness.png",
+          "artifacts/redesign/final/screenshots/V06-unlinked-event.png",
+          "artifacts/redesign/final/screenshots/V16-200-graph.png",
+          "artifacts/redesign/final/screenshots/V16-200-overview.png",
+          "artifacts/redesign/final/screenshots/V16-50-graph.png",
+          "artifacts/redesign/final/screenshots/V16-50-overview.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP16",
+      "phase": "P4",
+      "title": "Equivalent 2D and list navigation",
+      "depends_on": [
+        "WP05",
+        "WP06",
+        "WP15"
+      ],
+      "deliverables": [
+        "Shared selection/filter/time context",
+        "Accessible list/graph alternative",
+        "WebGL fallback continuity"
+      ],
+      "acceptance_refs": [
+        "NAV-02",
+        "NAV-08",
+        "CASTLE-13",
+        "A11Y-01"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "passed": 3,
+        "blocked": 1
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/castle/Castle3D.tsx",
+          "apps/web/src/castle/EdgeChooser.tsx",
+          "apps/web/src/castle/geometry.ts",
+          "apps/web/src/castle/labels.tsx",
+          "apps/web/src/castle/moduleRecovery.ts",
+          "apps/web/src/castle/modules.tsx",
+          "apps/web/src/castle/scenePresentation.ts",
+          "apps/web/src/castle/shaderRecovery.ts",
+          "apps/web/src/components/ui/SplitPane.tsx",
+          "apps/web/src/components/ui/Tabs.tsx",
+          "apps/web/src/lib/navigation.ts",
+          "apps/web/src/lib/state.tsx",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/panels/TopBar.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "apps/web/src/styles/base.css",
+          "apps/web/src/styles/components.css",
+          "apps/web/src/styles/workspaces.css",
+          "assets/castle-kit/MANIFEST.json",
+          "packages/scene-compiler/src/compile.ts"
+        ],
+        "test_references": [
+          "apps/web/src/lib/redesign-state.test.ts :: selection opens detail without moving camera; explicit focus does; navigation preserves context",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/evidence-redesign.spec.ts :: exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: a valid scene replacement clears the failed label for the same canonical asset",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one failed shader family notifies every asset owner and a healthy replacement clears only its own marker",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one invalid visual module becomes a named neutral block without changing canonical evidence",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real body GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real depth GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real roof GLSL compile failure recovers only its owned module family",
+          "e2e/navigation-redesign.spec.ts :: focused Castle and zoomed Graph each preserve their own camera on two-way return",
+          "e2e/pilot.spec.ts :: C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest",
+          "e2e/pilot.spec.ts :: C3. WebGL unavailable: explicit fallback to the 2D graph (this is NOT a 3D pass)",
+          "e2e/redesign.spec.ts :: V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+          "e2e/redesign.spec.ts :: explicit camera focus and context loss preserve stable selection and graph fallback",
+          "e2e/redesign.spec.ts :: stable ID history, hidden filters, and keyboard manual-activation semantics"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V02-kingdom-selected-1440.png",
+          "artifacts/redesign/final/screenshots/V03-graph-same-selection-1440.png",
+          "artifacts/redesign/final/screenshots/module-geometry-failure-canonical-focus.png",
+          "artifacts/redesign/final/screenshots/module-geometry-failure-one-neutral-block.png",
+          "artifacts/redesign/final/screenshots/module-geometry-replacement-healthy-same-asset.png",
+          "artifacts/redesign/final/screenshots/module-shader-body-neutral-recovery.png",
+          "artifacts/redesign/final/screenshots/module-shader-depth-neutral-recovery.png",
+          "artifacts/redesign/final/screenshots/module-shader-family-healthy-replacement.png",
+          "artifacts/redesign/final/screenshots/module-shader-roof-neutral-recovery.png",
+          "artifacts/redesign/final/screenshots/webgl-context-loss-selection-retained.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP17",
+      "phase": "P5",
+      "title": "Timeline and replay honesty",
+      "depends_on": [
+        "WP02",
+        "WP07",
+        "WP16"
+      ],
+      "deliverables": [
+        "Occurred/known-at controls",
+        "History limitations and current-note labels",
+        "Explicit return-live and buffered updates"
+      ],
+      "acceptance_refs": [
+        "TIME-01",
+        "TIME-02",
+        "TIME-03",
+        "TIME-04",
+        "TIME-05",
+        "TIME-06"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 6
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/lib/connection.ts",
+          "apps/web/src/lib/state.tsx",
+          "apps/web/src/panels/Timeline.tsx",
+          "apps/web/src/shell/replayRange.ts",
+          "apps/web/src/shell/timelineLanes.ts"
+        ],
+        "test_references": [
+          "apps/web/src/lib/redesign-state.test.ts :: continuous replay writes replace history and explicit live is separate",
+          "apps/web/src/lib/redesign-state.test.ts :: does not invent historical coverage loss from a source disabled now",
+          "apps/web/src/shell/replayRange.test.ts :: extends the latest rail when the accepted snapshot ends later",
+          "apps/web/src/shell/replayRange.test.ts :: leaves a custom interval fixed",
+          "apps/web/src/shell/replayRange.test.ts :: leaves historical replay fixed when a newer snapshot is available",
+          "apps/web/src/shell/replayRange.test.ts :: updates after explicit return-to-latest clears the custom interval",
+          "apps/web/src/shell/timelineLanes.test.ts :: does not invent historical markers from current disabled metadata or coverage summaries",
+          "apps/web/src/shell/timelineLanes.test.ts :: separates findings, ordinary events and recorded source-health changes with exact identifiers",
+          "e2e/evidence-redesign.spec.ts :: TIME-04 live-mode snapshot windows extend only after Load updates or Return live, while pinned replay stays stable",
+          "e2e/evidence-redesign.spec.ts :: late real ingestion announces newer records without replacing pinned finding revision or event snapshot",
+          "e2e/evidence-redesign.spec.ts :: pinned finding spanning replay cutoff clearly labels later evidence without silently dropping it",
+          "e2e/evidence-redesign.spec.ts :: review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+          "e2e/pilot.spec.ts :: E2. SSE reconnects but the catch-up snapshot fails, then is delayed: never Live until it is applied",
+          "e2e/pilot.spec.ts :: E3. snapshot fails while SSE stays connected, then recovers on retry",
+          "e2e/presentation-redesign.spec.ts :: TIME-03: earlier replay visibly labels later server notes and dispositions as current annotations",
+          "e2e/redesign.spec.ts :: V11: replay uses explicit known-time basis and keeps source-coverage limitations",
+          "e2e/redesign.spec.ts :: controlled replay reaches its end and stays historical until Return to latest"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V11a-known-time-replay-scope.png",
+          "artifacts/redesign/final/screenshots/V11b-late-record-known-time.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Explicit time bases, pinned updates, current-note/coverage/topology warnings and expanded canonical-record lanes implemented; controlled replay endpoint and dense aggregation checks await final run.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP18",
+      "phase": "P5",
+      "title": "Responsive and reduced-motion polish",
+      "depends_on": [
+        "WP05",
+        "WP07",
+        "WP16",
+        "WP17"
+      ],
+      "deliverables": [
+        "Narrow/full-page detail layouts",
+        "Touch targets and no essential hover",
+        "Reduced-motion equivalents"
+      ],
+      "acceptance_refs": [
+        "NAV-04",
+        "A11Y-05",
+        "A11Y-06",
+        "A11Y-07"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "passed": 3,
+        "blocked": 1
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/components/ui/SplitPane.tsx",
+          "apps/web/src/components/ui/Tabs.tsx",
+          "apps/web/src/lib/navigation.ts",
+          "apps/web/src/lib/state.tsx",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/panels/TopBar.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "apps/web/src/styles/base.css",
+          "apps/web/src/styles/components.css",
+          "apps/web/src/styles/workspaces.css"
+        ],
+        "test_references": [
+          "artifacts/redesign/reproduction/check-touch-bounds.ts :: All measured effective touch targets meet 44 CSS px in both dimensions",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-02 long source and inert raw records wrap at 320px and text paging preserves the exact loaded derivative",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/redesign.spec.ts :: A11Y-05: reduced-motion preference makes focus immediate and leaves no continuous effect or camera frames",
+          "e2e/redesign.spec.ts :: V14: responsive records, close controls, and no document overflow at 320\u20131366",
+          "e2e/redesign.spec.ts :: V15: axe DOM accessibility, reduced motion, forced colors, and visible keyboard focus"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V14-1024-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1024-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-kingdom-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-resized-inspector.png",
+          "artifacts/redesign/final/screenshots/V14-1366-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1366-findings.png",
+          "artifacts/redesign/final/screenshots/V14-200percent-css-zoom.png",
+          "artifacts/redesign/final/screenshots/V14-320-detail.png",
+          "artifacts/redesign/final/screenshots/V14-320-findings.png",
+          "artifacts/redesign/final/screenshots/V14-390-detail.png",
+          "artifacts/redesign/final/screenshots/V14-390-findings.png",
+          "artifacts/redesign/final/screenshots/V14-768-detail.png",
+          "artifacts/redesign/final/screenshots/V14-768-findings.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/narrow-body-filter-touch-audit.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/supplemental-commands.log",
+          "artifacts/redesign/shell/README.md",
+          "artifacts/redesign/shell/controls-regression.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP19",
+      "phase": "P5",
+      "title": "Accessibility task verification",
+      "depends_on": [
+        "WP18",
+        "WP04"
+      ],
+      "deliverables": [
+        "Keyboard/screen-reader journeys",
+        "Focus/live-region checks",
+        "Forced-colors/reflow review"
+      ],
+      "acceptance_refs": [
+        "A11Y-01",
+        "A11Y-02",
+        "A11Y-03",
+        "A11Y-04",
+        "A11Y-06",
+        "A11Y-08",
+        "A11Y-09",
+        "A11Y-10"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "blocked": 6,
+        "passed": 2
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/components/ui/Tabs.tsx",
+          "apps/web/src/lib/state.tsx",
+          "apps/web/src/panels/EvidencePane.tsx",
+          "apps/web/src/panels/TopBar.tsx",
+          "apps/web/src/shell/Shell.tsx",
+          "apps/web/src/styles/base.css",
+          "apps/web/src/styles/components.css",
+          "apps/web/src/styles/workspaces.css",
+          "apps/web/src/workspaces/integrations/IntegrationsWorkspace.tsx"
+        ],
+        "test_references": [
+          "apps/web/src/components/ui/primitives.test.ts :: has one sequential tab stop and explicit selected state",
+          "apps/web/src/lib/redesign-state.test.ts :: reduces automatic status independently of motion and keeps direct action feedback",
+          "e2e/announcements-redesign.spec.ts :: A11Y-21.4: local reduced automatic announcements keep sync visible and direct filter/selection feedback live",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-02 long source and inert raw records wrap at 320px and text paging preserves the exact loaded derivative",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/pilot.spec.ts :: C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest",
+          "e2e/redesign.spec.ts :: A11Y-03: desktop and narrow inspectors remain nonmodal and keyboard Tab can exit and return",
+          "e2e/redesign.spec.ts :: V14: responsive records, close controls, and no document overflow at 320\u20131366",
+          "e2e/redesign.spec.ts :: V15: axe DOM accessibility, reduced motion, forced colors, and visible keyboard focus",
+          "e2e/redesign.spec.ts :: editing, modal and browser-modifier keys are not intercepted when shortcuts are enabled",
+          "e2e/redesign.spec.ts :: stable ID history, hidden filters, and keyboard manual-activation semantics"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V14-1024-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1024-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-kingdom-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-resized-inspector.png",
+          "artifacts/redesign/final/screenshots/V14-1366-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1366-findings.png",
+          "artifacts/redesign/final/screenshots/V14-200percent-css-zoom.png",
+          "artifacts/redesign/final/screenshots/V14-320-detail.png",
+          "artifacts/redesign/final/screenshots/V14-320-findings.png",
+          "artifacts/redesign/final/screenshots/V14-390-detail.png",
+          "artifacts/redesign/final/screenshots/V14-390-findings.png",
+          "artifacts/redesign/final/screenshots/V14-768-detail.png",
+          "artifacts/redesign/final/screenshots/V14-768-findings.png",
+          "artifacts/redesign/final/screenshots/V15-forced-colors-reduced-motion.png"
+        ],
+        "additional_prose_gates": [
+          "PROSE-21.4"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Supplemental keyboard/axe/forced-color harness implemented; actual human keyboard/screen-reader/reflow/contrast tasks blocked.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_refs": [
+        "PROSE-21.4"
+      ],
+      "additional_acceptance_counts": {
+        "passed": 1
+      },
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP20",
+      "phase": "P5",
+      "title": "Performance and resource lifetime",
+      "depends_on": [
+        "WP15",
+        "WP16"
+      ],
+      "deliverables": [
+        "On-demand rendering and quality tiers",
+        "Resource disposal checks",
+        "Recorded-device benchmarks"
+      ],
+      "acceptance_refs": [
+        "PERF-01",
+        "PERF-02",
+        "PERF-03",
+        "PERF-04",
+        "PERF-05",
+        "PERF-06"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "blocked": 3,
+        "passed": 3
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/castle/Castle3D.tsx",
+          "apps/web/src/castle/frameBudget.ts",
+          "apps/web/src/castle/geometry.ts"
+        ],
+        "test_references": [
+          "apps/web/src/castle/architecture.test.ts :: forge high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: ignores idle gaps and the first active frame after one",
+          "apps/web/src/castle/architecture.test.ts :: never reduces for healthy active 60fps samples",
+          "apps/web/src/castle/architecture.test.ts :: observatory high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: reduces detail for sustained active frames slower than 250ms",
+          "apps/web/src/castle/architecture.test.ts :: refreshes overlapping live canvases after shared GPU disposal, without retaining departed renderers",
+          "apps/web/src/castle/architecture.test.ts :: releases renderer registrations only after its final module, preserving cached CPU buffers",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop medium is within actual declared bounds and budget",
+          "apps/web/src/castle/moduleRecovery.test.ts :: cancels deferred callbacks on unmount and releases every new material registration",
+          "e2e/camera-redesign.spec.ts :: PERF-02: genuine background-tab visibility pauses rendering when supported by the browser",
+          "e2e/camera-redesign.spec.ts :: PERF-05: sustained real slow active frames reduce quality without changing evidence or labels",
+          "e2e/latency-redesign.spec.ts :: PERF-06 local journal SSE snapshot and UI timings are separate; CASTLE-05 event-only update reuses mounted module geometry",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one failed shader family notifies every asset owner and a healthy replacement clears only its own marker",
+          "e2e/navigation-redesign.spec.ts :: six project switches retain one live stream and bounded global listeners requests and collected browser heap",
+          "e2e/redesign.spec.ts :: V16: 50/200 logical assets, grouping, software renderer and bounded demand frames",
+          "e2e/redesign.spec.ts :: default F01 native draw calls include main and shadow passes within the 250-call budget",
+          "e2e/redesign.spec.ts :: resource lifetime: bounded module cache and renderer counts after view and replay cycles"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V01-kingdom-overview-1440.png",
+          "artifacts/redesign/final/screenshots/V16-200-graph.png",
+          "artifacts/redesign/final/screenshots/V16-200-overview.png",
+          "artifacts/redesign/final/screenshots/V16-50-graph.png",
+          "artifacts/redesign/final/screenshots/V16-50-overview.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Demand rendering, quality controller, renderer-release ownership and scoped counters implemented. Actual CPU-contention adaptation, native context teardown and local backend/HTTP/UI timing await final execution. Physical GPU and genuine hidden-tab lifecycle remain unavailable.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP21",
+      "phase": "P5",
+      "title": "Privacy and permission verification",
+      "depends_on": [
+        "WP07",
+        "WP08",
+        "WP10"
+      ],
+      "deliverables": [
+        "Untrusted input fixtures",
+        "Project/logout cache isolation",
+        "Safe links/export and network allowlist"
+      ],
+      "acceptance_refs": [
+        "INV-09",
+        "SEC-01",
+        "SEC-02",
+        "SEC-03",
+        "SEC-04",
+        "SEC-05",
+        "SEC-06",
+        "SEC-07",
+        "SEC-08"
+      ],
+      "status": "implemented_requirements_verified",
+      "implementation_status": "implemented",
+      "acceptance_status": "all_referenced_requirements_passed",
+      "acceptance_counts": {
+        "passed": 9
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/App.tsx",
+          "apps/web/src/inspector/EventView.tsx",
+          "apps/web/src/inspector/FindingView.tsx",
+          "apps/web/src/inspector/actions.tsx",
+          "apps/web/src/lib/data.ts",
+          "apps/web/src/lib/evidence-loader.ts",
+          "apps/web/src/lib/investigation.ts",
+          "apps/web/src/workspaces/integrations/IntegrationsWorkspace.tsx",
+          "apps/web/src/workspaces/investigate/EventWorkspace.tsx"
+        ],
+        "test_references": [
+          "apps/server/test/investigation.test.ts :: denies other projects, including reuse of a cursor issued for another project",
+          "apps/web/src/lib/data-security.test.ts :: combines caller and authorization cancellation for reads and exports",
+          "apps/web/src/lib/data-security.test.ts :: does not advertise an empty body as JSON for case export",
+          "apps/web/src/lib/data-security.test.ts :: does not silently fall back to another project when the requested project is forbidden",
+          "apps/web/src/lib/data-security.test.ts :: does not substitute synthetic data on a server error",
+          "apps/web/src/lib/data-security.test.ts :: tags denial with the authorization scope captured before a delayed response",
+          "apps/web/src/lib/evidence-loader.test.ts :: rejects authorization failure rather than retaining sensitive pages",
+          "apps/web/src/lib/investigation.test.ts :: cannot become a live-data fallback",
+          "apps/web/src/lib/investigation.test.ts :: copies only allowlisted project/object/navigation fields, never the current sensitive URL",
+          "apps/web/src/lib/redesign-state.test.ts :: accepts legacy path, occurred/known basis and serializes only allowed references",
+          "e2e/evidence-cards-redesign.spec.ts :: EVIDENCE-CARDS-02 long source and inert raw records wrap at 320px and text paging preserves the exact loaded derivative",
+          "e2e/evidence-redesign.spec.ts :: events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+          "e2e/evidence-redesign.spec.ts :: export response arriving after confirmed role downgrade cannot download stale privileged content",
+          "e2e/evidence-redesign.spec.ts :: old containment denial while next project snapshot is pending cannot clear the next authorization scope",
+          "e2e/evidence-redesign.spec.ts :: review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+          "e2e/evidence-redesign.spec.ts :: stale403 from old project reload cannot clear the newly selected project",
+          "e2e/evidence-redesign.spec.ts :: viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+          "e2e/navigation-redesign.spec.ts :: a warmed deep link cannot restore evidence after project access is denied",
+          "e2e/navigation-redesign.spec.ts :: logout clears records and a delayed prior-session export cannot download after same-project sign-in",
+          "e2e/navigation-redesign.spec.ts :: six project switches retain one live stream and bounded global listeners requests and collected browser heap",
+          "e2e/pilot.spec.ts :: E3. snapshot fails while SSE stays connected, then recovers on retry",
+          "e2e/pilot.spec.ts :: G. instruction-like evidence text is displayed as data and authorizes nothing",
+          "e2e/redesign.spec.ts :: F11/F14: untrusted text is inert and empty project is not a fabricated kingdom",
+          "e2e/redesign.spec.ts :: V12: actual browser network interruption retains stale records and never claims live",
+          "packages/scene-compiler/test/scene.test.ts :: falls back after the retry budget when the model invents assets or errors",
+          "packages/scene-compiler/test/scene.test.ts :: sanitizes input: no events, no free text, names stripped of markup"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/F11-untrusted-text.png",
+          "artifacts/redesign/final/screenshots/V04c-in-context-raw-evidence.png",
+          "artifacts/redesign/final/screenshots/V12-network-interruption-stale-records.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/unit-results.json"
+        ]
+      },
+      "notes": [
+        "Privacy links, inert text, role/project/denial and export protections implemented. All-workspace/3D network allowlist, logout abort/stream cleanup and warmed denied-link checks await final execution.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": true,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP22",
+      "phase": "P6",
+      "title": "Automated integrated regression suite",
+      "depends_on": [
+        "WP17",
+        "WP18",
+        "WP21"
+      ],
+      "deliverables": [
+        "Final-candidate complete CI",
+        "Synthetic source-to-screen and MCP parity",
+        "V01\u2013V16 controlled screenshots"
+      ],
+      "acceptance_refs": [
+        "REL-02",
+        "REL-03",
+        "REL-04",
+        "REL-05"
+      ],
+      "status": "implemented_acceptance_blocked",
+      "implementation_status": "implemented",
+      "acceptance_status": "blocked_required_external_verification",
+      "acceptance_counts": {
+        "passed": 3,
+        "blocked": 1
+      },
+      "evidence": {
+        "implementation_files": [
+          "assets/castle-kit/MANIFEST.json",
+          "docs/redesign/CAPABILITIES.md",
+          "docs/redesign/IMPLEMENTATION.md",
+          "scripts/redesign-artifact-index.mjs"
+        ],
+        "test_references": [
+          "e2e/pilot.spec.ts :: A. controlled activity in the reference app becomes an evidence-backed finding in the browser",
+          "e2e/pilot.spec.ts :: C. 3D and 2D resolve the same identifiers; toggles, search, replay, return-to-latest",
+          "e2e/pilot.spec.ts :: G. instruction-like evidence text is displayed as data and authorizes nothing",
+          "e2e/redesign.spec.ts :: V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+          "e2e/redesign.spec.ts :: V09\u2013V10: ten architectural modules and actual roof removal",
+          "e2e/redesign.spec.ts :: V14: responsive records, close controls, and no document overflow at 320\u20131366",
+          "e2e/redesign.spec.ts :: V16: 50/200 logical assets, grouping, software renderer and bounded demand frames"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V01-kingdom-overview-1440.png",
+          "artifacts/redesign/final/screenshots/V02-kingdom-selected-1440.png",
+          "artifacts/redesign/final/screenshots/V03-graph-same-selection-1440.png",
+          "artifacts/redesign/final/screenshots/V04a-expanded-contradiction-claim.png",
+          "artifacts/redesign/final/screenshots/V04b-contradiction-supporting-counter.png",
+          "artifacts/redesign/final/screenshots/V05-event-search-separate-completeness.png",
+          "artifacts/redesign/final/screenshots/V06-unlinked-event.png",
+          "artifacts/redesign/final/screenshots/V07a-coverage-sources.png",
+          "artifacts/redesign/final/screenshots/V07b-partial-unobserved-assets.png",
+          "artifacts/redesign/final/screenshots/V08-3d-partial-coverage-selection.png",
+          "artifacts/redesign/final/screenshots/V09-ten-module-sheet.png",
+          "artifacts/redesign/final/screenshots/V10a-four-module-near.png",
+          "artifacts/redesign/final/screenshots/V10b-four-module-roofs-off.png",
+          "artifacts/redesign/final/screenshots/V11a-known-time-replay-scope.png",
+          "artifacts/redesign/final/screenshots/V11b-late-record-known-time.png",
+          "artifacts/redesign/final/screenshots/V12-network-interruption-stale-records.png",
+          "artifacts/redesign/final/screenshots/V13-evidence-partial-retained.png",
+          "artifacts/redesign/final/screenshots/V14-1024-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1024-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-kingdom-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-resized-inspector.png",
+          "artifacts/redesign/final/screenshots/V14-1366-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1366-findings.png",
+          "artifacts/redesign/final/screenshots/V14-200percent-css-zoom.png",
+          "artifacts/redesign/final/screenshots/V14-320-detail.png",
+          "artifacts/redesign/final/screenshots/V14-320-findings.png",
+          "artifacts/redesign/final/screenshots/V14-390-detail.png",
+          "artifacts/redesign/final/screenshots/V14-390-findings.png",
+          "artifacts/redesign/final/screenshots/V14-768-detail.png",
+          "artifacts/redesign/final/screenshots/V14-768-findings.png",
+          "artifacts/redesign/final/screenshots/V15-forced-colors-reduced-motion.png",
+          "artifacts/redesign/final/screenshots/V16-200-graph.png",
+          "artifacts/redesign/final/screenshots/V16-200-overview.png",
+          "artifacts/redesign/final/screenshots/V16-50-graph.png",
+          "artifacts/redesign/final/screenshots/V16-50-overview.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/baseline/README.md",
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/pilot-results.json",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP23",
+      "phase": "P6",
+      "title": "Visual and formative usability review",
+      "depends_on": [
+        "WP19",
+        "WP20",
+        "WP22"
+      ],
+      "deliverables": [
+        "Human review scope documented",
+        "Visual scorecard and task results",
+        "Unexecuted checks remain pending"
+      ],
+      "acceptance_refs": [
+        "CASTLE-01",
+        "CASTLE-03",
+        "CASTLE-09",
+        "REL-04",
+        "REL-07"
+      ],
+      "status": "human_validation_blocked",
+      "implementation_status": "human_validation_not_performed",
+      "acceptance_status": "blocked_required_human_review",
+      "acceptance_counts": {
+        "blocked": 4,
+        "passed": 1
+      },
+      "evidence": {
+        "implementation_files": [
+          "apps/web/src/castle/Castle3D.tsx",
+          "apps/web/src/castle/EdgeChooser.tsx",
+          "apps/web/src/castle/geometry.ts",
+          "apps/web/src/castle/labels.tsx",
+          "apps/web/src/castle/scenePresentation.ts",
+          "assets/castle-kit/MANIFEST.json",
+          "docs/redesign/CAPABILITIES.md",
+          "docs/redesign/IMPLEMENTATION.md",
+          "packages/scene-compiler/src/compile.ts",
+          "scripts/redesign-artifact-index.mjs"
+        ],
+        "test_references": [
+          "apps/web/src/castle/architecture.test.ts :: forge high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: forge medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: gatehouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: great_hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: guardhouse medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: hall medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: observatory medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: portal medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: tool_annex medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: vault medium is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop high is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop low is within actual declared bounds and budget",
+          "apps/web/src/castle/architecture.test.ts :: workshop medium is within actual declared bounds and budget",
+          "apps/web/src/castle/groupSelection.test.ts :: remembers focused group membership until explicit scope change, not incidental selection",
+          "apps/web/src/castle/groupSelection.test.ts :: retains every endpoint of cross-district path and relationship selections",
+          "e2e/evidence-redesign.spec.ts :: authoritative422 import paths are displayed after successful local preview; draft and graph remain unchanged",
+          "e2e/evidence-redesign.spec.ts :: review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+          "e2e/evidence-redesign.spec.ts :: viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit path focus retains every cross-district endpoint",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: a valid scene replacement clears the failed label for the same canonical asset",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one failed shader family notifies every asset owner and a healthy replacement clears only its own marker",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one invalid visual module becomes a named neutral block without changing canonical evidence",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real body GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real depth GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real roof GLSL compile failure recovers only its owned module family",
+          "e2e/redesign.spec.ts :: V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+          "e2e/redesign.spec.ts :: V09\u2013V10: ten architectural modules and actual roof removal",
+          "e2e/redesign.spec.ts :: V14: responsive records, close controls, and no document overflow at 320\u20131366",
+          "e2e/redesign.spec.ts :: V16: 50/200 logical assets, grouping, software renderer and bounded demand frames",
+          "e2e/redesign.spec.ts :: explicit camera focus and context loss preserve stable selection and graph fallback",
+          "e2e/setup-redesign.spec.ts :: PROSE-13: cards show scoped configuration and keep absent assessments unknown",
+          "e2e/setup-redesign.spec.ts :: PROSE-15: empty inventory, configuration and receipt are separate real server steps"
+        ],
+        "screenshots": [
+          "artifacts/redesign/final/screenshots/V01-kingdom-overview-1440.png",
+          "artifacts/redesign/final/screenshots/V02-kingdom-selected-1440.png",
+          "artifacts/redesign/final/screenshots/V03-graph-same-selection-1440.png",
+          "artifacts/redesign/final/screenshots/V04a-expanded-contradiction-claim.png",
+          "artifacts/redesign/final/screenshots/V04b-contradiction-supporting-counter.png",
+          "artifacts/redesign/final/screenshots/V05-event-search-separate-completeness.png",
+          "artifacts/redesign/final/screenshots/V06-unlinked-event.png",
+          "artifacts/redesign/final/screenshots/V07a-coverage-sources.png",
+          "artifacts/redesign/final/screenshots/V07b-partial-unobserved-assets.png",
+          "artifacts/redesign/final/screenshots/V08-3d-partial-coverage-selection.png",
+          "artifacts/redesign/final/screenshots/V09-ten-module-sheet.png",
+          "artifacts/redesign/final/screenshots/V10a-four-module-near.png",
+          "artifacts/redesign/final/screenshots/V10b-four-module-roofs-off.png",
+          "artifacts/redesign/final/screenshots/V11a-known-time-replay-scope.png",
+          "artifacts/redesign/final/screenshots/V11b-late-record-known-time.png",
+          "artifacts/redesign/final/screenshots/V12-network-interruption-stale-records.png",
+          "artifacts/redesign/final/screenshots/V13-evidence-partial-retained.png",
+          "artifacts/redesign/final/screenshots/V14-1024-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1024-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-findings.png",
+          "artifacts/redesign/final/screenshots/V14-1280-kingdom-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1280-resized-inspector.png",
+          "artifacts/redesign/final/screenshots/V14-1366-detail.png",
+          "artifacts/redesign/final/screenshots/V14-1366-findings.png",
+          "artifacts/redesign/final/screenshots/V14-200percent-css-zoom.png",
+          "artifacts/redesign/final/screenshots/V14-320-detail.png",
+          "artifacts/redesign/final/screenshots/V14-320-findings.png",
+          "artifacts/redesign/final/screenshots/V14-390-detail.png",
+          "artifacts/redesign/final/screenshots/V14-390-findings.png",
+          "artifacts/redesign/final/screenshots/V14-768-detail.png",
+          "artifacts/redesign/final/screenshots/V14-768-findings.png",
+          "artifacts/redesign/final/screenshots/V15-forced-colors-reduced-motion.png",
+          "artifacts/redesign/final/screenshots/V16-200-graph.png",
+          "artifacts/redesign/final/screenshots/V16-200-overview.png",
+          "artifacts/redesign/final/screenshots/V16-50-graph.png",
+          "artifacts/redesign/final/screenshots/V16-50-overview.png"
+        ],
+        "execution_receipts": [
+          "artifacts/redesign/artifact-safety-audit.json",
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/supplemental-commands.log",
+          "artifacts/redesign/final/unit-results.json",
+          "artifacts/redesign/shell/README.md",
+          "artifacts/redesign/shell/controls-regression.json"
+        ]
+      },
+      "notes": [
+        "Capture/review material prepared only. No actual human visual or formative usability approval is recorded; this package is not accepted.",
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    },
+    {
+      "id": "WP24",
+      "phase": "P6",
+      "title": "Prepare implementation PR and release evidence",
+      "depends_on": [
+        "WP23"
+      ],
+      "deliverables": [
+        "Exact refs and dependency notes",
+        "Actual results/screenshots/licenses/known limits",
+        "Rollback without security regression; no automatic merge/deploy"
+      ],
+      "acceptance_refs": [
+        "REL-03",
+        "REL-05",
+        "REL-06",
+        "REL-07",
+        "REL-08"
+      ],
+      "status": "handoff_pending",
+      "implementation_status": "delivery_material_prepared",
+      "acceptance_status": "not_run_remote_delivery",
+      "acceptance_counts": {
+        "passed": 4,
+        "not_run": 1
+      },
+      "evidence": {
+        "implementation_files": [
+          "assets/castle-kit/MANIFEST.json",
+          "docs/redesign/CAPABILITIES.md",
+          "docs/redesign/IMPLEMENTATION.md",
+          "scripts/redesign-artifact-index.mjs"
+        ],
+        "test_references": [
+          "apps/web/src/castle/architecture.test.ts :: matches checked-in content hashes and all actual LOD triangle counts",
+          "e2e/evidence-redesign.spec.ts :: authoritative422 import paths are displayed after successful local preview; draft and graph remain unchanged",
+          "e2e/evidence-redesign.spec.ts :: review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+          "e2e/evidence-redesign.spec.ts :: viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+          "e2e/expanded-investigation-redesign.spec.ts :: Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+          "e2e/grouped-focus-redesign.spec.ts :: F13 graph 320px: explicit path focus retains every cross-district endpoint",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: a valid scene replacement clears the failed label for the same canonical asset",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one failed shader family notifies every asset owner and a healthy replacement clears only its own marker",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: one invalid visual module becomes a named neutral block without changing canonical evidence",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real body GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real depth GLSL compile failure recovers only its owned module family",
+          "e2e/module-recovery-redesign.spec.ts :: 15.3: real roof GLSL compile failure recovers only its owned module family",
+          "e2e/redesign.spec.ts :: explicit camera focus and context loss preserve stable selection and graph fallback",
+          "e2e/setup-redesign.spec.ts :: PROSE-13: cards show scoped configuration and keep absent assessments unknown",
+          "e2e/setup-redesign.spec.ts :: PROSE-15: empty inventory, configuration and receipt are separate real server steps"
+        ],
+        "screenshots": [],
+        "execution_receipts": [
+          "artifacts/redesign/artifact-safety-audit.json",
+          "artifacts/redesign/final/execution-receipt.json",
+          "artifacts/redesign/final/final-commands.log",
+          "artifacts/redesign/final/receipt-seal.json",
+          "artifacts/redesign/final/results.json",
+          "artifacts/redesign/final/supplemental-commands.log",
+          "artifacts/redesign/final/unit-results.json",
+          "artifacts/redesign/shell/README.md",
+          "artifacts/redesign/shell/controls-regression.json"
+        ]
+      },
+      "notes": [
+        "Frozen source 5ce7487c76c87be2b53f6520690987d2c5bdd063 and complete receipts verify the listed automated support. Human and device requirements are not inferred from suite success."
+      ],
+      "release_gate_passed": false,
+      "additional_acceptance_counts": {},
+      "scope": "This package flag applies only to its listed criteria and additional gates. Overall product release_ready remains false."
+    }
+  ],
+  "candidate": {
+    "branch": "improve/ui-castle-redesign",
+    "base_sha": "453b2db522780361405c388f036d7874041cb005",
+    "tested_source_sha": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+    "final_evidence_commit": null,
+    "execution_state": "machine_verification_complete_open_release_gates_and_delivery"
+  },
+  "status_policy": "Implementation progress and acceptance are separate. No package is release-complete while its required gates remain failed, blocked or not_run. Dependencies describe implementation order, not approval to bypass later human/hardware gates.",
+  "release_ready": false,
+  "acceptance_summary": {
+    "passed": 69,
+    "failed": 0,
+    "blocked": 16,
+    "not_run": 1
+  },
+  "package_status_summary": {
+    "implemented_requirements_verified": 11,
+    "implemented_acceptance_blocked": 11,
+    "human_validation_blocked": 1,
+    "handoff_pending": 1
+  }
+}

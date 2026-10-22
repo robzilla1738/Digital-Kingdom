@@ -1,0 +1,11 @@
+{
+  "fixture": "5000 locally generated synthetic WAF records processed through the real journal, normalizer, detector and exact evidence endpoint",
+  "expectedLoaded": 5000,
+  "exactEvidenceRequests": 10,
+  "renderedCards": 20,
+  "cardNodeCount": 940,
+  "firstAndLastPageIdsVerified": true,
+  "displayPagingRefetches": 0,
+  "selectedFindingPreserved": true,
+  "retrievalAndDisplayPaginationAreSeparate": true
+}

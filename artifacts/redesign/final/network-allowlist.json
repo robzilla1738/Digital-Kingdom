@@ -1,0 +1,20 @@
+{
+  "scope": "Actual page requests through hostile F11 graph/detail, all four workspaces, and rendered WebGL 3D; no external application resource requests.",
+  "workspaces": [
+    "Kingdom",
+    "Investigate",
+    "Coverage",
+    "Integrations"
+  ],
+  "realWebGLCanvas": true,
+  "external": [],
+  "requests": [
+    "http://127.0.0.1:36093/",
+    "http://127.0.0.1:36093/assets/index-7h5O8oRq.js",
+    "http://127.0.0.1:36093/assets/three-D-fHQp3O.js",
+    "http://127.0.0.1:36093/assets/r3f-Cy3TS7m8.js",
+    "http://127.0.0.1:36093/assets/index-D2lAxyzJ.css",
+    "http://127.0.0.1:36093/assets/Castle3D-BU1ogo6_.js",
+    "http://127.0.0.1:36093/assets/modules-4tP4_J1M.js"
+  ]
+}

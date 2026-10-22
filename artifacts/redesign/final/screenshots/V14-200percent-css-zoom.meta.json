@@ -1,0 +1,23 @@
+{
+  "name": "V14-200percent-css-zoom",
+  "file": "V14-200percent-css-zoom.png",
+  "sha256": "c86b1e5cfb5fb5125c841ed2f7d4389808279e6a828f998028d1f722feccb7c5",
+  "bytes": 120274,
+  "capturedAt": "2026-10-22T20:52:13.434Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "2",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "zoomNote": "CSS 200% emulation, not browser-chrome zoom or human approval",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

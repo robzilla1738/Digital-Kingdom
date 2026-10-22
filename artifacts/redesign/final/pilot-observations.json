@@ -1,0 +1,84 @@
+{
+  "finding": {
+    "id": "f-1xkogz4k59vrw",
+    "kind": "repeated_auth_failure",
+    "outcome_state": "attempted",
+    "evidence_level": "source_reported",
+    "affected": [
+      "checkout"
+    ]
+  },
+  "browser": {
+    "support": [
+      "ev-1jawgd1obf7sp",
+      "ev-1qpiw0c1iqxeaw",
+      "ev-83l3uuhzkv8q",
+      "ev-vwcxuowsxuf8",
+      "ev-ylsilx1gsjkld"
+    ],
+    "counter": [],
+    "asset": "checkout",
+    "complete": true
+  },
+  "mcp": {
+    "transport": "stdio (node --import tsx apps/mcp/src/main.ts)",
+    "events": [
+      "ev-1jawgd1obf7sp",
+      "ev-1qpiw0c1iqxeaw",
+      "ev-83l3uuhzkv8q",
+      "ev-vwcxuowsxuf8",
+      "ev-ylsilx1gsjkld"
+    ],
+    "complete": true
+  },
+  "webgl": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "frame_png_bytes": 76220,
+    "note": "software WebGL (SwiftShader); not a GPU benchmark"
+  },
+  "uncertainty": {
+    "coverage_state": "degraded",
+    "unknown_posture": "not_assessed",
+    "mixed_posture": "insufficient_context",
+    "mixed_unresolved": 1
+  },
+  "restart": {
+    "probe_processed_count": 1,
+    "duplicate_on_resend": true,
+    "browser_reconnected": true
+  },
+  "reconnect_sync": {
+    "states": [
+      "live",
+      "reconnecting",
+      "synchronizing",
+      "sync-failed",
+      "live"
+    ]
+  },
+  "snapshot_retry": {
+    "states": [
+      "live",
+      "sync-failed",
+      "sync-failed",
+      "live",
+      "live"
+    ]
+  },
+  "containment": {
+    "proposed_by": "service via MCP",
+    "self_approval_status": 403,
+    "human_decision": "approved",
+    "monitored_state_changed": false,
+    "ref_probe": [
+      200,
+      429
+    ]
+  },
+  "untrusted_text": {
+    "rendered_as_text": true,
+    "script_executed": false,
+    "containment_requests_unchanged": true,
+    "finding_authority_unchanged": true
+  }
+}

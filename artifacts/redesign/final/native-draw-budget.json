@@ -1,0 +1,94 @@
+{
+  "fixture": "F01",
+  "logicalAssets": 13,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "renderer": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "method": "Native WebGL drawArrays/drawElements, instanced variants and drawRangeElements wrappers preserve original receivers, arguments and results. Counts group by real requestAnimationFrame timestamp; bindFramebuffer tracks default versus offscreen draws, including shadow targets. No postprocessing renderer is present in this scene.",
+  "instrumentation": "Separate instrumented condition, not an FPS/load sample. JavaScript counting adds overhead. Native framebuffer counts belong to each complete frame; the application-published gl.info main-pass counter is the previous completed main pass because it is sampled by useFrame before rendering.",
+  "frames": [
+    {
+      "rafTimestamp": 679.142,
+      "nativeDrawCalls": 119,
+      "defaultFramebufferDrawCalls": 69,
+      "offscreenDrawCalls": 50,
+      "triangles": 26750,
+      "methods": {
+        "drawArrays": 101,
+        "drawElements": 18
+      },
+      "qualities": [
+        "medium"
+      ],
+      "contextType": "WebGL2RenderingContext"
+    },
+    {
+      "rafTimestamp": 1295.784,
+      "nativeDrawCalls": 119,
+      "defaultFramebufferDrawCalls": 69,
+      "offscreenDrawCalls": 50,
+      "triangles": 26750,
+      "methods": {
+        "drawArrays": 101,
+        "drawElements": 18
+      },
+      "qualities": [
+        "medium"
+      ],
+      "contextType": "WebGL2RenderingContext"
+    },
+    {
+      "rafTimestamp": 1312.45,
+      "nativeDrawCalls": 69,
+      "defaultFramebufferDrawCalls": 69,
+      "offscreenDrawCalls": 0,
+      "triangles": 13982,
+      "methods": {
+        "drawArrays": 51,
+        "drawElements": 18
+      },
+      "qualities": [
+        "medium"
+      ],
+      "contextType": "WebGL2RenderingContext"
+    },
+    {
+      "rafTimestamp": 1329.116,
+      "nativeDrawCalls": 69,
+      "defaultFramebufferDrawCalls": 69,
+      "offscreenDrawCalls": 0,
+      "triangles": 13982,
+      "methods": {
+        "drawArrays": 51,
+        "drawElements": 18
+      },
+      "qualities": [
+        "medium"
+      ],
+      "contextType": "WebGL2RenderingContext"
+    }
+  ],
+  "outsideRaf": [],
+  "publishedMainPass": {
+    "engine": "three.js r178",
+    "moduleShaderOwners": "13",
+    "cameraPose": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":20.201}",
+    "renderCount": "4",
+    "drawCalls": "69",
+    "triangles": "13982",
+    "quality": "medium",
+    "moduleGeometryBuilds": "10",
+    "gpuGeometries": "57",
+    "gpuTextures": "2",
+    "gpuPrograms": "33"
+  },
+  "maximumCompleteFrameDrawCalls": 119,
+  "target": 250,
+  "scope": "Actual default synthetic 13-asset scene at medium quality, Chromium SwiftShader. No real-GPU timing or hardware-performance claim."
+}

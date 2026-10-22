@@ -1,0 +1,27 @@
+{
+  "embeddedBuild": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "scope": "Real invalid fragment GLSL in one explicitly isolated module-family program; native compile and link status checked, no callback or result spoofed.",
+  "driver": {
+    "injections": 1,
+    "compileFailures": 1,
+    "linkFailures": 1,
+    "target": "dk_arch_gatehouse_roof"
+  },
+  "classifiedDiagnostics": [
+    "Digital Kingdom renderer {code: module_shader_failure, module_id: gatehouse, recovery: neutral_block}"
+  ],
+  "pageErrors": [],
+  "affectedAsset": "edge",
+  "otherBuildingSelectable": "agent",
+  "canonicalRecordsUnchanged": [
+    "graph",
+    "events",
+    "findings",
+    "scene",
+    "evidence"
+  ],
+  "remainingShaderOwners": "12",
+  "selectedAsset": "edge",
+  "explicitFocusWorks": true,
+  "part": "roof"
+}

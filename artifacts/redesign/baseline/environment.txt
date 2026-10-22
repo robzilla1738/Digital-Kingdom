@@ -1,0 +1,14 @@
+Thu Oct 22 17:50:01 UTC 2026
+453b2db522780361405c388f036d7874041cb005
+fix/investigation-quality-gates
+?? artifacts/
+d79ea616c20beb6c2e9df584a22993c4273a3788
+040000 tree 2879e58182abad203645eecfb1a4849f3879d4c0	eval/grading
+040000 tree fe1bd8ef6e93adde8e9cc9a463ee95f9e6844995	eval/runs
+040000 tree cf5c4fa7c68fd66b067c853e58d66361ce6d5ee7	eval/scenarios
+v24.19.0
+Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie)
+Linux e218fb6ec100 6.18.55 #1 SMP Wed Oct 14 19:45:18 UTC 2026 x86_64 GNU/Linux
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          32G   28G  2.1G  94% /workspace/scratch/7da97da4048f
+tmpfs           4.9G   17M  4.9G   1% /tmp

@@ -1,0 +1,25 @@
+
+> digital-kingdom@0.3.2 validate:fixtures /tmp/dk-redesign-baseline-453b2db
+> tsx scripts/validate-fixtures.ts
+
+node:net:2145
+      const error = new UVExceptionWithHostPort(rval, 'listen', address, port);
+                    ^
+
+Error: listen EPERM: operation not permitted /tmp/tsx-1000/871.pipe
+    at Server.setupListenHandle [as _listen2] (node:net:2145:21)
+    at listenInCluster (node:net:2224:12)
+    at Server.listen (node:net:2361:5)
+    at file:///tmp/dk-redesign-baseline-453b2db/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:53:32174
+    at new Promise (<anonymous>)
+    at createIpcServer (file:///tmp/dk-redesign-baseline-453b2db/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:53:32152)
+    at async file:///tmp/dk-redesign-baseline-453b2db/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/cli.mjs:55:542 {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '/tmp/tsx-1000/871.pipe',
+  port: -1
+}
+
+Node.js v24.19.0
+ ELIFECYCLE  Command failed with exit code 1.

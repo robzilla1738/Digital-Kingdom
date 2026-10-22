@@ -1,397 +1,299 @@
-import { Component, Suspense, useEffect, useMemo, useRef, type ReactNode } from "react";
+import { Component, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html, Line, OrbitControls, OrthographicCamera } from "@react-three/drei";
+import { Html, Line, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import type { CompiledScene, OutcomeState, SceneRoom } from "@dk/contracts";
+import type { CompiledScene, SceneRoom } from "@dk/contracts";
 import { CastleModule } from "./modules.tsx";
 import { Environment } from "./Environment.tsx";
-import { aoTexture, glowTexture, hatchTexture } from "./materials.ts";
+import { hatchTexture } from "./materials.ts";
+import { EdgeChooser, type EdgeChoice } from "./EdgeChooser.tsx";
+import { overlappingEdges, pointerWasDrag, type ScreenPoint } from "./edgePicking.ts";
+import { sampleFrameBudget, type FrameBudget } from "./frameBudget.ts";
 import { FORCE, LabelLayer, useLabel } from "./labels.tsx";
 import { useApp } from "../lib/state.tsx";
-import { EVENT_OUTCOME_COLOR, LAYER_STYLE, OUTCOME_STYLE, RELATIONSHIP_LAYER } from "../lib/vocab.ts";
-import { GapIcon, Icon, StateIcon } from "../lib/icons.tsx";
+import { ASSET_COVERAGE_LABEL } from "../lib/presentation.ts";
+import { LAYER_STYLE, OUTCOME_STYLE, RELATIONSHIP_LAYER, SEVERITY_RANK } from "../lib/vocab.ts";
+import { Icon, StateIcon } from "../lib/icons.tsx";
+import { groupSummary, presentationMembers, selectionDistrictKey, presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, presentationCollisions, selectionAssets, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
+import { cachedModuleGeometryCount, type DetailLevel } from "./geometry.ts";
+import type { ModuleFailureCode } from "./moduleRecovery.ts";
+import { watchRendererShaders } from "./shaderRecovery.ts";
 
-const BG = "#0b0d10";
-const ACCENT = "#7c85ff";
-const CAM_DIST = 110;
-const CAM_AZIMUTH = Math.PI / 4;
-const CAM_POLAR = 0.96;
-/** Outcomes that light a building (windows + ground halo). Others are shown by marker and label only. */
-const ACTIVE: OutcomeState[] = ["observed_effect", "needs_review", "attempted"];
-/** Buildings are drawn larger than their compiled footprint so assets read before walls. Stays inside slot spacing. */
-const MODULE_SCALE = 1.3;
-const RANK: Record<OutcomeState, number> = { observed_effect: 7, needs_review: 6, attempted: 5, unknown: 4, blocked: 3, refused: 2, allowed: 1 };
-
-type CamCmd = "in" | "out" | "reset";
-const camEvent = (cmd: CamCmd) => dispatchEvent(new CustomEvent<CamCmd>("dk:camera", { detail: cmd }));
-
+const BG = "#0B111B", ACCENT = "#A6B6FF", CAM_DIST = 110;
+type Command = { n: number; type: "in" | "out" | "fit" | "focus" | "back"; group?: string };
+type Pose = { pos: THREE.Vector3; target: THREE.Vector3; zoom: number };
+// Harmless camera-only context survives Castle/Graph toggles. Bounded; never contains evidence.
+const cameraPoses = new Map<string, Pose>();
+const districtPoses = new Map<string, string | null>();
 class CanvasBoundary extends Component<{ onError: (msg: string) => void; children: ReactNode }, { failed: boolean }> {
   override state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
   override componentDidCatch(e: Error) { this.props.onError(e.message || "3D renderer failed"); }
   override render() { return this.state.failed ? null : this.props.children; }
 }
-
 export function Castle3D() {
   const { ui, dispatch, vm } = useApp();
-  const scene = vm.data.scene;
-  const hc = scene.style_profile === "high-contrast-v1";
-  return (
-    <div className="castle-wrap" role="img" aria-label={`Isometric castle map of ${vm.data.graph.assets.length} assets. Use the asset list or the 2D graph for a fully keyboard-accessible view.`}>
-      <CanvasBoundary onError={(msg) => dispatch({ type: "webglFailed", reason: msg })}>
-        <Canvas
-          shadows="soft"
-          dpr={[1, 1.75]}
-          frameloop={ui.reducedMotion && !ui.playing ? "demand" : "always"}
-          gl={{ antialias: true, powerPreference: "high-performance", preserveDrawingBuffer: false }}
-          onCreated={({ gl }) => {
-            gl.toneMapping = THREE.NeutralToneMapping;
-            gl.toneMappingExposure = 1.12;
-            gl.domElement.addEventListener("webglcontextlost", (e) => {
-              e.preventDefault();
-              // R3F deliberately drops the context when the canvas unmounts (switching views); only a loss
-              // while the canvas is still on screen is a real failure.
-              setTimeout(() => { if (gl.domElement.isConnected) dispatch({ type: "webglFailed", reason: "The graphics context was lost. Showing the 2D graph instead." }); }, 0);
-            });
-          }}
-          onPointerMissed={() => dispatch({ type: "select", selection: null })}
-        >
-          <color attach="background" args={[hc ? "#0e1116" : BG]} />
-          <fog attach="fog" args={[hc ? "#0e1116" : BG, CAM_DIST + 6, CAM_DIST + 95]} />
-          <Rig scene={scene} />
-          <Lights scene={scene} />
-          <Invalidator />
-          <LabelLayer>
-            <Suspense fallback={null}>
-              <Environment scene={scene} highContrast={hc} />
-              {scene.rooms.map((r) => <Room key={r.asset_id} room={r} highContrast={hc} />)}
-              <Paths scene={scene} />
-            </Suspense>
-          </LabelLayer>
-        </Canvas>
-      </CanvasBoundary>
-      <div className="stage-tools" role="toolbar" aria-label="Castle view">
-        <button className="icon-btn sm" onClick={() => camEvent("in")} aria-label="Zoom in" title="Zoom in"><Icon name="plus" size={15} /></button>
-        <button className="icon-btn sm" onClick={() => camEvent("out")} aria-label="Zoom out" title="Zoom out"><Icon name="minus" size={15} /></button>
-        <button className="icon-btn sm" onClick={() => camEvent("reset")} aria-label="Reset view" title="Reset view  (0)"><Icon name="fit" size={15} /></button>
-        <div className="vr-h" />
-        <button className={`icon-btn sm${ui.roofs ? " on" : ""}`} aria-pressed={ui.roofs} onClick={() => dispatch({ type: "roofs", roofs: !ui.roofs })} aria-label="Show roofs" title="Roofs  (R)"><Icon name="roof" size={15} /></button>
-      </div>
+  const topologyKey = presentationTopologyKey(vm.data.scene), membershipKey = groupMembershipKey(vm.data.graph);
+  const scene = useMemo(() => presentationScene(vm.data.scene), [topologyKey]);
+  const collisions = useMemo(() => presentationCollisions(scene.rooms), [scene]);
+  const wrap = useRef<HTMLDivElement>(null);
+  const [edgeChoice, setEdgeChoice] = useState<EdgeChoice | null>(null);
+  useEffect(() => { setEdgeChoice(null); }, [ui.selection, ui.layers, ui.showHypothetical, topologyKey]);
+  const groups = useMemo(() => presentationGroups(scene, vm.data.graph), [scene, membershipKey]);
+  const [district, setDistrict] = useState<string | null>(() => districtPoses.get(scene.project_id) ?? null), [help, setHelp] = useState(false);
+  const [quality, setQuality] = useState(ui.quality), [reduced, setReduced] = useState(false);
+  const [cmd, setCmd] = useState<Command>({ n: 0, type: "fit" });
+  const send = (type: Command["type"], group?: string) => setCmd(c => ({ n: c.n + 1, type, group }));
+  useEffect(() => { setQuality(ui.quality); setReduced(false); }, [ui.quality]);
+  const latestDistrict = useRef(district); latestDistrict.current = district;
+  useEffect(() => { setDistrict(districtPoses.get(scene.project_id) ?? null); return () => { districtPoses.set(scene.project_id, latestDistrict.current); if (districtPoses.size > 4) districtPoses.delete(districtPoses.keys().next().value!); }; }, [scene.project_id]);
+  const grouped = scene.rooms.length > 50;
+  const focus = useMemo(() => selectionAssets(ui.selection, vm), [ui.selection, vm.findings, vm.data, vm.latestData, vm.selectedEventAssets]);
+  const membership = useMemo(() => presentationMembers(groups, district, focus), [groups, district, focus]);
+  const districtRooms = membership.members;
+  const visibleRooms = grouped ? membership.visible : scene.rooms;
+  useEffect(() => { if (ui.focusRevision <= ui.focusHandledRevision) return;
+    if (grouped) { const key = selectionDistrictKey(groups, focus); if (key) setDistrict(key); }
+  }, [ui.focusRevision, ui.focusHandledRevision, grouped, groups, focus]);
+  const visibleIds = useMemo(() => new Set(visibleRooms.map(r => r.asset_id)), [visibleRooms]);
+  return <div ref={wrap} className="castle-wrap" role="region" tabIndex={0} aria-label={`Architectural map of ${scene.rooms.length} assets. Select a building to inspect it; Focus moves the camera. Graph and lists show the same evidence.`}
+    onKeyDown={e => {
+      if (!ui.shortcuts || e.target !== e.currentTarget || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (["+", "=", "-", "0", "f"].includes(e.key)) { e.preventDefault(); if (e.key === "f") dispatch({ type: "focus" }); else send(e.key === "0" ? "fit" : e.key === "-" ? "out" : "in"); }
+    }}>
+    <CanvasBoundary onError={msg => dispatch({ type: "webglFailed", reason: msg })}>
+      <Canvas orthographic style={{ isolation: "isolate" }} shadows={quality !== "low" ? "soft" : false} dpr={quality === "low" ? 1 : quality === "high" ? [1, 2] : [1, 1.5]} frameloop="demand"
+        camera={{ position: [60, 68, 60], zoom: 12, near: 0.1, far: 800 }}
+        gl={{ antialias: quality !== "low", powerPreference: "default", preserveDrawingBuffer: false }}
+        onCreated={({ gl }) => { gl.toneMapping = THREE.NeutralToneMapping; gl.toneMappingExposure = 1.05; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
+        onPointerMissed={e => { if (e.type === "click") dispatch({ type: "select", selection: null }); }}>
+        <color attach="background" args={[BG]} />
+        <Rig scene={scene} command={cmd} groups={groups} />
+        <Lights scene={scene} quality={quality} />
+        <SceneLifecycle quality={quality} onSlow={() => { if (quality !== "low") { setQuality(quality === "high" ? "medium" : "low"); setReduced(true); } }} />
+        <LabelLayer budget={district ? 20 : 12} reservedLeft={grouped ? 320 : 0}>
+          <Suspense fallback={null}>
+            <Environment scene={scene} groups={groups} quality={quality} highContrast={scene.style_profile === "high-contrast-v1"} />
+            {visibleRooms.map(room => <Room key={room.asset_id} room={room} selected={focus.has(room.asset_id)} quality={quality} />)}
+            {grouped && !district && groups.map(g => <District key={g.key} group={g} onFocus={() => { setDistrict(g.key); send("focus", g.key); }} />)}
+            <Paths scene={scene} visibleIds={visibleIds} onChoice={setEdgeChoice} />
+          </Suspense>
+        </LabelLayer>
+      </Canvas>
+    </CanvasBoundary>
+    {edgeChoice && <EdgeChooser choice={edgeChoice} paths={scene.paths} graph={vm.data.graph} width={wrap.current?.clientWidth ?? 800} height={wrap.current?.clientHeight ?? 600} onChoose={id => { dispatch({ type: "select", selection: { kind: "path", id } }); setEdgeChoice(null); }} onClose={() => setEdgeChoice(null)} />}
+    <div className="stage-tools" style={{ zIndex: 30 }} role="toolbar" aria-label="Castle view">
+      <button className="icon-btn sm" onClick={() => send("in")} aria-label="Zoom in"><Icon name="plus" size={15} /></button>
+      <button className="icon-btn sm" onClick={() => send("out")} aria-label="Zoom out"><Icon name="minus" size={15} /></button>
+      <button className="icon-btn sm" onClick={() => { setDistrict(null); send("fit"); }} aria-label="Fit all assets"><Icon name="fit" size={15} /></button>
+      <button onClick={() => dispatch({ type: "focus" })} disabled={!focus.size}>Focus selection</button>
+      <button onClick={() => send("back")} aria-label="Back to previous camera view">Back</button>
+      <button className={`icon-btn sm${ui.roofs ? " on" : ""}`} aria-pressed={ui.roofs} onClick={() => dispatch({ type: "roofs", roofs: !ui.roofs })} aria-label="Show roofs"><Icon name="roof" size={15} /></button>
+      <button onClick={() => setHelp(!help)} aria-expanded={help}>View help</button>
     </div>
-  );
+    {!!collisions.length && <div role="status" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "polite"} style={panelStyle}>This stored layout has {collisions.length} overlapping module bounds with the upgraded kit. Positions are preserved; use Graph or request an explicit layout reflow.</div>}
+    {help && <div className="scene-help" style={panelStyle}><strong>Architectural map</strong><p>Drag empty space to orbit. Right-drag to pan. Scroll to zoom. Click selects without moving the camera. Focus selection moves it; Back restores the previous view.</p><p>Terraces are organizational, not security boundaries. Marker border is finding severity; the glyph describes outcome. Hatching is current source coverage, not asset health.</p><button onClick={() => dispatch({ type: "view", view: "graph" })}>Use graph and list view</button></div>}
+    {reduced && <div role="status" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "polite"} style={{ ...panelStyle, top: "auto", bottom: 72 }}>Visual quality reduced for performance. Evidence and selection are unchanged.</div>}
+    {grouped && <div className="scene-group-panel" style={{ ...panelStyle, maxWidth: 280 }}>
+      <strong>{district ? membership.groups.length > 1 ? `Combined focus · ${membership.groups.length} districts` : `${membership.groups[0]?.label ?? "District"} members` : "District overview"}</strong>
+      <p>{scene.rooms.length} logical assets. Groups are presentation only. {district ? `Showing ${visibleRooms.length} of ${districtRooms.length} buildings; selected assets are prioritized and all members remain accessible below.` : "Choose a district to expand its assets."}</p>
+      {membership.selectedOverflow > 0 && <p role="status">Only 50 of {membership.selectedCount} selected assets can be rendered together. {membership.selectedOverflow} selected assets are not drawn; every member remains in the list below. Select an individual asset to inspect it.</p>}
+      {!district ? groups.map(g => { const s = groupSummary(g, vm.assetStatus); return <button className="btn sm" style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 6, whiteSpace: "normal" }} key={g.key} onClick={() => { setDistrict(g.key); send("focus", g.key); }}><span><strong>{g.label}</strong> · {g.environment}<br />{g.rooms.length} assets · {s.findings} distinct findings<small style={{ display: "block", lineHeight: 1.5 }}>{Object.entries(s.coverage).map(([k,n]) => `${n} assets: ${ASSET_COVERAGE_LABEL[k as keyof typeof ASSET_COVERAGE_LABEL] ?? k}`).join(" · ")}</small></span></button>; }) : <>
+        <button className="btn sm" onClick={() => { setDistrict(null); send("fit"); }}>Back to district overview</button>
+        <ul>{districtRooms.map(r => <li key={r.asset_id}><button className="btn sm" onClick={() => { dispatch({ type: "select", selection: { kind: "asset", id: r.asset_id } }); }}>{vm.data.graph.assets.find(a => a.id === r.asset_id)?.name ?? r.asset_id}</button></li>)}</ul>
+      </>}
+    </div>}
+  </div>;
 }
+const panelStyle = { position: "absolute", left: 16, top: 16, zIndex: 12, maxWidth: 330, maxHeight: "min(55%, 380px)", overflow: "auto", background: "#121C29", color: "#EEF3FA", border: "1px solid #70849B", borderRadius: 10, padding: 14, fontSize: 13 } as const;
 
-/** In on-demand mode (reduced motion) DOM-only state changes still need a frame for labels/highlights. */
-function Invalidator() {
-  const { ui, vm } = useApp();
-  const invalidate = useThree((s) => s.invalidate);
-  useEffect(() => { invalidate(); }, [invalidate, ui.selection, ui.hover, ui.query, ui.roofs, ui.layers, vm]);
+function SceneLifecycle({ quality, onSlow }: { quality: DetailLevel; onSlow: () => void }) {
+  const { ui, vm, dispatch } = useApp(), { gl, invalidate, setFrameloop } = useThree();
+  const count = useRef(0), budget = useRef<FrameBudget>({ active: false, samples: 0, slow: 0 });
+  const rendererLifetime = useRef(0);
+  useLayoutEffect(() => watchRendererShaders(gl, () => dispatch({ type: "webglFailed", reason: "A scene shader failed to compile. Graph and records retain the same selection and evidence." })), [gl, dispatch]);
+  useEffect(() => {
+    const generation = ++rendererLifetime.current;
+    // Let module cleanups release shared GPU registrations first. A StrictMode effect replay
+    // immediately acquires the next generation and must not dispose its still-live renderer.
+    return () => { queueMicrotask(() => { if (rendererLifetime.current === generation) gl.dispose(); }); };
+  }, [gl]);
+  useEffect(() => { gl.shadowMap.needsUpdate = true; invalidate(); }, [gl, invalidate, ui.roofs, quality, vm.data.scene, ui.selection, ui.hover, ui.query, ui.layers, ui.playhead]);
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const lost = (e: Event) => { e.preventDefault(); setTimeout(() => { if (canvas.isConnected) dispatch({ type: "webglFailed", reason: "The graphics context was lost. Graph and records retain the same selection and evidence." }); }, 0); };
+    const visibility = () => { setFrameloop(document.hidden ? "never" : "demand"); if (!document.hidden) invalidate(); };
+    canvas.addEventListener("webglcontextlost", lost); document.addEventListener("visibilitychange", visibility);
+    return () => { canvas.removeEventListener("webglcontextlost", lost); document.removeEventListener("visibilitychange", visibility); document.body.style.cursor = ""; };
+  }, [gl, dispatch, invalidate, setFrameloop]);
+  useFrame((_, dt) => {
+    const c = gl.domElement; c.dataset.renderCount = String(++count.current); c.dataset.drawCalls = String(gl.info.render.calls); c.dataset.triangles = String(gl.info.render.triangles); c.dataset.quality = quality; c.dataset.moduleGeometryBuilds = String(cachedModuleGeometryCount()); c.dataset.gpuGeometries = String(gl.info.memory.geometries); c.dataset.gpuTextures = String(gl.info.memory.textures); c.dataset.gpuPrograms = String(gl.info.programs?.length ?? 0);
+    const sampled = sampleFrameBudget(budget.current, dt, c.dataset.cameraActive === "true");
+    budget.current = sampled.state; if (sampled.reduce) onSlow();
+  });
   return null;
 }
-
-function Rig({ scene }: { scene: CompiledScene }) {
-  const { size, camera } = useThree();
-  const { ui } = useApp();
-  const ctl = useRef<React.ComponentRef<typeof OrbitControls>>(null);
-  const b = scene.bounds;
-  const cx = (b.minX + b.maxX) / 2, cz = (b.minZ + b.maxZ) / 2;
-  const dir = useMemo(() => new THREE.Vector3().setFromSphericalCoords(1, CAM_POLAR, CAM_AZIMUTH), []);
-  // fit: project the scene's bounding box onto the camera's screen axes
-  const fitZoom = useMemo(() => {
-    const fwd = dir.clone().negate();
-    const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
-    const up = new THREE.Vector3().crossVectors(right, fwd).normalize();
-    let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-    for (const x of [b.minX - 2, b.maxX + 2]) for (const z of [b.minZ - 2, b.maxZ + 2]) for (const y of [0, 4]) {
-      const p = new THREE.Vector3(x - cx, y, z - cz);
-      const px = p.dot(right), py = p.dot(up);
-      x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py);
+function Rig({ scene, command, groups }: { scene: CompiledScene; command: Command; groups: PresentationGroup[] }) {
+  const { camera, size, invalidate, gl } = useThree(), { ui, vm, dispatch } = useApp();
+  const ctl = useRef<React.ComponentRef<typeof OrbitControls>>(null), tween = useRef<{ t: number; from: Pose; to: Pose; focusRevision?: number } | null>(null);
+  const focusInFlight = useRef(0);
+  const history = useRef<Pose[]>([]), initialized = useRef(false), manual = useRef(false);
+  const b = scene.bounds, key = `${scene.project_id}:${scene.graph_revision}`;
+  const dir = useMemo(() => new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(52), Math.PI / 4), []);
+  const fit = (rooms?: SceneRoom[]): Pose => {
+    const xs = rooms?.length ? rooms.flatMap(r => [r.position.x - r.footprint.w / 2, r.position.x + r.footprint.w / 2]) : [b.minX, b.maxX];
+    const zs = rooms?.length ? rooms.flatMap(r => [r.position.z - r.footprint.d / 2, r.position.z + r.footprint.d / 2]) : [b.minZ, b.maxZ];
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minZ = Math.min(...zs), maxZ = Math.max(...zs);
+    const maxY = Math.max(3, ...(rooms ?? scene.rooms).map(r => r.label_anchor.y + 0.7));
+    const target = new THREE.Vector3((minX + maxX) / 2, maxY * 0.22, (minZ + maxZ) / 2);
+    const right = new THREE.Vector3().crossVectors(dir.clone().negate(), new THREE.Vector3(0, 1, 0)).normalize(), up = new THREE.Vector3().crossVectors(right, dir.clone().negate()).normalize();
+    const px: number[] = [], py: number[] = [];
+    // Project each ACTUAL module/label bound, not all empty corners of a huge district rectangle.
+    const fittedRooms = rooms?.length ? rooms : scene.rooms;
+    for (const r of fittedRooms) for (const x of [r.position.x - r.footprint.w / 2 - 0.25, r.position.x + r.footprint.w / 2 + 0.25]) for (const z of [r.position.z - r.footprint.d / 2 - 0.25, r.position.z + r.footprint.d / 2 + 0.25]) for (const y of [0, r.label_anchor.y + 0.25]) {
+      const p = new THREE.Vector3(x, y, z).sub(target); px.push(p.dot(right)); py.push(p.dot(up));
     }
-    return Math.max(3, Math.min(size.width / (x1 - x0), size.height / (y1 - y0)) * 1.0);
-  }, [b, cx, cz, dir, size.width, size.height]);
-  const home = useMemo(() => ({ pos: new THREE.Vector3(cx, 0, cz).addScaledVector(dir, CAM_DIST), target: new THREE.Vector3(cx, 0.6, cz) }), [cx, cz, dir]);
-  const tween = useRef<{ t: number; from: { pos: THREE.Vector3; target: THREE.Vector3; zoom: number }; to: { pos: THREE.Vector3; target: THREE.Vector3; zoom: number } } | null>(null);
-
-  // initial framing + refit on resize
-  useEffect(() => {
-    const c = ctl.current; if (!c) return;
-    const cam = camera as THREE.OrthographicCamera;
-    cam.position.copy(home.pos); cam.zoom = fitZoom; cam.updateProjectionMatrix();
-    c.target.copy(home.target); c.update(); c.saveState();
-  }, [home, fitZoom, camera]);
-
-  useEffect(() => {
-    const go = (cmd: CamCmd) => {
-      const c = ctl.current; if (!c) return;
-      const cam = camera as THREE.OrthographicCamera;
-      const from = { pos: cam.position.clone(), target: c.target.clone(), zoom: cam.zoom };
-      const to = cmd === "reset" ? { pos: home.pos.clone(), target: home.target.clone(), zoom: fitZoom }
-        : { pos: from.pos.clone(), target: from.target.clone(), zoom: THREE.MathUtils.clamp(cam.zoom * (cmd === "in" ? 1.3 : 1 / 1.3), fitZoom * 0.6, fitZoom * 4) };
-      if (ui.reducedMotion) { cam.position.copy(to.pos); c.target.copy(to.target); cam.zoom = to.zoom; cam.updateProjectionMatrix(); c.update(); return; }
-      tween.current = { t: 0, from, to };
-      c.update();
-    };
-    const onCam = (e: Event) => go((e as CustomEvent<CamCmd>).detail);
-    const onKey = (e: KeyboardEvent) => { if (e.key === "0" && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) go("reset"); };
-    addEventListener("dk:camera", onCam); addEventListener("keydown", onKey);
-    return () => { removeEventListener("dk:camera", onCam); removeEventListener("keydown", onKey); };
-  }, [camera, home, fitZoom, ui.reducedMotion]);
-
-  useFrame((state, dt) => {
-    const tw = tween.current; const c = ctl.current;
-    if (!tw || !c) return;
-    tw.t = Math.min(1, tw.t + dt / 0.45);
-    const k = 1 - Math.pow(1 - tw.t, 3);
-    const cam = camera as THREE.OrthographicCamera;
-    cam.position.lerpVectors(tw.from.pos, tw.to.pos, k);
-    c.target.lerpVectors(tw.from.target, tw.to.target, k);
-    cam.zoom = THREE.MathUtils.lerp(tw.from.zoom, tw.to.zoom, k); cam.updateProjectionMatrix();
-    c.update();
-    if (tw.t >= 1) tween.current = null;
-    state.invalidate();
-  });
-
-  // keep panning inside the castle's footprint
-  const clampTarget = () => {
-    const c = ctl.current; if (!c) return;
-    const t = c.target; const cam = camera;
-    const nx = THREE.MathUtils.clamp(t.x, b.minX, b.maxX), nz = THREE.MathUtils.clamp(t.z, b.minZ, b.maxZ), ny = THREE.MathUtils.clamp(t.y, -2, 6);
-    if (nx !== t.x || nz !== t.z || ny !== t.y) { const d = new THREE.Vector3(nx - t.x, ny - t.y, nz - t.z); t.add(d); cam.position.add(d); }
+    if (!px.length) { px.push(-5, 5); py.push(-5, 5); }
+    const x0 = Math.min(...px), x1 = Math.max(...px), y0 = Math.min(...py), y1 = Math.max(...py);
+    target.addScaledVector(right, (x0 + x1) / 2).addScaledVector(up, (y0 + y1) / 2);
+    const zoom = Math.max(1, Math.min((size.width - 64) / (x1 - x0), (size.height - 88) / (y1 - y0)) * 0.94);
+    return { pos: target.clone().addScaledVector(dir, CAM_DIST), target, zoom };
   };
-
-  return (
-    <>
-      <OrthographicCamera makeDefault position={home.pos.toArray()} zoom={fitZoom} near={-300} far={800} />
-      <OrbitControls ref={ctl} target={home.target.toArray()} enableDamping={!ui.reducedMotion} dampingFactor={0.09} rotateSpeed={0.6} zoomSpeed={0.8}
-        minPolarAngle={0.5} maxPolarAngle={1.18} minAzimuthAngle={CAM_AZIMUTH - 1.2} maxAzimuthAngle={CAM_AZIMUTH + 1.2}
-        minZoom={fitZoom * 0.6} maxZoom={fitZoom * 4} screenSpacePanning makeDefault onChange={clampTarget} />
-    </>
-  );
-}
-
-function Lights({ scene }: { scene: CompiledScene }) {
-  const cx = (scene.bounds.minX + scene.bounds.maxX) / 2, cz = (scene.bounds.minZ + scene.bounds.maxZ) / 2;
-  const span = Math.max(scene.bounds.maxX - scene.bounds.minX, scene.bounds.maxZ - scene.bounds.minZ) / 2 + 10;
-  const key = useRef<THREE.DirectionalLight>(null);
-  const rim = useRef<THREE.DirectionalLight>(null);
+  const current = (): Pose => ({ pos: camera.position.clone(), target: ctl.current!.target.clone(), zoom: (camera as THREE.OrthographicCamera).zoom });
+  const apply = (p: Pose) => { camera.position.copy(p.pos); ctl.current!.target.copy(p.target); (camera as THREE.OrthographicCamera).zoom = p.zoom; camera.updateProjectionMatrix(); ctl.current!.update(); invalidate(); };
+  const go = (to: Pose, remember = true) => {
+    if (!ctl.current) return;
+    if (remember) { history.current.push(current()); if (history.current.length > 12) history.current.shift(); }
+    manual.current = true;
+    if (ui.reducedMotion) apply(to); else { tween.current = { t: 0, from: current(), to }; gl.domElement.dataset.cameraActive = "true"; invalidate(); }
+  };
   useEffect(() => {
-    for (const l of [key.current, rim.current]) if (l) { l.target.position.set(cx, 0, cz); l.target.updateMatrixWorld(); }
-  }, [cx, cz]);
-  return (
-    <>
-      {/* soft sky fill, warm bounce from the ground */}
-      <hemisphereLight args={["#e3e9f2", "#2c2824", 1.25]} />
-      <ambientLight intensity={0.12} />
-      {/* key: high, front-left, warm white, soft shadows */}
-      <directionalLight ref={key} position={[cx - 34, 62, cz + 30]} intensity={2.5} color="#fff3e2" castShadow
-        shadow-mapSize={[2048, 2048]} shadow-bias={-0.00035} shadow-normalBias={0.03} shadow-radius={4}
-        shadow-camera-left={-span} shadow-camera-right={span} shadow-camera-top={span} shadow-camera-bottom={-span} shadow-camera-near={1} shadow-camera-far={200} />
-      {/* rim: low from behind, cool, separates silhouettes from the ground */}
-      <directionalLight ref={rim} position={[cx - 30, 22, cz - 60]} intensity={0.9} color="#a9c0e4" />
-      {/* faint fill from the camera side so front faces never go black */}
-      <directionalLight position={[cx + 60, 30, cz + 50]} intensity={0.35} color="#c9d4e6" />
-    </>
-  );
-}
-
-function Room({ room, highContrast }: { room: SceneRoom; highContrast: boolean }) {
-  const { ui, dispatch, vm } = useApp();
-  const asset = vm.data.graph.assets.find((a) => a.id === room.asset_id)!;
-  const status = vm.assetStatus.get(room.asset_id);
-  const selected = (ui.selection?.kind === "asset" && ui.selection.id === room.asset_id) ||
-    (ui.selection?.kind === "finding" && !!vm.findings.find((f) => f.id === ui.selection!.id)?.affected_asset_ids.includes(room.asset_id)) ||
-    (ui.selection?.kind === "event" && !!vm.data.events.find((e) => e.id === ui.selection!.id)?.asset_ids.includes(room.asset_id));
-  const hovered = ui.hover === room.asset_id;
-  const q = ui.query.trim().toLowerCase();
-  const dim = q.length > 1 && !(asset.name.toLowerCase().includes(q) || asset.id.toLowerCase().includes(q) || (asset.owner ?? "").toLowerCase().includes(q));
-  const select = () => dispatch({ type: "select", selection: { kind: "asset", id: room.asset_id }, announce: `Selected ${asset.name}` });
-  const worst = status?.worst ?? null;
-  const active = !!worst && ACTIVE.includes(worst);
-  const gap = !!status && status.coverage !== "reporting";
-  const S = MODULE_SCALE;
-  const fw = room.footprint.w * S, fd = room.footprint.d * S, fh = room.height * S;
-  const r = Math.max(fw, fd);
-  const labelY = room.label_anchor.y * S + (worst ? 1.1 : 0.2);
-  const priority = selected ? FORCE + 100 : hovered ? FORCE : dim ? -1000 : (worst ? RANK[worst] * 10 : 0) + (status?.findingIds.length ?? 0) + (gap ? 15 : 0) + room.height;
-  const labelRef = useLabel(`room:${room.asset_id}`, [room.position.x, labelY, room.position.z], priority, -6);
-  const count = status?.findingIds.length ?? 0;
-  return (
-    <group position={[room.position.x, 0, room.position.z]} userData={{ asset_id: room.asset_id, node_id: room.node_id }}>
-      {/* contact shadow: cheap ambient occlusion that grounds every building */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.07, 0]} renderOrder={1}>
-        <planeGeometry args={[fw * 1.8, fd * 1.8]} />
-        <meshBasicMaterial map={aoTexture()} transparent opacity={0.85} depthWrite={false} />
-      </mesh>
-      <group rotation={[0, (room.rotation_y * Math.PI) / 180, 0]} scale={S}>
-        <CastleModule id={room.module_id} roofs={ui.roofs} highContrast={highContrast} windowColor={active ? OUTCOME_STYLE[worst!].color : null} />
-      </group>
-      {/* selectable proxy that matches the displayed footprint */}
-      <mesh
-        position={[0, fh / 2, 0]}
-        userData={{ asset_id: room.asset_id }}
-        onClick={(e) => { e.stopPropagation(); select(); }}
-        onPointerOver={(e) => { e.stopPropagation(); dispatch({ type: "hover", id: room.asset_id }); document.body.style.cursor = "pointer"; }}
-        onPointerOut={() => { dispatch({ type: "hover", id: null }); document.body.style.cursor = ""; }}
-      >
-        <boxGeometry args={[fw, fh + 0.6, fd]} />
-        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
-      </mesh>
-      {active && <Halo color={OUTCOME_STYLE[worst!].color} size={r * 2.4} />}
-      {selected && <SelectionRing r={r * 0.72} />}
-      {hovered && !selected && (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.09, 0]} renderOrder={3}>
-          <ringGeometry args={[r * 0.72, r * 0.72 + 0.09, 64]} />
-          <meshBasicMaterial color="#d7dce4" transparent opacity={0.55} depthWrite={false} />
-        </mesh>
-      )}
-      {gap && <CoverageHatch w={fw + 1.2} d={fd + 1.2} kind={status!.coverage as "gap" | "unobserved"} />}
-      {worst && <Marker state={worst} y={fh + 0.9} />}
-      {status && status.recentEventIds.length > 0 && !ui.reducedMotion && <Pulse r={r * 0.6} eventIds={status.recentEventIds} />}
-      <Html position={[0, labelY, 0]} center zIndexRange={[20, 10]}>
-        <div ref={labelRef} className="lbl">
-          <button className={`room-label${selected ? " is-selected" : ""}${dim ? " dim" : ""}`} onClick={select}
-            onPointerEnter={() => dispatch({ type: "hover", id: room.asset_id })} onPointerLeave={() => dispatch({ type: "hover", id: null })}
-            aria-label={`${asset.name}, ${worst ? OUTCOME_STYLE[worst].label : "no open findings"}${gap ? ", coverage gap" : ""}`}>
-            {worst && <StateIcon state={worst} size={11} />}
-            <span className="name">{asset.name}</span>
-            {count > 1 && <span className="n">{count}</span>}
-            {gap && <span title={status?.coverageNote ?? "No telemetry"} style={{ display: "inline-flex" }}><GapIcon size={11} /></span>}
-          </button>
-        </div>
-      </Html>
-    </group>
-  );
-}
-
-function SelectionRing({ r }: { r: number }) {
-  return (
-    <group position={[0, 0.095, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <mesh renderOrder={4}>
-        <ringGeometry args={[r, r + 0.16, 72]} />
-        <meshBasicMaterial color={ACCENT} transparent opacity={1} depthWrite={false} toneMapped={false} />
-      </mesh>
-      <mesh renderOrder={3}>
-        <planeGeometry args={[r * 2.9, r * 2.9]} />
-        <meshBasicMaterial map={glowTexture()} color={ACCENT} transparent opacity={0.7} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
-      </mesh>
-    </group>
-  );
-}
-
-function Halo({ color, size }: { color: string; size: number }) {
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.085, 0]} renderOrder={2}>
-      <planeGeometry args={[size, size]} />
-      <meshBasicMaterial map={glowTexture()} color={color} transparent opacity={0.45} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
-    </mesh>
-  );
-}
-
-function CoverageHatch({ w, d, kind }: { w: number; d: number; kind: "gap" | "unobserved" }) {
-  const tex = useMemo(() => { const t = hatchTexture().clone(); t.repeat.set(w / 1.1, d / 1.1); t.needsUpdate = true; return t; }, [w, d]);
-  const edge = useMemo(() => [[-w / 2, 0, -d / 2], [w / 2, 0, -d / 2], [w / 2, 0, d / 2], [-w / 2, 0, d / 2], [-w / 2, 0, -d / 2]] as [number, number, number][], [w, d]);
-  const color = kind === "gap" ? "#e2b84f" : "#9aa3af";
-  return (
-    <group position={[0, 0.08, 0]}>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} renderOrder={2}>
-        <planeGeometry args={[w, d]} />
-        <meshBasicMaterial map={tex} color={color} transparent opacity={kind === "gap" ? 0.5 : 0.32} depthWrite={false} />
-      </mesh>
-      <Line points={edge} color={color} lineWidth={1.2} dashed dashSize={0.3} gapSize={0.2} transparent opacity={0.8} />
-    </group>
-  );
-}
-
-const markerGeo: Record<OutcomeState, () => THREE.BufferGeometry> = {
-  blocked: () => new THREE.CylinderGeometry(0.36, 0.14, 0.46, 6),
-  attempted: () => new THREE.OctahedronGeometry(0.34),
-  allowed: () => new THREE.SphereGeometry(0.26, 20, 14),
-  refused: () => new THREE.BoxGeometry(0.42, 0.42, 0.42),
-  needs_review: () => new THREE.ConeGeometry(0.36, 0.58, 3),
-  observed_effect: () => new THREE.TorusGeometry(0.3, 0.1, 12, 32),
-  unknown: () => new THREE.DodecahedronGeometry(0.3),
-};
-
-function Marker({ state, y }: { state: OutcomeState; y: number }) {
-  const ref = useRef<THREE.Group>(null);
-  const { ui } = useApp();
-  const geo = useMemo(() => markerGeo[state](), [state]);
-  useFrame((s) => { if (ref.current && !ui.reducedMotion) { ref.current.position.y = y + Math.sin(s.clock.elapsedTime * 1.2) * 0.07; ref.current.rotation.y += 0.006; } });
-  const color = OUTCOME_STYLE[state].color;
-  const active = ACTIVE.includes(state);
-  return (
-    <group ref={ref} position={[0, y, 0]}>
-      <mesh geometry={geo} castShadow>
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={active ? 0.55 : 0.2} roughness={0.45} />
-      </mesh>
-    </group>
-  );
-}
-
-function Pulse({ r, eventIds }: { r: number; eventIds: string[] }) {
-  const { vm } = useApp();
-  const ref = useRef<THREE.Mesh>(null);
-  const last = vm.events.find((e) => e.id === eventIds[eventIds.length - 1]);
-  const color = last ? EVENT_OUTCOME_COLOR[last.outcome] : "#ffffff";
-  useFrame((s) => {
-    if (!ref.current) return;
-    const t = (s.clock.elapsedTime % 2) / 2;
-    ref.current.scale.setScalar(1 + t * 1.2);
-    (ref.current.material as THREE.MeshBasicMaterial).opacity = 0.55 * (1 - t) * (1 - t);
+    if (!ctl.current) return;
+    if (!initialized.current) { const saved = cameraPoses.get(key); apply(saved ?? fit()); manual.current = !!saved; initialized.current = true; }
+    else if (!manual.current) apply(fit());
+    // React clears the ref before passive unmount cleanup. Capture the live control instance so
+    // returning from Graph restores the interacted camera, rather than the last resize/overview.
+    const control = ctl.current;
+    return () => { cameraPoses.set(key, { pos: camera.position.clone(), target: control.target.clone(), zoom: (camera as THREE.OrthographicCamera).zoom }); if (cameraPoses.size > 4) cameraPoses.delete(cameraPoses.keys().next().value!); };
+    // Deliberate panel resizing preserves an interacted camera; initial scene fit still responds.
+  }, [key, size.width, size.height]);
+  useEffect(() => {
+    if (!command.n || !ctl.current) return;
+    if (command.type === "back") { const p = history.current.pop(); if (p) go(p, false); }
+    else if (command.type === "fit") go(fit());
+    else if (command.type === "focus") { const ids = selectionAssets(ui.selection, vm); const rs = command.group ? groups.find(g => g.key === command.group)?.rooms : scene.rooms.filter(r => ids.has(r.asset_id)); if (rs?.length) go(fit(rs)); }
+    else { const p = current(); p.zoom = THREE.MathUtils.clamp(p.zoom * (command.type === "in" ? 1.25 : 0.8), 1, 140); go(p); }
+  }, [command.n]);
+  useEffect(() => {
+    if (ui.focusRevision <= ui.focusHandledRevision || ui.focusRevision === focusInFlight.current || !ctl.current) return;
+    const ids = selectionAssets(ui.selection, vm), rs = scene.rooms.filter(r => ids.has(r.asset_id));
+    if (rs.length) { focusInFlight.current = ui.focusRevision; go(fit(rs)); if (ui.reducedMotion) dispatch({ type: "focusHandled", revision: ui.focusRevision }); else if (tween.current) tween.current.focusRevision = ui.focusRevision; }
+  }, [ui.focusRevision, ui.focusHandledRevision, vm.selectedEventAssets]);
+  useFrame((_, dt) => {
+    if (!ctl.current) return;
+    const t = tween.current;
+    if (t) { t.t = Math.min(1, t.t + Math.min(dt, 0.05) / 0.38); const k = 1 - (1 - t.t) ** 3;
+      apply({ pos: t.from.pos.clone().lerp(t.to.pos, k), target: t.from.target.clone().lerp(t.to.target, k), zoom: THREE.MathUtils.lerp(t.from.zoom, t.to.zoom, k) }); if (t.t === 1) { tween.current = null; gl.domElement.dataset.cameraActive = "false"; if (t.focusRevision) dispatch({ type: "focusHandled", revision: t.focusRevision }); }
+    }
+    gl.domElement.dataset.cameraPose = JSON.stringify({ position: camera.position.toArray().map(v => +v.toFixed(3)), target: ctl.current.target.toArray().map(v => +v.toFixed(3)), zoom: +(camera as THREE.OrthographicCamera).zoom.toFixed(3) });
   });
-  return (
-    <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]} userData={{ event_ids: eventIds }} renderOrder={5}>
-      <ringGeometry args={[r, r + 0.12, 56]} />
-      <meshBasicMaterial color={color} transparent opacity={0.5} depthWrite={false} toneMapped={false} />
+  return <OrbitControls ref={ctl} makeDefault enableDamping={false} rotateSpeed={0.6} zoomSpeed={0.8} minPolarAngle={THREE.MathUtils.degToRad(25)} maxPolarAngle={THREE.MathUtils.degToRad(65)} minZoom={1} maxZoom={140}
+    onStart={() => { gl.domElement.dataset.cameraActive = "true"; if (tween.current?.focusRevision) dispatch({ type: "focusHandled", revision: tween.current.focusRevision }); tween.current = null; manual.current = true; }} onEnd={() => { gl.domElement.dataset.cameraActive = "false"; }} onChange={() => { const c = ctl.current; if (!c) return;
+      const x = THREE.MathUtils.clamp(c.target.x, b.minX - 5, b.maxX + 5), z = THREE.MathUtils.clamp(c.target.z, b.minZ - 5, b.maxZ + 5); const delta = new THREE.Vector3(x - c.target.x, 0, z - c.target.z); c.target.add(delta); camera.position.add(delta); invalidate(); }} />;
+}
+function Lights({ scene, quality }: { scene: CompiledScene; quality: DetailLevel }) {
+  const cx = (scene.bounds.minX + scene.bounds.maxX) / 2, cz = (scene.bounds.minZ + scene.bounds.maxZ) / 2;
+  const span = Math.max(scene.bounds.maxX - scene.bounds.minX, scene.bounds.maxZ - scene.bounds.minZ) / 2 + 6;
+  const key = useRef<THREE.DirectionalLight>(null);
+  useEffect(() => { if (key.current) { key.current.target.position.set(cx, 0, cz); key.current.target.updateMatrixWorld(); } }, [cx, cz]);
+  return <><hemisphereLight args={["#E7EFF9", "#4D453A", 1.65]} />
+    <directionalLight ref={key} position={[cx - 30, 50, cz + 32]} intensity={3.1} color="#FFF1DA" castShadow={quality !== "low"} shadow-mapSize={quality === "high" ? [2048, 2048] : [1024, 1024]} shadow-bias={-0.0003} shadow-normalBias={0.04} shadow-radius={3}
+      shadow-camera-left={-span} shadow-camera-right={span} shadow-camera-top={span} shadow-camera-bottom={-span} shadow-camera-near={1} shadow-camera-far={200} />
+    <directionalLight position={[cx + 24, 16, cz - 30]} intensity={1.1} color="#AAC9EF" />
+  </>;
+}
+function Room({ room, selected, quality }: { room: SceneRoom; selected: boolean; quality: DetailLevel }) {
+  const { ui, dispatch, vm } = useApp(), status = vm.assetStatus.get(room.asset_id), asset = vm.data.graph.assets.find(a => a.id === room.asset_id)!;
+  const [moduleFault, setModuleFault] = useState<{ id: string; code: ModuleFailureCode } | null>(null);
+  const moduleFailure = moduleFault?.id === room.module_id ? moduleFault.code : null;
+  const [lod, setLod] = useState<DetailLevel>(quality === "low" ? "low" : "medium"), previousPixels = useRef(0);
+  useFrame(({ camera }) => {
+    const pixels = Math.max(room.footprint.w, room.footprint.d) * (camera as THREE.OrthographicCamera).zoom;
+    if (Math.abs(previousPixels.current - pixels) < 18 && !selected) return;
+    previousPixels.current = pixels;
+    const next = quality === "low" ? "low" : quality === "high" && (selected || pixels > 175) ? "high" : pixels < 42 && !selected ? "low" : "medium";
+    if (next !== lod) setLod(next);
+  });
+  useEffect(() => { setLod(quality === "low" ? "low" : selected && quality === "high" ? "high" : "medium"); }, [quality, selected]);
+  const hovered = ui.hover === room.asset_id, q = ui.query.trim().toLowerCase(), dim = !!q && !`${asset.name} ${asset.id} ${asset.owner ?? ""}`.toLowerCase().includes(q);
+  const gap = status && status.coverage !== "reporting", severity = status?.severity;
+  const priority = selected ? FORCE + 200 : hovered ? FORCE + 100 : moduleFailure ? FORCE + 50 : dim ? -1000 : (severity ? SEVERITY_RANK[severity] * 45 : 0) + (gap ? 15 : 0);
+  const labelRef = useLabel(`room:${room.asset_id}`, [room.position.x, room.label_anchor.y, room.position.z], priority);
+  const select = () => dispatch({ type: "select", selection: { kind: "asset", id: room.asset_id }, announce: `Selected ${asset.name}. ${status ? ASSET_COVERAGE_LABEL[status.coverage] : "Coverage not assessed"}.` });
+  const w = room.footprint.w, d = room.footprint.d;
+  const moduleIdentity = useMemo(() => ({ assetId: asset.id, name: asset.name, width: room.rotation_y % 180 ? d : w, depth: room.rotation_y % 180 ? w : d, height: room.height,
+    onFailure: (code: ModuleFailureCode) => setModuleFault({ id: room.module_id, code }) }), [asset.id, asset.name, w, d, room.rotation_y, room.height, room.module_id]);
+  return <group name={`asset:${room.asset_id}`} position={[room.position.x, 0.08, room.position.z]} userData={{ asset_id: room.asset_id, node_id: room.node_id }}>
+    <group rotation={[0, room.rotation_y * Math.PI / 180, 0]}><CastleModule id={room.module_id} roofs={ui.roofs} lod={lod}
+      identity={moduleIdentity} /></group>
+    <mesh name="hit-proxy" position={[0, room.height / 2, 0]} userData={{ asset_id: room.asset_id }} onClick={e => { if (e.delta > 6) return; e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); select(); dispatch({ type: "focus" }); }}
+      onPointerOver={e => { e.stopPropagation(); dispatch({ type: "hover", id: room.asset_id }); document.body.style.cursor = "pointer"; }} onPointerOut={() => { dispatch({ type: "hover", id: null }); document.body.style.cursor = ""; }}>
+      <boxGeometry args={[w, room.height, d]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
     </mesh>
-  );
+    {(selected || hovered) && <Line points={[[-w / 2 - 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, -d / 2 - 0.18]]} color={selected ? ACCENT : "#EEF3FA"} lineWidth={selected ? 2.6 : 1.5} raycast={() => null} />}
+    {gap && <CoverageHatch w={w + 0.32} d={d + 0.32} warning={status.coverage === "gap" || status.coverage === "partial"} />}
+    <Html position={[0, room.label_anchor.y - 0.08, 0]} center zIndexRange={[20, 10]}>
+      <div ref={labelRef} className="lbl"><button data-asset-label={asset.id} data-module-recovery={moduleFailure ?? undefined} className={`room-label${selected ? " is-selected" : ""}${dim ? " dim" : ""}`} onClick={e => { e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); dispatch({ type: "focus" }); }}
+        onFocus={() => dispatch({ type: "hover", id: asset.id })} onBlur={() => dispatch({ type: "hover", id: null })}
+        aria-label={`${asset.name}. ${moduleFailure ? "Visual module unavailable; neutral block. " : ""}${severity ? severity + " severity. " : ""}${status?.worst ? OUTCOME_STYLE[status.worst].label + ". " : "No open findings. "}${status ? ASSET_COVERAGE_LABEL[status.coverage] : "Coverage not assessed"}`}
+        style={{ borderColor: selected ? ACCENT : severity ? SEVERITY_COLOR[severity] : undefined, maxWidth: selected ? 230 : 170, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, borderRadius: 7, padding: "6px 9px" }}>
+        <span className="name" style={{ whiteSpace: selected ? "normal" : undefined }}>{asset.name}</span>
+        {moduleFailure && <small role="status" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "polite"}>Model unavailable · neutral block</small>}
+        {status?.worst && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><StateIcon state={status.worst} size={12} /><span>{OUTCOME_STYLE[status.worst].label}</span></span>}
+        {severity && <small style={{ color: SEVERITY_COLOR[severity] }}>{severity} · {status!.findingIds.length} finding{status!.findingIds.length === 1 ? "" : "s"}</small>}
+        {gap && <small data-coverage={status.coverage} style={{ color: "#E8BE78" }}>{ASSET_COVERAGE_LABEL[status.coverage]}</small>}
+      </button></div>
+    </Html>
+  </group>;
 }
-
-function Paths({ scene }: { scene: CompiledScene }) {
-  const { ui, dispatch, vm } = useApp();
-  const sel = ui.selection;
-  const focus = useMemo(() => {
-    if (sel?.kind === "asset") return new Set([sel.id]);
-    if (sel?.kind === "finding") return new Set(vm.findings.find((f) => f.id === sel.id)?.affected_asset_ids ?? []);
-    return new Set<string>();
-  }, [sel, vm.findings]);
-  const anyFocus = focus.size > 0 || sel?.kind === "path";
-  return (
-    <group>
-      {scene.paths.map((p) => {
-        const layer = RELATIONSHIP_LAYER[p.kind] ?? "runtime";
-        const hypothetical = p.evidence_level === "hypothetical" || p.evidence_level === "inferred";
-        const touchesSel = focus.has(p.source_asset_id) || focus.has(p.target_asset_id);
-        const isSel = sel?.kind === "path" && sel.id === p.relationship_id;
-        if (!(touchesSel || isSel) && (!ui.layers[layer] || (hypothetical && !ui.showHypothetical && p.evidence_level === "hypothetical"))) return null;
-        const pts = curvePoints(p.points);
-        const emphasis = touchesSel || isSel;
-        return (
-          <Line
-            key={p.relationship_id}
-            points={pts}
-            color={LAYER_STYLE[layer].color}
-            lineWidth={isSel ? 3 : emphasis ? 2.2 : 1.3}
-            transparent
-            opacity={emphasis ? 0.95 : anyFocus ? 0.12 : 0.5}
-            dashed={hypothetical}
-            dashSize={0.4}
-            gapSize={0.28}
-            onClick={(e) => { e.stopPropagation(); dispatch({ type: "select", selection: { kind: "path", id: p.relationship_id } }); }}
-          />
-        );
-      })}
-    </group>
-  );
+function CoverageHatch({ w, d, warning }: { w: number; d: number; warning: boolean }) {
+  const tex = useMemo(() => { const t = hatchTexture().clone(); t.repeat.set(w * 1.4, d * 1.4); t.needsUpdate = true; return t; }, [w, d]);
+  useEffect(() => () => tex.dispose(), [tex]);
+  return <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, 0]} renderOrder={2} raycast={() => null}><planeGeometry args={[w, d]} /><meshBasicMaterial map={tex} color={warning ? "#E8BE78" : "#B2BBC8"} transparent opacity={0.44} depthWrite={false} /></mesh>;
 }
-
-const curveCache = new Map<string, THREE.Vector3[]>();
-function curvePoints(points: { x: number; y: number; z: number }[]): THREE.Vector3[] {
-  const key = points.map((p) => `${p.x},${p.y},${p.z}`).join("|");
-  let c = curveCache.get(key);
-  if (!c) {
-    c = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(p.x, p.y, p.z)), false, "centripetal").getPoints(32);
-    curveCache.set(key, c);
-  }
-  return c;
+function District({ group, onFocus }: { group: PresentationGroup; onFocus: () => void }) {
+  const b = group.bounds, pos: [number, number, number] = [(b.minX + b.maxX) / 2, 1.5, (b.minZ + b.maxZ) / 2];
+  const ref = useLabel(`district:${group.key}`, pos, 100);
+  return <Html position={pos} center><div ref={ref} className="lbl"><button onClick={onFocus} style={{ padding: "7px 10px", background: "#192637", border: "1px solid #70849B", borderRadius: 8, color: "#EEF3FA", maxWidth: 170, fontSize: 12 }} aria-label={`Expand ${group.label}, ${group.environment}, ${group.rooms.length} assets`}>
+    <strong>{group.label}</strong><br />{group.rooms.length} assets
+  </button></div></Html>;
+}
+function Paths({ scene, visibleIds, onChoice }: { scene: CompiledScene; visibleIds: Set<string>; onChoice: (choice: EdgeChoice) => void }) {
+  const { ui, dispatch, vm } = useApp(), { camera, gl, size } = useThree(), focus = selectionAssets(ui.selection, vm), down = useRef<ScreenPoint | null>(null);
+  const visible = scene.paths.filter(p => {
+    if (!visibleIds.has(p.source_asset_id) || !visibleIds.has(p.target_asset_id)) return false;
+    if (p.evidence_level === "hypothetical" && !ui.showHypothetical) return false;
+    const layer = RELATIONSHIP_LAYER[p.kind] ?? "runtime", chosen = (ui.selection?.kind === "path" || ui.selection?.kind === "relationship") && ui.selection.id === p.relationship_id;
+    return chosen || (ui.layers[layer] && (focus.has(p.source_asset_id) || focus.has(p.target_asset_id)));
+  }).map(p => ({ p, points: p.points.map(v => new THREE.Vector3(v.x, v.y, v.z)), curved: new THREE.CatmullRomCurve3(p.points.map(v => new THREE.Vector3(v.x, v.y, v.z))).getPoints(40) }));
+  const choose = (e: { clientX: number; clientY: number; delta: number; stopPropagation: () => void }) => {
+    e.stopPropagation(); const pointer = { x: e.clientX, y: e.clientY };
+    if (e.delta > 6 || pointerWasDrag(down.current, pointer)) return;
+    const rect = gl.domElement.getBoundingClientRect();
+    const ids = overlappingEdges(visible.map(({ p, curved }) => ({ id: p.relationship_id, points: curved.map(v => { const s = v.clone().project(camera); return { x: rect.left + (s.x + 1) / 2 * size.width, y: rect.top + (1 - s.y) / 2 * size.height }; }) })), pointer);
+    if (ids.length > 1) onChoice({ ids, x: e.clientX - rect.left, y: e.clientY - rect.top });
+    else if (ids.length === 1) dispatch({ type: "select", selection: { kind: "path", id: ids[0]! } });
+  };
+  return <group name="evidence-relationship-overlays">{visible.map(({ p, points, curved }) => {
+    const layer = RELATIONSHIP_LAYER[p.kind] ?? "runtime", chosen = (ui.selection?.kind === "path" || ui.selection?.kind === "relationship") && ui.selection.id === p.relationship_id;
+    const declared = p.evidence_level === "declared", hypothetical = p.evidence_level === "hypothetical", inferred = p.evidence_level === "inferred";
+    const end = curved[curved.length - 1]!, before = curved[curved.length - 3]!, direction = end.clone().sub(before).normalize(), side = new THREE.Vector3(-direction.z, 0, direction.x).multiplyScalar(0.2), tail = end.clone().addScaledVector(direction, -0.45);
+    return <group key={p.relationship_id}><Line points={curved} color={chosen ? ACCENT : LAYER_STYLE[layer].color} lineWidth={chosen ? 2.5 : 1.5} dashed={declared || hypothetical || inferred} dashSize={hypothetical ? 0.06 : inferred ? 0.35 : 0.48} gapSize={hypothetical ? 0.25 : inferred ? 0.17 : 0.28} raycast={() => null} />
+      <Line name={`relationship-hit:${p.relationship_id}`} userData={{ relationship_id: p.relationship_id }} points={curved} lineWidth={12} transparent opacity={0} depthWrite={false}
+        onPointerDown={e => { down.current = { x: e.clientX, y: e.clientY }; }} onClick={choose} />
+      {inferred && <Line points={curved} color={LAYER_STYLE[layer].color} lineWidth={1.4} dashed dashSize={0.035} gapSize={0.48} dashOffset={0.37} raycast={() => null} />}
+      <Line points={[tail.clone().add(side), end, tail.clone().sub(side)]} color={chosen ? ACCENT : LAYER_STYLE[layer].color} lineWidth={1.5} raycast={() => null} />
+      {chosen && <Html position={points[1]!.toArray()} center><span style={{ background: "#121C29", color: "#EEF3FA", padding: 6, fontSize: 12 }}>{p.evidence_level} · {p.kind.replaceAll("_", " ")}</span></Html>}
+    </group>;
+  })}</group>;
 }

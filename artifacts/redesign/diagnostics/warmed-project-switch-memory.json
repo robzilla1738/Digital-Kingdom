@@ -1,0 +1,540 @@
+{
+  "title": "Controlled warmed project-switch memory diagnosis",
+  "diagnosticNotFinalReleaseRun": true,
+  "baseCommit": "e5705562d3ee640d7cf43d26a6122edf639f452e",
+  "workingSourceDiffSha256": "26ec0e9a02e0390a56760961a3dbc494980bac3cbbdbfcae0fa235a644b31a16",
+  "conditions": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "deviceScaleFactor": 1,
+    "headless": true,
+    "renderer": "SwiftShader requested; not real-GPU performance",
+    "warmup": "Both projects and Castle/Graph twice each, 800ms rendered Castle per warmup",
+    "measuredSwitches": 40,
+    "settleMs": 800,
+    "gc": "Immediate GC diagnostic, then 800ms settling and two explicit GC calls separated by 100ms",
+    "control": "Real project picker resets default Castle then real Graph radio",
+    "liveAllocationSamplingBytes": 32768
+  },
+  "browser": "141.0.7390.37",
+  "before": [
+    {
+      "arm": "picker-transient-castle",
+      "build": "e5705562d3ee640d7cf43d26a6122edf639f452e",
+      "htmlSha256": "7daaa2ce22ec3d39815dbaf1afe71d62fb69e6d493765e08af06cebbb59296b0",
+      "initialCollectedBytes": 10165992,
+      "finalCollectedBytes": 18671976,
+      "collectedHeapDeltaBytes": 8505984,
+      "last20SlopeBytesPerSwitch": 188077.76240601504,
+      "last10SlopeBytesPerSwitch": 190244.43636363637,
+      "last10RangeBytes": 1722060,
+      "initialDom": {
+        "documents": 2,
+        "nodes": 2591,
+        "jsEventListeners": 2993
+      },
+      "finalDom": {
+        "documents": 2,
+        "nodes": 3525,
+        "jsEventListeners": 6034
+      },
+      "errors": [],
+      "switch10": {
+        "step": 10,
+        "at": "2026-10-22T19:01:28.209Z",
+        "immediate": {
+          "heap": {
+            "usedSize": 13176412,
+            "totalSize": 13930496,
+            "embedderHeapUsedSize": 4170464,
+            "backingStorageSize": 3012461
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 2835,
+            "jsEventListeners": 5744
+          }
+        },
+        "heap": {
+          "usedSize": 12979708,
+          "totalSize": 13406208,
+          "embedderHeapUsedSize": 4078560,
+          "backingStorageSize": 2925805
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 2835,
+          "jsEventListeners": 5734
+        },
+        "probe": {
+          "activeStreams": 1,
+          "openedStreams": 15,
+          "closedStreams": 14,
+          "pendingFetches": 0,
+          "listenerKeys": [
+            "document:click:158:true",
+            "document:selectionchange:2:false",
+            "window:dk:access-denied:3:false",
+            "window:dk:close-inspector:159:false",
+            "window:hashchange:161:false",
+            "window:keydown:160:false",
+            "window:keydown:165:false",
+            "window:popstate:155:false",
+            "window:popstate:161:false"
+          ]
+        },
+        "createdCanvases": 44,
+        "connectedCanvases": 0,
+        "visibility": "visible",
+        "build": "e5705562d3ee640d7cf43d26a6122edf639f452e",
+        "hash": "#v=2&workspace=kingdom&view=graph",
+        "project": "demo-castle"
+      },
+      "switch40": {
+        "step": 40,
+        "at": "2026-10-22T19:02:07.754Z",
+        "immediate": {
+          "heap": {
+            "usedSize": 18867116,
+            "totalSize": 19959808,
+            "embedderHeapUsedSize": 5735400,
+            "backingStorageSize": 3015221
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 3525,
+            "jsEventListeners": 6044
+          }
+        },
+        "heap": {
+          "usedSize": 18670652,
+          "totalSize": 19697664,
+          "embedderHeapUsedSize": 5586464,
+          "backingStorageSize": 2928565
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 3525,
+          "jsEventListeners": 6034
+        },
+        "probe": {
+          "activeStreams": 1,
+          "openedStreams": 45,
+          "closedStreams": 44,
+          "pendingFetches": 0,
+          "listenerKeys": [
+            "document:click:488:true",
+            "document:selectionchange:2:false",
+            "window:dk:access-denied:3:false",
+            "window:dk:close-inspector:489:false",
+            "window:hashchange:491:false",
+            "window:keydown:490:false",
+            "window:keydown:495:false",
+            "window:popstate:485:false",
+            "window:popstate:491:false"
+          ]
+        },
+        "createdCanvases": 134,
+        "connectedCanvases": 0,
+        "visibility": "visible",
+        "build": "e5705562d3ee640d7cf43d26a6122edf639f452e",
+        "hash": "#v=2&workspace=kingdom&view=graph",
+        "project": "demo-castle"
+      }
+    },
+    {
+      "arm": "native-history-graph-only",
+      "build": "e5705562d3ee640d7cf43d26a6122edf639f452e",
+      "htmlSha256": "7daaa2ce22ec3d39815dbaf1afe71d62fb69e6d493765e08af06cebbb59296b0",
+      "initialCollectedBytes": 10172260,
+      "finalCollectedBytes": 10690096,
+      "collectedHeapDeltaBytes": 517836,
+      "last20SlopeBytesPerSwitch": 6519.166917293233,
+      "last10SlopeBytesPerSwitch": 6587.587878787879,
+      "last10RangeBytes": 76668,
+      "initialDom": {
+        "documents": 2,
+        "nodes": 2591,
+        "jsEventListeners": 2993
+      },
+      "finalDom": {
+        "documents": 2,
+        "nodes": 2580,
+        "jsEventListeners": 2993
+      },
+      "errors": [],
+      "switch10": {
+        "step": 10,
+        "at": "2026-10-22T19:02:27.044Z",
+        "immediate": {
+          "heap": {
+            "usedSize": 10483668,
+            "totalSize": 11309056,
+            "embedderHeapUsedSize": 3311024,
+            "backingStorageSize": 2924039
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 2580,
+            "jsEventListeners": 2993
+          }
+        },
+        "heap": {
+          "usedSize": 10483668,
+          "totalSize": 11309056,
+          "embedderHeapUsedSize": 3311352,
+          "backingStorageSize": 2924039
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 2580,
+          "jsEventListeners": 2993
+        },
+        "probe": {
+          "activeStreams": 1,
+          "openedStreams": 15,
+          "closedStreams": 14,
+          "pendingFetches": 0,
+          "listenerKeys": [
+            "document:click:112:true",
+            "document:selectionchange:2:false",
+            "window:dk:access-denied:3:false",
+            "window:dk:close-inspector:113:false",
+            "window:hashchange:115:false",
+            "window:keydown:111:false",
+            "window:keydown:114:false",
+            "window:popstate:110:false",
+            "window:popstate:115:false"
+          ]
+        },
+        "createdCanvases": 24,
+        "connectedCanvases": 0,
+        "visibility": "visible",
+        "build": "e5705562d3ee640d7cf43d26a6122edf639f452e",
+        "hash": "#v=2&workspace=kingdom&view=graph",
+        "project": "demo-castle"
+      },
+      "switch40": {
+        "step": 40,
+        "at": "2026-10-22T19:02:59.651Z",
+        "immediate": {
+          "heap": {
+            "usedSize": 10690080,
+            "totalSize": 11571200,
+            "embedderHeapUsedSize": 3428256,
+            "backingStorageSize": 2924039
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 2580,
+            "jsEventListeners": 2993
+          }
+        },
+        "heap": {
+          "usedSize": 10690080,
+          "totalSize": 11571200,
+          "embedderHeapUsedSize": 3428584,
+          "backingStorageSize": 2924039
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 2580,
+          "jsEventListeners": 2993
+        },
+        "probe": {
+          "activeStreams": 1,
+          "openedStreams": 45,
+          "closedStreams": 44,
+          "pendingFetches": 0,
+          "listenerKeys": [
+            "document:click:292:true",
+            "document:selectionchange:2:false",
+            "window:dk:access-denied:3:false",
+            "window:dk:close-inspector:293:false",
+            "window:hashchange:295:false",
+            "window:keydown:291:false",
+            "window:keydown:294:false",
+            "window:popstate:290:false",
+            "window:popstate:295:false"
+          ]
+        },
+        "createdCanvases": 54,
+        "connectedCanvases": 0,
+        "visibility": "visible",
+        "build": "e5705562d3ee640d7cf43d26a6122edf639f452e",
+        "hash": "#v=2&workspace=kingdom&view=graph",
+        "project": "demo-castle"
+      }
+    }
+  ],
+  "after": [
+    {
+      "arm": "picker-transient-castle",
+      "build": "working-lifecycle-20261022T1908",
+      "htmlSha256": "dffb36ec7980010e81a1e4978fe62ef8d764a83b8aa2de7777eddc42b24fd448",
+      "initialCollectedBytes": 9572808,
+      "finalCollectedBytes": 11410176,
+      "collectedHeapDeltaBytes": 1837368,
+      "last20SlopeBytesPerSwitch": 11770.442105263159,
+      "last10SlopeBytesPerSwitch": 9300.727272727272,
+      "last10RangeBytes": 96012,
+      "initialDom": {
+        "documents": 2,
+        "nodes": 2486,
+        "jsEventListeners": 2960
+      },
+      "finalDom": {
+        "documents": 2,
+        "nodes": 2523,
+        "jsEventListeners": 5608
+      },
+      "errors": [],
+      "switch10": {
+        "step": 10,
+        "at": "2026-10-22T19:10:00.839Z",
+        "immediate": {
+          "heap": {
+            "usedSize": 10874552,
+            "totalSize": 11571200,
+            "embedderHeapUsedSize": 3786528,
+            "backingStorageSize": 2929742
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 2523,
+            "jsEventListeners": 5618
+          }
+        },
+        "heap": {
+          "usedSize": 10874412,
+          "totalSize": 11571200,
+          "embedderHeapUsedSize": 3575960,
+          "backingStorageSize": 2929742
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 2523,
+          "jsEventListeners": 5608
+        },
+        "probe": {
+          "activeStreams": 1,
+          "openedStreams": 15,
+          "closedStreams": 14,
+          "pendingFetches": 0,
+          "listenerKeys": [
+            "document:click:158:true",
+            "document:selectionchange:2:false",
+            "window:dk:access-denied:3:false",
+            "window:dk:close-inspector:159:false",
+            "window:hashchange:161:false",
+            "window:keydown:160:false",
+            "window:keydown:165:false",
+            "window:popstate:155:false",
+            "window:popstate:161:false"
+          ]
+        },
+        "createdCanvases": 45,
+        "connectedCanvases": 0,
+        "visibility": "visible",
+        "build": "working-lifecycle-20261022T1908",
+        "hash": "#v=2&workspace=kingdom&view=graph",
+        "project": "demo-castle"
+      },
+      "switch40": {
+        "step": 40,
+        "at": "2026-10-22T19:10:39.303Z",
+        "immediate": {
+          "heap": {
+            "usedSize": 11393672,
+            "totalSize": 12357632,
+            "embedderHeapUsedSize": 3853632,
+            "backingStorageSize": 2929742
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 2523,
+            "jsEventListeners": 5618
+          }
+        },
+        "heap": {
+          "usedSize": 11393532,
+          "totalSize": 12095488,
+          "embedderHeapUsedSize": 3679088,
+          "backingStorageSize": 2929742
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 2523,
+          "jsEventListeners": 5608
+        },
+        "probe": {
+          "activeStreams": 1,
+          "openedStreams": 45,
+          "closedStreams": 44,
+          "pendingFetches": 0,
+          "listenerKeys": [
+            "document:click:488:true",
+            "document:selectionchange:2:false",
+            "window:dk:access-denied:3:false",
+            "window:dk:close-inspector:489:false",
+            "window:hashchange:491:false",
+            "window:keydown:490:false",
+            "window:keydown:495:false",
+            "window:popstate:485:false",
+            "window:popstate:491:false"
+          ]
+        },
+        "createdCanvases": 135,
+        "connectedCanvases": 0,
+        "visibility": "visible",
+        "build": "working-lifecycle-20261022T1908",
+        "hash": "#v=2&workspace=kingdom&view=graph",
+        "project": "demo-castle"
+      }
+    },
+    {
+      "arm": "native-history-graph-only",
+      "build": "working-lifecycle-20261022T1908",
+      "htmlSha256": "dffb36ec7980010e81a1e4978fe62ef8d764a83b8aa2de7777eddc42b24fd448",
+      "initialCollectedBytes": 9563796,
+      "finalCollectedBytes": 10077332,
+      "collectedHeapDeltaBytes": 513536,
+      "last20SlopeBytesPerSwitch": 6377.404511278195,
+      "last10SlopeBytesPerSwitch": 5765.212121212121,
+      "last10RangeBytes": 60068,
+      "initialDom": {
+        "documents": 2,
+        "nodes": 2486,
+        "jsEventListeners": 2960
+      },
+      "finalDom": {
+        "documents": 2,
+        "nodes": 2475,
+        "jsEventListeners": 2960
+      },
+      "errors": [],
+      "switch10": {
+        "step": 10,
+        "at": "2026-10-22T19:10:59.009Z",
+        "immediate": {
+          "heap": {
+            "usedSize": 9886660,
+            "totalSize": 10784768,
+            "embedderHeapUsedSize": 3154696,
+            "backingStorageSize": 2928891
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 2475,
+            "jsEventListeners": 2960
+          }
+        },
+        "heap": {
+          "usedSize": 9886660,
+          "totalSize": 10784768,
+          "embedderHeapUsedSize": 3155024,
+          "backingStorageSize": 2928891
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 2475,
+          "jsEventListeners": 2960
+        },
+        "probe": {
+          "activeStreams": 1,
+          "openedStreams": 15,
+          "closedStreams": 14,
+          "pendingFetches": 0,
+          "listenerKeys": [
+            "document:click:112:true",
+            "document:selectionchange:2:false",
+            "window:dk:access-denied:3:false",
+            "window:dk:close-inspector:113:false",
+            "window:hashchange:115:false",
+            "window:keydown:111:false",
+            "window:keydown:114:false",
+            "window:popstate:110:false",
+            "window:popstate:115:false"
+          ]
+        },
+        "createdCanvases": 24,
+        "connectedCanvases": 0,
+        "visibility": "visible",
+        "build": "working-lifecycle-20261022T1908",
+        "hash": "#v=2&workspace=kingdom&view=graph",
+        "project": "demo-castle"
+      },
+      "switch40": {
+        "step": 40,
+        "at": "2026-10-22T19:11:31.730Z",
+        "immediate": {
+          "heap": {
+            "usedSize": 10077316,
+            "totalSize": 11046912,
+            "embedderHeapUsedSize": 3279840,
+            "backingStorageSize": 2928891
+          },
+          "dom": {
+            "documents": 2,
+            "nodes": 2475,
+            "jsEventListeners": 2960
+          }
+        },
+        "heap": {
+          "usedSize": 10077316,
+          "totalSize": 11046912,
+          "embedderHeapUsedSize": 3280168,
+          "backingStorageSize": 2928891
+        },
+        "dom": {
+          "documents": 2,
+          "nodes": 2475,
+          "jsEventListeners": 2960
+        },
+        "probe": {
+          "activeStreams": 1,
+          "openedStreams": 45,
+          "closedStreams": 44,
+          "pendingFetches": 0,
+          "listenerKeys": [
+            "document:click:292:true",
+            "document:selectionchange:2:false",
+            "window:dk:access-denied:3:false",
+            "window:dk:close-inspector:293:false",
+            "window:hashchange:295:false",
+            "window:keydown:291:false",
+            "window:keydown:294:false",
+            "window:popstate:290:false",
+            "window:popstate:295:false"
+          ]
+        },
+        "createdCanvases": 54,
+        "connectedCanvases": 0,
+        "visibility": "visible",
+        "build": "working-lifecycle-20261022T1908",
+        "hash": "#v=2&workspace=kingdom&view=graph",
+        "project": "demo-castle"
+      }
+    }
+  ],
+  "findings": [
+    "The old Castle-containing arm retained about 23 DOM nodes and 10 JS listeners per switch even after 800ms settling and two GC passes.",
+    "Installed React Three Fiber defers root disposal 500ms; settling excluded that confounder but did not fix retention.",
+    "Cached architecture geometry/materials retained renderer dispose registrations. Cleanup now releases GPU registrations while retaining bounded CPU buffers and refreshes overlapping live renderers.",
+    "After cleanup, Castle DOM node/listener counts remain exactly constant from switch 10 through 40; the late heap slope drops 95.1 percent.",
+    "The Graph-only control has residual late heap growth too. These measurements do not establish zero long-term JS growth, native-memory bounds, or real-GPU performance."
+  ],
+  "rawResults": {
+    "before": "../diagnostics/heap-before/results.json",
+    "after": "../diagnostics/heap-after/results.json"
+  },
+  "sourceFiles": [
+    "apps/web/src/castle/geometry.ts",
+    "apps/web/src/castle/modules.tsx",
+    "apps/web/src/castle/Castle3D.tsx",
+    "apps/web/src/castle/architecture.test.ts"
+  ],
+  "tests": "76 compiler/architecture tests and root typecheck passed; both 40-switch diagnostic arms completed before and after."
+}

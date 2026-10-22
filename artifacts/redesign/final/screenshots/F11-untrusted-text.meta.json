@@ -1,0 +1,22 @@
+{
+  "name": "F11-untrusted-text",
+  "file": "F11-untrusted-text.png",
+  "sha256": "8378137f784f16630f7a965353e739f787fbb276511f8b17e45b867908386828",
+  "bytes": 244034,
+  "capturedAt": "2026-10-22T20:52:02.679Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F11"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

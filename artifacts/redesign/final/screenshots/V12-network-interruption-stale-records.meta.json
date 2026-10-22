@@ -1,0 +1,22 @@
+{
+  "name": "V12-network-interruption-stale-records",
+  "file": "V12-network-interruption-stale-records.png",
+  "sha256": "7bdf0f13a5a5cd7c33b8a1260d9d13d72ce2ca0cc37d7092c6ebe1a3b2e0815f",
+  "bytes": 157170,
+  "capturedAt": "2026-10-22T20:52:26.358Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

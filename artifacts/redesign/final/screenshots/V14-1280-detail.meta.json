@@ -1,0 +1,22 @@
+{
+  "name": "V14-1280-detail",
+  "file": "V14-1280-detail.png",
+  "sha256": "a0a8c09b26ec9982f65217fcbaf16ff4c3080f9a52c43d45ec268e70d70ee6c5",
+  "bytes": 133627,
+  "capturedAt": "2026-10-22T20:52:06.267Z",
+  "viewport": {
+    "width": 1280,
+    "height": 768
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

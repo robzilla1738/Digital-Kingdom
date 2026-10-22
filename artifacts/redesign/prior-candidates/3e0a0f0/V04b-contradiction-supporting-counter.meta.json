@@ -1,0 +1,22 @@
+{
+  "name": "V04b-contradiction-supporting-counter",
+  "file": "V04b-contradiction-supporting-counter.png",
+  "sha256": "14689427c2d8925778816227cd2c8b25fb5865b5ed0b8608193f44c652cd732a",
+  "bytes": 188964,
+  "capturedAt": "2026-10-22T19:39:15.332Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "3e0a0f0c6423b6b3645c0397f30b59d617edb8c8",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

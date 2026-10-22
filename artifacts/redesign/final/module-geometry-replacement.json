@@ -1,0 +1,18 @@
+{
+  "scope": "Two real accepted scene proposals on an isolated synthetic API project; great_hall alone fails, then hall replaces it on the same mounted Canvas.",
+  "assetId": "api",
+  "assetName": "orders-api",
+  "acceptedModules": [
+    "great_hall",
+    "hall"
+  ],
+  "staleRecoveryLabelCleared": true,
+  "explicitConfirmedSnapshotApplied": true,
+  "canonicalRecordsUnchanged": [
+    "graph",
+    "events",
+    "findings",
+    "evidence"
+  ],
+  "sceneOnlyChangedByExplicitTestProposals": true
+}

@@ -1,0 +1,38 @@
+{
+  "embeddedBuild": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "affectedAssets": [
+    "api",
+    "web"
+  ],
+  "driver": {
+    "injections": 1,
+    "compileFailures": 1,
+    "linkFailures": 1,
+    "target": "dk_arch_great_hall_body"
+  },
+  "shaderOwnerCounts": [
+    11,
+    12
+  ],
+  "replacementAsset": "api",
+  "replacementModule": "hall",
+  "otherFailedAssetRemainsMarked": "web",
+  "shaderProgramSamplesAcrossRepeatedReplacement": [
+    37,
+    35,
+    35
+  ],
+  "sameCanvasRetainedDuringReplacement": true,
+  "ownersReleasedOnUnmount": true,
+  "nativeContextLostOnUnmount": true,
+  "classifiedDiagnostics": [
+    "Digital Kingdom renderer {code: module_shader_failure, module_id: great_hall, recovery: neutral_block}"
+  ],
+  "canonicalRecordsUnchanged": [
+    "graph",
+    "events",
+    "findings",
+    "evidence"
+  ],
+  "scope": "Real accepted scene proposals and native shader compilation failure; explicitly applied confirmed snapshots, without changing canonical asset identity or evidence."
+}

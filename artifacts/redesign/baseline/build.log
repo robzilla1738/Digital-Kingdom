@@ -1,0 +1,20 @@
+
+> digital-kingdom@0.3.2 build /tmp/dk-redesign-baseline-453b2db
+> pnpm --filter @dk/web build
+
+
+> @dk/web@0.3.2 build /tmp/dk-redesign-baseline-453b2db/apps/web
+> vite build
+
+vite v7.0.8 building for production...
+transforming...
+✓ 724 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                     1.00 kB │ gzip:   0.49 kB
+dist/assets/index-DJLgJAut.css     30.90 kB │ gzip:   7.06 kB
+dist/assets/Castle3D-B_kD5Elp.js   33.59 kB │ gzip:  11.39 kB
+dist/assets/index-DkZ-_kDN.js     245.24 kB │ gzip:  55.24 kB
+dist/assets/r3f-DsGXv00T.js       387.14 kB │ gzip: 122.07 kB
+dist/assets/three-Da73cOz1.js     698.78 kB │ gzip: 180.07 kB
+✓ built in 4.28s

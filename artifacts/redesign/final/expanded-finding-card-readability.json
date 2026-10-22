@@ -1,0 +1,175 @@
+{
+  "contentBounds": {
+    "x": 72,
+    "y": 160,
+    "width": 1368,
+    "height": 740
+  },
+  "detailBounds": {
+    "x": 72,
+    "y": 160,
+    "width": 1368,
+    "height": 740
+  },
+  "selectedFinding": "f-1ogfivz17xdjzf",
+  "cards": [
+    {
+      "role": "supporting",
+      "eventId": "ev-9fayr9nhp01t",
+      "fields": [
+        {
+          "field": "source",
+          "fontSize": 13,
+          "text": "Egress observer (controlled sink)Source name is current metadata.src-sink",
+          "width": 407.046875,
+          "clientWidth": 407,
+          "scrollWidth": 407,
+          "clippedText": []
+        },
+        {
+          "field": "action",
+          "fontSize": 14,
+          "text": "Effect observed",
+          "width": 448.859375,
+          "clientWidth": 449,
+          "scrollWidth": 449,
+          "clippedText": []
+        },
+        {
+          "field": "outcome",
+          "fontSize": 13,
+          "text": "Effect observed",
+          "width": 123.546875,
+          "clientWidth": 122,
+          "scrollWidth": 122,
+          "clippedText": []
+        },
+        {
+          "field": "occurred",
+          "fontSize": 13,
+          "text": "2026-10-20 14:07:03 UTC",
+          "width": 407.046875,
+          "clientWidth": 407,
+          "scrollWidth": 407,
+          "clippedText": []
+        },
+        {
+          "field": "received",
+          "fontSize": 13,
+          "text": "2026-10-20 14:07:05 UTC",
+          "width": 407.046875,
+          "clientWidth": 407,
+          "scrollWidth": 407,
+          "clippedText": []
+        },
+        {
+          "field": "redaction",
+          "fontSize": 13,
+          "text": "1 of 1 referenced stored payloads loaded. Stored evidence is redacted at ingestion; redaction does not guarantee anonymity. ",
+          "width": 584.40625,
+          "clientWidth": 584,
+          "scrollWidth": 584,
+          "clippedText": []
+        },
+        {
+          "field": "relationship",
+          "fontSize": 13,
+          "text": "Supporting evidence for finding f-1ogfivz17xdjzf · pinned revision 1. This record contributes to the recorded claim, not activity outside its scope.",
+          "width": 584.40625,
+          "clientWidth": 584,
+          "scrollWidth": 584,
+          "clippedText": []
+        },
+        {
+          "field": "reference",
+          "fontSize": 13,
+          "text": "Stable event referenceCopy referenceReference privacy previewReview the scope before sharing. References can expose project and record metadata; links do not grant access.Project: demo-castle. Object: event ev-9fayr9nhp01t.Includes only navigation references and selected replay time. No evidence payload, credentials, network addresses or event-search filters are included.Normal project authorization is required when the link is opened.Text to copyhttp://127.0.0.1:36093/?project=demo-castle#v=2&workspace=investigate&view=graph&sel=event%3Aev-9fayr9nhp01tCopy reviewed textClose previewOpen event detail",
+          "width": 584.40625,
+          "clientWidth": 584,
+          "scrollWidth": 584,
+          "clippedText": []
+        }
+      ]
+    },
+    {
+      "role": "counter",
+      "eventId": "ev-1hzyfmm12lg2qi",
+      "fields": [
+        {
+          "field": "source",
+          "fontSize": 13,
+          "text": "Edge WAFSource name is current metadata.src-edge",
+          "width": 407.046875,
+          "clientWidth": 407,
+          "scrollWidth": 407,
+          "clippedText": []
+        },
+        {
+          "field": "action",
+          "fontSize": 14,
+          "text": "WAF match",
+          "width": 495.671875,
+          "clientWidth": 496,
+          "scrollWidth": 496,
+          "clippedText": []
+        },
+        {
+          "field": "outcome",
+          "fontSize": 13,
+          "text": "blocked",
+          "width": 76.734375,
+          "clientWidth": 75,
+          "scrollWidth": 75,
+          "clippedText": []
+        },
+        {
+          "field": "occurred",
+          "fontSize": 13,
+          "text": "2026-10-20 14:07:00 UTC",
+          "width": 407.046875,
+          "clientWidth": 407,
+          "scrollWidth": 407,
+          "clippedText": []
+        },
+        {
+          "field": "received",
+          "fontSize": 13,
+          "text": "2026-10-20 14:07:02 UTC",
+          "width": 407.046875,
+          "clientWidth": 407,
+          "scrollWidth": 407,
+          "clippedText": []
+        },
+        {
+          "field": "redaction",
+          "fontSize": 13,
+          "text": "1 of 1 referenced stored payloads loaded. Stored evidence is redacted at ingestion; redaction does not guarantee anonymity. ",
+          "width": 584.40625,
+          "clientWidth": 584,
+          "scrollWidth": 584,
+          "clippedText": []
+        },
+        {
+          "field": "relationship",
+          "fontSize": 13,
+          "text": "Counterevidence for finding f-1ogfivz17xdjzf · pinned revision 1. This record challenges the claim; neither source is assumed correct.",
+          "width": 584.40625,
+          "clientWidth": 584,
+          "scrollWidth": 584,
+          "clippedText": []
+        },
+        {
+          "field": "reference",
+          "fontSize": 13,
+          "text": "Stable event referenceCopy referenceReference privacy previewReview the scope before sharing. References can expose project and record metadata; links do not grant access.Project: demo-castle. Object: event ev-1hzyfmm12lg2qi.Includes only navigation references and selected replay time. No evidence payload, credentials, network addresses or event-search filters are included.Normal project authorization is required when the link is opened.Text to copyhttp://127.0.0.1:36093/?project=demo-castle#v=2&workspace=investigate&view=graph&sel=event%3Aev-1hzyfmm12lg2qiCopy reviewed textClose previewOpen event detail",
+          "width": 584.40625,
+          "clientWidth": 584,
+          "scrollWidth": 584,
+          "clippedText": []
+        }
+      ]
+    }
+  ],
+  "rawExpansionRetainsFinding": true,
+  "bothEvidenceKindsVisibleTogether": true
+}

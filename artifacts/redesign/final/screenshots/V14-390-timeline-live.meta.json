@@ -1,0 +1,22 @@
+{
+  "name": "V14-390-timeline-live",
+  "file": "V14-390-timeline-live.png",
+  "sha256": "bb473f45f9f3ad52aef130dd178ef7f7c977787da2ea870e483876de95404032",
+  "bytes": 61081,
+  "capturedAt": "2026-10-22T20:52:07.629Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

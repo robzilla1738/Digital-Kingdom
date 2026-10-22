@@ -1,0 +1,324 @@
+[
+  {
+    "view": "graph",
+    "width": 1440,
+    "selection": {
+      "kind": "finding",
+      "id": "f-1ogfivz17xdjzf",
+      "assets": [
+        "blob",
+        "edge"
+      ]
+    },
+    "renderedIds": [
+      "blob",
+      "edge",
+      "db"
+    ],
+    "selectedBounds": [
+      {
+        "id": "blob",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 19
+      },
+      {
+        "id": "edge",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 19
+      }
+    ],
+    "roundtrip": null,
+    "fullMembershipCount": 3,
+    "normalPointerFocus": true,
+    "everySelectedNameReceivesNormalPointerSelection": true,
+    "errors": [],
+    "result": "passed"
+  },
+  {
+    "view": "graph",
+    "width": 1440,
+    "selection": {
+      "kind": "path",
+      "id": "rel-edge-web",
+      "assets": [
+        "edge",
+        "web"
+      ]
+    },
+    "renderedIds": [
+      "web",
+      "edge",
+      "api",
+      "auth",
+      "pay",
+      "sched",
+      "worker"
+    ],
+    "selectedBounds": [
+      {
+        "id": "web",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 15
+      },
+      {
+        "id": "edge",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 15
+      }
+    ],
+    "roundtrip": null,
+    "fullMembershipCount": 7,
+    "normalPointerFocus": true,
+    "everySelectedNameReceivesNormalPointerSelection": true,
+    "errors": [],
+    "result": "passed"
+  },
+  {
+    "view": "castle",
+    "width": 1440,
+    "selection": {
+      "kind": "finding",
+      "id": "f-1ogfivz17xdjzf",
+      "assets": [
+        "blob",
+        "edge"
+      ]
+    },
+    "renderedIds": [
+      "blob",
+      "edge",
+      "db"
+    ],
+    "selectedBounds": [
+      {
+        "id": "blob",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 18
+      },
+      {
+        "id": "edge",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 18
+      }
+    ],
+    "roundtrip": null,
+    "fullMembershipCount": 3,
+    "normalPointerFocus": true,
+    "everySelectedNameReceivesNormalPointerSelection": true,
+    "errors": [],
+    "result": "passed"
+  },
+  {
+    "view": "castle",
+    "width": 1440,
+    "selection": {
+      "kind": "path",
+      "id": "rel-edge-web",
+      "assets": [
+        "edge",
+        "web"
+      ]
+    },
+    "renderedIds": [
+      "web",
+      "edge",
+      "api",
+      "auth",
+      "pay",
+      "sched",
+      "worker"
+    ],
+    "selectedBounds": [
+      {
+        "id": "web",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 36
+      },
+      {
+        "id": "edge",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 18
+      }
+    ],
+    "roundtrip": null,
+    "fullMembershipCount": 7,
+    "normalPointerFocus": true,
+    "everySelectedNameReceivesNormalPointerSelection": true,
+    "errors": [],
+    "result": "passed"
+  },
+  {
+    "view": "graph",
+    "width": 320,
+    "selection": {
+      "kind": "finding",
+      "id": "f-1ogfivz17xdjzf",
+      "assets": [
+        "blob",
+        "edge"
+      ]
+    },
+    "renderedIds": [
+      "blob",
+      "edge"
+    ],
+    "selectedBounds": [
+      {
+        "id": "blob",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 13
+      },
+      {
+        "id": "edge",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 13
+      }
+    ],
+    "roundtrip": {
+      "drawnIds": [
+        "blob",
+        "edge"
+      ],
+      "viewBox": [
+        -78.614973,
+        -121.016043,
+        431.229947,
+        508.042781
+      ],
+      "names": [
+        "receipts-bucket",
+        "public-edge"
+      ],
+      "membersExpanded": "false",
+      "controlsExpanded": "true"
+    },
+    "fullMembershipCount": 3,
+    "normalPointerFocus": true,
+    "everySelectedNameReceivesNormalPointerSelection": true,
+    "errors": [],
+    "result": "passed"
+  },
+  {
+    "view": "graph",
+    "width": 320,
+    "selection": {
+      "kind": "path",
+      "id": "rel-edge-web",
+      "assets": [
+        "edge",
+        "web"
+      ]
+    },
+    "renderedIds": [
+      "web",
+      "edge"
+    ],
+    "selectedBounds": [
+      {
+        "id": "web",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 13
+      },
+      {
+        "id": "edge",
+        "fullyInsideStage": true,
+        "occluders": [],
+        "nameHitTests": [
+          true,
+          true,
+          true
+        ],
+        "renderedNameHeight": 13
+      }
+    ],
+    "roundtrip": {
+      "drawnIds": [
+        "web",
+        "edge"
+      ],
+      "viewBox": [
+        -78.614973,
+        -121.016043,
+        431.229947,
+        508.042781
+      ],
+      "names": [
+        "storefront-web",
+        "public-edge"
+      ],
+      "membersExpanded": "false",
+      "controlsExpanded": "true"
+    },
+    "fullMembershipCount": 7,
+    "normalPointerFocus": true,
+    "everySelectedNameReceivesNormalPointerSelection": true,
+    "errors": [],
+    "result": "passed"
+  }
+]

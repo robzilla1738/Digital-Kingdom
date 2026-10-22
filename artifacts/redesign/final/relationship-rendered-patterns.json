@@ -1,0 +1,35 @@
+{
+  "scope": "Actual selected-neighborhood SVG computed dash styles, accessible labels and visible legend; a canonical endpoint selected for each sample. All layers explicitly enabled only after default hypothetical absence was confirmed",
+  "hypotheticalAbsentByDefault": true,
+  "hypotheticalStillAbsentWithIdentityLayer": true,
+  "samples": [
+    {
+      "id": "rel-web-api",
+      "selectedAsset": "web",
+      "level": "observed",
+      "attribute": null,
+      "computed": "none"
+    },
+    {
+      "id": "rel-edge-web",
+      "selectedAsset": "edge",
+      "level": "declared",
+      "attribute": "8 5",
+      "computed": "8px, 5px"
+    },
+    {
+      "id": "rel-tools-db",
+      "selectedAsset": "tools",
+      "level": "inferred",
+      "attribute": "10 4 2 4",
+      "computed": "10px, 4px, 2px, 4px"
+    },
+    {
+      "id": "rel-agent-db",
+      "selectedAsset": "agent",
+      "level": "hypothetical",
+      "attribute": "2 6",
+      "computed": "2px, 6px"
+    }
+  ]
+}

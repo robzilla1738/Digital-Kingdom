@@ -27,11 +27,14 @@
     "eval:gen": "tsx eval/scripts/gen.ts",
     "eval:smoke": "tsx eval/scripts/smoke-cases.ts",
     "eval:run": "tsx eval/src/run.ts",
-    "eval:report": "tsx eval/scripts/report.ts"
+    "eval:report": "tsx eval/scripts/report.ts",
+    "pilot:redesign": "pnpm build:redesign-fixtures && DK_RED_OFFLINE_DIST=artifacts/redesign/offline-dist playwright test --config=playwright.redesign.config.ts",
+    "build:redesign-fixtures": "VITE_DK_STATIC_DEMO=1 pnpm --filter @dk/web exec vite build --outDir ../../artifacts/redesign/offline-dist --emptyOutDir"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",
     "@types/node": "^22.10.0",
+    "axe-core": "4.10.3",
     "tsx": "^4.20.0",
     "typescript": "~5.9.3",
     "vitest": "~3.2.4"

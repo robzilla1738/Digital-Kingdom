@@ -1,0 +1,22 @@
+{
+  "name": "V16-50-graph",
+  "file": "V16-50-graph.png",
+  "sha256": "ff1636eb36cb5aed0c05d4e05bcc4ec7a2fbd9bb4c0b9365cb3228a3ac30a7c9",
+  "bytes": 257080,
+  "capturedAt": "2026-10-22T20:52:22.320Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F12"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

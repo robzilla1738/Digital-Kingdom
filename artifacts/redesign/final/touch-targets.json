@@ -1,0 +1,74 @@
+[
+  {
+    "viewport": 390,
+    "name": "Search assets and findings",
+    "width": 366,
+    "height": 44
+  },
+  {
+    "viewport": 390,
+    "name": "Kingdom",
+    "width": 91.5,
+    "height": 45
+  },
+  {
+    "viewport": 390,
+    "name": "Investigate",
+    "width": 91.5,
+    "height": 45
+  },
+  {
+    "viewport": 390,
+    "name": "Coverage",
+    "width": 91.5,
+    "height": 45
+  },
+  {
+    "viewport": 390,
+    "name": "Integrations",
+    "width": 91.5,
+    "height": 45
+  },
+  {
+    "viewport": 390,
+    "name": "Close evidence pane",
+    "width": 78,
+    "height": 44
+  },
+  {
+    "viewport": 320,
+    "name": "Search assets and findings",
+    "width": 296,
+    "height": 44
+  },
+  {
+    "viewport": 320,
+    "name": "Kingdom",
+    "width": 72.828125,
+    "height": 45
+  },
+  {
+    "viewport": 320,
+    "name": "Investigate",
+    "width": 72.828125,
+    "height": 45
+  },
+  {
+    "viewport": 320,
+    "name": "Coverage",
+    "width": 72.828125,
+    "height": 45
+  },
+  {
+    "viewport": 320,
+    "name": "Integrations",
+    "width": 77.5,
+    "height": 45
+  },
+  {
+    "viewport": 320,
+    "name": "Close evidence pane",
+    "width": 78,
+    "height": 44
+  }
+]

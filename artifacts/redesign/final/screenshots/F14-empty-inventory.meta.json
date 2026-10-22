@@ -1,0 +1,22 @@
+{
+  "name": "F14-empty-inventory",
+  "file": "F14-empty-inventory.png",
+  "sha256": "b3dd00515b99f6c76cd0c9c199e040b8d2a8429b471bc2189488edc362abda37",
+  "bytes": 75431,
+  "capturedAt": "2026-10-22T20:52:05.452Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F14"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

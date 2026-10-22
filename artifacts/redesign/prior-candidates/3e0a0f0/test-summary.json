@@ -1,0 +1,447 @@
+{
+  "candidate": "3e0a0f0c6423b6b3645c0397f30b59d617edb8c8",
+  "status": "Superseded: automation passed, required finding-detail presentation failed prose and pixel review",
+  "stats": {
+    "startTime": "2026-10-22T19:37:24.046Z",
+    "duration": 173639.239,
+    "expected": 60,
+    "skipped": 1,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "testResultsSha256": "bda4bd853e2932a6976407ce834af66d486f1f47d60d473f34fb7ee4976cbee5",
+  "tests": [
+    {
+      "title": "CASTLE-12: an actual pointer drag cancels active camera focus with no later snap-back",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "overlapping graph relationships open a keyboard chooser; cancel/drag do not select or move camera",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "overlapping 3D connections open the same real-ID chooser without moving camera",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "CASTLE-08: clicking a visible architectural roof resolves its canonical parent asset",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "CASTLE-11: an unlinked event highlights its asset without inventing or animating a causal trail",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "PERF-02: genuine background-tab visibility pauses rendering when supported by the browser",
+      "status": "skipped",
+      "results": [
+        "skipped"
+      ]
+    },
+    {
+      "title": "PERF-05: sustained real slow active frames reduce quality without changing evidence or labels",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "real opaque pagination stays pinned, retains rows after failure, and discards cursor on filter change",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "event interval validation rejects more than31days before network and source-local namespace stays explicit",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "later finding-evidence page failure retains earlier exact records and marks aggregate incomplete",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "slow finding A evidence cannot appear in selected finding B and replay does not refetch the pinned record",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "late real ingestion announces newer records without replacing pinned finding revision or event snapshot",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "authoritative422 import paths are displayed after successful local preview; draft and graph remain unchanged",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "stale403 from old project reload cannot clear the newly selected project",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "pinned finding spanning replay cutoff clearly labels later evidence without silently dropping it",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "old containment denial while next project snapshot is pending cannot clear the next authorization scope",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "export response arriving after confirmed role downgrade cannot download stale privileged content",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "SEM-01 canonical blocked request preserves exact source claim and limitations without downstream success",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "SEM-05 zero findings with no configured source remains explicitly unobserved rather than secure",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "SEM-06 shared IP across unrelated actors remains network context with no invented identity or causal map edge",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "COV-01 mixed source coverage agrees as Partial visibility in Castle Graph list and detail",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "TIME-04 live-mode snapshot windows extend only after Load updates or Return live, while pinned replay stays stable",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "F13 graph 320px: explicit path focus retains every cross-district endpoint",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "PERF-06 local journal SSE snapshot and UI timings are separate; CASTLE-05 event-only update reuses mounted module geometry",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "legacy project relationship view time basis survives reload and browser Back; local navigation search sends no query",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "logout clears records and a delayed prior-session export cannot download after same-project sign-in",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "a warmed deep link cannot restore evidence after project access is denied",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "six project switches retain one live stream and bounded global listeners requests and collected browser heap",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "focused Castle and zoomed Graph each preserve their own camera on two-way return",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "COV-05: canonical source counts and distinct affected asset counts agree across Coverage and header",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "COV-06: fault-injected missing assessments remain unknown, never zero gaps or healthy",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "COV-06: failed refresh retains confirmed nonzero gaps and visibly marks the snapshot stale",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "TIME-03: earlier replay visibly labels later server notes and dispositions as current annotations",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V07\u2013V08: partial source administration stays separate from findings and map hatching",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V05\u2013V06: deliberate event search and unlinked successful operation are inspectable",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V11: replay uses explicit known-time basis and keeps source-coverage limitations",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V09\u2013V10: ten architectural modules and actual roof removal",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "stable ID history, hidden filters, and keyboard manual-activation semantics",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "F11/F14: untrusted text is inert and empty project is not a fabricated kingdom",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V14: responsive records, close controls, and no document overflow at 320\u20131366",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V15: axe DOM accessibility, reduced motion, forced colors, and visible keyboard focus",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V16: 50/200 logical assets, grouping, software renderer and bounded demand frames",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "V12: actual browser network interruption retains stale records and never claims live",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "explicit camera focus and context loss preserve stable selection and graph fallback",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "resource lifetime: bounded module cache and renderer counts after view and replay cycles",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "editing, modal and browser-modifier keys are not intercepted when shortcuts are enabled",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "controlled replay reaches its end and stays historical until Return to latest",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "A11Y-03: desktop and narrow inspectors remain nonmodal and keyboard Tab can exit and return",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "A11Y-05: reduced-motion preference makes focus immediate and leaves no continuous effect or camera frames",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "CASTLE-10: rendered relationship patterns and labels distinguish evidence without color; hypothetical stays off by default",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    },
+    {
+      "title": "default F01 native draw calls include main and shadow passes within the 250-call budget",
+      "status": "expected",
+      "results": [
+        "passed"
+      ]
+    }
+  ],
+  "observedFailures": [
+    "Specification 9.1: no primary-content expanded finding mode; the alleged expanded capture still used a narrow right inspector.",
+    "Specification 9.4: horizontal finding evidence rows clipped source/action and lacked in-context raw normalized data expansion."
+  ],
+  "fullLocalCorpus": "artifacts/redesign/nonfinal/prior-3e0a0f0 (ignored; may include credential-bearing raw archives)"
+}

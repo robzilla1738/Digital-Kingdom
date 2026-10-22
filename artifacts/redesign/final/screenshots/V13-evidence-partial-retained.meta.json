@@ -1,0 +1,22 @@
+{
+  "name": "V13-evidence-partial-retained",
+  "file": "V13-evidence-partial-retained.png",
+  "sha256": "4c5939e4baf4a535827f54f88a7b57721b4129efa49f08bb957a6f8f1f713cb8",
+  "bytes": 136031,
+  "capturedAt": "2026-10-22T20:49:29.784Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-22T21:02:39.613949+00:00",
+  "scope": "Delivery-only CI output isolation; no application or test modification. YAML parse, bash syntax and both directory states tested in temporary fixtures.",
+  "workflowSha256": "e1ba1fc3a32981e0726e371d9ae2e6aa72d4300ffd38a28bf08cc3c1a915da73",
+  "yamlParse": "passed",
+  "shellSyntax": "passed",
+  "cases": [
+    {
+      "existingHandoff": true,
+      "freshOutputEmpty": true,
+      "originalBytesPreserved": true,
+      "passed": true
+    },
+    {
+      "existingHandoff": false,
+      "freshOutputEmpty": true,
+      "originalBytesPreserved": false,
+      "passed": true
+    }
+  ]
+}

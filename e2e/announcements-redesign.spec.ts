@@ -1,0 +1,42 @@
+import { test, expect } from '@playwright/test';
+import { createRedesignHarness, loginRedesign, writeRedesignEvidence, type RedesignHarness } from './redesign-harness.ts';
+let harness: RedesignHarness;
+test.beforeAll(async () => { harness = await createRedesignHarness(); });
+test.afterAll(async () => { await harness?.close(); });
+test('A11Y-21.4: local reduced automatic announcements keep sync visible and direct filter/selection feedback live', async ({ browser }) => {
+  const { page, context } = await loginRedesign(browser, harness);
+  try {
+    await expect(page.getByTestId('connection-pill')).toHaveAttribute('data-state', 'live', { timeout: 15000 });
+    const storageKeys = await page.evaluate(() => ({ local: Object.keys(localStorage), session: Object.keys(sessionStorage) }));
+    await page.getByRole('button', { name: 'Integrations', exact: true }).click();
+    await page.getByRole('tab', { name: 'Display', exact: true }).click();
+    const motion = page.getByRole('checkbox', { name: /^Reduce motion/ }); const originalMotion = await motion.isChecked();
+    await page.getByRole('checkbox', { name: 'Reduce automatic status announcements', exact: true }).check();
+    expect(await motion.isChecked()).toBe(originalMotion);
+    await expect(page.getByTestId('connection-pill')).toHaveAttribute('aria-live', 'off');
+    await expect(page.getByTestId('action-announcement')).toHaveAttribute('aria-live', 'polite');
+    await expect(page.getByTestId('action-announcement')).toContainText('Direct action feedback remains enabled');
+    await page.getByRole('button', { name: 'Investigate', exact: true }).click();
+    const results = page.locator('.findings-workspace');
+    await results.getByLabel('Severity', { exact: true }).selectOption('high');
+    await expect(results.locator('.filter-summary [role="status"]')).toHaveAttribute('aria-live', 'off');
+    const count = await results.locator('[data-finding-id]').count();
+    await expect(page.getByTestId('action-announcement')).toHaveText(`${count} findings match the submitted filters.`);
+    const first = results.locator('[data-finding-id]').first(); const title = await first.innerText();
+    await first.click(); await expect(page.getByTestId('action-announcement')).toHaveText(`Selected finding ${title}`);
+    await expect(page.locator('aside.evidence').getByTestId('evidence-count')).toContainText('All referenced stored records');
+    await context.setOffline(true); harness.disconnectClients();
+    await expect(page.getByTestId('connection-pill')).not.toHaveAttribute('data-state', 'live', { timeout: 20000 });
+    await expect(page.getByTestId('connection-banner')).toBeVisible();
+    await expect(page.getByTestId('connection-banner')).toContainText('not live monitoring');
+    await expect(page.getByTestId('connection-banner')).toHaveAttribute('aria-live', 'off');
+    await expect(page.getByTestId('action-announcement')).toHaveText(`Selected finding ${title}`);
+    expect(await page.evaluate(() => ({ local: Object.keys(localStorage), session: Object.keys(sessionStorage) }))).toEqual(storageKeys);
+    expect(page.url()).not.toContain('reduceAutomaticAnnouncements');
+    await page.getByRole('button', { name: 'Integrations', exact: true }).click();
+    await page.getByRole('checkbox', { name: 'Reduce automatic status announcements', exact: true }).uncheck();
+    await expect(page.getByTestId('connection-pill')).toHaveAttribute('aria-live', 'polite');
+    await expect(page.getByTestId('connection-banner')).toHaveAttribute('aria-live', 'assertive');
+    writeRedesignEvidence('automatic-announcement-preference.json', { result: 'passed', independentOfReducedMotion: true, directSelectionAndFilterFeedback: 'polite', backgroundSyncNotice: 'off while opted in, still visible', preferenceStorage: 'component session only, no added storage keys or URL fields', actualFault: 'Playwright offline mode and existing SSE socket disconnect', limitation: 'DOM live-region semantics verified; hardware screen-reader speech is not claimed' });
+  } finally { await context.setOffline(false); await context.close(); }
+});

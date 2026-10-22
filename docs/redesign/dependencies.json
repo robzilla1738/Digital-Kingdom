@@ -1,0 +1,40 @@
+{
+  "checked_at": "2026-10-22T20:48:17Z",
+  "phase": "Replacement source frozen; before remote branch publication",
+  "repository": "robzilla1738/Digital-Kingdom",
+  "implementation_branch": "improve/ui-castle-redesign",
+  "implementation_branch_remote_present": false,
+  "base_branch": "fix/investigation-quality-gates",
+  "base_sha": "453b2db522780361405c388f036d7874041cb005",
+  "upstream_pr": {
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/pull/2",
+    "state": "open",
+    "merged": false,
+    "base": "improve/investigation-honesty",
+    "base_sha": "812a9575e5682be0ae915f3f2cf8f74c86d395a6",
+    "head_sha": "453b2db522780361405c388f036d7874041cb005",
+    "mergeable": true
+  },
+  "main_sha": "8762d30d28156cfce40393a0ac0bac9f2e0e8e14",
+  "workflow_inspection": {
+    "ci": "push/pull_request: typecheck, unit tests, fixtures, build, original isolated pilot and supplemental redesign suite",
+    "pages": "main pushes or explicit workflow_dispatch only; neither requested nor performed",
+    "paid_evaluation": "No evaluation runner is called by these branch CI jobs",
+    "source_hashes": {
+      ".github/workflows/ci.yml": "e526645669d1680fdd1f34e95604737dd1dfa440cf480b4fe026ed6f9dd2019c",
+      ".github/workflows/pages.yml": "a7dabe3d07d0238c6b94cbddc066e75b637ca77e50aeb84a067561e2cf81bb90"
+    },
+    "delivery_only_delta": {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "e1ba1fc3a32981e0726e371d9ae2e6aa72d4300ffd38a28bf08cc3c1a915da73",
+      "description": "Preserve the immutable checked-in handoff outside the fresh CI output directory before any install/test step, so failed or successful CI cannot mix old sealed evidence with fresh output. Triggers, permissions, test commands and deployment scope remain unchanged.",
+      "validation": "docs/redesign/ci-artifact-isolation.json"
+    }
+  },
+  "verification_sources": [
+    "git ls-remote origin exact branch refs",
+    "GitHub PR2 metadata",
+    "Inspected .github/workflows/ci.yml and pages.yml"
+  ],
+  "tested_source_sha": "5ce7487c76c87be2b53f6520690987d2c5bdd063"
+}

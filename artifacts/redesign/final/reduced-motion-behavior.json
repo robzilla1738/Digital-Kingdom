@@ -1,0 +1,10 @@
+{
+  "scope": "Chromium media preference emulation, real 3D focus and MutationObserver, 700ms idle observation; not a physical OS-setting or screen-reader certification",
+  "before": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":19.701}",
+  "focused": "{\"position\":[55.362,69.257,55.562],\"target\":[-5.931,1.534,-5.731],\"zoom\":85.238}",
+  "framesBefore": "8",
+  "framesAfter": "8",
+  "prefersReduced": true,
+  "cameraActiveStates": [],
+  "runningDomAnimations": 0
+}

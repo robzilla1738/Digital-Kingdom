@@ -1,6 +1,8 @@
 name: ci
 on: [push, pull_request]
 permissions: { contents: read }
+env:
+  VITE_DK_BUILD: ${{ github.sha }}
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -27,6 +29,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Isolate fresh CI evidence from the frozen handoff
+        run: |
+          if [ -d artifacts/redesign/final ]; then
+            preserved="$(mktemp -d "${RUNNER_TEMP}/dk-handoff.XXXXXX")"
+            mv artifacts/redesign/final "$preserved/final"
+          fi
+          mkdir -p artifacts/redesign/final
       - uses: pnpm/action-setup@v4
         with: { version: 10.12.1 }
       - uses: actions/setup-node@v4
@@ -35,10 +44,17 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: pnpm build
       - run: pnpm pilot
-      - name: Upload pilot evidence (traces, screenshots, sanitized server log, JSON results)
+      - run: pnpm pilot:redesign
+      - name: Upload pilot and redesign evidence (screenshots, sanitized logs, JSON results)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: browser-pilot-evidence
-          path: artifacts/pilot/
+          path: |
+            artifacts/pilot/screens/
+            artifacts/pilot/results.json
+            artifacts/pilot/pilot-observations.json
+            artifacts/pilot/server.log
+            artifacts/redesign/final/screenshots/
+            artifacts/redesign/final/*.json
           retention-days: 14

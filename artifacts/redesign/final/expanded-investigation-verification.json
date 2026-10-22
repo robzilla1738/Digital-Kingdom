@@ -1,0 +1,149 @@
+[
+  {
+    "width": 1440,
+    "headerTargets": {
+      "project": {
+        "x": 68,
+        "y": 11.5,
+        "width": 220,
+        "height": 40,
+        "top": 11.5,
+        "right": 288,
+        "bottom": 51.5,
+        "left": 68
+      },
+      "auth": {
+        "x": 1343.5,
+        "y": 13.5,
+        "width": 76.5,
+        "height": 36,
+        "top": 13.5,
+        "right": 1420,
+        "bottom": 49.5,
+        "left": 1343.5
+      },
+      "overlap": false,
+      "projectHit": true,
+      "authHit": true
+    },
+    "actualDetailWidth": 1368,
+    "mainContentWidth": 1368,
+    "sameMountedEvidenceDraftAndCard": true,
+    "noExtraEvidenceFetchOnExpansionOrReturn": true,
+    "filteredIds": [
+      "f-nfzy2a9kaquu",
+      "f-1g1rsccjtsw8o",
+      "f-1ogfivz17xdjzf",
+      "f-1smha6p11bwr1h",
+      "f-ispggw1ipym1g"
+    ],
+    "originalScrollTop": 180,
+    "restoredScrollTop": 180,
+    "explicitQueueNeighbor": "f-1smha6p11bwr1h",
+    "expandedKeyboardFocusAndReturnInvokerFocus": true,
+    "result": "passed"
+  },
+  {
+    "width": 390,
+    "headerTargets": {
+      "project": {
+        "x": 52,
+        "y": 7.5,
+        "width": 237.5,
+        "height": 44,
+        "top": 7.5,
+        "right": 289.5,
+        "bottom": 51.5,
+        "left": 52
+      },
+      "auth": {
+        "x": 301.5,
+        "y": 7.5,
+        "width": 76.5,
+        "height": 44,
+        "top": 7.5,
+        "right": 378,
+        "bottom": 51.5,
+        "left": 301.5
+      },
+      "overlap": false,
+      "projectHit": true,
+      "authHit": true
+    },
+    "actualDetailWidth": 390,
+    "mainContentWidth": 390,
+    "sameMountedEvidenceDraftAndCard": true,
+    "noExtraEvidenceFetchOnExpansionOrReturn": true,
+    "filteredIds": [
+      "f-nfzy2a9kaquu",
+      "f-1g1rsccjtsw8o",
+      "f-1ogfivz17xdjzf",
+      "f-1smha6p11bwr1h",
+      "f-ispggw1ipym1g"
+    ],
+    "originalScrollTop": 990,
+    "restoredScrollTop": 990,
+    "explicitQueueNeighbor": "f-1smha6p11bwr1h",
+    "expandedKeyboardFocusAndReturnInvokerFocus": true,
+    "result": "passed"
+  },
+  {
+    "width": 320,
+    "headerTargets": {
+      "project": {
+        "x": 52,
+        "y": 7.5,
+        "width": 167.5,
+        "height": 44,
+        "top": 7.5,
+        "right": 219.5,
+        "bottom": 51.5,
+        "left": 52
+      },
+      "auth": {
+        "x": 231.5,
+        "y": 7.5,
+        "width": 76.5,
+        "height": 44,
+        "top": 7.5,
+        "right": 308,
+        "bottom": 51.5,
+        "left": 231.5
+      },
+      "overlap": false,
+      "projectHit": true,
+      "authHit": true
+    },
+    "actualDetailWidth": 320,
+    "mainContentWidth": 320,
+    "sameMountedEvidenceDraftAndCard": true,
+    "noExtraEvidenceFetchOnExpansionOrReturn": true,
+    "filteredIds": [
+      "f-nfzy2a9kaquu",
+      "f-1g1rsccjtsw8o",
+      "f-1ogfivz17xdjzf",
+      "f-1smha6p11bwr1h",
+      "f-ispggw1ipym1g"
+    ],
+    "originalScrollTop": 1035,
+    "restoredScrollTop": 1035,
+    "explicitQueueNeighbor": "f-1smha6p11bwr1h",
+    "expandedKeyboardFocusAndReturnInvokerFocus": true,
+    "result": "passed"
+  },
+  {
+    "transition": "Kingdom → main-area investigation → filtered results",
+    "sameFindingInstance": true,
+    "nonemptyOutsideFilterQueue": "explicitly opens first matching finding",
+    "emptyOutsideFilterQueue": "both controls disabled, no matching findings disclosed",
+    "horizontalBefore": {
+      "left": 51,
+      "max": 51
+    },
+    "horizontalAfter": {
+      "left": 51,
+      "max": 51
+    },
+    "result": "passed"
+  }
+]

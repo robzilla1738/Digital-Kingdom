@@ -1,0 +1,678 @@
+{
+  "candidate": "66ce8f347fe60bba34b87e7d1b089183e78643cb",
+  "priorCandidate": true,
+  "recordedAt": "2026-10-22T20:30:00.859400+00:00",
+  "automation": {
+    "unitTests": 369,
+    "originalPilot": {
+      "startTime": "2026-10-22T20:17:20.441Z",
+      "duration": 34433.126,
+      "expected": 11,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "redesign": {
+      "startTime": "2026-10-22T20:18:32.041Z",
+      "duration": 203740.75,
+      "expected": 73,
+      "skipped": 1,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "touch": {
+      "states": 14,
+      "effectiveTargets": 240,
+      "undersized": 0,
+      "harnessSha256": "151f21062330b17c7a79cd684f4f124a1858253ea2a14616f128887729532d2c",
+      "scope": "Read-only Chromium bounding boxes at 390/320 CSS px. Native checkbox/radio associated labels count as their actual click target. Not a physical touch-device test or every possible application state."
+    },
+    "shell": {
+      "checks": 11,
+      "pageErrors": 0,
+      "sourceCandidate": "66ce8f347fe60bba34b87e7d1b089183e78643cb",
+      "condition": "Frozen-source Vite development server with explicit synthetic mode, not the immutable production bundle",
+      "receipt": "../shell/controls-regression.json",
+      "receiptSha256": "8ab6aaa5f4f25d4879d30e957a470d4a3ad07229fe55164753f62d3929b86bac"
+    },
+    "screenshots": {
+      "count": 73,
+      "bytes": 11909817,
+      "requiredViews": [
+        "V01",
+        "V02",
+        "V03",
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V14",
+        "V15",
+        "V16"
+      ],
+      "allEmbeddedBuildsAndPngHashesVerified": true
+    }
+  },
+  "testTitlesAndStatuses": [
+    {
+      "file": "announcements-redesign.spec.ts",
+      "title": "A11Y-21.4: local reduced automatic announcements keep sync visible and direct filter/selection feedback live",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2045,
+      "annotations": []
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "CASTLE-12: an actual pointer drag cancels active camera focus with no later snap-back",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 4140,
+      "annotations": []
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "overlapping graph relationships open a keyboard chooser; cancel/drag do not select or move camera",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2172,
+      "annotations": []
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "overlapping 3D connections open the same real-ID chooser without moving camera",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 4389,
+      "annotations": []
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "CASTLE-08: clicking a visible architectural roof resolves its canonical parent asset",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 3926,
+      "annotations": []
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "CASTLE-11: an unlinked event highlights its asset without inventing or animating a causal trail",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 3172,
+      "annotations": []
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "PERF-02: genuine background-tab visibility pauses rendering when supported by the browser",
+      "status": "skipped",
+      "expectedStatus": "skipped",
+      "durationMs": 2798,
+      "annotations": [
+        {
+          "type": "skip",
+          "description": "Headless Chromium keeps both real tabs visible; physical hidden-tab lifecycle is not proven."
+        }
+      ]
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "PERF-05: sustained real slow active frames reduce quality without changing evidence or labels",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 10464,
+      "annotations": []
+    },
+    {
+      "file": "evidence-cards-redesign.spec.ts",
+      "title": "EVIDENCE-CARDS-01 both evidence roles expose full context and raw expansion keeps the pinned finding and comparison",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1038,
+      "annotations": []
+    },
+    {
+      "file": "evidence-cards-redesign.spec.ts",
+      "title": "EVIDENCE-CARDS-02 long source and inert raw records wrap at 320px and text paging preserves the exact loaded derivative",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 630,
+      "annotations": []
+    },
+    {
+      "file": "evidence-cards-redesign.spec.ts",
+      "title": "EVIDENCE-CARDS-03 real 5000-record finding retains all exact evidence with bounded display paging and no paging refetch",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2938,
+      "annotations": [
+        {
+          "type": "slow",
+          "description": null
+        }
+      ]
+    },
+    {
+      "file": "evidence-cards-redesign.spec.ts",
+      "title": "EVENT-DISPLAY-01 bounded rows retain loaded pages selection and the opaque cursor across a later fetch failure",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2399,
+      "annotations": [
+        {
+          "type": "slow",
+          "description": null
+        }
+      ]
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1035,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "real opaque pagination stays pinned, retains rows after failure, and discards cursor on filter change",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1162,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "event interval validation rejects more than31days before network and source-local namespace stays explicit",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 597,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "later finding-evidence page failure retains earlier exact records and marks aggregate incomplete",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 897,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "slow finding A evidence cannot appear in selected finding B and replay does not refetch the pinned record",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 748,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 897,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "late real ingestion announces newer records without replacing pinned finding revision or event snapshot",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 3054,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1400,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "authoritative422 import paths are displayed after successful local preview; draft and graph remain unchanged",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1013,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2983,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "stale403 from old project reload cannot clear the newly selected project",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 3585,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "pinned finding spanning replay cutoff clearly labels later evidence without silently dropping it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 563,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "old containment denial while next project snapshot is pending cannot clear the next authorization scope",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1414,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "export response arriving after confirmed role downgrade cannot download stale privileged content",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2678,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "SEM-01 canonical blocked request preserves exact source claim and limitations without downstream success",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 607,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "SEM-05 zero findings with no configured source remains explicitly unobserved rather than secure",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1201,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "SEM-06 shared IP across unrelated actors remains network context with no invented identity or causal map edge",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1525,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "COV-01 mixed source coverage agrees as Partial visibility in Castle Graph list and detail",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1889,
+      "annotations": []
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "TIME-04 live-mode snapshot windows extend only after Load updates or Return live, while pinned replay stays stable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 3934,
+      "annotations": []
+    },
+    {
+      "file": "expanded-investigation-redesign.spec.ts",
+      "title": "Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1388,
+      "annotations": []
+    },
+    {
+      "file": "expanded-investigation-redesign.spec.ts",
+      "title": "Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1224,
+      "annotations": []
+    },
+    {
+      "file": "expanded-investigation-redesign.spec.ts",
+      "title": "Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1186,
+      "annotations": []
+    },
+    {
+      "file": "expanded-investigation-redesign.spec.ts",
+      "title": "Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1164,
+      "annotations": []
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 872,
+      "annotations": []
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 674,
+      "annotations": []
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2209,
+      "annotations": []
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2755,
+      "annotations": []
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1773,
+      "annotations": []
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 graph 320px: explicit path focus retains every cross-district endpoint",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1977,
+      "annotations": []
+    },
+    {
+      "file": "latency-redesign.spec.ts",
+      "title": "PERF-06 local journal SSE snapshot and UI timings are separate; CASTLE-05 event-only update reuses mounted module geometry",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 6179,
+      "annotations": []
+    },
+    {
+      "file": "module-recovery-redesign.spec.ts",
+      "title": "15.3: one invalid visual module becomes a named neutral block without changing canonical evidence",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 5004,
+      "annotations": []
+    },
+    {
+      "file": "module-recovery-redesign.spec.ts",
+      "title": "15.3: a valid scene replacement clears the failed label for the same canonical asset",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 3929,
+      "annotations": []
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "legacy project relationship view time basis survives reload and browser Back; local navigation search sends no query",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1117,
+      "annotations": []
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "logout clears records and a delayed prior-session export cannot download after same-project sign-in",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1080,
+      "annotations": []
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "a warmed deep link cannot restore evidence after project access is denied",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 616,
+      "annotations": []
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "six project switches retain one live stream and bounded global listeners requests and collected browser heap",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 14589,
+      "annotations": []
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "focused Castle and zoomed Graph each preserve their own camera on two-way return",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 3725,
+      "annotations": []
+    },
+    {
+      "file": "presentation-redesign.spec.ts",
+      "title": "COV-05: canonical source counts and distinct affected asset counts agree across Coverage and header",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 625,
+      "annotations": []
+    },
+    {
+      "file": "presentation-redesign.spec.ts",
+      "title": "COV-06: fault-injected missing assessments remain unknown, never zero gaps or healthy",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1404,
+      "annotations": []
+    },
+    {
+      "file": "presentation-redesign.spec.ts",
+      "title": "COV-06: failed refresh retains confirmed nonzero gaps and visibly marks the snapshot stale",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2564,
+      "annotations": []
+    },
+    {
+      "file": "presentation-redesign.spec.ts",
+      "title": "TIME-03: earlier replay visibly labels later server notes and dispositions as current annotations",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1902,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 4398,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V07\u2013V08: partial source administration stays separate from findings and map hatching",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2219,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V05\u2013V06: deliberate event search and unlinked successful operation are inspectable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 894,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V11: replay uses explicit known-time basis and keeps source-coverage limitations",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 3042,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V09\u2013V10: ten architectural modules and actual roof removal",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 4729,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "stable ID history, hidden filters, and keyboard manual-activation semantics",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1440,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "F11/F14: untrusted text is inert and empty project is not a fabricated kingdom",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2895,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V14: responsive records, close controls, and no document overflow at 320\u20131366",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 7001,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V15: axe DOM accessibility, reduced motion, forced colors, and visible keyboard focus",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 4012,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V16: 50/200 logical assets, grouping, software renderer and bounded demand frames",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 6439,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V12: actual browser network interruption retains stale records and never claims live",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1377,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "explicit camera focus and context loss preserve stable selection and graph fallback",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 7043,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "resource lifetime: bounded module cache and renderer counts after view and replay cycles",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 10916,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "editing, modal and browser-modifier keys are not intercepted when shortcuts are enabled",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1749,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "controlled replay reaches its end and stays historical until Return to latest",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1765,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "A11Y-03: desktop and narrow inspectors remain nonmodal and keyboard Tab can exit and return",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 681,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "A11Y-05: reduced-motion preference makes focus immediate and leaves no continuous effect or camera frames",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2974,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "CASTLE-10: rendered relationship patterns and labels distinguish evidence without color; hypothetical stays off by default",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 1575,
+      "annotations": []
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "default F01 native draw calls include main and shadow passes within the 250-call budget",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2547,
+      "annotations": []
+    },
+    {
+      "file": "setup-redesign.spec.ts",
+      "title": "PROSE-15: empty inventory, configuration and receipt are separate real server steps",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 2048,
+      "annotations": []
+    },
+    {
+      "file": "setup-redesign.spec.ts",
+      "title": "PROSE-13: cards show scoped configuration and keep absent assessments unknown",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "durationMs": 871,
+      "annotations": []
+    }
+  ],
+  "originalResultsSha256": "d48412fb6056f7f5cce5669e3e10746b9844fb1cad061d1df15554df55817c14",
+  "missingRequirement": {
+    "specification": "15.3",
+    "state": "unimplemented",
+    "description": "Attributable shader compile-failure isolation was not implemented. The passing geometry-construction fault test does not establish shader compile-failure isolation."
+  },
+  "deliveryComplete": false
+}

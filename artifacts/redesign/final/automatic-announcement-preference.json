@@ -1,0 +1,9 @@
+{
+  "result": "passed",
+  "independentOfReducedMotion": true,
+  "directSelectionAndFilterFeedback": "polite",
+  "backgroundSyncNotice": "off while opted in, still visible",
+  "preferenceStorage": "component session only, no added storage keys or URL fields",
+  "actualFault": "Playwright offline mode and existing SSE socket disconnect",
+  "limitation": "DOM live-region semantics verified; hardware screen-reader speech is not claimed"
+}

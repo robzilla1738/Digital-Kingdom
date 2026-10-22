@@ -1,0 +1,23 @@
+{
+  "cutoff": "1792505579000",
+  "selection": "edge",
+  "evidenceIds": [
+    "ev-1j3zzwh13phn0d",
+    "ev-1hzyfmm12lg2qi",
+    "ev-eluj891y8g8b9",
+    "ev-drvq5c1xehf8c",
+    "ev-e1vbub1xoh0xb",
+    "ev-fftcb61wui7ue",
+    "ev-fpsy051x4htjd",
+    "ev-evu4x81waj0gg",
+    "ev-f5tqm71wkim5f",
+    "ev-fzpe7512bms1h",
+    "ev-fppsi6121n6ci",
+    "ev-ebrs1b12vlzff"
+  ],
+  "evidenceText": "Asset\nedge\nClose\npublic-edge\n\nEdge gateway · Gatehouse\n\ndemo\nactive\nCopy reference\nFocus asset\nSummary\nStable ID\nedge\nGraph revision\ndemo-r3\nOwner\nplatform-team\nSensitivity\nNot declared\nAliases\nnginx-edge\nInstances\nNot declared\nProvenance\nfixture:inventory-manifest\nFindings3\n\n3 non-closed findings. Lifecycle and analyst disposition are separate.\n\n13 requests blocked at public-edge\nBlocked\nSources disagree about a request\nNeeds review\nRequest blocked at public-edge\nNeeds review\nVisibility\n\nReporting sources available. 1 of 1 configured sources reporting.\n\nCurrent coverage as of 2026-10-20 14:13:00 UTC. Coverage during a replay interval has not been assessed.\n\nEdge WAF\nReporting\nRecent stored activity12\n\nAt most 12 loaded events from 2026-10-20 13:59:00 UTC to 2026-10-20 14:12:59 UTC. This is not the full stored event archive.\n\nSearch all stored events for this asset\nOccurred / received (UTC)\tAction\tOutcome\tSource\n2026-10-20 14:10:30 UTC\nReceived 2026-10-20 14:10:32 UTC\n\tRequest\nev-1j3zzwh13phn0d\n\t\nallowed\tsrc-edge\n2026-10-20 14:07:00 UTC\nReceived 2026-10-20 14:07:02 UTC\n\tWAF match\nev-1hzyfmm12lg2qi\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:55 UTC\nReceived 2026-10-20 14:06:25 UTC\nLate arrival\tWAF match\nev-eluj891y8g8b9\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:44 UTC\nReceived 2026-10-20 14:01:46 UTC\n\tWAF match\nev-drvq5c1xehf8c\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:40 UTC\nReceived 2026-10-20 14:01:42 UTC\n\tWAF match\nev-e1vbub1xoh0xb\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:36 UTC\nReceived 2026-10-20 14:01:38 UTC\n\tWAF match\nev-fftcb61wui7ue\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:32 UTC\nReceived 2026-10-20 14:01:34 UTC\n\tWAF match\nev-fpsy051x4htjd\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:28 UTC\nReceived 2026-10-20 14:01:30 UTC\n\tWAF match\nev-evu4x81waj0gg\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:24 UTC\nReceived 2026-10-20 14:01:26 UTC\n\tWAF match\nev-f5tqm71wkim5f\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:20 UTC\nReceived 2026-10-20 14:01:22 UTC\n\tWAF match\nev-fzpe7512bms1h\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:16 UTC\nReceived 2026-10-20 14:01:18 UTC\n\tWAF match\nev-fppsi6121n6ci\n\t\nblocked\tsrc-edge\n2026-10-20 14:01:12 UTC\nReceived 2026-10-20 14:01:14 UTC\n\tWAF match\nev-ebrs1b12vlzff\n\t\nblocked\tsrc-edge\nRelationships3\npublic-edge → storefront-webcalls\ndeclared\npublic-edge → orders-apicalls\ndeclared\npublic-edge → identity-servicecalls\ndeclared",
+  "preservedAcross": [
+    "actual WEBGL_lose_context fallback",
+    "explicit Retry 3D"
+  ]
+}

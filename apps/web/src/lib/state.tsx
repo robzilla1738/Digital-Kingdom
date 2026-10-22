@@ -1,182 +1,118 @@
-import { createContext, useContext, useEffect, useMemo, useReducer, type Dispatch, type ReactNode } from "react";
-import type { CoverageRecord, Finding, OutcomeState, SecurityEvent } from "@dk/contracts";
-import { stateAt, type ReplayBasis } from "@dk/detections";
-import type { Dataset } from "./data.ts";
-import type { Layer } from "./vocab.ts";
+import { createContext, useContext, useEffect, useMemo, useReducer, useRef, useState, type Dispatch, type ReactNode } from 'react';
+import type { CoverageRecord, Finding, SecurityEvent } from '@dk/contracts';
+import { stateAt, type ReplayBasis } from '@dk/detections';
+import type { Dataset } from './data.ts';
+import type { Layer } from './vocab.ts';
+import { currentCoveragePresentation, distinctSummary, type AssetStatus } from './presentation.ts';
+import { parseNavigation, serializeNavigation, type NavigationState, type Selection, type View, type Workspace } from './navigation.ts';
+export { worstOutcome, highestSeverity, ASSET_COVERAGE_LABEL, sortFindings } from './presentation.ts';
+export type { AssetStatus, Selection, View, Workspace };
 
-export type Selection = { kind: "asset" | "finding" | "path" | "event"; id: string } | null;
-export type View = "castle" | "graph";
-
-export interface UiState {
-  view: View;
-  selection: Selection;
-  hover: string | null;
-  playhead: string | null; // null = latest
-  playing: boolean;
-  speed: number;
-  basis: ReplayBasis;
-  roofs: boolean;
-  layers: Record<Layer, boolean>;
-  showHypothetical: boolean;
-  reducedMotion: boolean;
-  query: string;
-  tab: "findings" | "assets" | "coverage";
-  webglFailed: string | null;
-  announce: string;
-  /** Left list and right inspector visibility (app shell). */
-  sidebar: boolean;
-  inspector: boolean;
+export interface UiState extends NavigationState {
+  hover: string | null; playing: boolean; speed: number; roofs: boolean;
+  layers: Record<Layer, boolean>; showHypothetical: boolean; reducedMotion: boolean; reduceAutomaticAnnouncements: boolean;
+  query: string; tab: 'findings' | 'assets' | 'coverage'; webglFailed: string | null; announce: string;
+  sidebar: boolean; inspector: boolean; focusRevision: number; focusHandledRevision: number; quality: 'low' | 'medium' | 'high'; shortcuts: boolean;
+  resolvedEvent: { id: string; assetIds: string[] } | null; eventAssetFilter: string | null; inspectorSection: string; updateRevision: number;
+  historyMode: 'push' | 'replace' | 'none'; navigationRevision: number;
 }
-
 export type Action =
-  | { type: "view"; view: View }
-  | { type: "select"; selection: Selection; announce?: string }
-  | { type: "hover"; id: string | null }
-  | { type: "playhead"; at: string | null }
-  | { type: "playing"; playing: boolean }
-  | { type: "speed"; speed: number }
-  | { type: "basis"; basis: ReplayBasis }
-  | { type: "roofs"; roofs: boolean }
-  | { type: "layer"; layer: Layer; on: boolean }
-  | { type: "hypothetical"; on: boolean }
-  | { type: "reducedMotion"; on: boolean }
-  | { type: "query"; query: string }
-  | { type: "tab"; tab: UiState["tab"] }
-  | { type: "webglFailed"; reason: string }
-  | { type: "panel"; panel: "sidebar" | "inspector"; open: boolean };
-
-function reducer(s: UiState, a: Action): UiState {
-  switch (a.type) {
-    case "view": return { ...s, view: a.view };
-    case "select": return { ...s, selection: a.selection, announce: a.announce ?? s.announce, inspector: a.selection ? true : s.inspector };
-    case "hover": return s.hover === a.id ? s : { ...s, hover: a.id };
-    case "playhead": return { ...s, playhead: a.at };
-    case "playing": return { ...s, playing: a.playing };
-    case "speed": return { ...s, speed: a.speed };
-    case "basis": return { ...s, basis: a.basis };
-    case "roofs": return { ...s, roofs: a.roofs };
-    case "layer": return { ...s, layers: { ...s.layers, [a.layer]: a.on } };
-    case "hypothetical": return { ...s, showHypothetical: a.on };
-    case "reducedMotion": return { ...s, reducedMotion: a.on };
-    case "query": return { ...s, query: a.query };
-    case "tab": return { ...s, tab: a.tab };
-    case "webglFailed": return { ...s, webglFailed: a.reason, view: "graph" };
-    case "panel": return { ...s, [a.panel]: a.open };
-  }
+ | {type:'view';view:View} | {type:'workspace';workspace:Workspace} | {type:'investigateTab';tab:UiState['investigateTab']}
+ | {type:'select';selection:Selection;announce?:string} | {type:'hover';id:string|null}
+ | {type:'playhead';at:string|null} | {type:'playing';playing:boolean} | {type:'speed';speed:number} | {type:'basis';basis:ReplayBasis}
+ | {type:'roofs';roofs:boolean} | {type:'layer';layer:Layer;on:boolean} | {type:'hypothetical';on:boolean}
+ | {type:'reduceAutomaticAnnouncements';on:boolean} | {type:'reducedMotion';on:boolean} | {type:'query';query:string} | {type:'tab';tab:UiState['tab']}
+ | {type:'webglFailed';reason:string} | {type:'retryWebgl'} | {type:'panel';panel:'sidebar'|'inspector';open:boolean}
+ | {type:'focus'} | {type:'focusHandled';revision:number} | {type:'quality';quality:UiState['quality']} | {type:'shortcuts';on:boolean}
+ | {type:'eventAssetFilter';assetId:string|null} | {type:'inspectorSection';section:string}
+ | {type:'resolvedEvent';id:string;assetIds:string[]}
+ | {type:'acceptUpdates'} | {type:'announce';message:string} | {type:'restoreNavigation';state:NavigationState};
+const navigate = (s:UiState, patch:Partial<UiState>, historyMode:'push'|'replace'='push'):UiState => ({...s,...patch,historyMode,navigationRevision:s.navigationRevision+1});
+export function reducer(s:UiState,a:Action):UiState {
+ switch(a.type) {
+ case 'view': return navigate(s,{view:a.view});
+ case 'workspace': return navigate(s,{workspace:a.workspace});
+ case 'investigateTab': return navigate(s,{investigateTab:a.tab});
+ case 'select': return navigate(s,{selection:a.selection,announce:a.announce ?? (a.selection ? `Selected ${a.selection.kind} ${a.selection.id}` : 'Selection cleared'),inspector:!!a.selection,resolvedEvent:a.selection?.kind==='event'&&a.selection.id===s.resolvedEvent?.id?s.resolvedEvent:null});
+ case 'hover': return s.hover===a.id?s:{...s,hover:a.id};
+ case 'playhead': return navigate(s,{playhead:a.at},'replace');
+ case 'playing': return {...s,playing:a.playing};
+ case 'speed': return {...s,speed:a.speed};
+ case 'basis': return navigate(s,{basis:a.basis});
+ case 'roofs': return {...s,roofs:a.roofs};
+ case 'layer': return {...s,layers:{...s.layers,[a.layer]:a.on}};
+ case 'hypothetical': return {...s,showHypothetical:a.on};
+ case 'reduceAutomaticAnnouncements': return {...s,reduceAutomaticAnnouncements:a.on,announce:a.on?'Automatic status announcements reduced. Direct action feedback remains enabled.':'Automatic status announcements enabled.'};
+ case 'reducedMotion': return {...s,reducedMotion:a.on,playing:a.on?false:s.playing};
+ case 'query': return {...s,query:a.query};
+ case 'tab': return {...s,tab:a.tab};
+ case 'webglFailed': return {...s,webglFailed:a.reason,view:'graph'};
+ case 'retryWebgl': return {...s,webglFailed:null,view:'castle'};
+ case 'panel': return {...s,[a.panel]:a.open};
+ case 'focus': return navigate(s,{workspace:'kingdom',focusRevision:s.focusRevision+1});
+ case 'focusHandled': return {...s,focusHandledRevision:Math.max(s.focusHandledRevision,Math.min(a.revision,s.focusRevision))};
+ case 'quality': return {...s,quality:a.quality};
+ case 'shortcuts': return {...s,shortcuts:a.on};
+ case 'eventAssetFilter': return navigate(s,{workspace:'investigate',investigateTab:'events',eventAssetFilter:a.assetId});
+ case 'inspectorSection': return {...s,inspectorSection:a.section};
+ case 'resolvedEvent': return s.selection?.kind==='event'&&s.selection.id===a.id?{...s,resolvedEvent:{id:a.id,assetIds:[...new Set(a.assetIds)]}}:s;
+ case 'acceptUpdates': return {...s,updateRevision:s.updateRevision+1,announce:'Latest confirmed snapshot applied'};
+ case 'announce': return {...s,announce:a.message};
+ case 'restoreNavigation': return {...s,...a.state,inspector:!!a.state.selection,resolvedEvent:a.state.selection?.kind==='event'&&a.state.selection.id===s.resolvedEvent?.id?s.resolvedEvent:null,historyMode:'none',navigationRevision:s.navigationRevision+1};
+ }
 }
-
-const SEVERITY_ORDER: OutcomeState[] = ["observed_effect", "needs_review", "attempted", "unknown", "blocked", "refused", "allowed"];
-export const worstOutcome = (xs: OutcomeState[]): OutcomeState | null => SEVERITY_ORDER.find((o) => xs.includes(o)) ?? null;
-
-export interface AssetStatus {
-  worst: OutcomeState | null;
-  findingIds: string[];
-  coverage: "reporting" | "gap" | "unobserved";
-  coverageNote?: string;
-  recentEventIds: string[];
-}
-
 export interface ViewModel {
-  data: Dataset;
-  findings: Finding[];
-  coverage: CoverageRecord[];
-  unobserved: string[];
-  events: SecurityEvent[];
-  lateEventIds: Set<string>;
-  assetStatus: Map<string, AssetStatus>;
-  at: string;
-  isLatest: boolean;
+ data:Dataset; latestData:Dataset; findings:Finding[]; coverage:CoverageRecord[]; unobserved:string[]; events:SecurityEvent[];
+ lateEventIds:Set<string>; assetStatus:Map<string,AssetStatus>; at:string; isLatest:boolean;
+ coverageAsOf:string; selectedEventAssets:string[]; pendingUpdates:number; summary:ReturnType<typeof distinctSummary>;
 }
-
-function readHash(): Partial<UiState> {
-  const p = new URLSearchParams(location.hash.slice(1));
-  const out: Partial<UiState> = {};
-  const view = p.get("view"); if (view === "graph" || view === "castle") out.view = view;
-  const sel = p.get("sel"); if (sel && /^(asset|finding|path|event):.+/.test(sel)) { const i = sel.indexOf(":"); out.selection = { kind: sel.slice(0, i) as NonNullable<Selection>["kind"], id: sel.slice(i + 1) }; }
-  const t = p.get("t"); if (t && !Number.isNaN(Date.parse(t))) out.playhead = new Date(t).toISOString();
-  const basis = p.get("basis"); if (basis === "known" || basis === "occurred") out.basis = basis;
-  return out;
+/** Current administrative disablement is not a historical sensor event. */
+export function replayAt(data: Dataset, at: string, basis: 'known' | 'occurred') {
+ const sources = data.sources.map(({ disabled: _currentDisabled, ...source }) => source);
+ return stateAt(data.graph, data.events, at, basis, { sources });
 }
-
-const Ctx = createContext<{ ui: UiState; dispatch: Dispatch<Action>; vm: ViewModel } | null>(null);
-
-export function AppStateProvider({ data, children }: { data: Dataset; children: ReactNode }) {
-  const prefersReduced = typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const wide = typeof matchMedia !== "undefined" && matchMedia("(min-width: 1360px)").matches;
-  const narrow = typeof matchMedia !== "undefined" && matchMedia("(max-width: 820px)").matches;
-  const [ui, dispatch] = useReducer(reducer, undefined, () => { const fromHash = readHash(); return {
-    view: "castle", selection: null, hover: null, playhead: null, playing: false, speed: 30, basis: "occurred",
-    roofs: true, layers: { runtime: true, identity: false, deployment: false, tools: true }, showHypothetical: false,
-    reducedMotion: prefersReduced, query: "", tab: "findings", webglFailed: null, announce: "",
-    sidebar: !narrow, inspector: wide || !!fromHash.selection,
-    ...fromHash,
-  } satisfies UiState; });
-
-  // deep links: the same asset/finding/time view can be shared (authorization still applies on load)
-  useEffect(() => {
-    const p = new URLSearchParams();
-    if (ui.view !== "castle") p.set("view", ui.view);
-    if (ui.selection) p.set("sel", `${ui.selection.kind}:${ui.selection.id}`);
-    if (ui.playhead) { p.set("t", ui.playhead); if (ui.basis !== "occurred") p.set("basis", ui.basis); }
-    const next = p.toString();
-    if (location.hash.slice(1) !== next) history.replaceState(null, "", next ? `#${next}` : location.pathname + location.search);
-  }, [ui.view, ui.selection, ui.playhead, ui.basis]);
-
-  const vm = useMemo<ViewModel>(() => {
-    const isLatest = ui.playhead === null;
-    const at = ui.playhead ?? data.window.end;
-    let findings = data.findings, coverage = data.coverage, unobserved = data.unobserved_asset_ids, events = data.events;
-    let late = new Set<string>();
-    if (!isLatest) {
-      const s = stateAt(data.graph, data.events, at, ui.basis, { sources: data.sources });
-      // keep analyst lifecycle/disposition from the server's view when the finding exists there
-      const server = new Map(data.findings.map((f) => [f.id, f]));
-      findings = s.findings.map((f) => { const sv = server.get(f.id); return sv ? { ...f, lifecycle: sv.lifecycle, disposition: sv.disposition } : f; });
-      coverage = s.coverage; unobserved = s.unobserved_asset_ids; events = s.events; late = new Set(s.late_event_ids);
-    } else {
-      for (const e of events) if (Date.parse(e.received_at) - Date.parse(e.occurred_at) > 60_000) late.add(e.id);
-    }
-    const status = new Map<string, AssetStatus>();
-    for (const a of data.graph.assets) status.set(a.id, { worst: null, findingIds: [], coverage: unobserved.includes(a.id) ? "unobserved" : "reporting", recentEventIds: [] });
-    for (const c of coverage) if (c.state !== "healthy") for (const id of c.asset_ids) {
-      const st = status.get(id); if (!st) continue;
-      const others = coverage.filter((x) => x !== c && x.state === "healthy" && x.asset_ids.includes(id));
-      // an asset is a gap when every source covering it is not reporting
-      if (!others.length) { st.coverage = "gap"; st.coverageNote = c.note ?? c.label; }
-    }
-    for (const f of findings) {
-      if (f.lifecycle === "closed") continue;
-      for (const id of f.affected_asset_ids) { const st = status.get(id); if (!st) continue; st.findingIds.push(f.id); }
-    }
-    for (const [id, st] of status) st.worst = worstOutcome(findings.filter((f) => st.findingIds.includes(f.id)).map((f) => f.outcome_state));
-    const tMs = Date.parse(at);
-    for (const e of events) if (tMs - Date.parse(e.occurred_at) <= 45_000 && tMs >= Date.parse(e.occurred_at)) for (const id of e.asset_ids) status.get(id)?.recentEventIds.push(e.id);
-    return { data, findings, coverage, unobserved, events, lateEventIds: late, assetStatus: status, at, isLatest };
-  }, [data, ui.playhead, ui.basis]);
-
-  // playback clock
-  useEffect(() => {
-    if (!ui.playing) return;
-    const start = Date.parse(data.window.start), end = Date.parse(data.window.end);
-    let cur = ui.playhead ? Date.parse(ui.playhead) : start;
-    if (cur >= end) cur = start;
-    let last = performance.now();
-    // ~8 updates/s: geometry never rebuilds per event; only overlays and markers change
-    const id = setInterval(() => {
-      const now = performance.now(); const dt = now - last; last = now;
-      cur = Math.min(end, cur + dt * ui.speed);
-      if (cur >= end) { dispatch({ type: "playing", playing: false }); dispatch({ type: "playhead", at: null }); return; }
-      dispatch({ type: "playhead", at: new Date(Math.round(cur / 1000) * 1000).toISOString() });
-    }, 125);
-    return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ui.playing, ui.speed, data.window.start, data.window.end]);
-
-  return <Ctx.Provider value={{ ui, dispatch, vm }}>{children}</Ctx.Provider>;
+const Ctx=createContext<{ui:UiState;dispatch:Dispatch<Action>;vm:ViewModel}|null>(null);
+export function AppStateProvider({data:incoming,children}:{data:Dataset;children:ReactNode}) {
+ const reduced=typeof matchMedia!=='undefined'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const narrow=typeof matchMedia!=='undefined'&&matchMedia('(max-width: 767px)').matches;
+ const [ui,dispatch]=useReducer(reducer,undefined,()=>{
+  const nav=parseNavigation(location.hash);
+  if(!location.hash&&narrow)nav.view='graph';
+  return {...nav,hover:null,playing:false,speed:30,roofs:true,layers:{runtime:true,identity:false,deployment:false,tools:true},showHypothetical:false,
+   reducedMotion:reduced,reduceAutomaticAnnouncements:false,query:'',tab:'findings',webglFailed:null,announce:'',sidebar:true,inspector:!!nav.selection,
+   focusRevision:0,focusHandledRevision:0,quality:narrow?'low':'medium',shortcuts:false,resolvedEvent:null,eventAssetFilter:null,inspectorSection:'summary',updateRevision:0,historyMode:'replace',navigationRevision:0} satisfies UiState;
+ });
+ const [data,setData]=useState(incoming);
+ const appliedUpdate=useRef(0);
+ useEffect(()=>{
+  const explicitly=appliedUpdate.current!==ui.updateRevision;
+  if(explicitly||(!ui.selection&&!ui.playhead)||incoming.role!==data.role) {setData(incoming);appliedUpdate.current=ui.updateRevision;}
+ },[incoming,ui.selection,ui.playhead,ui.updateRevision,data.role]);
+ useEffect(()=>{const restore=()=>dispatch({type:'restoreNavigation',state:parseNavigation(location.hash)});addEventListener('popstate',restore);addEventListener('hashchange',restore);return()=>{removeEventListener('popstate',restore);removeEventListener('hashchange',restore);};},[]);
+ useEffect(()=>{
+  if(ui.historyMode==='none')return;
+  const next=serializeNavigation(ui);if(location.hash.slice(1)===next)return;
+  history[ui.historyMode==='push'?'pushState':'replaceState'](null,'',`${location.pathname}${location.search}#${next}`);
+ },[ui.navigationRevision]);
+ useEffect(()=>{const mq=matchMedia('(prefers-reduced-motion: reduce)');const change=()=>{if(mq.matches)dispatch({type:'reducedMotion',on:true});};mq.addEventListener('change',change);return()=>mq.removeEventListener('change',change);},[]);
+ const vm=useMemo<ViewModel>(()=>{
+  const isLatest=ui.playhead===null,at=ui.playhead??data.window.end;
+  let findings=data.findings,events=data.events;let late=new Set<string>();
+  if(!isLatest){const s=replayAt(data,at,ui.basis);findings=s.findings;events=s.events;late=new Set(s.late_event_ids);}
+  else for(const e of events)if(Date.parse(e.received_at)-Date.parse(e.occurred_at)>60000)late.add(e.id);
+  // Coverage is explicitly CURRENT metadata, never repainted as historical certainty during replay.
+  const {coverage,unobserved,coverageAsOf,assetStatus:status}=currentCoveragePresentation(data,incoming,findings),t=Date.parse(at);
+  for(const e of events)if(t-Date.parse(e.occurred_at)<=45000&&t>=Date.parse(e.occurred_at))for(const id of e.asset_ids)status.get(id)?.recentEventIds.push(e.id);
+  return {data,latestData:incoming,findings,coverage,unobserved,events,lateEventIds:late,assetStatus:status,at,isLatest,
+   coverageAsOf,selectedEventAssets:ui.selection?.kind==='event'?(data.events.find(e=>e.id===ui.selection?.id)?.asset_ids??(ui.resolvedEvent?.id===ui.selection.id?ui.resolvedEvent.assetIds:[])):[],pendingUpdates:incoming!==data?Math.max(1,incoming.cursor-data.cursor):0,summary:distinctSummary(findings,status,coverage)};
+ },[data,incoming,ui.playhead,ui.basis,ui.selection,ui.resolvedEvent]);
+ useEffect(()=>{
+  if(!ui.playing)return;
+  const start=Date.parse(data.window.start),end=Date.parse(data.window.end);let cur=ui.playhead?Date.parse(ui.playhead):start;if(cur>=end)cur=start;
+  let last=performance.now();const id=setInterval(()=>{const now=performance.now();cur=Math.min(end,cur+(now-last)*ui.speed);last=now;
+   if(cur>=end){dispatch({type:'playing',playing:false});dispatch({type:'playhead',at:new Date(end).toISOString()});return;}
+   dispatch({type:'playhead',at:new Date(Math.round(cur/1000)*1000).toISOString()});},125);return()=>clearInterval(id);
+ },[ui.playing,ui.speed,data.window.start,data.window.end]);
+ return <Ctx.Provider value={{ui,dispatch,vm}}>{children}</Ctx.Provider>;
 }
-
-export function useApp() {
-  const c = useContext(Ctx);
-  if (!c) throw new Error("useApp outside provider");
-  return c;
-}
+export function useApp(){const c=useContext(Ctx);if(!c)throw new Error('useApp outside provider');return c;}

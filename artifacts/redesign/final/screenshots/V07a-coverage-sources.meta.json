@@ -1,0 +1,22 @@
+{
+  "name": "V07a-coverage-sources",
+  "file": "V07a-coverage-sources.png",
+  "sha256": "4c53c53907fcaa2e41cc1a720bf38b8335eff00ea85433aa22279934d9dcad34",
+  "bytes": 132118,
+  "capturedAt": "2026-10-22T20:51:49.401Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F04"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

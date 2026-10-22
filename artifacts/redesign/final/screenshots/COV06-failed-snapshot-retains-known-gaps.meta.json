@@ -1,0 +1,22 @@
+{
+  "name": "COV06-failed-snapshot-retains-known-gaps",
+  "file": "COV06-failed-snapshot-retains-known-gaps.png",
+  "sha256": "12000bbdb6c3c82e9a0de0c78a0457c79d82fe4011e16195888a0c6486bbaa70",
+  "bytes": 142355,
+  "capturedAt": "2026-10-22T20:51:43.340Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

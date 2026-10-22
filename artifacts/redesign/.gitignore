@@ -1,0 +1,16 @@
+# Local-only raw browser archives may contain temporary session credentials.
+*.zip
+*.webm
+*.har
+*.heapsnapshot
+*.heapprofile
+*.db*
+*.sqlite*
+**/*test-results/
+# Intermediate and failed capture corpora are retained locally, not final evidence.
+/nonfinal/
+/baseline/isolated-live-pilot/
+/baseline/isolated-live-pilot-confirmed/
+
+# Compiled fixture bundles are reproducible, not publication source.
+/offline-dist/

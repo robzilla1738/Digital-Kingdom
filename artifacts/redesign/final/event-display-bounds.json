@@ -1,0 +1,10 @@
+{
+  "fixture": "Real event search over 5000 locally generated synthetic records",
+  "loadedBeforeQueryReset": 200,
+  "renderedRowsBound": 100,
+  "initialAndLaterLoadedIdsVerified": true,
+  "failedFetchPreserved150RowsAndCursor": true,
+  "selectedEventPreserved": true,
+  "displayNavigationSentNoRequests": true,
+  "queryResetClearedDisplayAndOpaqueCursor": true
+}

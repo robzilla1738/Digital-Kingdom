@@ -1,0 +1,11 @@
+2026-10-22T20:48:37Z BEGIN full redesign suite
+DK_RED_OFFLINE_DIST=artifacts/redesign/offline-dist VITE_DK_BUILD=5ce7487c76c87be2b53f6520690987d2c5bdd063 PLAYWRIGHT_BROWSERS_PATH=/workspace/shared/dk-playwright node node_modules/@playwright/test/cli.js test -c playwright.redesign.config.ts
+2026-10-22T20:53:09Z END full redesign suite exit=0
+2026-10-22T20:53:27Z BEGIN touch audit
+DK_RED_OFFLINE_DIST=artifacts/redesign/offline-dist VITE_DK_BUILD=5ce7487c76c87be2b53f6520690987d2c5bdd063 PLAYWRIGHT_BROWSERS_PATH=/workspace/shared/dk-playwright node --import tsx artifacts/redesign/reproduction/check-touch-bounds.ts
+2026-10-22T20:53:31Z END touch audit exit=0
+2026-10-22T20:53:31Z BEGIN separately labeled Vite shell controls
+VITE_DK_STATIC_DEMO=1 VITE_DK_BUILD=5ce7487c76c87be2b53f6520690987d2c5bdd063 PLAYWRIGHT_BROWSERS_PATH=/workspace/shared/dk-playwright node apps/web/src/shell/verify-controls.mjs
+2026-10-22T20:53:41Z END shell controls exit=0
+2026-10-22T20:54:19Z node scripts/redesign-artifact-index.mjs 5ce7487c76c87be2b53f6520690987d2c5bdd063 exited 0
+2026-10-22T20:55:58Z python3 artifacts/redesign/reproduction/audit-artifact-publication.py exited 0; no public marker findings or raw publication violations

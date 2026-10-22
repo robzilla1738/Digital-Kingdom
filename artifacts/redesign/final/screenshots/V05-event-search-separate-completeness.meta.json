@@ -1,0 +1,22 @@
+{
+  "name": "V05-event-search-separate-completeness",
+  "file": "V05-event-search-separate-completeness.png",
+  "sha256": "42d8293f561e52a80f4342db4afcbeb976f4bb824e0100447a965755617176a7",
+  "bytes": 100165,
+  "capturedAt": "2026-10-22T20:51:52.518Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F06"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

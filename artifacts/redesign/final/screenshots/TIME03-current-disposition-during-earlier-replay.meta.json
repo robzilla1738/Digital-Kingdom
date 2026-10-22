@@ -1,0 +1,22 @@
+{
+  "name": "TIME03-current-disposition-during-earlier-replay",
+  "file": "TIME03-current-disposition-during-earlier-replay.png",
+  "sha256": "0af018eeaa9f10857099fc1cee85f3f03fca6994565af5b3c1bb49be5685e604",
+  "bytes": 230083,
+  "capturedAt": "2026-10-22T20:51:44.253Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

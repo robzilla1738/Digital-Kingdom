@@ -1,0 +1,22 @@
+{
+  "name": "V10b-four-module-roofs-off",
+  "file": "V10b-four-module-roofs-off.png",
+  "sha256": "2802cf276bc70c3955d36cc5c1da8e31a636155b2d0c26df2696017fb111c6a4",
+  "bytes": 144513,
+  "capturedAt": "2026-10-22T20:51:59.692Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "moduleSheet": "near"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

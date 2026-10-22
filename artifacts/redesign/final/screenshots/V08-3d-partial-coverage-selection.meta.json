@@ -1,0 +1,22 @@
+{
+  "name": "V08-3d-partial-coverage-selection",
+  "file": "V08-3d-partial-coverage-selection.png",
+  "sha256": "4e13699cf1a3ca10458d1f177a2f7db5f398c3d557384e59f013992f258f8e7b",
+  "bytes": 306546,
+  "capturedAt": "2026-10-22T20:51:52.050Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F04"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "V14-390-timeline-historical",
+  "file": "V14-390-timeline-historical.png",
+  "sha256": "e0c5fa0c80a42d934f305fa00f71dc8288170f79dd2792731c2ac2791f5a3704",
+  "bytes": 67103,
+  "capturedAt": "2026-10-22T20:52:07.842Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

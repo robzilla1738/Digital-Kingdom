@@ -1,0 +1,86 @@
+[
+  {
+    "width": 390,
+    "state": "expanded finding filters",
+    "controls": 20,
+    "undersized": []
+  },
+  {
+    "width": 390,
+    "state": "finding inspector",
+    "controls": 13,
+    "undersized": []
+  },
+  {
+    "width": 390,
+    "state": "expanded finding and compact queue",
+    "controls": 14,
+    "undersized": []
+  },
+  {
+    "width": 390,
+    "state": "expanded finding with open raw evidence",
+    "controls": 14,
+    "undersized": []
+  },
+  {
+    "width": 390,
+    "state": "asset inspector",
+    "controls": 16,
+    "undersized": []
+  },
+  {
+    "width": 390,
+    "state": "asset inspector expanded details",
+    "controls": 16,
+    "undersized": []
+  },
+  {
+    "width": 390,
+    "state": "expanded finding queue and raw-text pagination page two",
+    "controls": 27,
+    "undersized": []
+  },
+  {
+    "width": 320,
+    "state": "expanded finding filters",
+    "controls": 20,
+    "undersized": []
+  },
+  {
+    "width": 320,
+    "state": "finding inspector",
+    "controls": 13,
+    "undersized": []
+  },
+  {
+    "width": 320,
+    "state": "expanded finding and compact queue",
+    "controls": 14,
+    "undersized": []
+  },
+  {
+    "width": 320,
+    "state": "expanded finding with open raw evidence",
+    "controls": 14,
+    "undersized": []
+  },
+  {
+    "width": 320,
+    "state": "asset inspector",
+    "controls": 16,
+    "undersized": []
+  },
+  {
+    "width": 320,
+    "state": "asset inspector expanded details",
+    "controls": 16,
+    "undersized": []
+  },
+  {
+    "width": 320,
+    "state": "expanded finding queue and raw-text pagination page two",
+    "controls": 27,
+    "undersized": []
+  }
+]

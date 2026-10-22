@@ -1,0 +1,28 @@
+tested_source_sha=5ce7487c76c87be2b53f6520690987d2c5bdd063
+started_utc=2026-10-22T20:46:44Z
+node=v24.19.0
+OTEL_TRACES_SAMPLER=always_on
+OTEL_TRACES_SAMPLER_ARG=1
+2026-10-22T20:46:44Z	typecheck-final.log	./node_modules/.bin/tsc -p tsconfig.json --noEmit
+2026-10-22T20:46:51Z	typecheck-final.log	exit=0
+2026-10-22T20:46:51Z	unit-final.log	./node_modules/.bin/vitest run --reporter=default --reporter=json --outputFile=/workspace/scratch/7da97da4048f/digital-kingdom-redesign/artifacts/redesign/final/unit-results.json
+2026-10-22T20:46:58Z	unit-final.log	exit=0
+2026-10-22T20:46:58Z	fixtures-final.log	node --import tsx scripts/validate-fixtures.ts
+2026-10-22T20:46:59Z	fixtures-final.log	exit=0
+2026-10-22T20:46:59Z	build-final.log	bash -c cd apps/web && ./node_modules/.bin/vite build
+2026-10-22T20:47:03Z	build-final.log	exit=0
+2026-10-22T20:47:03Z	immutable-offline-build.log	bash -c cd apps/web && VITE_DK_STATIC_DEMO=1 ./node_modules/.bin/vite build --outDir ../../artifacts/redesign/offline-dist --emptyOutDir
+2026-10-22T20:47:09Z	immutable-offline-build.log	exit=0
+2026-10-22T20:47:09Z	clean-archive-receipt.json	python scripts/verify-clean-archive.py
+2026-10-22T20:47:09Z	clean-archive-receipt.json	exit=0
+2026-10-22T20:47:09Z	clean-archive-typecheck.log	bash -c cd "$1" && ./node_modules/.bin/tsc -p tsconfig.json --noEmit _ /tmp/dk-clean-5ce7487c76c8
+2026-10-22T20:47:16Z	clean-archive-typecheck.log	exit=0
+2026-10-22T20:47:16Z	clean-archive-unit.log	bash -c cd "$1" && ./node_modules/.bin/vitest run _ /tmp/dk-clean-5ce7487c76c8
+2026-10-22T20:47:29Z	clean-archive-unit.log	exit=0
+2026-10-22T20:47:29Z	clean-archive-fixtures.log	bash -c cd "$1" && node --import tsx scripts/validate-fixtures.ts _ /tmp/dk-clean-5ce7487c76c8
+2026-10-22T20:47:30Z	clean-archive-fixtures.log	exit=0
+2026-10-22T20:47:30Z	clean-archive-build.log	bash -c cd "$1/apps/web" && ./node_modules/.bin/vite build _ /tmp/dk-clean-5ce7487c76c8
+2026-10-22T20:47:35Z	clean-archive-build.log	exit=0
+2026-10-22T20:47:35Z	pilot-final.log	./node_modules/.bin/playwright test --config=playwright.config.ts
+2026-10-22T20:48:08Z	pilot-final.log	exit=0
+completed_utc=2026-10-22T20:48:08Z

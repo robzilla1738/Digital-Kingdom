@@ -1,0 +1,7 @@
+
+> digital-kingdom@0.3.2 typecheck /tmp/dk-redesign-baseline-453b2db
+> tsc -p tsconfig.json --noEmit
+
+examples/reference-app/e2e.test.ts(3,32): error TS2307: Cannot find module '@dk/sdk-node' or its corresponding type declarations.
+examples/reference-app/src/app.ts(3,32): error TS2307: Cannot find module '@dk/sdk-node' or its corresponding type declarations.
+ ELIFECYCLE  Command failed with exit code 2.

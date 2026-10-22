@@ -1,0 +1,7 @@
+{
+  "clock": "Playwright controlled browser clock:2000ms+3000ms",
+  "end": 1792505580000,
+  "automaticallyReturnedToLatest": false,
+  "explicitReturnToLatestVerified": true,
+  "dataset": "fixed synthetic F01"
+}

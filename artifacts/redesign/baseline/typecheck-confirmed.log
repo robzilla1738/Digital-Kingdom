@@ -1,0 +1,4 @@
+
+> digital-kingdom@0.3.2 typecheck /tmp/dk-redesign-baseline-453b2db
+> tsc -p tsconfig.json --noEmit
+

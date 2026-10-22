@@ -1,0 +1,24 @@
+{
+  "typed": "23[]/",
+  "editable": "Actual textarea input preserved",
+  "modal": "Actual key presses remained scoped to the export dialog",
+  "modifiers": [
+    {
+      "modifier": "ctrlKey",
+      "defaultPrevented": false
+    },
+    {
+      "modifier": "metaKey",
+      "defaultPrevented": false
+    },
+    {
+      "modifier": "altKey",
+      "defaultPrevented": false
+    },
+    {
+      "modifier": "shiftKey",
+      "defaultPrevented": false
+    }
+  ],
+  "nativeBrowserShortcutNote": "Modifier events checked for non-cancellation and no app navigation; native browser chrome actions deliberately not invoked."
+}

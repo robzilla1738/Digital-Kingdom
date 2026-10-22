@@ -1,0 +1,22 @@
+{
+  "name": "V14-320-findings",
+  "file": "V14-320-findings.png",
+  "sha256": "d4ca8bc2758f4ae1d5d4374dbc2e3d7ca7b4da73d293c3230a782d47c20316bf",
+  "bytes": 50099,
+  "capturedAt": "2026-10-22T20:52:07.930Z",
+  "viewport": {
+    "width": 320,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "5ce7487c76c87be2b53f6520690987d2c5bdd063",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

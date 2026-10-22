@@ -1,180 +1,149 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AppStateProvider, useApp } from "./lib/state.tsx";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AppStateProvider } from "./lib/state.tsx";
 import { Api, ApiError, detectServer, loadFromServer, loadOfflineDemo, type Dataset } from "./lib/data.ts";
-import { TopBar } from "./panels/TopBar.tsx";
-import { Sidebar } from "./panels/Sidebar.tsx";
-import { EvidencePane, ActionsCtx, type ServerActions } from "./panels/EvidencePane.tsx";
-import { Timeline } from "./panels/Timeline.tsx";
-import { Legend } from "./panels/Legend.tsx";
-import { Graph2D } from "./graph2d/Graph2D.tsx";
-import { webglAvailable } from "./lib/webgl.ts";
-import { Icon } from "./lib/icons.tsx";
+import { ActionsCtx, type ServerActions } from "./panels/EvidencePane.tsx";
+import { applyRedesignFixture } from "../../../fixtures/redesign/offline.ts";
+import { Shell } from "./shell/Shell.tsx";
 import { BrandMark } from "./panels/TopBar.tsx";
-import { fmtTime } from "./lib/vocab.ts";
-import { ConnectionCtx, CONNECTION_BANNER, deriveConnection, type Connection, type SyncState, type Transport } from "./lib/connection.ts";
+import { eventSearchParams, type FindingDetailResult } from "./lib/investigation.ts";
+import { loadFindingEvidence } from "./lib/evidence-loader.ts";
+import { ConnectionCtx, deriveConnection, type Connection, type SyncState, type Transport } from "./lib/connection.ts";
 
 /** Set at build time for the public static demo: never contact a backend, always use bundled fixtures. */
 const STATIC_DEMO = (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_DK_STATIC_DEMO === "1";
 
-const Castle3D = lazy(() => import("./castle/Castle3D.tsx").then((m) => ({ default: m.Castle3D })));
+
 
 export function App() {
-  const api = useMemo(() => new Api(""), []);
+  const authorizationEpoch = useRef(0), authorizationRequests = useRef(new AbortController());
+  const stream = useRef<EventSource | null>(null);
+  const api = useMemo(() => new Api("", () => authorizationEpoch.current, () => authorizationRequests.current.signal), []);
   const [data, setData] = useState<Dataset | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [needsLogin, setNeedsLogin] = useState(false);
   const [connection, setConnection] = useState<Connection | null>(null);
-  // once a server session is established we never silently swap in the offline synthetic demo
-  const serverMode = useRef(false);
-  const lastSync = useRef<string | null>(null);
-  // SSE transport and snapshot synchronization are tracked separately; see lib/connection.ts
-  const transport = useRef<Transport>("connecting");
-  const sync = useRef<SyncState>("synced");
-  const reachable = useRef(true);
-  const retryTimer = useRef<number | null>(null);
-  const retryDelay = useRef(1000);
-  const publish = useCallback(() => setConnection({ state: deriveConnection(transport.current, sync.current, reachable.current), since: lastSync.current }), []);
+  const serverMode = useRef(false), lastSync = useRef<string | null>(null);
+  const transport = useRef<Transport>("connecting"), sync = useRef<SyncState>("synced"), reachable = useRef(true);
+  const retryTimer = useRef<number | null>(null), reloadTimer = useRef<number | null>(null), retryDelay = useRef(1000);
+  const request = useRef<{ sequence: number; controller: AbortController | null }>({ sequence: 0, controller: null });
+  const currentData = useRef(data); currentData.current = data;
+  const reload = useRef<() => Promise<void>>(async () => {});
   const [projectId, setProjectId] = useState<string | undefined>(() => new URLSearchParams(location.search).get("project") ?? undefined);
-  const reloadTimer = useRef<number | null>(null);
-
+  const clearTimers = useCallback(() => { if (retryTimer.current) clearTimeout(retryTimer.current); if (reloadTimer.current) clearTimeout(reloadTimer.current); retryTimer.current = reloadTimer.current = null; }, []);
+  const clearSensitive = useCallback(() => {
+    authorizationEpoch.current++; authorizationRequests.current.abort(); authorizationRequests.current = new AbortController();
+    stream.current?.close(); stream.current = null;
+    request.current.sequence++; request.current.controller?.abort(); clearTimers();
+    setData(null); currentData.current = null; setConnection(null); lastSync.current = null; serverMode.current = false;
+    transport.current = "connecting"; sync.current = "synced";
+  }, [clearTimers]);
+  const publish = useCallback(() => setConnection({ state: deriveConnection(transport.current, sync.current, reachable.current), since: lastSync.current }), []);
   const load = useCallback(async () => {
-    if (STATIC_DEMO) { setData(loadOfflineDemo()); return; }
-    const me = await detectServer(api);
-    if (!me) {
-      if (serverMode.current) { syncFailed(false); return; } // keep the last data, flagged stale
-      setData(loadOfflineDemo()); return;
-    }
-    if (me.role === "none") { setNeedsLogin(true); return; }
+    request.current.controller?.abort();
+    const controller = new AbortController(), sequence = ++request.current.sequence; request.current.controller = controller;
+    const current = () => !controller.signal.aborted && sequence === request.current.sequence;
+    if (STATIC_DEMO) { setData(applyRedesignFixture(loadOfflineDemo(), new URLSearchParams(location.search).get("fixture"))); return; }
     try {
-      const d = await loadFromServer(api, projectId);
+      const me = await detectServer(api, controller.signal);
+      if (!current()) return;
+      if (!me) throw new Error("The project server is unavailable. No synthetic data has been substituted.");
+      if (me.role === "none") { clearSensitive(); setNeedsLogin(true); return; }
+      const d = await loadFromServer(api, projectId, controller.signal);
+      if (!current()) return;
       d.identity = me.kind === "anonymous-demo" ? "anonymous demo" : me.name;
       if (me.kind === "anonymous-demo") d.role = "none";
+      const prior = currentData.current;
+      if (prior && (prior.role !== d.role || prior.identity !== d.identity)) {
+        authorizationEpoch.current++; authorizationRequests.current.abort(); authorizationRequests.current = new AbortController();
+        stream.current?.close(); stream.current = null;
+      }
+
       serverMode.current = true; lastSync.current = new Date().toISOString();
       setData(d); setError(null); setNeedsLogin(false);
-      // only a successfully applied snapshot clears staleness
       sync.current = "synced"; reachable.current = true; retryDelay.current = 1000;
       if (retryTimer.current) { clearTimeout(retryTimer.current); retryTimer.current = null; }
       if (transport.current !== "connecting") publish();
     } catch (e) {
-      if (e instanceof ApiError && e.status === 401) setNeedsLogin(true);
-      else if (serverMode.current) syncFailed(true);
-      else setError((e as Error).message);
+      if (!current()) return;
+      if (e instanceof ApiError && (e.status === 401 || e.status === 403)) {
+        clearSensitive(); if (e.status === 401) setNeedsLogin(true); else setError("This project is not available to your current role. Cached project data has been cleared.");
+      } else if (serverMode.current) {
+        sync.current = "failed"; reachable.current = e instanceof ApiError || transport.current === "open"; publish();
+        if (transport.current === "open" && !retryTimer.current) {
+          retryTimer.current = window.setTimeout(() => { retryTimer.current = null; void reload.current(); }, retryDelay.current);
+          retryDelay.current = Math.min(retryDelay.current * 2, 10_000);
+        }
+      } else setError(`Unable to load the project server: ${(e as Error).message}. No synthetic data has been substituted.`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, projectId]);
-
-  // a failed snapshot never yields "live"; while the stream stays open we retry with bounded backoff
-  // (when the stream is down, its reconnect triggers the catch-up instead)
-  function syncFailed(serverAnswered: boolean) {
-    sync.current = "failed"; reachable.current = serverAnswered || transport.current === "open";
-    publish();
-    if (transport.current === "open" && !retryTimer.current) {
-      retryTimer.current = window.setTimeout(() => { retryTimer.current = null; void load(); }, retryDelay.current);
-      retryDelay.current = Math.min(retryDelay.current * 2, 10_000);
-    }
-  }
-
-  useEffect(() => { void load(); }, [load]);
-
-  // resumable live updates: debounce into a bounded snapshot refetch (geometry is not rebuilt per event)
+  }, [api, projectId, publish, clearSensitive]);
+  reload.current = load;
+  useEffect(() => { void load(); return () => { request.current.controller?.abort(); clearTimers(); }; }, [load, clearTimers]);
+  useEffect(() => {
+    const deny = (event: Event) => {
+      const detail = (event as CustomEvent<{ status: number; path?: string; scope: number }>).detail;
+      // Scopes survive the null-data loading window and distinguish re-login to the same project.
+      if (detail?.scope !== authorizationEpoch.current) return;
+      clearSensitive(); if (detail?.status === 401) setNeedsLogin(true); else setError("Access denied. Sensitive records and outstanding queries have been cleared.");
+    };
+    addEventListener("dk:access-denied", deny); return () => removeEventListener("dk:access-denied", deny);
+  }, [clearSensitive]);
+  useEffect(() => {
+    const onHistory = () => { const id = new URLSearchParams(location.search).get("project") ?? undefined; if (id !== projectId) { clearSensitive(); setProjectId(id); } };
+    addEventListener("popstate", onHistory); return () => removeEventListener("popstate", onHistory);
+  }, [projectId, clearSensitive]);
   useEffect(() => {
     if (!data || data.mode !== "server") return;
     const es = new EventSource(`/api/projects/${encodeURIComponent(data.project.id)}/stream?cursor=${data.cursor}`);
-    const schedule = () => { if (reloadTimer.current) return; reloadTimer.current = window.setTimeout(() => { reloadTimer.current = null; void load(); }, 1200); };
-    // hello = transport connected. After any interruption the view stays stale ("Synchronizing") until the
-    // catch-up snapshot has actually been applied by load().
+    stream.current = es;
+    let active = true; const scope = authorizationEpoch.current;
+    const isActive = () => active && scope === authorizationEpoch.current;
+    const schedule = () => { if (!isActive() || reloadTimer.current) return; reloadTimer.current = window.setTimeout(() => { reloadTimer.current = null; void reload.current(); }, 1200); };
     es.addEventListener("hello", () => {
+      if (!isActive()) return;
       const resume = transport.current === "down" || sync.current !== "synced";
       transport.current = "open"; reachable.current = true;
-      if (resume) { sync.current = "syncing"; if (retryTimer.current) { clearTimeout(retryTimer.current); retryTimer.current = null; } void load(); }
+      if (resume) { sync.current = "syncing"; if (retryTimer.current) { clearTimeout(retryTimer.current); retryTimer.current = null; } void reload.current(); }
       publish();
     });
     for (const t of ["event", "finding", "graph", "scene", "containment", "resync"]) es.addEventListener(t, schedule);
-    es.onerror = () => { transport.current = "down"; if (sync.current === "synced") sync.current = "syncing"; publish(); };
-    return () => { es.close(); transport.current = "connecting"; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.project.id, data?.mode]);
-
-  const actions: ServerActions | null = data?.mode === "server" ? {
-    role: data.role,
-    setDisposition: async (id, body) => { await api.send("POST", `/api/projects/${data.project.id}/findings/${id}/disposition`, body); await load(); },
-    exportCase: async (id) => {
-      const bundle = await api.send("POST", `/api/projects/${data.project.id}/cases/${id}/export`);
-      const url = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" }));
-      const a = document.createElement("a"); a.href = url; a.download = `digital-kingdom-case-${id}.json`; a.click(); URL.revokeObjectURL(url);
-    },
-    containment: () => api.get(`/api/projects/${data.project.id}/containment`),
-    requestContainment: async (findingId, actionId, rationale) => { await api.send("POST", `/api/projects/${data.project.id}/containment`, { finding_id: findingId, action_id: actionId, rationale }); },
-    findingEvidence: async (id) => {
-      type Page = { expected_event_count: number; events: Dataset["events"]; evidence: Dataset["evidence"]; missing_event_ids: string[]; missing_evidence_refs: string[]; next_offset: number | null };
-      const events: Dataset["events"] = []; const evidence: Dataset["evidence"] = {}; const missingEvents: string[] = []; const missingEvidence: string[] = [];
-      let offset: number | null = 0, expected = 0;
-      while (offset !== null && events.length < 5000) {
-        const p: Page = await api.get<Page>(`/api/projects/${data.project.id}/findings/${encodeURIComponent(id)}/evidence?offset=${offset}&limit=500`);
-        expected = p.expected_event_count; events.push(...p.events); Object.assign(evidence, p.evidence); missingEvents.push(...p.missing_event_ids); missingEvidence.push(...p.missing_evidence_refs); offset = p.next_offset;
-      }
-      Object.assign(data.evidence, evidence);
-      return { events, evidence, expected, missingEvents, missingEvidence, complete: offset === null && !missingEvents.length && !missingEvidence.length };
-    },
-  } : null;
-
-  if (needsLogin) return <Login api={api} onDone={() => { setNeedsLogin(false); void load(); }} />;
-  if (error) return <div className="fullscreen-msg" role="alert"><span className="brand-mark" style={{ width: 32, height: 32 }}><BrandMark size={18} /></span><h1>Digital Kingdom</h1><p>{error}</p><button className="btn" onClick={() => void load()}>Retry</button></div>;
-  if (!data) return <div className="fullscreen-msg" aria-busy="true"><div className="spinner" aria-hidden /><p className="small">Loading evidence…</p></div>;
-
-  return (
-    <ConnectionCtx.Provider value={connection}>
-    <ActionsCtx.Provider value={actions}>
-      <AppStateProvider key={data.project.id} data={data}>
-        <Shell connection={connection}
-          onSignIn={() => setNeedsLogin(true)}
-          onSignOut={async () => { await fetch("/api/session", { method: "DELETE" }); void load(); }}
-          onProject={(id) => { setProjectId(id); history.replaceState(null, "", `?project=${encodeURIComponent(id)}`); }} />
-      </AppStateProvider>
-    </ActionsCtx.Provider>
-    </ConnectionCtx.Provider>
-  );
-}
-
-function Shell(props: { connection: Connection | null; onSignIn: () => void; onSignOut: () => void; onProject: (id: string) => void }) {
-  const { ui, dispatch, vm } = useApp();
-  useEffect(() => { const r = webglAvailable(); if (r) dispatch({ type: "webglFailed", reason: r }); }, [dispatch]);
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
-      if (e.key === "Escape") dispatch({ type: "select", selection: null });
-      if (e.key === "2") dispatch({ type: "view", view: "graph" });
-      if (e.key === "3" && !ui.webglFailed) dispatch({ type: "view", view: "castle" });
-      if (e.key === " " && !(e.target instanceof HTMLButtonElement)) { e.preventDefault(); dispatch({ type: "playing", playing: !ui.playing }); }
-      if (e.key === "r") dispatch({ type: "roofs", roofs: !ui.roofs });
-      if (e.key === "[") dispatch({ type: "panel", panel: "sidebar", open: !ui.sidebar });
-      if (e.key === "]") dispatch({ type: "panel", panel: "inspector", open: !ui.inspector });
-      if (e.key === "/") { e.preventDefault(); document.querySelector<HTMLInputElement>(".search")?.focus(); }
+    es.onerror = () => { if (!isActive()) return; transport.current = "down"; if (sync.current === "synced") sync.current = "syncing"; publish(); schedule(); };
+    return () => { active = false; es.close(); if (stream.current === es) stream.current = null; transport.current = "connecting"; clearTimers(); };
+  }, [data?.project.id, data?.mode, data?.role, data?.identity, publish, clearTimers]);
+  const actions = useMemo<ServerActions | null>(() => {
+    if (data?.mode !== "server") return null;
+    const epoch = authorizationEpoch.current;
+    const project = data.project.id, prefix = `/api/projects/${encodeURIComponent(project)}`;
+    const check = () => { if (epoch !== authorizationEpoch.current || currentData.current?.project.id !== project) throw new Error("Authorization or project changed; operation discarded."); };
+    return {
+      role: data.role,
+      importInventory: async (input) => {
+        check();
+        const query = new URLSearchParams({ format: input.format, revision: input.revision, environment: input.environment });
+        const result = await api.sendText<{ graph_revision: string; scene_digest: string; reflow_zones: string[]; warnings: string[]; unresolved: string[] }>("POST", `${prefix}/graph?${query}`, input.text);
+        check(); await reload.current(); return result;
+      },
+      setDisposition: async (id, body) => { check(); await api.send("POST", `${prefix}/findings/${encodeURIComponent(id)}/disposition`, body); check(); await reload.current(); },
+      exportCase: async (id) => {
+        check(); const bundle = await api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}/export`); check();
+        const url = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" }));
+        const a = document.createElement("a"); a.href = url; a.download = `digital-kingdom-case-${id}.json`; a.click(); URL.revokeObjectURL(url);
+      },
+      containment: (signal) => { check(); return api.get(`${prefix}/containment`, signal); },
+      requestContainment: async (findingId, actionId, rationale) => { check(); await api.send("POST", `${prefix}/containment`, { finding_id: findingId, action_id: actionId, rationale }); },
+      findingEvidence: (id, signal) => { check(); return loadFindingEvidence(api, project, id, signal); },
+      findingDetail: (id, signal) => { check(); return api.get<FindingDetailResult>(`${prefix}/findings/${encodeURIComponent(id)}`, signal); },
+      eventDetail: (id, signal) => { check(); return api.get(`${prefix}/events/${encodeURIComponent(id)}`, signal); },
+      searchEvents: (input, signal) => { check(); return api.get(`${prefix}/events/search?${eventSearchParams(input)}`, signal); },
     };
-    addEventListener("keydown", onKey); return () => removeEventListener("keydown", onKey);
-  }, [dispatch, ui.playing, ui.roofs, ui.webglFailed, ui.sidebar, ui.inspector]);
-  return (
-    <div className={`app${ui.selection ? " has-selection" : ""}${ui.sidebar ? "" : " no-side"}${ui.inspector ? "" : " no-pane"}`}>
-      <a href="#main" className="skip">Skip to map</a>
-      <TopBar connection={props.connection} onSignIn={props.onSignIn} onSignOut={props.onSignOut} onProject={props.onProject} />
-      <Sidebar />
-      <main id="main" className="stage">
-        {ui.webglFailed && ui.view === "graph" && <div className="banner" role="status"><Icon name="alert" size={15} />{ui.webglFailed} The 2D graph and timeline show the same evidence.</div>}
-        {ui.view === "castle" && !ui.webglFailed ? <Suspense fallback={<div className="stage-loading"><div className="spinner" aria-hidden /></div>}><Castle3D /></Suspense> : <Graph2D />}
-        {props.connection && props.connection.state !== "live" && (
-          <div className="banner warn" role="alert" data-testid="connection-banner">
-            <Icon name="alert" size={15} />
-            {CONNECTION_BANNER[props.connection.state]} Showing data as of {props.connection.since ? fmtTime(props.connection.since) : "the last sync"}. This is not live monitoring.
-          </div>
-        )}
-        {!vm.isLatest && <div className="stage-title"><span className="replay-tag"><span className="pip" aria-hidden />Replay · {fmtTime(vm.at)}</span></div>}
-        <Legend />
-      </main>
-      <EvidencePane />
-      <Timeline />
-      <div className="sr-only" aria-live="polite">{ui.announce}</div>
-    </div>
-  );
+  }, [data?.project.id, data?.mode, data?.role, data?.identity, api]);
+  if (needsLogin) return <Login api={api} onDone={() => { setNeedsLogin(false); void load(); }} />;
+  if (error) return <div className="fullscreen-msg" role="alert"><span className="brand-mark"><BrandMark size={18} /></span><h1>Digital Kingdom</h1><p>{error}</p><button className="btn" onClick={() => { setError(null); void load(); }}>Retry server</button><button className="btn" onClick={() => { clearSensitive(); setError(null); setNeedsLogin(false); setData(loadOfflineDemo()); }}>Open explicitly synthetic offline demo</button></div>;
+  if (!data) return <div className="fullscreen-msg" aria-busy="true"><div className="spinner" aria-hidden /><p className="small">Loading evidence…</p></div>;
+  return <ConnectionCtx.Provider value={connection}><ActionsCtx.Provider value={actions}><AppStateProvider key={`${data.project.id}:${data.role}:${authorizationEpoch.current}`} data={data}>
+    <Shell connection={connection} onSignIn={() => { clearSensitive(); setNeedsLogin(true); }}
+      onSignOut={async () => { clearSensitive(); setNeedsLogin(false); const sequence = request.current.sequence; try { const r = await fetch("/api/session", { method: "DELETE", credentials: "same-origin", headers: { "x-dk-request": "1" } }); if (!r.ok) throw new Error("Server did not confirm sign-out."); if (sequence === request.current.sequence) setNeedsLogin(true); } catch { if (sequence === request.current.sequence) setError("Local sensitive data was cleared, but server sign-out could not be confirmed. Retry when connected."); } }}
+      onProject={id => { clearSensitive(); setError(null); setNeedsLogin(false); setProjectId(id); history.pushState(null, "", `?project=${encodeURIComponent(id)}`); }} />
+  </AppStateProvider></ActionsCtx.Provider></ConnectionCtx.Provider>;
 }
 
 function Login({ api, onDone }: { api: Api; onDone: () => void }) {

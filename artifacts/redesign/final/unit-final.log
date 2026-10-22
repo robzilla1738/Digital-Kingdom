@@ -1,0 +1,63 @@
+
+ RUN  v3.2.7 /workspace/scratch/7da97da4048f/digital-kingdom-redesign
+
+ ✓ apps/server/test/assessment-v2.test.ts (8 tests) 625ms
+ ✓ apps/server/test/trust.test.ts (14 tests) 658ms
+ ✓ apps/mcp/test/quality-gates-stdio.test.ts (1 test) 678ms
+   ✓ investigation honesty over the documented stdio transport > pins event pages but reports CURRENT coverage, and denies unknown/cross-project targets  677ms
+ ✓ apps/server/test/investigation.test.ts (15 tests) 1176ms
+ ✓ packages/contracts/test/contracts.test.ts (6 tests) 274ms
+ ✓ apps/server/test/quality-gates.test.ts (29 tests) 1384ms
+ ✓ apps/server/test/import-validation.test.ts (5 tests) 232ms
+ ✓ packages/scene-compiler/test/redesign-layout.test.ts (8 tests) 433ms
+ ✓ apps/server/test/otlp.test.ts (7 tests) 684ms
+ ✓ apps/server/test/hardening.test.ts (12 tests) 637ms
+ ✓ apps/mcp/test/evidence.test.ts (1 test) 2178ms
+   ✓ fix 4: older findings keep complete, explicit evidence > evidence for an old finding survives 5,000+ later events; >50 records; partial failures are explicit  2176ms
+ ✓ apps/mcp/test/mcp.test.ts (7 tests) 218ms
+ ✓ apps/mcp/test/readonly-profile.test.ts (5 tests) 266ms
+ ✓ apps/web/src/castle/architecture.test.ts (46 tests) 241ms
+ ✓ apps/web/src/castle/moduleRecovery.test.ts (11 tests) 241ms
+ ✓ apps/mcp/test/trial.e2e.test.ts (1 test) 248ms
+ ✓ examples/reference-app/e2e.test.ts (1 test) 246ms
+ ✓ apps/web/src/castle/groupSelection.test.ts (6 tests) 144ms
+ ✓ packages/scene-compiler/test/scene.test.ts (22 tests) 38ms
+ ✓ apps/web/src/lib/redesign-fixtures.test.ts (8 tests) 72ms
+ ✓ apps/web/src/lib/investigation.test.ts (13 tests) 45ms
+ ✓ apps/web/src/lib/redesign-state.test.ts (10 tests) 48ms
+stderr | packages/contracts/test/agent-schemas.test.ts
+unknown format "date-time" ignored in schema at path "#/properties/source_coverage/properties/coverage_as_of"
+unknown format "date-time" ignored in schema at path "#/properties/source_coverage/properties/coverage_as_of"
+
+ ✓ apps/web/src/lib/data-security.test.ts (10 tests) 41ms
+ ✓ packages/contracts/test/agent-schemas.test.ts (1 test) 119ms
+ ✓ packages/detections/test/detections.test.ts (29 tests) 31ms
+ ✓ apps/web/src/shell/timelineLanes.test.ts (4 tests) 46ms
+ ✓ apps/web/src/components/ui/primitives.test.ts (5 tests) 31ms
+ ✓ packages/graph-core/test/graph.test.ts (10 tests) 37ms
+ ✓ apps/server/test/upgrade-v03.test.ts (3 tests) 31ms
+ ✓ apps/server/test/tombstones.test.ts (2 tests) 18ms
+ ✓ apps/web/src/workspaces/integrations/setupProgress.test.ts (4 tests) 14ms
+ ✓ apps/web/src/inspector/evidenceCards.test.ts (5 tests) 12ms
+ ✓ apps/web/src/workspaces/investigate/findingCapabilities.test.ts (1 test) 19ms
+ ✓ apps/web/src/workspaces/coverage/currentSources.test.ts (2 tests) 23ms
+ ✓ apps/web/src/castle/edgePicking.test.ts (7 tests) 16ms
+ ✓ apps/web/src/components/ui/splitPane.test.ts (4 tests) 15ms
+ ✓ eval/test/v2-objectives.test.ts (6 tests) 4ms
+ ✓ apps/web/src/shell/replayRange.test.ts (5 tests) 4ms
+ ✓ packages/detections/test/coverage-finding-time.test.ts (1 test) 4ms
+ ✓ apps/web/src/lib/evidence-loader.test.ts (4 tests) 7ms
+ ✓ apps/web/src/lib/connection.test.ts (1 test) 3ms
+ ✓ eval/test/harness.test.ts (8 tests) 4867ms
+   ✓ evaluation harness (scripted fake model) > offers only the investigation tools, records tool use, drops reasoning payloads, grades fabricated refs  700ms
+   ✓ evaluation harness (scripted fake model) > enforces the tool-call budget and then asks for a final answer  618ms
+   ✓ evaluation harness (scripted fake model) > records a timeout instead of hanging  1508ms
+ ✓ apps/server/test/server.test.ts (28 tests) 5775ms
+   ✓ durability and recovery (B) > O06: SSE resumes from a cursor and signals resync for an expired cursor  4522ms
+
+ Test Files  43 passed (43)
+      Tests  376 passed (376)
+   Start at  13:46:51
+   Duration  6.78s (transform 2.11s, setup 0ms, collect 11.31s, tests 21.88s, environment 8ms, prepare 3.26s)
+
+JSON report written to /workspace/scratch/7da97da4048f/digital-kingdom-redesign/artifacts/redesign/final/unit-results.json

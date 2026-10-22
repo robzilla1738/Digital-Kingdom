@@ -1,0 +1,155 @@
+{
+  "scope": "Five actual renderer unmount/remount cycles plus replay edits in Chromium SwiftShader. Previous WebGL contexts are held by WeakRef only and must be lost or GC-collected after the deferred teardown before remount. Nonzero program counts are sampled after completed rendering and stable observations; registered owners must match the 13-asset fixture and disappear from the old canvas on teardown. Current-renderer program/geometry/texture counts and bounded shared CPU cache are not process-wide GPU memory or a process heap/leak proof.",
+  "expectedModuleOwners": 13,
+  "initial": {
+    "engine": "three.js r178",
+    "moduleShaderOwners": "13",
+    "cameraPose": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":20.201}",
+    "renderCount": "4",
+    "drawCalls": "69",
+    "triangles": "13982",
+    "quality": "medium",
+    "moduleGeometryBuilds": "10",
+    "gpuGeometries": "57",
+    "gpuTextures": "2",
+    "gpuPrograms": "33"
+  },
+  "previousContextLifecycle": [
+    {
+      "id": 2,
+      "collected": false,
+      "contextLost": true,
+      "lostEvents": 1,
+      "canvasCollected": false,
+      "canvasConnected": false,
+      "moduleShaderOwners": 0,
+      "ownerCounterPresent": false
+    },
+    {
+      "id": 4,
+      "collected": false,
+      "contextLost": true,
+      "lostEvents": 1,
+      "canvasCollected": false,
+      "canvasConnected": false,
+      "moduleShaderOwners": 0,
+      "ownerCounterPresent": false
+    },
+    {
+      "id": 5,
+      "collected": false,
+      "contextLost": true,
+      "lostEvents": 1,
+      "canvasCollected": false,
+      "canvasConnected": false,
+      "moduleShaderOwners": 0,
+      "ownerCounterPresent": false
+    },
+    {
+      "id": 6,
+      "collected": false,
+      "contextLost": true,
+      "lostEvents": 1,
+      "canvasCollected": false,
+      "canvasConnected": false,
+      "moduleShaderOwners": 0,
+      "ownerCounterPresent": false
+    },
+    {
+      "id": 7,
+      "collected": false,
+      "contextLost": true,
+      "lostEvents": 1,
+      "canvasCollected": false,
+      "canvasConnected": false,
+      "moduleShaderOwners": 0,
+      "ownerCounterPresent": false
+    }
+  ],
+  "teardownWaitMs": 750,
+  "samples": [
+    {
+      "cycle": 0,
+      "engine": "three.js r178",
+      "moduleShaderOwners": "13",
+      "cameraPose": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":20.201}",
+      "renderCount": "4",
+      "drawCalls": "69",
+      "triangles": "13982",
+      "quality": "medium",
+      "moduleGeometryBuilds": "10",
+      "gpuGeometries": "57",
+      "gpuTextures": "2",
+      "gpuPrograms": "33"
+    },
+    {
+      "cycle": 1,
+      "engine": "three.js r178",
+      "moduleShaderOwners": "13",
+      "cameraPose": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":20.201}",
+      "renderCount": "5",
+      "drawCalls": "69",
+      "triangles": "13982",
+      "quality": "medium",
+      "moduleGeometryBuilds": "10",
+      "gpuGeometries": "57",
+      "gpuTextures": "2",
+      "gpuPrograms": "33"
+    },
+    {
+      "cycle": 2,
+      "engine": "three.js r178",
+      "moduleShaderOwners": "13",
+      "cameraPose": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":20.201}",
+      "renderCount": "4",
+      "drawCalls": "69",
+      "triangles": "13982",
+      "quality": "medium",
+      "moduleGeometryBuilds": "10",
+      "gpuGeometries": "57",
+      "gpuTextures": "2",
+      "gpuPrograms": "33"
+    },
+    {
+      "cycle": 3,
+      "engine": "three.js r178",
+      "moduleShaderOwners": "13",
+      "cameraPose": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":20.201}",
+      "renderCount": "3",
+      "drawCalls": "69",
+      "triangles": "13982",
+      "quality": "medium",
+      "moduleGeometryBuilds": "10",
+      "gpuGeometries": "57",
+      "gpuTextures": "2",
+      "gpuPrograms": "33"
+    },
+    {
+      "cycle": 4,
+      "engine": "three.js r178",
+      "moduleShaderOwners": "13",
+      "cameraPose": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":20.201}",
+      "renderCount": "3",
+      "drawCalls": "69",
+      "triangles": "13982",
+      "quality": "medium",
+      "moduleGeometryBuilds": "10",
+      "gpuGeometries": "57",
+      "gpuTextures": "2",
+      "gpuPrograms": "33"
+    }
+  ],
+  "afterReplay": {
+    "engine": "three.js r178",
+    "moduleShaderOwners": "13",
+    "cameraPose": "{\"position\":[66.438,69.035,62.701],\"target\":[5.145,1.312,1.408],\"zoom\":20.201}",
+    "renderCount": "10",
+    "drawCalls": "69",
+    "triangles": "13982",
+    "quality": "medium",
+    "moduleGeometryBuilds": "10",
+    "gpuGeometries": "57",
+    "gpuTextures": "2",
+    "gpuPrograms": "33"
+  }
+}
