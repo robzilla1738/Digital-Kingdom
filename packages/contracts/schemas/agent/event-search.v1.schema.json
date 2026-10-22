@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://digital-kingdom.dev/schemas/agent/event-search.v1.schema.json",
   "title": "dk.event_search.v1 — read-only event search response",
-  "description": "query_completeness (were all stored matches returned), source_coverage (could the sources have recorded it) and finding-bundle completeness (findings/:id/evidence) are distinct. An empty complete result never means the activity did not occur.",
+  "description": "Stored-query completeness, current source coverage and finding-bundle completeness are distinct. Current health does not establish historical coverage. An empty complete search does not prove absence of activity.",
   "type": "object",
   "required": ["schema", "project_id", "interval", "filters", "snapshot_seq", "events", "page", "query_completeness", "source_coverage", "correlation", "limits"],
   "properties": {
@@ -21,8 +21,11 @@
       "properties": { "matching_in_snapshot": { "type": "integer" }, "returned_through_this_page": { "type": "integer" }, "complete": { "type": "boolean" }, "truncated": { "type": "boolean" }, "later_arrivals_not_included": { "type": "integer" }, "note": { "type": "string" } }
     },
     "source_coverage": {
-      "type": "object", "required": ["sources", "unobserved_asset_ids", "gaps"],
+      "type": "object", "required": ["coverage_basis", "coverage_as_of", "historical_coverage_assessed", "sources", "unobserved_asset_ids", "gaps"],
       "properties": {
+        "coverage_basis": { "const": "current_state" },
+        "coverage_as_of": { "type": "string", "format": "date-time" },
+        "historical_coverage_assessed": { "const": false },
         "sources": { "type": "array", "items": { "type": "object", "required": ["source_id", "current_state", "events_in_interval"], "properties": { "current_state": { "enum": ["healthy", "degraded", "offline", "not_assessed"] } } } },
         "unobserved_asset_ids": { "type": "array", "items": { "type": "string" } },
         "gaps": { "type": "array", "items": { "type": "string" } }
