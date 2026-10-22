@@ -4,13 +4,15 @@ import {
   type CoverageRecord, type Finding, type FindingKind, type Graph, type SecurityEvent, type Severity,
 } from "@dk/contracts";
 
-export const RULESET_VERSION = "dk-rules-1.0.0";
+export const RULESET_VERSION = "dk-rules-1.0.1";
 
 export interface SourceDeclaration {
   id: string;
   independence_group?: string;
   label: string;
   asset_ids: string[];
+  /** Administrative disablement overrides historic events and sensor-restored messages. */
+  disabled?: boolean;
   /** Silence longer than this (live mode) degrades coverage. */
   stale_after_seconds?: number;
 }
@@ -214,10 +216,11 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
   const coverage = deriveCoverage(graph, events, opts);
   for (const c of coverage) if (c.state === "offline" || c.state === "degraded") {
     const evs = events.filter((e) => c.event_ids.includes(e.id));
-    // a stale source has no event marking the moment it went quiet: derive it from the last receipt + threshold
+    // A stale source has no event marking the moment it went quiet. Administrative disablement has
+    // no historical timestamp in SourceDeclaration: use the assessment time, never invent a source event.
     const decl = opts.sources?.find((x) => x.id === c.source_id);
     const lastOwn = events.filter((e) => e.source_id === c.source_id).at(-1);
-    const at = c.state === "degraded" && lastOwn && decl?.stale_after_seconds ? new Date(toMs(lastOwn.received_at) + decl.stale_after_seconds * 1000).toISOString() : undefined;
+    const at = decl?.disabled ? opts.now : c.state === "degraded" && lastOwn && decl?.stale_after_seconds ? new Date(toMs(lastOwn.received_at) + decl.stale_after_seconds * 1000).toISOString() : undefined;
     drafts.push({
       ...(at ? { at } : {}),
       key: `coverage:${c.source_id}`, kind: "coverage_loss", title: `${c.label} ${c.state === "offline" ? "offline" : "stale"}`,
@@ -227,7 +230,7 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
       coverage_gaps: [c.note ?? `${c.label} is not reporting.`],
       not_claimed: ["Silence from this source does not mean nothing happened.", "Loss of a sensor is not evidence of an attack."],
       next_steps: ["Restore the source and confirm a heartbeat.", "Backfill if the source supports it."],
-      rule_id: "coverage.source_loss", rule_version: "1", events: evs,
+      rule_id: "coverage.source_loss", rule_version: "2", events: evs,
     });
   }
 
@@ -247,8 +250,12 @@ export function deriveCoverage(graph: Graph, events: SecurityEvent[], opts: Eval
     let state: CoverageRecord["state"] = own.length ? "healthy" : "not_assessed";
     let note: string | undefined = own.length ? undefined : "No events received from this source yet.";
     const evIds: string[] = [];
-    if (lastHealth?.action === "sensor_unavailable") { state = "offline"; note = lastHealth.coverage_note ?? `${s.label} reported itself unavailable.`; evIds.push(lastHealth.id); }
-    else if (opts.now && last && s.stale_after_seconds && toMs(opts.now) - toMs(last.received_at) > s.stale_after_seconds * 1000) {
+    if (s.disabled) {
+      state = "offline";
+      note = `${s.label} is administratively disabled. Stored events do not establish current reporting; the disablement time is not recorded here.`;
+    } else if (lastHealth?.action === "sensor_unavailable") {
+      state = "offline"; note = lastHealth.coverage_note ?? `${s.label} reported itself unavailable.`; evIds.push(lastHealth.id);
+    } else if (opts.now && last && s.stale_after_seconds && toMs(opts.now) - toMs(last.received_at) > s.stale_after_seconds * 1000) {
       state = "degraded"; note = `No events for more than ${s.stale_after_seconds}s.`;
     }
     const rec: CoverageRecord = { source_id: s.id, label: s.label, asset_ids: s.asset_ids.filter((a) => graph.assets.some((x) => x.id === a)), state, event_ids: evIds };

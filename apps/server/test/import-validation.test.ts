@@ -31,7 +31,7 @@ describe("manifest import validation", () => {
     const r = await ctx.app.inject({ method: "POST", url: "/api/projects/imp/graph?format=manifest&revision=r2", headers: yaml(ctx), payload: "assets:\n  - {kind: service}\n  - {id: x, kind: 7}\nrelationships:\n  - {from: a, to: b, kind: teleports_to}\n" });
     expect(r.statusCode).toBe(422);
     expect(r.json().details).toEqual([
-      "/assets/0/id: required string",
+      "/assets/0/id: must be a non-empty string",
       expect.stringMatching(/^\/assets\/1\/kind: unsupported asset kind 7/),
       expect.stringMatching(/^\/relationships\/0\/kind: unsupported relationship kind "teleports_to"/),
     ]);
