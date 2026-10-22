@@ -20,7 +20,9 @@ jobs:
   # the built web app in Chromium, and a stdio MCP client. 3D uses SwiftShader software WebGL; the 3D test
   # fails (never passes on the fallback) if no WebGL context or a blank frame is produced.
   browser-pilot:
-    runs-on: ubuntu-latest
+    # pinned: Playwright 1.56's --with-deps installer targets known distro releases, and ubuntu-latest
+    # began migrating to Ubuntu 26 on 2026-10-19
+    runs-on: ubuntu-24.04
     needs: check
     timeout-minutes: 20
     steps:
