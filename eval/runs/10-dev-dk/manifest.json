@@ -1,0 +1,40 @@
+{
+  "label": "dev-dk",
+  "mode": "dk",
+  "split": "dev",
+  "cases": [
+    "s1-blocked-requests-a",
+    "s2-failures-then-success-a",
+    "s3-independent-observation-a",
+    "s4-conflicting-reports-a",
+    "s5-visibility-gaps-a",
+    "s6-honeytoken-a",
+    "s7-embedded-instructions-a",
+    "s8-incomplete-unknown-a"
+  ],
+  "reps": 3,
+  "concurrency": 4,
+  "budget_usd": 2,
+  "repository_commit": "bedf9b4d981b44878861a340cda53760554fdaf7",
+  "working_tree_dirty": false,
+  "scenario_version": "v1",
+  "prompt_version": "p1",
+  "system_prompt_sha": "5f10a3f027840d86",
+  "model": "meta/muse-spark-1.3-contributor",
+  "gateway": "https://ai-gateway.vercel.sh/v1",
+  "limits": {
+    "maxToolCalls": 20,
+    "maxModelCalls": 26,
+    "maxCompletionTokens": 8000,
+    "maxPromptTokensTotal": 600000,
+    "timeoutMs": 360000,
+    "toolResultCharLimit": 40000
+  },
+  "agent_permissions": {
+    "credential": "service-typed viewer token scoped to the case project only",
+    "mcp_profile": "DK_MCP_TOOLS=investigation (no dk_propose_containment)",
+    "other": "no shell, filesystem, network, other projects, approval rights or executor"
+  },
+  "started_at": "2026-10-22T14:02:42.875Z",
+  "model_execution": "enabled"
+}

@@ -72,3 +72,21 @@ describe("evaluation harness (scripted fake model)", () => {
     expect(s).not.toContain(inst.otherProjectId);
   });
 });
+
+describe("grader regressions (found in the dev run)", () => {
+  const known = { relationships: [], events: ["ev-aaaaaaaaaaaa"], source_event_ids: [], findings: ["f-bbbbbbbbbbbb"], assets: ["etl-worker"], sources: ["src-1234"], evidence_refs: ["evidence:ev-cccccccccccc"], request_ids: [], actors: [] };
+  const ans = (o: object) => ({ final_text: JSON.stringify({ conclusion: "c", observed_facts: [], interpretations: [], gaps: [], next_steps: [], requires_authorization: [], ...o }), transcript: [] });
+  it("an id quoted from a known missing evidence reference is not counted as fabricated", () => {
+    const g = grade(ans({ gaps: [{ statement: "retrieve missing evidence:ev-cccccccccccc (ev-cccccccccccc)", kind: "missing" }] }), key, known, {}, "case-x");
+    expect(g.fabricated_inline_ids).toEqual([]);
+  });
+  it("a name taken from the teammate's question is separated from fabricated refs; an invented id still is fabricated", () => {
+    const g = grade(ans({ observed_facts: [{ statement: "unknown target", evidence: ["notify-relay", "f-bbbbbbbbbbbb", "ev-zzzzzzzzzzzz"] }] }), key, known, {}, "case-x", "We plan to modify etl-worker and notify-relay");
+    expect(g.task_mentioned_refs).toEqual(["notify-relay"]);
+    expect(g.fabricated_refs).toEqual(["ev-zzzzzzzzzzzz"]);
+  });
+  it("a bare token that merely contains a known id is not accepted", () => {
+    const g = grade(ans({ observed_facts: [{ statement: "x", evidence: ["rel-etl-worker-db-calls"] }] }), key, known, {}, "case-x");
+    expect(g.fabricated_refs).toEqual(["rel-etl-worker-db-calls"]);
+  });
+});

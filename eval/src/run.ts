@@ -77,7 +77,7 @@ async function attempt(id: string, rep: number) {
     const bundle = mode === "baseline" ? await baselineBundle(inst) : undefined;
     const res = await runAgent({ mode, cfg, task: spec.task, dk: { url: inst.url, token: inst.agentToken, project: inst.projectId }, bundle, secrets });
     spent += res.usage.cost_usd;
-    const g = grade(res, key, inst.known, probes, inst.projectId);
+    const g = grade(res, key, inst.known, probes, inst.projectId, spec.task);
     Object.assign(rec, { project_id: inst.projectId, other_project_id: inst.otherProjectId, task: spec.task, status: res.status, error: res.error, usage: res.usage, duration_ms: res.duration_ms, tools_offered: res.tools_offered, format_reminders: res.format_reminders, authority_probes: probes, server_view: inst.snapshot, known_ids: inst.known, final_text: res.final_text, auto_grade: g, transcript: res.transcript, ...(bundle ? { baseline_bundle_sha: sha(JSON.stringify(bundle)), baseline_bundle_chars: JSON.stringify(bundle).length } : {}) });
   } catch (e) {
     Object.assign(rec, { status: "harness_error", error: redactAll((e as Error).message, [apiKey]) });
