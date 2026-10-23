@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { setup, liveGraph } from "./helpers.ts";
 
-/** R03.2 deterministic investigation recipes. */
+/** R03.2 deterministic investigation recipes. LP02 (recipes@2): "guessing_succeeded" was split into the observable
+ * "failures_then_success_same_identity" and the intent hypothesis "credential_guessing", which telemetry never supports. */
 const T0 = Date.parse("2026-10-21T10:00:00Z");
 const at = (sec: number) => new Date(T0 + sec * 1000).toISOString();
 
@@ -36,7 +37,7 @@ describe("R03.2 recipes distinguish explanations", () => {
     const r = (await run("auth-burst-then-success")).json();
     const shared = r.hypotheses.find((x: { id: string }) => x.id === "shared_locator");
     expect(shared).toMatchObject({ status: "unresolved", needs: expect.stringMatching(/identity link/) });
-    const guessing = r.hypotheses.find((x: { id: string }) => x.id === "guessing_succeeded");
+    const guessing = r.hypotheses.find((x: { id: string }) => x.id === "failures_then_success_same_identity");
     // bob's request (same IP) is never evidence about alice
     const ipQuery = r.queries.find((q: { params: { client_ip?: string } }) => q.params.client_ip);
     expect(ipQuery.follow_on_event_ids.length).toBeGreaterThan(0);
@@ -49,7 +50,8 @@ describe("R03.2 recipes distinguish explanations", () => {
     const aliceRead = ctx.store.listEvents("shop", { limit: 500 }).find((e) => e.action === "data_access" && e.actor_ref === "alice")!;
     expect(finding.event_ids).not.toContain(aliceRead.id);
     expect(r.unlinked_follow_on_event_ids).toContain(aliceRead.id);
-    expect(r.hypotheses.find((x: { id: string }) => x.id === "guessing_succeeded")).toMatchObject({ status: "supported", supporting_event_ids: expect.arrayContaining([aliceRead.id]) });
+    expect(r.hypotheses.find((x: { id: string }) => x.id === "failures_then_success_same_identity")).toMatchObject({ kind: "observable", status: "supported", supporting_event_ids: expect.arrayContaining([aliceRead.id]) });
+    expect(r.hypotheses.find((x: { id: string }) => x.id === "credential_guessing")).toMatchObject({ kind: "intent", status: "open", supporting_event_ids: [] });
     expect(r.conclusion_allowed).toBe(true);
     expect(r.budget.used).toBeLessThanOrEqual(r.budget.max_queries);
   });
@@ -81,7 +83,7 @@ describe("R03.2 recipes distinguish explanations", () => {
 
   it("recipes are versioned, scoped to finding kinds, and viewers cannot attach to cases", async () => {
     const { ctx, run } = await scenario();
-    expect((await ctx.app.inject({ url: "/api/recipes", headers: ctx.h(ctx.viewer) })).json().recipes.map((r: { id: string; version: number }) => `${r.id}@${r.version}`)).toContain("auth-burst-then-success@1");
+    expect((await ctx.app.inject({ url: "/api/recipes", headers: ctx.h(ctx.viewer) })).json().recipes.map((r: { id: string; version: number }) => `${r.id}@${r.version}`)).toContain("auth-burst-then-success@2");
     expect((await run("blocked-request-scope")).statusCode).toBe(422);
     expect((await run("nope")).statusCode).toBe(404);
     expect((await run("auth-burst-then-success", { case_id: "case_x", expected_version: 1 })).statusCode).toBe(403);

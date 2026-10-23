@@ -140,7 +140,7 @@
     "LP00"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
+   "commit": "21b0f46",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP01.md",
    "before": {
@@ -175,10 +175,22 @@
    "depends_on": [
     "LP00"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP02.md",
+   "before": {
+    "commit": "21b0f46 (recipes@1)",
+    "failed": 10,
+    "of": 11,
+    "old_behaviour_probe": "docs/phases/local-intelligence/receipts/LP02.md#reproduction-first"
+   },
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "92 files passed, 1 skipped; 653 passed, 1 skipped",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "build": "exit 0"
+   }
   },
   {
    "id": "LP03",
@@ -616,23 +628,32 @@
   },
   "LP02-A1": {
    "package": "LP02",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp02-recipes.test.ts > LP02-A1 (budget exhaustion, failed page, zero observers, no data store)"
+   ]
   },
   "LP02-A2": {
    "package": "LP02",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp02-recipes.test.ts > LP02-A2 (130 padding events: retrieved via continuation pages; budget 1: partial + resumable cursor)"
+   ]
   },
   "LP02-A3": {
    "package": "LP02",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp02-recipes.test.ts > LP02-A3 (different namespace, undeclared namespace, shared-namespace positive control)"
+   ]
   },
   "LP02-A4": {
    "package": "LP02",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp02-recipes.test.ts > LP02-A4 (auth recipe and agent recipe through real ingestion)",
+    "apps/server/test/recipes-r03.test.ts (updated, explicit)"
+   ]
   },
   "LP03-A1": {
    "package": "LP03",
@@ -1287,6 +1308,16 @@
    "id": "D-LP01-2",
    "date": "2026-10-23",
    "decision": "An omitted resource policy key is now unresolved (null = none). An omitted permission boundary keeps v1 meaning 'none'; exporters must send 'unknown' when unreadable (declared limit)."
+  },
+  {
+   "id": "D-LP02-1",
+   "date": "2026-10-23",
+   "decision": "Recipe run contract bumped to dk.recipe_run.v2 and every recipe to @2 (meaning changed: obligations, kinds, paging). v1 recipes are retired, not kept runnable, because v1 reproduces the LP02 defects; stored case text that quotes @1 is unchanged."
+  },
+  {
+   "id": "D-LP02-2",
+   "date": "2026-10-23",
+   "decision": "Recipe budget unit is one search page or one coverage question (max 12). Running out produces partial/not_run obligations and outstanding continuations, never an implied answer."
   }
  ],
  "model_spend_usd": {

@@ -250,7 +250,7 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
 
   server.registerTool("dk_run_recipe", {
     title: "Weigh explanations for a finding",
-    description: "Run a recipe on a finding: competing hypotheses with supporting and counter event ids, bounded follow-on queries (including events no finding references), coverage checks, and stop conditions. If conclusion_allowed is false, do not conclude; say which observer was missing. Read-only.",
+    description: "Run a recipe on a finding: competing hypotheses typed observable/intent/authorization with supporting and counter event ids, paged follow-on queries bounded by correlation namespace (including events no finding references), coverage checks, obligations, outstanding work with continuation cursors, and stop conditions. If conclusion_allowed is false, do not conclude; name the missing observer or outstanding work. Telemetry never settles intent or approval. Read-only.",
     inputSchema: { recipe_id: z.string().max(80), finding_id: z.string().max(200), max_queries: z.number().int().min(1).max(12).optional(), project }, annotations: RO,
   }, async ({ recipe_id, finding_id, max_queries, project: p }) => out(await client.req("POST", client.p(`/recipes/${encodeURIComponent(recipe_id)}/run`, p), { finding_id, ...(max_queries ? { max_queries } : {}) })));
 

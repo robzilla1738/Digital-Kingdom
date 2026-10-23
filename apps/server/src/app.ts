@@ -705,9 +705,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     store.require(req.principal!, proj.id, "analyst");
     let version = typeof b.expected_version === "number" ? b.expected_version : -1;
     let c: ReturnType<Cases["get"]> | undefined;
-    for (const h of result.hypotheses) { c = cases.addItem(proj.id, b.case_id, { kind: "hypothesis", text: `[${result.recipe.id}@${result.recipe.version}] ${h.statement} Needs: ${h.needs}`.slice(0, 1000), expected_version: version }, who(req)); version = c.version; }
+    for (const h of result.hypotheses) { c = cases.addItem(proj.id, b.case_id, { kind: "hypothesis", text: `[${result.recipe.id}@${result.recipe.version}] (${h.kind}) ${h.statement} Needs: ${h.needs}`.slice(0, 1000), expected_version: version }, who(req)); version = c.version; }
     const stops = result.stop_conditions.filter((s) => s.triggered).map((s) => s.reason);
-    c = cases.addItem(proj.id, b.case_id, { kind: "note", text: `Recipe ${result.recipe.id}@${result.recipe.version} on ${b.finding_id}: ${result.conclusion_allowed ? "no stop condition triggered" : `conclusion blocked: ${stops.join(" ")}`} ${result.unlinked_follow_on_event_ids.length} unlinked follow-on event(s).`.slice(0, 4000), expected_version: version }, who(req));
+    c = cases.addItem(proj.id, b.case_id, { kind: "note", text: `Recipe ${result.recipe.id}@${result.recipe.version} on ${b.finding_id}: ${result.conclusion_allowed ? "no stop condition triggered and every obligation satisfied (observable propositions only)" : `conclusion blocked: ${[...stops, ...result.outstanding.map((o) => `Outstanding: ${o.purpose} (${o.reason}).`)].join(" ")}`} ${result.unlinked_follow_on_event_ids.length} unlinked follow-on event(s).`.slice(0, 4000), expected_version: version }, who(req));
     return { ...result, case: { id: c.id, version: c.version } };
   });
 
@@ -726,7 +726,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   });
   app.get("/api/capabilities", { preHandler: authed() }, async () => ({
     schema: "dk.capabilities.v1", api_version: "v1", ruleset: RULESET_VERSION,
-    contracts: { recipe_run: "dk.recipe_run.v1", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2" },
+    contracts: { recipe_run: "dk.recipe_run.v2", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2" },
     recipes: RECIPES.map((r) => `${r.id}@${r.version}`),
     budgets: { search_limit_max: 100, search_window_days_max: 31, recipe_queries_max: 12, case_changes_page: 50 },
     delivery: { incremental: "poll /cases/changes with next_since every poll_after_seconds", push: "not supported" },

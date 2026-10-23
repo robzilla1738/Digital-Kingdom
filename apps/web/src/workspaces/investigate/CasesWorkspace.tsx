@@ -129,7 +129,8 @@ function RecipeRunner({ c, kinds, onDone }: { c: CaseDetail; kinds: Record<strin
       {!applicable.length && <span className="small faint">No recipe applies to this finding kind.</span>}</div>
     {error && <p className="scope-note warning" role="alert">{error}</p>}
     {result && <div aria-live="polite"><p className={result.conclusion_allowed ? "small" : "scope-note warning"}>{result.conclusion_allowed ? "No stop condition triggered." : `Do not conclude: ${result.stop_conditions.filter((s) => s.triggered).map((s) => s.reason).join(" ")}`}</p>
-      <ul className="mini-list">{result.hypotheses.map((h) => <li key={h.id}><strong>{h.status}</strong> {h.statement} <small>Needs {h.needs}. {h.supporting_event_ids.length} supporting, {h.counter_event_ids.length} counter.</small></li>)}</ul>
+      {result.outstanding?.length ? <div className="scope-note warning" data-testid="recipe-outstanding"><strong>Incomplete: {result.outstanding.length} outstanding</strong><ul className="mini-list">{result.outstanding.map((o, i) => <li key={i}>{o.purpose}: {o.reason}</li>)}</ul></div> : null}
+      <ul className="mini-list">{result.hypotheses.map((h) => <li key={h.id}><strong>{h.status}</strong>{h.kind ? <span className="small faint"> ({h.kind})</span> : null} {h.statement} <small>Needs {h.needs}. {h.supporting_event_ids.length} supporting, {h.counter_event_ids.length} counter.</small></li>)}</ul>
       <p className="small faint">{result.unlinked_follow_on_event_ids.length} follow-on event(s) no finding references · {result.budget.used}/{result.budget.max_queries} queries.</p></div>}
   </div>;
 }

@@ -48,9 +48,12 @@ export interface NotificationStatus {
 export interface GithubPreview { preview_id: string; base_graph_revision: string | null; repository: string; additions: string[]; removals: string[]; changes: string[]; collisions: string[]; partial: { resource: string; reason: string }[] }
 export interface RecipeRun {
   recipe: { id: string; version: number; title: string };
-  hypotheses: { id: string; statement: string; status: string; needs: string; supporting_event_ids: string[]; counter_event_ids: string[]; notes: string[] }[];
+  hypotheses: { id: string; kind?: "observable" | "intent" | "authorization"; statement: string; status: string; needs: string; supporting_event_ids: string[]; counter_event_ids: string[]; notes: string[] }[];
   stop_conditions: { condition: string; triggered: boolean; reason: string }[];
   conclusion_allowed: boolean; unlinked_follow_on_event_ids: string[]; notes: string[];
+  /** LP02 (dk.recipe_run.v2): explicit unfinished work. Absent on v1 results. */
+  completeness?: "complete" | "partial";
+  outstanding?: { purpose: string; status: string; reason: string }[];
   budget: { max_queries: number; used: number };
 }
 export interface ConnectorCatalogResult {
