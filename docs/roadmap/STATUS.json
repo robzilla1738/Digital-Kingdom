@@ -247,12 +247,12 @@
   {
    "id": "R04.4",
    "title": "Replace target-only posture with a real security change diff",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R04-RECEIPT.md#r044-replace-target-only-posture-with-a-real-security-change-diff",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "change-r04.test.ts 4/4."
   },
   {
    "id": "R05.1",

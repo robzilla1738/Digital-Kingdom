@@ -22,6 +22,7 @@ import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
 import { Controls } from "./controls.ts";
+import { ChangeReviews, type ChangePlanInput } from "./change-review.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
 import { assess as assessVulns } from "./vuln.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
@@ -666,6 +667,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const decorations = [{ kind: "lawn_and_trees", category: "decoration", selectable: false, note: "decoration only; carries no data" }, { kind: "curtain_wall", category: "decoration", selectable: false, note: "the castle wall is a layout boundary, not a network perimeter" }];
     return { surface_registry_version: SURFACE_REGISTRY_VERSION, structures, boundaries, decorations, unsupported_families: SURFACES.filter((x) => x.requires_data && !structures.some((st) => st.surface === x.id)).map((x) => ({ surface: x.id, family: x.family, reason: `not drawn: ${x.support_evidence}` })) };
   });
+
+  // ---- security change review (R04.4) ----
+  const changes = new ChangeReviews(store.db, () => store.now());
+  app.post("/api/projects/:p/changes/review", { preHandler: authed(), bodyLimit: 4_194_304 }, async (req) => changes.create(store.require(req.principal!, P(req), "viewer").id, req.body as ChangePlanInput, who(req)));
+  app.get("/api/projects/:p/changes/:id", { preHandler: authed() }, async (req) => changes.get(store.require(req.principal!, P(req), "viewer").id, (req.params as { id: string }).id));
+  app.post("/api/projects/:p/changes/:id/owner-review", { preHandler: authed("analyst") }, async (req) => changes.ownerReview(store.require(req.principal!, P(req), "analyst").id, (req.params as { id: string }).id, (req.body ?? {}) as { decision?: unknown; candidate_digest?: unknown }, who(req), req.principal!.principalType));
+  app.post("/api/projects/:p/changes/:id/post-deploy", { preHandler: authed("analyst"), bodyLimit: 4_194_304 }, async (req) => changes.postDeploy(store.require(req.principal!, P(req), "analyst").id, (req.params as { id: string }).id, (req.body ?? {}) as Record<string, never>));
 
   // ---- investigation recipes (R03.2) ----
   app.get("/api/recipes", { preHandler: authed() }, async () => ({ recipes: RECIPES.map(({ id, version, title, applies_to, alternates }) => ({ id, version, title, applies_to, alternates })) }));

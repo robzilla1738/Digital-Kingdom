@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R04.4: security change diff
+
+- `apps/server/src/change-review.ts` (migration 20): a versioned ChangePlan pins base and candidate commits, artifacts, inventory, authorization snapshot, telemetry sources and agent tools/model routes. The review surfaces new ingress, broader effective grants (probe paths and new wildcard allows), tool and model-route changes and lost telemetry even with no finding, treats missing inputs as unknown (never favourable), suggests negative and positive tests, binds owner review to the candidate digest and checks post-deploy state against what was reviewed. Routes under `/changes`.
+
 ### Roadmap R04.2: contextual vulnerability applicability
 
 - `apps/server/src/vuln.ts` and `POST /vulnerabilities/assess`: OSV-format matching against SBOMs keyed by the running artifact digest, keeping applicability (in runtime, source only, fixed in runtime, not affected by reviewed signed VEX, unknown), KEV/EPSS global context, observed exploitation (not assessed here) and verified remediation separate. Distribution packages, missing versions and feeds older than seven days are qualified; each priority line cites the asset, digest, exposure and assumptions. Feeds are supplied as cached snapshots; Digital Kingdom does not fetch them.

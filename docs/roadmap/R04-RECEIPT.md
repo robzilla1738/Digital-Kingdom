@@ -36,3 +36,15 @@ Acceptance (`apps/server/test/vuln-r04.test.ts`, 4 tests, synthetic OSV-format r
 - Explanations cite asset, digest prefix, exposure and authority; assumptions cite the SBOM tool and feed time; unsigned or unreviewed VEX is ignored, reviewed signed VEX downgrades.
 
 External gate still open: live feed access (`external_feed_access`). Reachability analysis is not done.
+
+## R04.4 replace target-only posture with a real security change diff
+
+Delivered: `reviewChange`, `ChangeReviews` (create, ownerReview, postDeploy, get), routes.
+
+Acceptance (`apps/server/test/change-r04.test.ts`, 4 tests):
+- A candidate adding `s3:*` on `*` turns a blocked probe feasible and lists the new wildcard allow, with zero findings involved.
+- A missing candidate snapshot keeps the posture review_required with an unknown-authority reason; a new edge-reachable service without telemetry is new_ingress and lost_telemetry. An identical candidate is 'no material change found', explicitly not 'safe'.
+- A different candidate digest cannot be accepted against the old review (409); the review's author cannot accept it.
+- Post-deploy with the reviewed digest matches; another digest is drift naming both.
+
+Limits: probes must be supplied for grant comparison (plus wildcard detection); ingress is computed from the declared graph.
