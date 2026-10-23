@@ -21,6 +21,7 @@ import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
+import { Controls } from "./controls.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
 import { accessPaths, type AuthSnapshot } from "./access/aws-policy.ts";
 import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
@@ -572,6 +573,24 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   const discovery = new GithubDiscovery(store, cfg.githubFetch ?? (globalThis.fetch as unknown as FetchLike), cfg.githubToken ?? process.env.DK_GITHUB_TOKEN);
   app.post("/api/projects/:p/discovery/github/preview", { preHandler: authed("admin") }, async (req) => discovery.preview(store.require(req.principal!, P(req), "admin").id, (req.body ?? {}) as Record<string, unknown>));
   app.post("/api/projects/:p/discovery/github/apply", { preHandler: authed("admin") }, async (req) => discovery.apply(store.require(req.principal!, P(req), "admin").id, (req.body ?? {}) as Record<string, unknown>, who(req)));
+
+  // ---- controls (R07.1) ----
+  const controls = new Controls(store.db, () => store.now());
+  app.get("/api/projects/:p/controls", { preHandler: authed() }, async (req) => ({ controls: controls.list(store.require(req.principal!, P(req), "viewer").id) }));
+  app.get("/api/projects/:p/controls/:id", { preHandler: authed() }, async (req) => controls.get(store.require(req.principal!, P(req), "viewer").id, (req.params as { id: string }).id));
+  app.post("/api/projects/:p/controls", { preHandler: authed("admin") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "admin");
+    const assets = new Set(store.getGraph(proj.id)?.assets.map((a) => a.id) ?? []);
+    const r = controls.upsert(proj.id, (req.body ?? {}) as Record<string, unknown>, who(req), (id) => assets.has(id));
+    store.audit(who(req), "control.upsert", proj.id, r.id, { config_digest: r.config_digest });
+    return r;
+  });
+  app.post("/api/projects/:p/controls/:id/tests", { preHandler: authed("analyst") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "analyst");
+    const r = controls.recordTest(proj.id, (req.params as { id: string }).id, (req.body ?? {}) as Record<string, unknown>, who(req));
+    store.audit(who(req), "control.test", proj.id, (req.params as { id: string }).id, { outcome: r.recorded_outcome });
+    return r;
+  });
 
   // ---- investigation recipes (R03.2) ----
   app.get("/api/recipes", { preHandler: authed() }, async () => ({ recipes: RECIPES.map(({ id, version, title, applies_to, alternates }) => ({ id, version, title, applies_to, alternates })) }));

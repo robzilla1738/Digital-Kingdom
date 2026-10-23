@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R07.1: control inventory and verification records
+
+- Controls (`apps/server/src/controls.ts`, migration 15): declared, configured, tested, failed, stale and unknown states derived only from verification records bound to the control's config digest, with expiry, observer availability and recorded conditions. A pass with an unavailable observer is stored as inconclusive; a config or policy change makes earlier tests stale. `/controls` routes and a Coverage → Controls tab.
+
 ### Roadmap R04.1: source-to-running-artifact lineage
 
 - `apps/server/src/lineage.ts` and `POST /lineage/evaluate`: repository, commit, workflow, artifact digest, registry tag, deployment and runtime links with DSSE/in-toto SLSA v1 provenance verified against a policy of expected signers, builders and repositories; explicit undeclared, unsigned, unverified and verified states; tag and runtime drift. A merged commit is not treated as deployed until the runtime digest matches. Sigstore keyless bundles are not verified.

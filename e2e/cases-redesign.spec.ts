@@ -70,3 +70,14 @@ test("CONN-01: connector manifests show supported versions and verification leve
     await expect(catalog).toContainText("Authority: collect only");
   } finally { await context.close(); }
 });
+
+test("CTL-01: Coverage → Controls shows an honest empty state and never implies a tested control", async ({ browser }) => {
+  const { context, page } = await loginRedesign(browser, harness);
+  try {
+    await page.getByRole("button", { name: "Coverage", exact: true }).click();
+    await page.getByRole("tab", { name: "Controls", exact: true }).click();
+    const panel = page.getByRole("tabpanel", { name: "Controls" });
+    await expect(panel).toContainText("No controls declared.");
+    await expect(panel).toContainText("A drawn shield is never a tested control.");
+  } finally { await context.close(); }
+});

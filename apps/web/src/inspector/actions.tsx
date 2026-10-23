@@ -31,6 +31,9 @@ export interface ServerActions {
   /** R02.3 read-only repository discovery. */
   githubPreview(owner: string, repo: string): Promise<GithubPreview>;
   githubApply(previewId: string, expectedGraphRevision: string | null): Promise<void>;
+  /** R07.1 controls. */
+  controls(signal?: AbortSignal): Promise<{ controls: { id: string; name: string; kind: string; asset_ids: string[]; state: string; state_reason: string }[] }>;
+  control(id: string): Promise<any>;
 }
 export interface GithubPreview { preview_id: string; base_graph_revision: string | null; repository: string; additions: string[]; removals: string[]; changes: string[]; collisions: string[]; partial: { resource: string; reason: string }[] }
 export interface RecipeRun {
