@@ -1,0 +1,33 @@
+{
+ "schema": "dk.extension.v1",
+ "id": "example.login-burst",
+ "version": "1.0.0",
+ "kind": "rule",
+ "contract_version": 1,
+ "name": "Login failure burst (example contributor pack)",
+ "description": "Five failed sign-ins for one actor within a minute. Example of a declarative rule pack with all four required fixtures.",
+ "license": "Apache-2.0",
+ "maintainers": [
+  "Digital Kingdom maintainers"
+ ],
+ "permissions": [
+  "events:read",
+  "findings:propose"
+ ],
+ "files": {
+  "fixtures/benign.json": "831848eed7102c69cfba5387e2f4c588bcea53cc8cce0ce071dbb7af27e17946",
+  "fixtures/failure.json": "c2906203a39c02ac44779d2a01b4b033d9806e6285a7bb1507a2f217246ac730",
+  "fixtures/missing-evidence.json": "c189be84a98180050157e7a505d10f28c631d19aa921218cfa0e1f477a2b0ca5",
+  "fixtures/positive.json": "76f3e3f0c23feeff3476e946d78896501a713ffb6e8344ede429b5ffbae30632",
+  "rule.json": "49e5191a8782208ffbc258d2bb3b261be1266c3ef271110e433c0934a9cf298f"
+ },
+ "rule": {
+  "definition": "rule.json",
+  "fixtures": {
+   "positive": "fixtures/positive.json",
+   "benign": "fixtures/benign.json",
+   "missing_evidence": "fixtures/missing-evidence.json",
+   "failure": "fixtures/failure.json"
+  }
+ }
+}

@@ -150,6 +150,8 @@ importers:
         specifier: workspace:*
         version: link:../graph-core
 
+  packages/extension-sdk: {}
+
   packages/graph-core:
     dependencies:
       '@dk/contracts':

@@ -1,0 +1,35 @@
+{
+ "expect": "fires",
+ "events": [
+  {
+   "occurred_at": "2030-01-01T00:00:00Z",
+   "action": "authentication",
+   "outcome": "failure",
+   "actor_ref": "actor-1"
+  },
+  {
+   "occurred_at": "2030-01-01T00:00:05Z",
+   "action": "authentication",
+   "outcome": "failure",
+   "actor_ref": "actor-1"
+  },
+  {
+   "occurred_at": "2030-01-01T00:00:10Z",
+   "action": "authentication",
+   "outcome": "failure",
+   "actor_ref": "actor-1"
+  },
+  {
+   "occurred_at": "2030-01-01T00:00:15Z",
+   "action": "authentication",
+   "outcome": "failure",
+   "actor_ref": "actor-1"
+  },
+  {
+   "occurred_at": "2030-01-01T00:00:20Z",
+   "action": "authentication",
+   "outcome": "failure",
+   "actor_ref": "actor-1"
+  }
+ ]
+}

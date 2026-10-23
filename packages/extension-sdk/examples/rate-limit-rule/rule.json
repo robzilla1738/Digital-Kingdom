@@ -1,0 +1,1 @@
+{ "id": "example.login-burst", "severity": "medium", "match": { "action": "authentication", "outcomes": ["failure"] }, "group_by": "actor_ref", "threshold": 5, "window_seconds": 60 }

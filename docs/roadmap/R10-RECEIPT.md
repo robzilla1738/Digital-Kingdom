@@ -33,3 +33,13 @@ Acceptance (`apps/server/test/resilience-r10.test.ts`, 6 tests):
 Soak (100,000 events, ARM64 2-core): 9,400 events/s durable ingest, 3,500 events/s processing, 0.7 s backup and 1.0 s verified restore of 133 MB.
 
 Limitations: admission budgets are per process (in memory); single-node SQLite only (R10.3); no off-host backup shipping.
+
+## R10.5 release identity and extension contracts
+
+- Candidate: roadmap/batch4 (commit follows this receipt).
+- Changed: packages/extension-sdk (new: src, test, examples/rate-limit-rule), scripts/pin-extension.ts, scripts/release-lib.ts, scripts/release-manifest.ts, scripts/dependency-inventory.ts, package.json scripts, .github/workflows/ci.yml, docs/RELEASE.md, docs/EXTENSIONS.md, docs/THIRD_PARTY_NOTICES.md (207 production packages, 0 outside the allow-list), docs/release/branch-ruleset.proposed.json, CONTRIBUTING.md, test/release-r10.test.ts.
+- Commands: pnpm -s typecheck (clean); npx vitest run (581 passed, 1 skipped, 83 files); pnpm deps:inventory.
+- Acceptance: (1) release-r10 test: matching build verifies; changed/added file, other commit, dirty tree, other lockfile fail; (2) overprivileged, forbidden-family, executable, path-escaping, unknown-field and wrong-contract manifests are rejected; (3) the example pack's four fixtures produce fires/quiet/unknown/rejected; (4) revocation and integrity failures are tested; disconnected install, upgrade, removal and revocation are documented.
+- Blocked (gate owner_release_settings): signing, build provenance attestation, tag protection and applying the branch ruleset. Nothing here changes repository settings.
+- Migration/rollback: none (no database change).
+- Next: owner applies or amends the proposed ruleset and decides on attestations.

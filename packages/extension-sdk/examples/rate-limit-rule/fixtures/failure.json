@@ -1,0 +1,11 @@
+{
+ "expect": "rejected",
+ "events": [
+  {
+   "occurred_at": "yesterday",
+   "action": "authentication",
+   "outcome": "failure",
+   "actor_ref": "actor-1"
+  }
+ ]
+}

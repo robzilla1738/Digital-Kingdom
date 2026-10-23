@@ -570,12 +570,12 @@
   {
    "id": "R10.5",
    "title": "Secure releases and the extension ecosystem",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "owner_release_settings",
-   "receipt": null,
+   "receipt": "docs/roadmap/R10-RECEIPT.md#r105-release-identity-and-extension-contracts",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Local parts done; signing/attestation/rulesets await owner_release_settings."
   },
   {
    "id": "R11.1",

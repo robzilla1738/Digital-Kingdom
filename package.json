@@ -36,7 +36,11 @@
     "backup": "tsx scripts/backup.ts",
     "restore": "tsx scripts/backup.ts --restore",
     "soak": "tsx scripts/soak.ts",
-    "scenarios": "tsx scripts/run-scenarios.ts"
+    "scenarios": "tsx scripts/run-scenarios.ts",
+    "release:manifest": "tsx scripts/release-manifest.ts",
+    "release:verify": "tsx scripts/release-manifest.ts --verify",
+    "deps:inventory": "tsx scripts/dependency-inventory.ts",
+    "extension:pin": "tsx scripts/pin-extension.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",

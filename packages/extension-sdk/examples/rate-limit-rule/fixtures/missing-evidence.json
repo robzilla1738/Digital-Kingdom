@@ -1,0 +1,30 @@
+{
+ "expect": "unknown",
+ "events": [
+  {
+   "occurred_at": "2030-01-01T00:00:00Z",
+   "action": "authentication",
+   "outcome": "failure"
+  },
+  {
+   "occurred_at": "2030-01-01T00:00:05Z",
+   "action": "authentication",
+   "outcome": "failure"
+  },
+  {
+   "occurred_at": "2030-01-01T00:00:10Z",
+   "action": "authentication",
+   "outcome": "failure"
+  },
+  {
+   "occurred_at": "2030-01-01T00:00:15Z",
+   "action": "authentication",
+   "outcome": "failure"
+  },
+  {
+   "occurred_at": "2030-01-01T00:00:20Z",
+   "action": "authentication",
+   "outcome": "failure"
+  }
+ ]
+}

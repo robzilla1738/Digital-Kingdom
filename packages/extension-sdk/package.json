@@ -1,0 +1,3 @@
+{ "name": "@dk/extension-sdk", "version": "0.3.2", "private": true, "type": "module", "license": "Apache-2.0",
+  "description": "Declarative extension contracts for Digital Kingdom connectors, rules and scene modules: validation, isolated permissions, integrity and revocation.",
+  "main": "src/index.ts", "exports": { ".": "./src/index.ts" } }

@@ -18,6 +18,11 @@ jobs:
       - run: pnpm validate:fixtures
       - run: pnpm scenarios
       - run: pnpm build
+      # R10.5: dependency/license inventory must be current; release build identity recorded and re-verified
+      - run: pnpm deps:inventory && git diff --exit-code docs/THIRD_PARTY_NOTICES.md
+      - run: pnpm release:manifest && pnpm release:verify
+      - uses: actions/upload-artifact@v4
+        with: { name: release-manifest, path: artifacts/release/release-manifest.json }
       # R02.2: real OpenTelemetry Collector binary (pinned release, checksum-verified) against the OTLP endpoint
       - name: Collector conformance (otelcol 0.112.0)
         run: |

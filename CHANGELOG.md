@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R10.5: Release identity, dependency inventory and declarative extensions
+
+Local parts of release and extension security: packages/extension-sdk defines dk.extension.v1 (declarative connector/rule/module packs only, per-kind permission ceilings, forbidden network/fs/exec/response/approval/secret permissions, no executable files, sha256-pinned files, revocation by id, version or digest) and checkPack, which requires positive, benign, missing-evidence and failure fixtures; an example pack ships with tests. scripts/release-manifest.ts records and re-verifies commit, clean tree, lockfile digest and every built file digest (CI step + uploaded artifact). scripts/dependency-inventory.ts generates docs/THIRD_PARTY_NOTICES.md with a license allow-list enforced in CI. docs/RELEASE.md (process, no telemetry, no required model service, disconnected install, upgrade, removal), docs/EXTENSIONS.md, and a branch ruleset PROPOSED for owner approval (not applied).
+
 ### Roadmap R08.4: Independent containment and service-recovery verification
 
 Containment verification (apps/server/src/verification.ts, containment_verifications table): after the propagation window, recorded observations from the plan's independent effect observers decide pending, verified, failed, inconclusive or compensated. A provider acceptance with the contained behaviour still succeeding for the finding's identities is failed; surviving descendant authority (credential aftermath) is failed; no observer, silent observers or an unknown snapshot are inconclusive. Containment, service restoration (legitimate traffic before vs after; disruption detected) and historical exposure (never concluded here) are separate. Every result names its tested scope and unassessed paths and says the case stays unresolved unless verified for that scope. POST /containment/:id/verify, GET /containment/:id/verifications.
