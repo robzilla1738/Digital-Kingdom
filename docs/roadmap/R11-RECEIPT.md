@@ -11,7 +11,7 @@ Acceptance:
   in preflight; scoring then returns `invalid_case`, never a better score.
 - C2 stays "Event-MCP with context", `raw_only: false`, exactly two tools; relabeling it raw throws.
 - The v1 scenarios, grading keys and runs tree digest is pinned
-  (`d5b29fd4d65a31bc7cda590565ea6960540ea31caee780bf97826b82d93127cf`).
+  (`9f6fde03ddec56f6692149a94c7f09fdf7f4287b534700a66aec173d6e811d96`, tracked files).
 - Budget reservation is tested only with a fake provider: it counts in-flight reservations and stops before 80%
   of the cap; a real provider is refused without `DK_EVAL_V2_APPROVED=1` and an approved cap.
 

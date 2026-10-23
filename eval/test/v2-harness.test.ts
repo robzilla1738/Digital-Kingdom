@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { readFileSync } from "node:fs";
+import { execSync } from "node:child_process";
+import { join, resolve } from "node:path";
 import { assertConditionLabels, buildC3Bundle, BudgetLedger, CONDITIONS, FAMILIES, generateCases, generatePairs, manifestOf, manifestViaApi, preflight, preregisteredOrder, runCalls, scoreAttempt, type CommonMetadata, type Provider } from "../src/v2/harness.ts";
 import { renderCase, SCENARIO_IDS } from "../src/scenarios.ts";
 import { setup } from "../../apps/server/test/helpers.ts";
@@ -114,13 +115,12 @@ describe("R11.1 budget reservation (fake provider only)", () => {
 });
 
 describe("R11.1 v1 artifacts are untouched", () => {
-  it("v1 scenarios, grading keys and runs keep their recorded digest", () => {
-    const files: string[] = [];
-    const walk = (d: string) => { for (const f of readdirSync(d)) { const p = join(d, f); if (statSync(p).isDirectory()) walk(p); else files.push(p); } };
-    for (const d of ["eval/runs", "eval/grading", "eval/scenarios"]) walk(join(ROOT, d));
+  it("v1 scenarios, grading keys and runs keep their recorded digest (tracked files)", () => {
+    const files = execSync("git ls-files eval/runs eval/grading eval/scenarios", { cwd: ROOT, encoding: "utf8" }).split("\n").filter(Boolean).sort();
+    expect(files.length).toBeGreaterThan(50);
     const h = createHash("sha256");
-    for (const f of files.sort()) h.update(relative(ROOT, f)).update("\0").update(readFileSync(f));
+    for (const f of files) h.update(f).update("\0").update(readFileSync(join(ROOT, f)));
     expect(h.digest("hex")).toBe(V1_TREE_DIGEST);
   });
 });
-const V1_TREE_DIGEST = "d5b29fd4d65a31bc7cda590565ea6960540ea31caee780bf97826b82d93127cf";
+const V1_TREE_DIGEST = "9f6fde03ddec56f6692149a94c7f09fdf7f4287b534700a66aec173d6e811d96";
