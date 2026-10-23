@@ -28,6 +28,13 @@ const msg = (content: string, tool_calls?: unknown[]) => ({ model: "fake", choic
 const cfg = (over = {}) => ({ model: "fake", gatewayUrl: fakeUrl, apiKey: "test-key-123456", ...DEFAULT_LIMITS, ...over });
 
 describe("evaluation harness (scripted fake model)", () => {
+  it("records malformed answer arrays as schema failures without crashing grading", () => {
+    const malformed = { conclusion: "Unknown", observed_facts: {}, interpretations: 1, gaps: null, next_steps: {}, requires_authorization: false };
+    const g = grade({ final_text: JSON.stringify(malformed), transcript: [] }, key, inst.known, {}, spec.project_id);
+    expect(g.schema_ok).toBe(false);
+    expect(g.schema_problems).toContain("observed_facts missing or not a list");
+    expect(g.cited_refs).toEqual([]);
+  });
   it("refuses a model request before sending when its maximum cost exceeds remaining budget", async () => {
     calls = 0;
     const ledger = new BudgetLedger(0.001);
