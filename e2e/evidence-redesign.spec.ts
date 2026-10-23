@@ -173,8 +173,9 @@ test("authoritative422 import paths are displayed after successful local preview
   const { context, page } = await loginRedesign(browser, harness);
   try {
     const previousGraph = (await harness.api("GET", `/api/projects/${project}/snapshot`)).json.graph;
-    await page.getByRole("button", { name: "Integrations", exact: true }).click(); await page.getByLabel("Supported format").selectOption("compose"); await page.getByLabel("Proposed graph revision").fill("redesign-server-rejected"); await page.getByLabel("Environment for all imported services").fill("synthetic-review");
+    await page.getByRole("button", { name: "Integrations", exact: true }).click();
     await page.locator(".context-note > summary").filter({ hasText: "Import inventory" }).click();
+    await page.getByLabel("Supported format").selectOption("compose"); await page.getByLabel("Proposed graph revision").fill("redesign-server-rejected"); await page.getByLabel("Environment for all imported services").fill("synthetic-review");
     const draft = "services:\n  api:\n    image: busybox:latest\n    ports: ['8080:80']\n"; await page.getByLabel("Inventory text", { exact: true }).fill(draft); await page.getByRole("button", { name: "Preview declared inventory", exact: true }).click(); await expect(page.locator(".inventory-preview")).toContainText("Provisional local preview");
     // Authoritative server-only policy rejection uses the existing422 details envelope; no graph is changed.
     await page.route(`**/api/projects/${project}/graph?*`, (route) => route.fulfill({ status: 422, contentType: "application/json", body: JSON.stringify({ error: "Import validation failed", details: ["/assets/0/id: synthetic server-only constraint", "/relationships/0/target_id: synthetic unresolved target"] }) }));
