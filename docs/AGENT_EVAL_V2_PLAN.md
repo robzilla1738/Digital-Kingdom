@@ -111,3 +111,11 @@ Leave `eval/runs`, `eval/grading` and `eval/scenarios` from v1 unchanged. Store 
 ## 8. Remaining limitations
 
 A small synthetic evaluation with one model and one snapshot cannot establish production reliability, universal safety, attacker attribution or superiority over professionals. Equivalent raw information does not imply equal effort, context placement or cost. Report tool calls, tokens, latency and cost per condition. Search scalability and historical coverage remain separate engineering work, not claims established by this evaluation.
+
+### 2026-10-23 execution amendment
+
+The owner authorized Muse Spark 1.3 Contributor through AI Gateway and the proposed $5 total cap. The committed preregistration records the exact model, prompts, cases, order and limits before calls. Development transcripts have been inspected for harness behavior; held-out specifications and grading keys have not been manually inspected. No independent operator blinding is claimed.
+
+After the first development calls, the runner gained optional concurrency (1–8), with one shared reservation ledger. It launches slots in the registered order in bounded batches and finishes all 48 regressions before any held-out attempt. Completion order can differ. This changes scheduling, not prompts, limits, cases, exclusions or objectives. Every manifest records concurrency. Outstanding reservations from an interrupted process are charged conservatively on restart. The full run will use eight concurrent conversations; all calls remain within the same $5 total ledger and 80% stop threshold.
+
+The preflight now additionally compares the contents of every stored evidence record across the real MCP detail responses and C3, including explicit missing records. Earlier development records used the event/reference/metadata equality gate; the strengthened gate is required for the full run. No model output or grade is altered by this check. Human semantic review and outside-user validation remain pending.

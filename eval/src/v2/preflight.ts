@@ -1,4 +1,5 @@
 import { join } from 'node:path';
+import { canonicalJson } from '../../../packages/contracts/src/index.ts';
 import { Client, StdioClientTransport } from '../../../apps/mcp/test/sdk-client.ts';
 import { ROOT, baselineBundle, type Instance } from '../instance.ts';
 import { CONDITIONS, buildC3Bundle, manifestOf, preflight, type CaseManifest, type CommonMetadata } from './harness.ts';
@@ -36,6 +37,14 @@ export async function prepareCase(instance: Instance & { clock: string }) {
       for (const event of retrieved) {
         const detail = await call('dk_get_event', { id: event.id });
         if (JSON.stringify(detail.event) !== JSON.stringify(event)) throw new Error('event changed during preflight');
+        for (const ref of event.evidence_refs.filter(ref => ref.startsWith('evidence:'))) {
+          const expected = evidence[ref] as { unavailable?: string } | undefined;
+          if (expected?.unavailable === 'HTTP 404') {
+            if (!detail.evidence_completeness.missing_evidence_refs.includes(ref)) throw new Error('missing evidence differs across conditions');
+          } else if (expected === undefined || canonicalJson(detail.evidence.records[ref]) !== canonicalJson(expected)) {
+            throw new Error('stored evidence differs across conditions');
+          }
+        }
       }
       manifests[condition.id] = manifestOf(retrieved, metadata);
     } finally { await client.close(); }

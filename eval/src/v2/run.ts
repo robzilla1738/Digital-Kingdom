@@ -36,7 +36,8 @@ const cases: V2Case[] = JSON.parse(readFileSync(join(out, 'cases.json'), 'utf8')
 if (hash(JSON.stringify(cases)) !== registration.case_digest) throw new Error('preregistered cases changed');
 const previous = existsSync(join(out, 'budget.json')) ? JSON.parse(readFileSync(join(out, 'budget.json'), 'utf8')) : { charged_upper_bound_usd: 0 };
 const ledger = new BudgetLedger(5);
-if (previous.charged_upper_bound_usd) { ledger.reserve('previous', previous.charged_upper_bound_usd); ledger.settle('previous', previous.charged_upper_bound_usd); }
+const priorCharge = (previous.charged_upper_bound_usd ?? 0) + (previous.outstanding_usd ?? 0);
+if (priorCharge) { if (!ledger.reserve('previous', priorCharge)) throw new Error('previous charges exhausted the budget'); ledger.settle('previous', priorCharge); }
 const catalog = await fetch('https://ai-gateway.vercel.sh/v1/models').then(r => r.json()) as { data: { id: string; pricing: { input: string; output: string } }[] };
 const model = catalog.data.find(m => m.id === registration.model);
 if (!model) throw new Error('requested model absent from live catalog');
@@ -44,14 +45,17 @@ const inputRate = Number(model.pricing.input), outputRate = Number(model.pricing
 if (!(inputRate > 0 && outputRate > 0 && Number.isFinite(inputRate + outputRate))) throw new Error('invalid live pricing');
 const cfg: AgentConfig = { ...registration.limits, model: model.id, gatewayUrl: 'https://ai-gateway.vercel.sh/v1', apiKey: process.env.AI_GATEWAY_API_KEY, budget: { ledger, inputUsdPerToken: inputRate, outputUsdPerToken: outputRate } };
 const order: Slot[] = phase === 'dev' ? cases.filter(c => c.spec.version === 'v2' && c.spec.split === 'dev').flatMap(c => CONDITIONS.map(condition => ({ case_id: c.spec.case_id, condition: condition.id, repetition: 1 }))) : registration.order;
+const concurrency = Number(argument('concurrency', '1'));
+if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 8) throw new Error('concurrency must be an integer from 1 to 8');
 const runId = `${phase}-${new Date().toISOString().replace(/[:.]/g, '-')}`;
 const runDir = join(out, runId); mkdirSync(runDir);
 const revision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-write(`${runId}/manifest.json`, { revision, dirty: !!execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(), lockfile_hash: hash(readFileSync('pnpm-lock.yaml')), preregistration_hash: hash(readFileSync(preregistration)), model, phase, order, started_at: new Date().toISOString() });
+write(`${runId}/manifest.json`, { revision, dirty: !!execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(), lockfile_hash: hash(readFileSync('pnpm-lock.yaml')), preregistration_hash: hash(readFileSync(preregistration)), model, phase, order, concurrency, started_at: new Date().toISOString() });
 let halted: string | null = null;
 const summary: Record<string, unknown>[] = [];
-for (const [index, slot] of order.entries()) {
-  if (ledger.incurred >= 3.9) { halted = 'budget reserve threshold'; break; }
+async function attempt(index: number, slot: Slot) {
+  if (halted) return;
+  if (ledger.incurred >= 3.9) { halted = 'budget reserve threshold'; return; }
   const selected = cases.find(c => c.spec.case_id === slot.case_id)!;
   const attemptId = `${String(index + 1).padStart(4, '0')}-${slot.condition}`;
   let instance: Awaited<ReturnType<typeof startV2Instance>> | undefined;
@@ -82,7 +86,13 @@ for (const [index, slot] of order.entries()) {
   writeFileSync(join(out, 'budget.json'), JSON.stringify({ charged_upper_bound_usd: ledger.incurred, outstanding_usd: ledger.outstanding, cap_usd: 5, updated_at: new Date().toISOString() }, null, 2));
   const progress = { attempt: attemptId, ...slot, status: record.status, charged_upper_bound_usd: ledger.incurred };
   summary.push(progress); appendFileSync(join(runDir, 'progress.jsonl'), JSON.stringify(progress) + '\n'); console.log(JSON.stringify(progress));
-  if (halted) break;
+}
+// Launch slots in the registered order; finish each batch before starting the next.
+// Eight divides the 48-regression prefix, so held-out calls cannot precede its completion.
+for (let index = 0; index < order.length && !halted; index += concurrency) {
+  const count = phase === 'full' && index < 48 ? Math.min(concurrency, 48 - index) : concurrency;
+  await Promise.all(order.slice(index, index + count).map((slot, offset) => attempt(index + offset, slot)));
+  if (count !== concurrency) index += count - concurrency;
 }
 write(`${runId}/summary.json`, { started: summary.length, planned: order.length, halted, charged_upper_bound_usd: ledger.incurred, attempts: summary, human_review: 'pending' });
 if (halted) process.exitCode = 1;
