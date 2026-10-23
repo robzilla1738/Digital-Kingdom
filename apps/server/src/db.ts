@@ -1,4 +1,4 @@
-import { BUNDLES_MIGRATION, CASES_MIGRATION, FACTS_MIGRATION } from "./schema-r01.ts";
+import { BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION } from "./schema-r01.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -81,6 +81,8 @@ export const MIGRATIONS: string[] = [
    CREATE INDEX events_trace ON events (project_id, json_extract(body, '$.trace_id'), occurred_at, id);`,
   // R03.1: durable cases with append-only items (see cases.ts).
   CASES_MIGRATION,
+  // R02.1: connector manifests bound to sources, and collection reports for honest coverage.
+  CONNECTORS_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

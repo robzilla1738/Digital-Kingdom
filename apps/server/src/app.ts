@@ -14,6 +14,7 @@ import { assessChange, securityContext, summarize } from "./context.ts";
 import { coverageHistory, parseCoverageQuestion } from "./coverage-history.ts";
 import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } from "./bundles.ts";
 import { Cases } from "./cases.ts";
+import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 
 export interface AppConfig {
   store: Store;
@@ -190,7 +191,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, meta: proj.meta },
       graph: store.getGraph(proj.id) ?? null,
       scene: store.getScene(proj.id) ?? null,
-      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision })),
+      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision, connector_id }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision, connector_id })),
       events,
       evidence: store.evidenceFor(proj.id, events.flatMap((e) => e.evidence_refs)),
       findings: store.listFindings(proj.id),
@@ -310,7 +311,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/projects/:p/sources", { preHandler: authed() }, async (req) => store.listSources(store.require(req.principal!, P(req), "viewer").id));
   app.post("/api/projects/:p/sources", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");
-    const b = req.body as { id: string; label: string; kind?: string; asset_ids?: string[]; trusts_request_ids?: boolean; stale_after_seconds?: number; dataset_kind?: "live" | "synthetic"; allowed_actions?: string[]; independence_group?: string; identity_namespace?: string; run_namespace?: string; expected_revision?: unknown; sampling_ratio?: unknown; retention_days?: unknown; outcomes_reported?: unknown };
+    const b = req.body as { id: string; label: string; kind?: string; asset_ids?: string[]; trusts_request_ids?: boolean; stale_after_seconds?: number; dataset_kind?: "live" | "synthetic"; allowed_actions?: string[]; independence_group?: string; identity_namespace?: string; run_namespace?: string; expected_revision?: unknown; sampling_ratio?: unknown; retention_days?: unknown; outcomes_reported?: unknown; connector_id?: unknown; granted_scopes?: unknown };
     if (b?.expected_revision !== undefined && (typeof b.expected_revision !== "number" || !Number.isInteger(b.expected_revision) || b.expected_revision < 0)) throw new HttpError(400, "expected_revision must be a non-negative integer");
     if (!b?.id || !b.label) throw new HttpError(400, "id and label are required");
     const r = store.upsertSource(proj.id, {
@@ -323,6 +324,8 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       ...(b.sampling_ratio !== undefined ? { sampling_ratio: b.sampling_ratio as number } : {}),
       ...(b.retention_days !== undefined ? { retention_days: b.retention_days as number } : {}),
       ...(b.outcomes_reported !== undefined ? { outcomes_reported: b.outcomes_reported as string[] } : {}),
+      ...(typeof b.connector_id === "string" ? { connector_id: b.connector_id } : {}),
+      ...(Array.isArray(b.granted_scopes) && b.granted_scopes.every((x) => typeof x === "string" && x.length <= 200) ? { granted_scopes: b.granted_scopes as string[] } : {}),
     }, who(req), { requirePrecondition: true, ...(b.expected_revision !== undefined ? { expectedRevision: b.expected_revision as number } : {}) });
     return { ...r, note: "Store this key now; it is shown once and only its hash is kept." };
   });
@@ -470,6 +473,10 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     return id.startsWith("case_") ? cases.export(proj.id, id, who(req), cfg.secret) : exportCase(store, proj.id, id, who(req), cfg.secret);
   });
 
+  // ---- connector manifests (R02.1) ----
+  app.get("/api/connectors", { preHandler: authed() }, async () => ({ connectors: CONNECTORS, capability_levels: CAPABILITY_LEVELS,
+    note: "Levels: declared < discovered < instrumented < analyzed < lab_verified < live_verified. Connectors collect only; response authority is never granted to a connector." }));
+
   // ---- durable cases (R03.1) ----
   const cases = new Cases(store);
   const body = (req: FastifyRequest) => ((req.body && typeof req.body === "object" && !Array.isArray(req.body)) ? req.body : {}) as Record<string, unknown>;
@@ -539,6 +546,11 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const list = b && typeof b === "object" && Array.isArray((b as { events?: unknown[] }).events) ? (b as { events: unknown[] }).events : [b];
     if (list.length > MAX_BATCH) throw new HttpError(413, `batch limit is ${MAX_BATCH}`);
     return respond(reply, list.map((e) => ingestOne(req as SrcReq, e)));
+  });
+  // R02.1: a collector's account of one collection window (complete, partial, denied, throttled, revoked, error).
+  app.post("/ingest/collection-report", { preHandler: sourceAuth, bodyLimit: 16_384 }, async (req) => {
+    const src = (req as SrcReq).source;
+    return store.recordCollectionReport(src.projectId, src.sourceId, ((req.body && typeof req.body === "object") ? req.body : {}) as Record<string, unknown>);
   });
   app.post("/ingest/falco", { preHandler: sourceAuth, bodyLimit: 262_144 }, async (req, reply) => {
     const body = req.body as Record<string, unknown>;

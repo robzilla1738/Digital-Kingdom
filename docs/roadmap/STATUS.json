@@ -113,12 +113,12 @@
   {
    "id": "R02.1",
    "title": "Define versioned connector and support-pack contracts",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R02-RECEIPT.md#r021-connector-and-support-pack-contracts",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "connectors-r02.test.ts 4/4; CONN-01 e2e passes locally. Process sandboxing not implemented (contract-level collect-only authority)."
   },
   {
    "id": "R02.2",
@@ -153,11 +153,11 @@
   {
    "id": "R03.1",
    "title": "Persist cases separately from findings",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R03-RECEIPT.md#r031-durable-cases",
-   "head": null,
-   "ci_run": null,
+   "head": "477b451",
+   "ci_run": 39894349088,
    "notes": "cases-r03.test.ts 6/6; e2e/cases-redesign.spec.ts CASE-01 and COV-01 pass locally. Collaboration is role-gated, not real-time co-editing."
   },
   {

@@ -134,6 +134,7 @@ export function App() {
       findingDetail: (id, signal) => { check(); return api.get<FindingDetailResult>(`${prefix}/findings/${encodeURIComponent(id)}`, signal); },
       eventDetail: (id, signal) => { check(); return api.get(`${prefix}/events/${encodeURIComponent(id)}`, signal); },
       coverageHistory: (q, signal) => { check(); return api.get(`${prefix}/coverage/history?${new URLSearchParams(q as Record<string, string>)}`, signal); },
+      connectors: (signal) => { check(); return api.get(`/api/connectors`, signal); },
       listCases: (signal) => { check(); return api.get(`${prefix}/cases`, signal); },
       getCase: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}`, signal); },
       createCase: async (body) => { check(); return api.send("POST", `${prefix}/cases`, body); },

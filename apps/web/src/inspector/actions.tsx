@@ -23,6 +23,12 @@ export interface ServerActions {
   createCase(body: Record<string, unknown>): Promise<CaseDetail>;
   caseAction(id: string, path: string, body: Record<string, unknown>): Promise<CaseDetail>;
   exportDurableCase(id: string): Promise<void>;
+  /** R02.1 connector manifests. */
+  connectors(signal?: AbortSignal): Promise<ConnectorCatalogResult>;
+}
+export interface ConnectorCatalogResult {
+  note: string; capability_levels: string[];
+  connectors: { id: string; name: string; protocol: { name: string; versions: string[]; encodings: string[] }; read_scopes: { scope: string; why: string }[]; capabilities: { capability: string; level: string; evidence: string }[]; limits: string[] }[];
 }
 export interface CaseSummary { id: string; title: string; owner: string; status: string; version: number; updated_at: string; open_questions: number }
 export interface CaseItem { item_id: string; kind: string; ref: string; text?: string; status?: string; answer?: string | null; why?: string | null; produced_finding?: boolean; revision?: number; bundle_id?: string; bundle_digest?: string; added_by: string; added_at: string; removed?: { at: string; by: string; reason: string } }

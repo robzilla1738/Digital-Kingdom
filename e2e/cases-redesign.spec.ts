@@ -56,3 +56,17 @@ test("COV-01: the historical coverage question returns spans with reasons", asyn
     await expect(panel).toContainText("not proof that anything was recorded");
   } finally { await context.close(); }
 });
+
+test("CONN-01: connector manifests show supported versions and verification levels, collect-only", async ({ browser }) => {
+  const { context, page } = await loginRedesign(browser, harness);
+  try {
+    await page.getByRole("button", { name: "Integrations", exact: true }).click();
+    await page.getByRole("tab", { name: "Connectors", exact: true }).click();
+    const catalog = page.getByTestId("connector-catalog");
+    await expect(catalog.getByRole("article")).toHaveCount(3);
+    await expect(catalog.getByLabel("Connector OpenTelemetry traces (OTLP/HTTP JSON)")).toContainText("Other versions and encodings are not supported");
+    await expect(catalog).toContainText("Lab verified");
+    await expect(catalog).not.toContainText("Live verified");
+    await expect(catalog).toContainText("Authority: collect only");
+  } finally { await context.close(); }
+});

@@ -2,6 +2,12 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R02.1: connector manifests
+
+- Every ingestion path (event API, OTLP/HTTP JSON, Falco) has a manifest: protocol and exact versions, read scopes and why, pagination and resume, rate limits, cost, data handling, limits, and a verification level per capability (declared to live-verified; nothing is claimed live-verified). `GET /api/connectors`; Integrations gains a Connectors tab.
+- Sources are bound to a connector (`connector_id`, `granted_scopes`). Installation grants only the manifest's required read scopes by default; administrative, wildcard, write and foreign scopes are refused. Connectors are collect-only by contract.
+- Collectors report each collection window (`POST /ingest/collection-report`: complete, partial, permission_denied, throttled, scope_revoked, error; idempotent per report id). Historical coverage marks those windows partial or unknown with the collector's (redacted) reason.
+
 ### Roadmap R05.1: agent run contracts (ruleset dk-rules-1.2.0)
 
 - Optional `agent` context on events: `phase` (intent, decision, execution, effect), `origin` (runtime_self_report, tool_wrapper, policy_enforcer, independent_observer), initiating principal, runtime, model route, tool and version, policy revision, step, parent run. Phase, outcome and origin must agree: a refusal cannot be recorded as enforcement, and an observer reports effects only.

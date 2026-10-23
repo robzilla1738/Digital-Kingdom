@@ -14,3 +14,9 @@ export const CASES_MIGRATION = `CREATE TABLE cases (id TEXT PRIMARY KEY, project
    CREATE INDEX cases_project ON cases (project_id, updated_at);
    CREATE TABLE case_items (seq INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT NOT NULL, project_id TEXT NOT NULL, item_id TEXT NOT NULL UNIQUE, kind TEXT NOT NULL, ref TEXT NOT NULL, body TEXT NOT NULL, added_by TEXT NOT NULL, added_at TEXT NOT NULL, removed_at TEXT, removed_by TEXT, removal_reason TEXT);
    CREATE INDEX case_items_case ON case_items (case_id, seq);`;
+
+/** R02.1 connector identity on sources and collector-reported collection windows. */
+export const CONNECTORS_MIGRATION = `ALTER TABLE sources ADD COLUMN connector_id TEXT;
+   ALTER TABLE sources ADD COLUMN granted_scopes TEXT;
+   CREATE TABLE collection_reports (project_id TEXT NOT NULL, source_id TEXT NOT NULL, report_id TEXT NOT NULL, window_start TEXT NOT NULL, window_end TEXT NOT NULL, status TEXT NOT NULL, detail TEXT NOT NULL, received_at TEXT NOT NULL, PRIMARY KEY (project_id, source_id, report_id));
+   CREATE INDEX collection_reports_window ON collection_reports (project_id, source_id, window_start);`;

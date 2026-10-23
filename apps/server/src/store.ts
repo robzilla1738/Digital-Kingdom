@@ -8,6 +8,7 @@ import { compileScene, defaultProposal, validateProposal } from "@dk/scene-compi
 import { checkCapability, deriveCoverage, evaluate, RULESET_VERSION, redactString, type SourceState, validateNamespace, minimizeIngest, normalizeIngest, sanitizeStoredRedaction, sourceCapabilities, toStoredRedaction, type StoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
 import { tx, type DB } from "./db.ts";
 import { Facts } from "./facts.ts";
+import { checkInstallScopes, COLLECTION_STATUSES, CONNECTORS } from "./adapters/connectors.ts";
 import { atLeast, newToken, sha256, type Role } from "./security.ts";
 import { CONTAINMENT_CATALOG, type ContainmentAction } from "./containment.ts";
 
@@ -142,7 +143,7 @@ export class Store {
 
   // ---------------- sources ----------------
 
-  upsertSource(projectId: string, cfg: SourceConfig & { kind?: string; dataset_kind?: DatasetKind }, actor: string, opts: { expectedRevision?: number; requirePrecondition?: boolean } = {}): { id: string; key: string; config_revision: number } {
+  upsertSource(projectId: string, cfg: SourceConfig & { kind?: string; dataset_kind?: DatasetKind; connector_id?: string; granted_scopes?: string[] }, actor: string, opts: { expectedRevision?: number; requirePrecondition?: boolean } = {}): { id: string; key: string; config_revision: number } {
     const proj = this.mustProject(projectId);
     if (!cfg.asset_ids?.length) throw new HttpError(400, "a source must be assigned at least one asset (asset_ids)");
     if (cfg.kind && !SOURCE_KINDS.includes(cfg.kind)) throw new HttpError(400, `unknown source kind ${cfg.kind} (known: ${SOURCE_KINDS.join(", ")})`);
@@ -155,6 +156,12 @@ export class Store {
     if (cfg.sampling_ratio !== undefined && !(typeof cfg.sampling_ratio === "number" && cfg.sampling_ratio > 0 && cfg.sampling_ratio <= 1)) throw new HttpError(400, "sampling_ratio must be a number in (0, 1]");
     if (cfg.retention_days !== undefined && !(Number.isInteger(cfg.retention_days) && cfg.retention_days > 0 && cfg.retention_days <= 36500)) throw new HttpError(400, "retention_days must be a positive integer");
     if (cfg.outcomes_reported !== undefined && (!Array.isArray(cfg.outcomes_reported) || !cfg.outcomes_reported.length || cfg.outcomes_reported.some((o) => !EVENT_OUTCOMES.includes(o as never)))) throw new HttpError(400, `outcomes_reported must be a non-empty list of: ${EVENT_OUTCOMES.join(", ")}`);
+    // R02.1: a source is bound to a connector manifest; scopes must be its read scopes, never administrative.
+    const connector = CONNECTORS.find((c) => c.id === (cfg.connector_id ?? "dk.events.http"));
+    if (!connector) throw new HttpError(400, `unknown connector ${cfg.connector_id} (known: ${CONNECTORS.map((c) => c.id).join(", ")})`);
+    if (!connector.source_kinds.includes(cfg.kind ?? "generic")) throw new HttpError(422, `connector ${connector.id} does not support source kind ${cfg.kind ?? "generic"}`);
+    const scopes = checkInstallScopes(connector, cfg.granted_scopes);
+    if (scopes.problems.length) throw new HttpError(422, "requested scopes are not allowed", scopes.problems);
     const existing = this.db.prepare("SELECT config_revision, disabled FROM sources WHERE project_id = ? AND id = ?").get(projectId, cfg.id) as { config_revision: number; disabled: number } | undefined;
     if (existing && opts.requirePrecondition && opts.expectedRevision === undefined) throw new HttpError(428, `source ${cfg.id} exists: expected_revision is required to change it`, [`current config_revision is ${existing.config_revision}`], { current: { config_revision: Number(existing.config_revision) } });
     if (existing && opts.expectedRevision !== undefined && opts.expectedRevision !== Number(existing.config_revision)) throw new HttpError(409, `source ${cfg.id} was changed since revision ${opts.expectedRevision}`, ["review the current configuration and its history, then resubmit"], { current: { config_revision: Number(existing.config_revision) }, history: this.sourceHistory(projectId, cfg.id).filter((h) => h.revision > opts.expectedRevision!) });
@@ -165,11 +172,34 @@ export class Store {
     this.db.prepare(`INSERT INTO sources (id, project_id, label, kind, asset_ids, trusts_request_ids, stale_after_seconds, key_hash, created_at, allowed_actions, independence_group, identity_namespace, run_namespace) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT (project_id, id) DO UPDATE SET label = excluded.label, kind = excluded.kind, asset_ids = excluded.asset_ids, trusts_request_ids = excluded.trusts_request_ids, stale_after_seconds = excluded.stale_after_seconds, key_hash = excluded.key_hash, allowed_actions = excluded.allowed_actions, independence_group = excluded.independence_group, identity_namespace = excluded.identity_namespace, run_namespace = excluded.run_namespace`)
       .run(cfg.id, projectId, cfg.label.slice(0, 120), cfg.kind ?? "generic", JSON.stringify(cfg.asset_ids), cfg.trusts_request_ids ? 1 : 0, cfg.stale_after_seconds ?? null, sha256(key), this.iso(), cfg.allowed_actions?.length ? JSON.stringify(cfg.allowed_actions) : null, cfg.independence_group ?? null, cfg.identity_namespace ?? null, cfg.run_namespace ?? null);
-    this.db.prepare("UPDATE sources SET config_revision = ?, sampling_ratio = ?, retention_days = ?, outcomes_reported = ? WHERE project_id = ? AND id = ?").run(revision, cfg.sampling_ratio ?? null, cfg.retention_days ?? null, cfg.outcomes_reported ? JSON.stringify(cfg.outcomes_reported) : null, projectId, cfg.id);
+    this.db.prepare("UPDATE sources SET config_revision = ?, sampling_ratio = ?, retention_days = ?, outcomes_reported = ?, connector_id = ?, granted_scopes = ? WHERE project_id = ? AND id = ?").run(revision, cfg.sampling_ratio ?? null, cfg.retention_days ?? null, cfg.outcomes_reported ? JSON.stringify(cfg.outcomes_reported) : null, connector.id, JSON.stringify(scopes.granted), projectId, cfg.id);
     this.recordSourceRevision(projectId, cfg.id, revision, actor, existing ? "updated (key rotated)" : "created", this.iso());
     this.audit(actor, "source.key_issued", projectId, cfg.id, { kind: cfg.kind ?? "generic", config_revision: revision });
     return { id: cfg.id, key, config_revision: revision };
     });
+  }
+
+  /**
+   * A collector's own account of a collection window (R02.1): complete, partial pagination, permission denied,
+   * throttled, scope revoked or error. Idempotent per report_id, so replays do not double count. Historical
+   * coverage treats any window that was not complete as partial or unknown.
+   */
+  recordCollectionReport(projectId: string, sourceId: string, body: Record<string, unknown>) {
+    const iso = (v: unknown) => typeof v === "string" && v.length <= 40 && !Number.isNaN(Date.parse(v)) && /T.*(Z|[+-]\d{2}:?\d{2})$/.test(v);
+    const id = body.report_id;
+    if (typeof id !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(id)) throw new HttpError(400, "report_id: 1-128 safe characters");
+    if (!iso(body.window_start) || !iso(body.window_end)) throw new HttpError(400, "window_start and window_end must be ISO 8601 with an offset");
+    const ws = new Date(Date.parse(body.window_start as string)).toISOString(), we = new Date(Date.parse(body.window_end as string)).toISOString();
+    if (we <= ws) throw new HttpError(400, "window_end must be later than window_start");
+    if (Date.parse(we) > this.now().getTime() + 60_000) throw new HttpError(400, "window_end cannot be in the future");
+    if (!COLLECTION_STATUSES.includes(body.status as never)) throw new HttpError(400, `status must be one of ${COLLECTION_STATUSES.join(", ")}`);
+    const detail = { ...(typeof body.detail === "string" ? { detail: redactString(body.detail.slice(0, 500)) } : {}), ...(Number.isInteger(body.pages_fetched) ? { pages_fetched: body.pages_fetched } : {}), ...(typeof body.cursor === "string" ? { cursor_present: true } : {}) };
+    const r = this.db.prepare("INSERT OR IGNORE INTO collection_reports (project_id, source_id, report_id, window_start, window_end, status, detail, received_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").run(projectId, sourceId, id, ws, we, body.status as string, canonicalJson(detail), this.iso());
+    return { report_id: id, duplicate: Number(r.changes) === 0, status: body.status, window: { start: ws, end: we } };
+  }
+
+  collectionReports(projectId: string, sourceId: string, from: string, to: string) {
+    return this.db.prepare("SELECT report_id, window_start, window_end, status, detail, received_at FROM collection_reports WHERE project_id = ? AND source_id = ? AND window_end > ? AND window_start < ? ORDER BY window_start").all(projectId, sourceId, from, to) as { report_id: string; window_start: string; window_end: string; status: string; detail: string; received_at: string }[];
   }
 
   /** Snapshot the source's current configuration (never its key) as a revision with an effective time (R01.2/R01.4). */
@@ -205,7 +235,7 @@ export class Store {
     });
   }
 
-  listSources(projectId: string): (SourceConfig & { kind: string; disabled: boolean; config_revision: number; created_at: string })[] {
+  listSources(projectId: string): (SourceConfig & { kind: string; disabled: boolean; config_revision: number; created_at: string; connector_id: string; granted_scopes: string[] })[] {
     return (this.db.prepare("SELECT * FROM sources WHERE project_id = ? ORDER BY id").all(projectId) as Record<string, unknown>[]).map((r) => ({
       id: String(r.id), label: String(r.label), kind: String(r.kind), asset_ids: J(String(r.asset_ids), [] as string[]),
       trusts_request_ids: r.trusts_request_ids === 1, ...(r.stale_after_seconds ? { stale_after_seconds: Number(r.stale_after_seconds) } : {}), disabled: r.disabled === 1,
@@ -217,6 +247,8 @@ export class Store {
       ...(r.sampling_ratio !== null && r.sampling_ratio !== undefined ? { sampling_ratio: Number(r.sampling_ratio) } : {}),
       ...(r.retention_days ? { retention_days: Number(r.retention_days) } : {}),
       ...(r.outcomes_reported ? { outcomes_reported: J(String(r.outcomes_reported), [] as string[]) } : {}),
+      connector_id: r.connector_id ? String(r.connector_id) : "dk.events.http",
+      granted_scopes: J(r.granted_scopes ? String(r.granted_scopes) : null, ["source-key:ingest"]),
       created_at: String(r.created_at),
     }));
   }

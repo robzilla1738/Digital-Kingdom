@@ -59,6 +59,18 @@ function overlay(base: Span[], cut: Span): Span[] {
   return out;
 }
 
+/** Lower covered parts of [from, to) to partial; unknown parts stay unknown. */
+function overlayPartial(base: Span[], from: number, to: number, reason: string): Span[] {
+  const out: Span[] = [];
+  for (const s of base) {
+    if (to <= s.from || from >= s.to || s.state !== "covered") { out.push(s); continue; }
+    if (from > s.from) out.push({ ...s, to: from });
+    out.push({ from: Math.max(s.from, from), to: Math.min(s.to, to), state: "partial", reason });
+    if (to < s.to) out.push({ ...s, from: to });
+  }
+  return out;
+}
+
 export function coverageHistory(store: Store, projectId: string, q: CoverageQuestion) {
   const graph = store.getGraph(projectId);
   if (!graph) throw new HttpError(404, "project has no graph");
@@ -117,6 +129,12 @@ export function coverageHistory(store: Store, projectId: string, q: CoverageQues
       if (lastSeen === null) silent(a, receipts.length ? receipts[0]! : Math.min(b, now));
       for (const r of receipts) { if (lastSeen !== null && r - lastSeen > ms) silent(lastSeen + ms, r); lastSeen = Math.max(lastSeen ?? r, r); }
       if (lastSeen !== null && Math.min(b, now) - lastSeen > ms) silent(lastSeen + ms, Math.min(b, now));
+    }
+    // R02.1: the collector's own account of each window. Anything but complete lowers coverage for that window.
+    for (const rep of store.collectionReports(projectId, src.id, iso(a), iso(b))) {
+      if (rep.status === "complete") continue;
+      const why = `collector reported ${rep.status.replace(/_/g, " ")} for this window${(JSON.parse(rep.detail) as { detail?: string }).detail ? `: ${(JSON.parse(rep.detail) as { detail: string }).detail}` : ""}`;
+      spans = rep.status === "partial" ? overlayPartial(spans, Date.parse(rep.window_start), Date.parse(rep.window_end), why) : overlay(spans, { from: Date.parse(rep.window_start), to: Date.parse(rep.window_end), state: "unknown", reason: why });
     }
     if (b > now) spans = overlay(spans, { from: Math.max(a, now), to: b, state: "unknown", reason: "in the future" });
     const retention = revs.at(-1)!.config.retention_days;
