@@ -17,6 +17,11 @@ Breaking for API clients:
   one hour (410 with the time). Match counts stop at 100,000 (`matching_capped`), pages at 1 MB of event bodies
   (`truncated_by: byte_budget`), and each principal may run 30 searches per 10 seconds (429).
 
+- **Agent events (R05.1, ruleset dk-rules-1.2.0).** Keys such as `prompt`, `messages`, `input`, `output`,
+  `arguments`, `content` and `payload` (non-numeric values) are now dropped from `tool_invocation` and
+  `side_effect_observed` evidence and attributes before storage. An `agent` object with an inconsistent phase,
+  outcome or origin is rejected.
+
 Additive:
 
 - Facts (`/facts`, migration 6) are backfilled lazily from stored graph revisions with

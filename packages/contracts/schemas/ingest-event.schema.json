@@ -153,6 +153,82 @@
         ],
         "maxLength": 500
       }
+    },
+    "agent": {
+      "description": "Agent run context (R05.1). Never carries prompts, completions, reasoning or tool payloads.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "origin"
+      ],
+      "properties": {
+        "phase": {
+          "enum": [
+            "intent",
+            "decision",
+            "execution",
+            "effect"
+          ],
+          "description": "intent: the agent asked for a tool; decision: an enforcer or the model allowed, denied or refused it; execution: the tool ran (success/failure); effect: something changed in the world."
+        },
+        "origin": {
+          "enum": [
+            "runtime_self_report",
+            "tool_wrapper",
+            "policy_enforcer",
+            "independent_observer"
+          ],
+          "description": "Who observed this. Only independent_observer can corroborate a runtime's own reports."
+        },
+        "initiating_principal": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@-]*$"
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+-]*$"
+        },
+        "model_route": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+-]*$"
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/@+-]*$"
+        },
+        "tool_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.+-]*$"
+        },
+        "policy_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:+-]*$"
+        },
+        "step": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "parent_run_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*$"
+        }
+      }
     }
   },
   "required": [

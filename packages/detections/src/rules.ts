@@ -9,7 +9,7 @@ import {
  * 1.1.0 (R00.2): identifier joins use typed, namespaced correlation identities. Findings produced by
  * 1.0.x keep their stored revisions; re-evaluation records a new revision rather than rewriting them.
  */
-export const RULESET_VERSION = "dk-rules-1.1.0";
+export const RULESET_VERSION = "dk-rules-1.2.0";
 
 export interface SourceDeclaration {
   id: string;
@@ -217,6 +217,17 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
     runs.set(e.run_id, byNs);
     push(byNs, ns.run(e.source_id), e);
   }
+  // R05.1: inside one declared namespace, runs reported by different runtimes are different runs. An effect
+  // that names no runtime joins the namespace's only runtime, or stays apart when several are present.
+  for (const [runText, byNs] of runs) {
+    const split = new Map<string, SecurityEvent[]>();
+    for (const [runNs, evs] of byNs) {
+      const rts = unique(evs.filter((e) => e.action === "tool_invocation" && e.agent?.runtime).map((e) => e.agent!.runtime!));
+      if (rts.length <= 1) { split.set(runNs, evs); continue; }
+      for (const e of evs) push(split, `${runNs}#runtime:${e.agent?.runtime ?? "undeclared"}`, e);
+    }
+    runs.set(runText, split);
+  }
   for (const [runText, byNs] of runs) {
     const nsList = [...byNs.keys()].sort();
     for (const [nsIndex, runNs] of nsList.entries()) {
@@ -239,7 +250,10 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
         rule_id: "agent.enforcement_denied", rule_version: "2", events: [...denied, ...refused],
       });
       if (observed.length) {
-        const independent = observed.filter((o) => !reported.some((r) => group(r.source_id) === group(o.source_id)));
+        // Only an observer that declares itself independent can corroborate; a runtime's or wrapper's own report of
+        // an effect never does. Legacy events (no agent context) keep the source-group rule, flagged below.
+        const independent = observed.filter((o) => (o.agent ? o.agent.origin === "independent_observer" : true) && !reported.some((r) => group(r.source_id) === group(o.source_id)));
+        const legacy = [...reported, ...observed].some((e) => !e.agent);
         const unlinked = !reported.length && otherNsCalls.length > 0;
         drafts.push({
           key: `agenteffect:${run}`, kind: "agent_effect_observed", title: `Agent action had an observed effect (${label})`,
@@ -248,12 +262,12 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
           // Equal run text from an undeclared/unrelated runtime is neither corroboration nor proof of a bypass.
           severity: reported.length ? "low" : unlinked ? "medium" : "high",
           affected_asset_ids: unique([...observed, ...reported].flatMap((e) => e.asset_ids)), event_ids: [...reported, ...observed].map((e) => e.id), counterevidence_event_ids: [],
-          coverage_gaps: reported.length ? [] : unlinked
+          coverage_gaps: [...(legacy ? ["Some events carry no agent context (legacy generic tool events): observation origin is undeclared, so independence is inferred from source grouping only."] : []), ...(reported.length ? [] : unlinked
             ? [`${otherNsCalls.length} tool call(s) from ${unique(otherNsCalls.map((e) => e.source_id)).join(", ")} use the same run identifier text, but no common run namespace is declared for these sources, so the effect cannot be attributed to them or to a bypass.`]
-            : ["The effect was not reported by the tool wrapper: a bypass path or unsupported transport may exist."],
+            : ["The effect was not reported by the tool wrapper: a bypass path or unsupported transport may exist."])],
           not_claimed: ["An observed effect is not automatically harmful.", ...(unlinked ? ["Equal run identifiers from unrelated runtimes are not treated as the same run."] : [])],
           next_steps: reported.length ? ["Confirm the effect matched the approved destination."] : unlinked ? ["Declare a shared run namespace only if the observer really receives this runtime's propagated run ids.", "Otherwise investigate the effect's origin independently."] : ["Investigate how the agent acted outside the instrumented wrapper."],
-          rule_id: "agent.effect_observed", rule_version: "2", events: [...reported, ...observed],
+          rule_id: "agent.effect_observed", rule_version: "3", events: [...reported, ...observed],
         });
       }
     }

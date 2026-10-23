@@ -1,6 +1,6 @@
 import { validateIngestEventSchema, stableId, type DatasetKind, type IngestEvent, type SecurityEvent } from "@dk/contracts";
 import type { GraphIndex } from "@dk/graph-core";
-import { normalizeRoute, redactString, redactValue, type RedactionReport } from "./redact.ts";
+import { normalizeRoute, PRIVATE_AGENT_KEY, redactString, redactValue, type RedactionReport } from "./redact.ts";
 import { checkCapability, type SourceCapabilities } from "./capabilities.ts";
 
 export const PARSER_VERSION = "dk-normalizer-1.0.0";
@@ -35,6 +35,9 @@ export function minimizeIngest(input: unknown): { ok: true; event: IngestEvent; 
   const e = input as IngestEvent;
   const reserved = findReservedKey(e.evidence) ?? findReservedKey(e.attributes);
   if (reserved) return { ok: false, detail: `reserved field name "${reserved}" (the _dk_ prefix is server-controlled)` };
+  const agentish = !!e.agent || e.action === "tool_invocation" || e.action === "side_effect_observed";
+  if (e.agent) { const err = agentConsistency(e); if (err) return { ok: false, detail: err }; }
+  const drop = agentish ? PRIVATE_AGENT_KEY : undefined;
   const redaction: RedactionReport = { removedKeys: [], maskedValues: 0, truncated: false };
   const out: IngestEvent = {
     source_event_id: e.source_event_id,
@@ -52,11 +55,33 @@ export function minimizeIngest(input: unknown): { ok: true; event: IngestEvent; 
   if (e.coverage_note !== undefined) out.coverage_note = redactString(e.coverage_note, redaction);
   if (e.evidence_refs !== undefined) out.evidence_refs = e.evidence_refs;
   if (e.attributes) {
-    const a = redactValue(e.attributes, redaction) as Record<string, string | number | boolean>;
+    const a = redactValue(e.attributes, redaction, 0, "", drop) as Record<string, string | number | boolean>;
     if (Object.keys(a).length) out.attributes = a;
   }
-  if (e.evidence) out.evidence = redactValue(e.evidence, redaction) as Record<string, unknown>;
+  if (e.evidence) out.evidence = redactValue(e.evidence, redaction, 0, "", drop) as Record<string, unknown>;
+  if (e.agent) out.agent = { ...e.agent };
   return { ok: true, event: out, redaction };
+}
+
+/**
+ * R05.1: phase, action, outcome and origin must agree, so a refusal cannot be recorded as enforcement, an
+ * attempted execution as an effect, or a runtime's own report as independent observation.
+ */
+function agentConsistency(e: IngestEvent): string | null {
+  const a = e.agent!;
+  const allowed: Record<string, { action: string; outcomes: string[] }> = {
+    intent: { action: "tool_invocation", outcomes: ["attempted"] },
+    decision: { action: "tool_invocation", outcomes: ["allowed", "denied", "blocked", "refused"] },
+    execution: { action: "tool_invocation", outcomes: ["success", "failure", "attempted"] },
+    effect: { action: "side_effect_observed", outcomes: ["observed"] },
+  };
+  const rule = allowed[a.phase]!;
+  if (e.action !== rule.action) return `agent.phase ${a.phase} requires action ${rule.action}`;
+  if (!rule.outcomes.includes(e.outcome)) return `agent.phase ${a.phase} allows outcomes ${rule.outcomes.join(", ")}`;
+  if (e.outcome === "refused" && a.origin === "policy_enforcer") return "a refusal is the model's own decision; a policy enforcer reports denied or blocked";
+  if ((e.outcome === "denied" || e.outcome === "blocked") && a.origin !== "policy_enforcer" && a.origin !== "tool_wrapper") return "denied/blocked decisions come from a policy enforcer or tool wrapper";
+  if (a.origin === "independent_observer" && a.phase !== "effect") return "an independent observer reports effects only";
+  return null;
 }
 
 /** Keys with the _dk_ prefix are reserved for server-controlled metadata; producers may not send them. */
@@ -124,6 +149,7 @@ export function normalizeIngest(input: unknown, ctx: SourceContext): NormalizeRe
     if (e[k] !== undefined) (event as unknown as Record<string, unknown>)[k] = e[k];
   }
   if (e.route) event.route = e.route;
+  if (e.agent) event.agent = e.agent;
   if (attributes && Object.keys(attributes).length) event.attributes = attributes;
   const notes: string[] = [];
   if (e.coverage_note) notes.push(e.coverage_note);

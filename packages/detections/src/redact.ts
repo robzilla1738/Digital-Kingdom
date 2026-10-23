@@ -19,22 +19,22 @@ export function redactString(s: string, report?: RedactionReport): string {
   return out;
 }
 
-export function redactValue(value: unknown, report: RedactionReport = { removedKeys: [], maskedValues: 0, truncated: false }, depth = 0, path = ""): unknown {
+export function redactValue(value: unknown, report: RedactionReport = { removedKeys: [], maskedValues: 0, truncated: false }, depth = 0, path = "", drop?: RegExp): unknown {
   if (depth > 6) { report.truncated = true; return "[truncated: nesting limit]"; }
   if (typeof value === "string") return redactString(value.length > 2000 ? (report.truncated = true, value.slice(0, 2000) + "…") : value, report);
   if (typeof value === "number" || typeof value === "boolean" || value === null) return value;
   if (Array.isArray(value)) {
     if (value.length > 100) report.truncated = true;
-    return value.slice(0, 100).map((v, i) => redactValue(v, report, depth + 1, `${path}[${i}]`));
+    return value.slice(0, 100).map((v, i) => redactValue(v, report, depth + 1, `${path}[${i}]`, drop));
   }
   if (typeof value === "object") {
     const out: Record<string, unknown> = {};
     const entries = Object.entries(value as Record<string, unknown>);
     if (entries.length > 64) report.truncated = true;
     for (const [k, v] of entries.slice(0, 64)) {
-      if (SECRET_KEY.test(k)) { report.removedKeys.push(path ? `${path}.${k}` : k); continue; }
+      if (SECRET_KEY.test(k) || (drop?.test(k) && typeof v !== "number" && typeof v !== "boolean")) { report.removedKeys.push(path ? `${path}.${k}` : k); continue; }
       if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
-      out[k] = redactValue(v, report, depth + 1, path ? `${path}.${k}` : k);
+      out[k] = redactValue(v, report, depth + 1, path ? `${path}.${k}` : k, drop);
     }
     return out;
   }
@@ -52,3 +52,9 @@ export function normalizeRoute(raw: string): string {
     .join("/")
     .slice(0, 300);
 }
+
+/**
+ * Keys that carry an agent's private content (R05.1): prompts, completions, message history, reasoning and raw tool
+ * inputs/outputs. Dropped from agent events before anything is persisted; only the fact of removal is kept.
+ */
+export const PRIVATE_AGENT_KEY = /^(prompt|prompts|system_prompt|user_prompt|completion|completions|response_text|messages?|conversation|history|reasoning|chain_of_thought|cot|thoughts?|scratchpad|input|inputs|output|outputs|arguments|args|tool_input|tool_output|tool_args|tool_result|payload|body|content|transcript)$/i;

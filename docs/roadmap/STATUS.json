@@ -243,12 +243,12 @@
   {
    "id": "R05.1",
    "title": "Define agent intent/decision/execution/effect contracts",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R05-RECEIPT.md#r051-agent-intent-decision-execution-and-effect-contracts",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "agent-r05.test.ts 5/5 (all 5 failed pre-change). Ruleset dk-rules-1.2.0; prompt/payload keys dropped from agent events (breaking for producers sending them)."
   },
   {
    "id": "R05.2",

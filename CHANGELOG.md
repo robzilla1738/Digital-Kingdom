@@ -2,6 +2,12 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R05.1: agent run contracts (ruleset dk-rules-1.2.0)
+
+- Optional `agent` context on events: `phase` (intent, decision, execution, effect), `origin` (runtime_self_report, tool_wrapper, policy_enforcer, independent_observer), initiating principal, runtime, model route, tool and version, policy revision, step, parent run. Phase, outcome and origin must agree: a refusal cannot be recorded as enforcement, and an observer reports effects only.
+- Only an `independent_observer` corroborates a runtime's reports; a runtime's own effect report never does. Runs from different runtimes with the same run id stay apart even inside one declared namespace. Events without agent context remain valid and the finding says independence was inferred from source grouping only.
+- Prompts, completions, message history, reasoning and raw tool inputs/outputs are dropped from agent events before persistence (the removal is recorded). The demo's agent run now declares its phases and origins.
+
 ### Roadmap R03.1: durable cases
 
 - Cases with their own identity, scope (question, assets, interval), owner, questions and hypotheses, closure criteria, and a timeline of linked findings, independent events and notes. Linking a finding pins an immutable bundle to the case. A closed finding never closes a case; closing requires every question answered or accepted unresolved, a closure statement, and the owner or an administrator. All edits are version-checked and recorded; removals are tombstones. Signed case export (`digital-kingdom-case/2`) lists unavailable records explicitly and verifies with `/api/verify-export`. Investigate workspace gains a Cases tab; MCP `dk_list_cases`, `dk_get_case`.

@@ -678,6 +678,15 @@
       "action": "tool_invocation",
       "outcome": "refused",
       "run_id": "run-77",
+      "agent": {
+        "phase": "decision",
+        "origin": "runtime_self_report",
+        "runtime": "support-agent-runtime",
+        "initiating_principal": "svc:support-desk",
+        "model_route": "route-support-v3",
+        "tool": "db.delete_customer",
+        "step": 1
+      },
       "evidence": {
         "tool": "db.delete_customer",
         "decision": "model declined"
@@ -697,6 +706,16 @@
       "outcome": "denied",
       "run_id": "run-77",
       "rule_ref": "policy-no-db-write",
+      "agent": {
+        "phase": "decision",
+        "origin": "policy_enforcer",
+        "runtime": "support-agent-runtime",
+        "initiating_principal": "svc:support-desk",
+        "model_route": "route-support-v3",
+        "tool": "db.write",
+        "policy_revision": "p-12",
+        "step": 2
+      },
       "evidence": {
         "tool": "db.write",
         "decision": "policy denied",
@@ -716,6 +735,17 @@
       "action": "tool_invocation",
       "outcome": "success",
       "run_id": "run-77",
+      "agent": {
+        "phase": "execution",
+        "origin": "tool_wrapper",
+        "runtime": "support-agent-runtime",
+        "initiating_principal": "svc:support-desk",
+        "model_route": "route-support-v3",
+        "tool": "email.send",
+        "tool_version": "1.4.0",
+        "policy_revision": "p-12",
+        "step": 3
+      },
       "evidence": {
         "tool": "email.send",
         "destination": "sink.test.internal",
@@ -735,6 +765,12 @@
       "action": "side_effect_observed",
       "outcome": "observed",
       "run_id": "run-77",
+      "agent": {
+        "phase": "effect",
+        "origin": "independent_observer",
+        "runtime": "support-agent-runtime",
+        "tool": "email.send"
+      },
       "evidence": {
         "observed": "SMTP delivery to sink.test.internal",
         "messages": 1

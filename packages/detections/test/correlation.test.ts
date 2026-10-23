@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evaluate, processDeliveries, validateNamespace, type SourceConfig } from "../src/index.ts";
+import { evaluate, processDeliveries, RULESET_VERSION, validateNamespace, type SourceConfig } from "../src/index.ts";
 import { stableId, type Finding, type Graph, type IngestEvent } from "@dk/contracts";
 import { demoDeliveries, demoGraph, demoSources } from "../../../fixtures/testing/load.ts";
 
@@ -82,7 +82,7 @@ describe("R00.2 authentication correlation is typed and namespaced", () => {
     // deterministic: the lexicographically first namespace keeps the legacy id
     expect(ids).toContain(legacy);
     expect(ids).toContain(stableId("f", "auth.repeated_failure", "authfail:auth|actor:admin|ns:source:idp-b"));
-    for (const f of authFinding(r)) expect(f.rule_version).toBe("dk-rules-1.1.0/2");
+    for (const f of authFinding(r)) expect(f.rule_version).toBe(`${RULESET_VERSION}/2`);
   });
 });
 

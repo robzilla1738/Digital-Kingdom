@@ -105,6 +105,23 @@ export interface EventCommon {
   coverage_note?: string;
   client_ip?: string;
   attributes?: Record<string, string | number | boolean>;
+  /** Agent run context (R05.1): phase and observation origin, never prompts or payloads. */
+  agent?: AgentContext;
+}
+
+export const AGENT_PHASES = ["intent", "decision", "execution", "effect"] as const;
+export const AGENT_ORIGINS = ["runtime_self_report", "tool_wrapper", "policy_enforcer", "independent_observer"] as const;
+export interface AgentContext {
+  phase: (typeof AGENT_PHASES)[number];
+  origin: (typeof AGENT_ORIGINS)[number];
+  initiating_principal?: string;
+  runtime?: string;
+  model_route?: string;
+  tool?: string;
+  tool_version?: string;
+  policy_revision?: string;
+  step?: number;
+  parent_run_id?: string;
 }
 
 export interface SecurityEvent extends EventCommon {
