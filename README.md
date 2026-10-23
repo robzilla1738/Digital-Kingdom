@@ -39,6 +39,7 @@ Other ways to run it:
 | Goal | Command |
 |---|---|
 | Offline demo, no server at all (same engine in the browser) | `pnpm --filter @dk/web dev`, then open http://localhost:5173 with no server running |
+| A real, live local investigation in one command (isolated server, instrumented app, database audit, agent and effect observer) | `pnpm --filter @dk/web build && pnpm quickstart` (remove with `pnpm quickstart --reset`) |
 | UI dev with hot reload against the API | `pnpm dev:server` and `pnpm dev:web` |
 | Docker (localhost-bound, non-root, read-only rootfs) | `docker compose -f infra/compose/docker-compose.yml up --build` |
 | Everything CI runs | `pnpm check && pnpm build` |

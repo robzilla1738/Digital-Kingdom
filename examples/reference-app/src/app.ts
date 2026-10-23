@@ -7,7 +7,7 @@ import { DigitalKingdom } from "@dk/sdk-node";
  * It binds to 127.0.0.1 only. It contains no vulnerable code; its defenses (a naive input filter and
  * a login rate check) are observable so a benign verification run produces real source events.
  */
-export function startReferenceApp(opts: { port?: number; dk: DigitalKingdom; asset?: string }) {
+export function startReferenceApp(opts: { port?: number; dk: DigitalKingdom; asset?: string; onDbRead?: (actor: string, route: string) => void }) {
   const asset = opts.asset ?? "checkout-api";
   const failures = new Map<string, number>();
   const users: Record<string, { password: string; role: string }> = { alice: { password: "correct-horse", role: "user" }, ops: { password: "battery-staple", role: "admin" } };
@@ -31,6 +31,7 @@ export function startReferenceApp(opts: { port?: number; dk: DigitalKingdom; ass
       const q = url.searchParams.get("q") ?? "";
       if (/('|--|\bunion\b|\bor\b\s+\d+=\d+)/i.test(q)) { opts.dk.denied(asset, "/orders", "input-filter-sqli", { requestId, severity: "medium", details: { input_sample: q.slice(0, 160) } }); return send(400, { error: "rejected input" }); }
       opts.dk.emit({ asset, action: "request_received", outcome: "success", route: "/orders", requestId });
+      opts.onDbRead?.(String(req.headers["x-demo-user"] ?? "anonymous").slice(0, 40), "/orders");
       return send(200, { orders: [] });
     }
     if (url.pathname === "/admin/roles" && req.method === "POST") {

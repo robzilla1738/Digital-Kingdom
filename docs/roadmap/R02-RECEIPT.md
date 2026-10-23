@@ -38,3 +38,24 @@ partial records (`/workspace/work/r00/live-github-discovery.txt`, not committed)
 
 Limitations: GitHub only; job permissions, secrets, reusable-workflow inputs and runner identity are listed as
 unsupported; artifact lineage is R04.1.
+
+## R02.2 one-command local application pack
+
+Delivered: `examples/reference-app/src/pack.ts` (`startPack`, `resetPack`), `src/quickstart.ts` (`pnpm quickstart`),
+SDK helpers (`dataAccess`, `toolStep`, `sensorDown`, `sensorUp`, `runId`, `agent`), reference-app database-read
+hook, `examples/reference-app/collector.test.ts` and the CI step that downloads a pinned, checksum-verified
+otelcol 0.112.0.
+
+Acceptance (`examples/reference-app/pack.test.ts`, 4 tests; `collector.test.ts`, 1 test, passes locally with
+otelcol 0.112.0 linux/arm64 and runs in CI on linux/amd64):
+- A fresh start passes all five guided steps; the SDK event lands on `checkout`, the audit read on `db`, and the
+  event detail from the HTTP API equals the MCP `dk_get_event` event and evidence.
+- A deliberate audit outage is offline in current coverage and unknown in historical coverage; the agent run is
+  independently corroborated and its denial recorded.
+- Restarting on the same directory does not duplicate sources; reset removes the directory.
+- The static demo stays synthetic; the pack project is live.
+- Real collector: delivery, retry while Digital Kingdom is down (no loss after restart), collector restart, and a
+  40 MiB decompressed gzip body refused with 413.
+
+Limitations: the pack runs in one Node process (not containers); `.dk-local/` holds a pack-only admin token in
+the database; the guided steps are printed by the CLI, while the web Setup checklist remains the in-app guide.

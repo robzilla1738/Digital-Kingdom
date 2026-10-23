@@ -18,11 +18,18 @@ export interface DkOptions {
   fetchImpl?: typeof fetch;
 }
 
-type Outcome = "allowed" | "denied" | "blocked" | "success" | "failure" | "attempted" | "unknown";
+type Outcome = "allowed" | "denied" | "blocked" | "success" | "failure" | "attempted" | "refused" | "observed" | "unknown";
+
+/** Agent run context (R05.1). Never put prompts, completions, reasoning or tool payloads here. */
+export interface DkAgentContext {
+  phase: "intent" | "decision" | "execution" | "effect";
+  origin: "runtime_self_report" | "tool_wrapper" | "policy_enforcer" | "independent_observer";
+  initiating_principal?: string; runtime?: string; model_route?: string; tool?: string; tool_version?: string; policy_revision?: string; step?: number; parent_run_id?: string;
+}
 
 export interface DkEvent {
   asset: string;
-  action: "request_received" | "authentication" | "authorization_change" | "data_access" | "decoy_used";
+  action: "request_received" | "authentication" | "authorization_change" | "data_access" | "decoy_used" | "tool_invocation" | "side_effect_observed" | "sensor_unavailable" | "sensor_restored";
   outcome: Outcome;
   route?: string;
   requestId?: string;
@@ -32,6 +39,9 @@ export interface DkEvent {
   severity?: "info" | "low" | "medium" | "high" | "critical";
   details?: Record<string, string | number | boolean>;
   at?: Date;
+  runId?: string;
+  agent?: DkAgentContext;
+  coverageNote?: string;
 }
 
 export class DigitalKingdom {
@@ -66,8 +76,18 @@ export class DigitalKingdom {
       ...(e.rule ? { rule_ref: e.rule } : {}),
       ...(e.severity ? { severity: e.severity } : {}),
       ...(e.details ? { attributes: e.details } : {}),
+      ...(e.runId ? { run_id: e.runId } : {}),
+      ...(e.agent ? { agent: e.agent } : {}),
+      ...(e.coverageNote ? { coverage_note: e.coverageNote.slice(0, 1000) } : {}),
     });
   }
+  /** A database read as the audit layer saw it (R02.2 database audit fixture). */
+  dataAccess(asset: string, actor: string, extra: Partial<DkEvent> = {}) { this.emit({ asset, action: "data_access", outcome: "success", actor, ...extra }); }
+  /** One agent tool step with its phase and observation origin (R05.1). */
+  toolStep(asset: string, runId: string, outcome: Outcome, agent: DkAgentContext, extra: Partial<DkEvent> = {}) { this.emit({ asset, action: agent.phase === "effect" ? "side_effect_observed" : "tool_invocation", outcome, runId, agent, ...extra }); }
+  /** Report this source's own outage and recovery so the gap is visible, not silent. */
+  sensorDown(asset: string, note: string) { this.emit({ asset, action: "sensor_unavailable", outcome: "unknown", coverageNote: note }); }
+  sensorUp(asset: string) { this.emit({ asset, action: "sensor_restored", outcome: "unknown" }); }
 
   signIn(asset: string, account: string, ok: boolean, extra: Partial<DkEvent> = {}) {
     this.emit({ asset, action: "authentication", outcome: ok ? "success" : "failure", actor: account, ...extra });

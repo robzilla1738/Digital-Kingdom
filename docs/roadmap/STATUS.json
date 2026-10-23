@@ -123,12 +123,12 @@
   {
    "id": "R02.2",
    "title": "Deliver a one-command local application pack",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R02-RECEIPT.md#r022-one-command-local-application-pack",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "pack.test.ts 4/4; collector.test.ts passes locally with real otelcol 0.112.0 (arm64), CI step added (amd64)."
   },
   {
    "id": "R02.3",

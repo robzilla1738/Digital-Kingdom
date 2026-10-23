@@ -2,6 +2,11 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R02.2: one-command local application pack
+
+- `pnpm quickstart` starts an isolated live project on 127.0.0.1 with its own database: declared inventory, four least-privilege sources (application SDK, database audit fixture, agent tool wrapper, independent effect observer), the instrumented reference app and a recorded agent run, and prints the guided steps (authorize, preview, import, validate, first event). `pnpm quickstart --reset` deletes `.dk-local/`. The Node SDK gains `dataAccess`, `toolStep` (with agent context), `sensorDown`/`sensorUp`.
+- CI runs a real OpenTelemetry Collector binary (otelcol 0.112.0, checksum-verified) through Digital Kingdom's OTLP endpoint: delivery, retry while the server is down, collector restart, and the decompressed-size cap.
+
 ### Roadmap R02.3: read-only repository discovery
 
 - `POST /discovery/github/preview` reads repository, workflow, deployment, release and head-commit metadata from the GitHub REST API (GET only; optional read-only `DK_GITHUB_TOKEN`). Workflow YAML is parsed as inert data: triggers, environments and referenced actions are kept; `run:` steps are never retained or executed. Stable ids come from GitHub numeric ids, so renames keep identity. Refused calls (rate limits, 403, 404) become partial discovery. The preview lists additions, removals, changes and id collisions; `POST /discovery/github/apply` needs the preview id and the base graph revision. Admin panel in Integrations → Connectors. Live-checked read-only against this repository.

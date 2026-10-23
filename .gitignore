@@ -17,3 +17,4 @@ eval/runs/*/server-logs
 # Transient SQLite fixture sidecars are never source artifacts.
 *.sqlite-wal
 *.sqlite-shm
+.dk-local/

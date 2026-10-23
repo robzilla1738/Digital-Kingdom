@@ -17,6 +17,13 @@ jobs:
       - run: pnpm test
       - run: pnpm validate:fixtures
       - run: pnpm build
+      # R02.2: real OpenTelemetry Collector binary (pinned release, checksum-verified) against the OTLP endpoint
+      - name: Collector conformance (otelcol 0.112.0)
+        run: |
+          curl -sSL -o "$RUNNER_TEMP/otelcol.tgz" https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.112.0/otelcol_0.112.0_linux_amd64.tar.gz
+          echo "0249feb53dc32c0960be0ca6b96c858b1e299c7b06ebb987ba3437d7c4531b99  $RUNNER_TEMP/otelcol.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/otelcol.tgz" -C "$RUNNER_TEMP" otelcol
+          OTELCOL_BIN="$RUNNER_TEMP/otelcol" npx vitest run examples/reference-app/collector.test.ts
 
   # Browser pilot: real server process + worker, fresh temp DB, reference app via the real SDK,
   # the built web app in Chromium, and a stdio MCP client. 3D uses SwiftShader software WebGL; the 3D test
