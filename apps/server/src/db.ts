@@ -1,4 +1,4 @@
-import { BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION } from "./schema-r01.ts";
+import { BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION, IDENTITY_MIGRATION } from "./schema-r01.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -83,6 +83,8 @@ export const MIGRATIONS: string[] = [
   CASES_MIGRATION,
   // R02.1: connector manifests bound to sources, and collection reports for honest coverage.
   CONNECTORS_MIGRATION,
+  // R10.1: token expiry and rotation, OIDC subject mappings.
+  IDENTITY_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

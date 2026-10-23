@@ -20,3 +20,10 @@ export const CONNECTORS_MIGRATION = `ALTER TABLE sources ADD COLUMN connector_id
    ALTER TABLE sources ADD COLUMN granted_scopes TEXT;
    CREATE TABLE collection_reports (project_id TEXT NOT NULL, source_id TEXT NOT NULL, report_id TEXT NOT NULL, window_start TEXT NOT NULL, window_end TEXT NOT NULL, status TEXT NOT NULL, detail TEXT NOT NULL, received_at TEXT NOT NULL, PRIMARY KEY (project_id, source_id, report_id));
    CREATE INDEX collection_reports_window ON collection_reports (project_id, source_id, window_start);`;
+
+/** R10.1 token expiry/rotation and OIDC subject mappings. */
+export const IDENTITY_MIGRATION = `ALTER TABLE api_tokens ADD COLUMN expires_at TEXT;
+   ALTER TABLE api_tokens ADD COLUMN rotated_to TEXT;
+   ALTER TABLE api_tokens ADD COLUMN oidc_issuer TEXT;
+   ALTER TABLE api_tokens ADD COLUMN oidc_subject TEXT;
+   CREATE TABLE oidc_subjects (issuer TEXT NOT NULL, subject TEXT NOT NULL, name TEXT NOT NULL, role TEXT NOT NULL, project_ids TEXT NOT NULL, created_at TEXT NOT NULL, created_by TEXT NOT NULL, revoked INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (issuer, subject));`;

@@ -1,0 +1,21 @@
+# R10 receipt
+
+## R10.1 deployment identity and secret handling
+
+Delivered: `apps/server/src/oidc.ts`, migration 12 (token `expires_at`, `rotated_to`, OIDC subject columns,
+`oidc_subjects`), `POST /api/session/oidc`, `POST /api/oidc-subjects`, `POST /api/tokens/:id/rotate`, service-token
+expiry, audited logout, trusted-proxy check, demo default, `scripts/recover-admin.ts`, SECURITY.md section.
+
+Acceptance (`apps/server/test/identity-r10.test.ts`, 7 tests):
+- Project scope survives rotation; the old secret and its sessions stop immediately; expiry ends access; SSO
+  unmapping revokes a live session.
+- No token/key/secret/session value is written to browser storage (source scan); sessions are HttpOnly cookies.
+  Logs and trace artifacts: request logging is off by default and `safeDetail` masks token-shaped values (R00.4);
+  not separately re-tested here.
+- Forwarded `https` counts only from a listed proxy peer; existing CSRF/cookie tests still pass.
+- Recovery needs filesystem access, yields a 24-hour human admin and is audited; it cannot mint service tokens.
+- Found and fixed while testing: Fastify's `req.protocol` honours `X-Forwarded-Proto` from any peer when
+  `trustProxy` is a list; the server now checks the socket peer itself.
+
+External gate still open: live verification against a real identity provider (`identity_provider_for_live_verification`).
+Field-level access control is not implemented beyond project and role scope.

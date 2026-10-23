@@ -443,12 +443,13 @@
   {
    "id": "R10.1",
    "title": "Strengthen deployment identity and secret handling",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "identity_provider_for_live_verification",
-   "receipt": null,
+   "receipt": "docs/roadmap/R10-RECEIPT.md#r101-deployment-identity-and-secret-handling",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "identity-r10.test.ts 7/7 with a locally generated signing key. Live IdP verification (external gate) NOT done; field-level ACL not implemented.",
+   "external_gate_open": true
   },
   {
    "id": "R10.2",

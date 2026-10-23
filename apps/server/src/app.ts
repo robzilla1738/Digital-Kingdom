@@ -1,3 +1,4 @@
+import { BlockList, isIP } from "node:net";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
@@ -17,6 +18,7 @@ import { Cases } from "./cases.ts";
 import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
+import { verifyIdToken, type OidcConfig } from "./oidc.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 
 export interface AppConfig {
@@ -33,6 +35,10 @@ export interface AppConfig {
   /** R02.3: fetch used for read-only GitHub discovery (tests inject fixtures). Defaults to global fetch. */
   githubFetch?: FetchLike;
   githubToken?: string;
+  /** R10.1: OIDC sign-in (subject mappings decide access). */
+  oidc?: OidcConfig | null;
+  /** R10.1: reverse proxies whose X-Forwarded-* headers are honoured (addresses or CIDRs). Default: none. */
+  trustedProxies?: string[];
 }
 
 declare module "fastify" {
@@ -44,7 +50,7 @@ const MAX_BATCH = 500;
 
 export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   const { store } = cfg;
-  const app = Fastify({ logger: cfg.logger ?? false, bodyLimit: 1_048_576, onProtoPoisoning: "error", onConstructorPoisoning: "error", trustProxy: false });
+  const app = Fastify({ logger: cfg.logger ?? false, bodyLimit: 1_048_576, onProtoPoisoning: "error", onConstructorPoisoning: "error", trustProxy: cfg.trustedProxies?.length ? cfg.trustedProxies : false });
 
   // ---- hardening ----
   app.addHook("onRequest", async (req, reply) => {
@@ -101,6 +107,12 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (!src) throw new HttpError(401, "invalid source key");
     (req as FastifyRequest & { source: typeof src }).source = src;
   };
+  // Secure cookies when configured, or when a TRUSTED proxy says the client connection was HTTPS (R10.1).
+  // Fastify's req.protocol reads X-Forwarded-Proto without checking WHO sent it, so check the socket peer here.
+  const trusted = new BlockList();
+  for (const t of cfg.trustedProxies ?? []) { const [addr, bits] = t.split("/"); const fam = isIP(addr ?? "") === 6 ? "ipv6" : "ipv4"; if (!isIP(addr ?? "")) continue; if (bits) trusted.addSubnet(addr!, Number(bits), fam); else trusted.addAddress(addr!, fam); }
+  const fromTrustedProxy = (req: FastifyRequest) => { const a = (req.socket.remoteAddress ?? "").replace(/^::ffff:/, ""); return !!a && isIP(a) > 0 && trusted.check(a, isIP(a) === 6 ? "ipv6" : "ipv4"); };
+  const secure = (req: FastifyRequest) => !!cfg.secureCookies || (fromTrustedProxy(req) && String(req.headers["x-forwarded-proto"] ?? "").split(",")[0]!.trim() === "https");
   const who = (req: FastifyRequest) => req.principal!.kind === "anonymous-demo" ? "anonymous" : `${req.principal!.name} (${req.principal!.id})`;
   const P = (req: FastifyRequest) => (req.params as { p: string }).p;
 
@@ -117,12 +129,36 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (!p) throw new HttpError(401, "invalid token");
     const sid = store.createSession(p.id);
     store.audit(`${p.name} (${p.id})`, "session.create", null, null, {});
-    reply.header("set-cookie", `${COOKIE}=${sid}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${cfg.secureCookies ? "; Secure" : ""}`);
+    reply.header("set-cookie", `${COOKIE}=${sid}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${secure(req) ? "; Secure" : ""}`);
     return { name: p.name, role: p.role };
+  });
+  // R10.1: SSO sign-in. A verified ID token gets a session only for an administrator-mapped subject.
+  app.post("/api/session/oidc", async (req, reply) => {
+    if (!cfg.oidc) throw new HttpError(404, "SSO is not configured");
+    const claims = verifyIdToken(String((req.body as { id_token?: unknown } | undefined)?.id_token ?? ""), cfg.oidc, store.now().getTime());
+    const t = store.oidcPrincipalToken(cfg.oidc.issuer, claims.sub);
+    const hours = Math.max(0.05, Math.min(12, (claims.exp * 1000 - store.now().getTime()) / 3600_000 + 0.0001));
+    const sid = store.createSession(t.id, hours);
+    store.audit(`${t.name} (${t.id})`, "session.create", null, null, { method: "oidc", issuer: cfg.oidc.issuer });
+    reply.header("set-cookie", `${COOKIE}=${sid}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${Math.floor(hours * 3600)}${secure(req) ? "; Secure" : ""}`);
+    return { name: t.name, role: t.role, method: "oidc" };
+  });
+  app.post("/api/oidc-subjects", { preHandler: authed("admin") }, async (req) => {
+    const p = req.principal!;
+    if (p.kind !== "token" || p.principalType !== "human" || p.projects !== "*") throw new HttpError(403, "only a human installation admin may map SSO identities");
+    if (!cfg.oidc) throw new HttpError(404, "SSO is not configured");
+    const b = (req.body ?? {}) as { subject?: unknown; name?: unknown; role?: unknown; projects?: unknown; remove?: unknown };
+    if (typeof b.subject !== "string" || !b.subject || b.subject.length > 255) throw new HttpError(400, "subject is required");
+    if (b.remove === true) { store.unmapOidcSubject(cfg.oidc.issuer, b.subject, who(req)); return { subject: b.subject, mapped: false }; }
+    if (!["viewer", "analyst", "admin"].includes(String(b.role))) throw new HttpError(400, "role must be viewer, analyst or admin");
+    const projects = b.projects === "*" ? "*" : Array.isArray(b.projects) && b.projects.length && b.projects.every((x) => typeof x === "string" && store.getProject(x)) ? b.projects as string[] : null;
+    if (!projects) throw new HttpError(400, "projects must be \"*\" or a list of existing project ids");
+    store.mapOidcSubject(cfg.oidc.issuer, b.subject, typeof b.name === "string" ? b.name : b.subject, b.role as Role, projects, who(req));
+    return { subject: b.subject, mapped: true, role: b.role, projects };
   });
   app.delete("/api/session", async (req, reply) => {
     const sid = parseCookie(req.headers.cookie)[COOKIE];
-    if (sid) store.deleteSession(sid);
+    if (sid) { const tokenId = store.deleteSession(sid); if (tokenId) store.audit(tokenId, "session.delete", null, null, {}); }
     reply.header("set-cookie", `${COOKIE}=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0`);
     return { ok: true };
   });
@@ -155,14 +191,34 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       const unknown = scope.filter((p) => !store.getProject(p));
       if (unknown.length) throw new HttpError(422, `unknown projects: ${unknown.join(", ")}`);
     }
-    const t = store.createToken(b.name, b.role, scope, undefined, type);
-    store.audit(who(req), "token.create", scope === "*" ? null : scope.length === 1 ? scope[0]! : null, t.id, { role: b.role, principal_type: type, projects: scope });
-    return { id: t.id, token: t.token, role: b.role, principal_type: type, projects: scope, note: "Shown once; only its hash is stored." };
+    // R10.1: service credentials always expire (default 90 days, at most 365); human tokens may.
+    const days = (b as { expires_in_days?: unknown }).expires_in_days;
+    if (days !== undefined && (typeof days !== "number" || !Number.isInteger(days) || days < 1 || days > 365)) throw new HttpError(400, "expires_in_days must be an integer from 1 to 365");
+    const effDays = days ?? (type === "service" ? 90 : undefined);
+    const expiresAt = effDays ? new Date(store.now().getTime() + effDays * 86_400_000).toISOString() : undefined;
+    const t = store.createToken(b.name, b.role, scope, undefined, type, expiresAt ? { expiresAt } : {});
+    store.audit(who(req), "token.create", scope === "*" ? null : scope.length === 1 ? scope[0]! : null, t.id, { role: b.role, principal_type: type, projects: scope, expires_at: t.expires_at });
+    return { id: t.id, token: t.token, role: b.role, principal_type: type, projects: scope, expires_at: t.expires_at, note: "Shown once; only its hash is stored." };
   });
   /**
    * Revocation (R00.4). A human admin may revoke a token whose scope lies inside their own; only an
    * installation admin may revoke "*"-scoped tokens. The last active installation admin cannot be revoked.
    */
+  /** R10.1 rotation: a token may rotate itself; a human admin may rotate tokens inside their scope. */
+  app.post("/api/tokens/:id/rotate", { preHandler: authed() }, async (req) => {
+    const p = req.principal!;
+    if (p.kind !== "token") throw new HttpError(403, "sign in with a token to rotate it");
+    const id = String((req.params as { id: string }).id).slice(0, 64);
+    const t = store.getTokenMeta(id);
+    if (!t || t.revoked) throw new HttpError(404, "unknown or revoked token");
+    const self = p.id === id;
+    if (!self) {
+      if (p.role !== "admin" || p.principalType !== "human") throw new HttpError(403, "only the token itself or a human admin may rotate it");
+      if (t.projects === "*" ? p.projects !== "*" : p.projects !== "*" && t.projects.some((x) => !(p.projects as string[]).includes(x))) throw new HttpError(403, "cannot rotate a token outside your scope");
+    }
+    const next = store.rotateToken(id, who(req));
+    return { id: next.id, token: next.token, expires_at: next.expires_at, replaced: id, note: "Shown once. The previous token and its sessions stopped working now." };
+  });
   app.post("/api/tokens/:id/revoke", { preHandler: authed("admin") }, async (req) => {
     const issuer = req.principal!;
     if (issuer.kind !== "token" || issuer.principalType !== "human") throw new HttpError(403, "only human admin tokens may revoke tokens");

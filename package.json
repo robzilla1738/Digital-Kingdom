@@ -31,7 +31,8 @@
     "eval:report": "tsx eval/scripts/report.ts",
     "pilot:redesign": "pnpm build:redesign-fixtures && DK_RED_OFFLINE_DIST=artifacts/redesign/offline-dist playwright test --config=playwright.redesign.config.ts",
     "build:redesign-fixtures": "VITE_DK_STATIC_DEMO=1 pnpm --filter @dk/web exec vite build --outDir ../../artifacts/redesign/offline-dist --emptyOutDir",
-    "quickstart": "tsx examples/reference-app/src/quickstart.ts"
+    "quickstart": "tsx examples/reference-app/src/quickstart.ts",
+    "admin:recover": "tsx scripts/recover-admin.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.56.1",

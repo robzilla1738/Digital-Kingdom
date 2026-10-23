@@ -1,3 +1,4 @@
+import { oidcFromEnv } from "./oidc.ts";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { randomBytes } from "node:crypto";
 import { resolve, dirname } from "node:path";
@@ -23,13 +24,15 @@ else if (!store.hasAdmin()) {
   console.log("\n  Digital Kingdom bootstrap admin token (shown once, store it securely):\n  " + token + "\n");
 }
 
-const demoMode = (env.DK_DEMO_MODE ?? "true") !== "false";
+// R10.1: anonymous demo access is off by default once a deployment holds live telemetry.
+const demoMode = env.DK_DEMO_MODE !== undefined ? env.DK_DEMO_MODE !== "false" : !store.hasLiveProjects();
+if (demoMode && store.hasLiveProjects()) console.warn("[dk] demo mode is ON in a deployment with live projects (anonymous access still sees synthetic projects only)");
 if (env.DK_SEED_DEMO !== "false") {
   const r = seedDemo(store);
   if (r.created) console.log(`  Seeded synthetic demo project "demo-castle" (${r.deliveries} deliveries).`);
 }
 
-const app = await buildApp({ store, secret, demoMode, planner: plannerFromEnv(), secureCookies: env.DK_SECURE_COOKIES === "true", logger: env.DK_LOG === "true" });
+const app = await buildApp({ store, secret, demoMode, planner: plannerFromEnv(), secureCookies: env.DK_SECURE_COOKIES === "true", logger: env.DK_LOG === "true", oidc: oidcFromEnv(env), trustedProxies: (env.DK_TRUSTED_PROXIES ?? "").split(",").map((x) => x.trim()).filter(Boolean) });
 
 // background worker: drain the journal, re-check coverage staleness, prune outbox.
 // DK_WORKER_PAUSED=true runs ingest-only: events are acknowledged and journaled but not processed

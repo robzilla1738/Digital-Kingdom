@@ -22,6 +22,12 @@ Breaking for API clients:
   `side_effect_observed` evidence and attributes before storage. An `agent` object with an inconsistent phase,
   outcome or origin is rejected.
 
+- **Identity (R10.1).** Service tokens issued through the API now expire (default 90 days, at most 365;
+  `expires_in_days`). Expired tokens and their sessions stop working; rotate with `POST /api/tokens/:id/rotate`.
+  When `DK_DEMO_MODE` is unset, anonymous demo access is now OFF once the database holds a live project; set
+  `DK_DEMO_MODE=true` to keep it (it never exposes live projects). `X-Forwarded-*` headers are ignored unless the
+  peer is listed in `DK_TRUSTED_PROXIES`.
+
 Additive:
 
 - Facts (`/facts`, migration 6) are backfilled lazily from stored graph revisions with

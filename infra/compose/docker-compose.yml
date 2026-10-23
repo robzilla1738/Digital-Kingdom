@@ -5,7 +5,7 @@ services:
     build: { context: ../.., dockerfile: Dockerfile }
     ports: ["127.0.0.1:8787:8787"]
     environment:
-      DK_DEMO_MODE: "true"        # anonymous read-only access to the SYNTHETIC demo project only
+      DK_DEMO_MODE: "true"        # anonymous read-only access to the SYNTHETIC demo project only (unset: off once live data exists)
       DK_SEED_DEMO: "true"
       # DK_ADMIN_TOKEN: change-me  # otherwise a bootstrap admin token is printed once at first start
       # DK_PLANNER_URL: https://api.openai.com/v1/chat/completions   # optional AI layout planner

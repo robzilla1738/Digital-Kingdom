@@ -686,12 +686,57 @@ export class Store {
 
   // ---------------- tokens / sessions / audit ----------------
 
-  createToken(name: string, role: Role, projects: "*" | string[] = "*", raw?: string, principalType: "human" | "service" = "human"): { id: string; token: string } {
+  createToken(name: string, role: Role, projects: "*" | string[] = "*", raw?: string, principalType: "human" | "service" = "human", opts: { expiresAt?: string; oidc?: { issuer: string; subject: string } } = {}): { id: string; token: string; expires_at: string | null } {
     const token = raw ?? newToken(principalType === "service" ? "dks_svc" : "dku");
     const id = "tok_" + sha256(token).slice(0, 12);
-    this.db.prepare("INSERT OR IGNORE INTO api_tokens (id, name, role, token_hash, project_ids, created_at, principal_type) VALUES (?, ?, ?, ?, ?, ?, ?)").run(id, name.slice(0, 80), role, sha256(token), projects === "*" ? "*" : JSON.stringify(projects), this.iso(), principalType);
-    return { id, token };
+    this.db.prepare("INSERT OR IGNORE INTO api_tokens (id, name, role, token_hash, project_ids, created_at, principal_type, expires_at, oidc_issuer, oidc_subject) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run(id, name.slice(0, 80), role, sha256(token), projects === "*" ? "*" : JSON.stringify(projects), this.iso(), principalType, opts.expiresAt ?? null, opts.oidc?.issuer ?? null, opts.oidc?.subject ?? null);
+    return { id, token, expires_at: opts.expiresAt ?? null };
   }
+
+  /**
+   * Rotate a token (R10.1): a new secret with the same role, scope, type and remaining policy; the old one is
+   * revoked at once (with its sessions) and points at its successor. Audited.
+   */
+  rotateToken(id: string, actor: string, expiresAt?: string): { id: string; token: string; expires_at: string | null } {
+    return tx(this.db, () => {
+      const r = this.db.prepare("SELECT * FROM api_tokens WHERE id = ? AND revoked = 0").get(id) as Record<string, string> | undefined;
+      if (!r) throw new HttpError(404, "unknown or revoked token");
+      if (r.oidc_subject) throw new HttpError(409, "SSO sessions are not rotated; sign in again");
+      const projects = r.project_ids === "*" ? "*" as const : J(r.project_ids, [] as string[]);
+      const next = this.createToken(`${r.name}`.slice(0, 80), r.role as Role, projects, undefined, (r.principal_type as "human" | "service") ?? "human", { ...(expiresAt ?? r.expires_at ? { expiresAt: expiresAt ?? r.expires_at! } : {}) });
+      this.db.prepare("UPDATE api_tokens SET revoked = 1, rotated_to = ? WHERE id = ?").run(next.id, id);
+      this.db.prepare("DELETE FROM sessions WHERE token_id = ?").run(id);
+      this.audit(actor, "token.rotate", null, id, { successor: next.id });
+      return next;
+    });
+  }
+
+  /** OIDC subject -> access mapping (R10.1). No mapping, no access. */
+  mapOidcSubject(issuer: string, subject: string, name: string, role: Role, projects: "*" | string[], actor: string) {
+    this.db.prepare("INSERT INTO oidc_subjects (issuer, subject, name, role, project_ids, created_at, created_by, revoked) VALUES (?, ?, ?, ?, ?, ?, ?, 0) ON CONFLICT (issuer, subject) DO UPDATE SET name = excluded.name, role = excluded.role, project_ids = excluded.project_ids, revoked = 0")
+      .run(issuer, subject, name.slice(0, 80), role, projects === "*" ? "*" : JSON.stringify(projects), this.iso(), actor);
+    // existing SSO sessions pick up the change at their next sign-in; revoke them now so a scope change applies at once
+    for (const t of this.db.prepare("SELECT id FROM api_tokens WHERE oidc_issuer = ? AND oidc_subject = ? AND revoked = 0").all(issuer, subject) as { id: string }[]) this.revokeToken(t.id, actor);
+    this.audit(actor, "oidc.subject_mapped", null, `${issuer}#${subject}`, { role, projects });
+  }
+
+  unmapOidcSubject(issuer: string, subject: string, actor: string) {
+    this.db.prepare("UPDATE oidc_subjects SET revoked = 1 WHERE issuer = ? AND subject = ?").run(issuer, subject);
+    for (const t of this.db.prepare("SELECT id FROM api_tokens WHERE oidc_issuer = ? AND oidc_subject = ? AND revoked = 0").all(issuer, subject) as { id: string }[]) this.revokeToken(t.id, actor);
+    this.audit(actor, "oidc.subject_unmapped", null, `${issuer}#${subject}`, {});
+  }
+
+  /** A verified SSO subject's principal: an internal, unusable-secret token row bound to the mapping. */
+  oidcPrincipalToken(issuer: string, subject: string): { id: string; name: string; role: Role } {
+    const m = this.db.prepare("SELECT * FROM oidc_subjects WHERE issuer = ? AND subject = ? AND revoked = 0").get(issuer, subject) as Record<string, string> | undefined;
+    if (!m) throw new HttpError(403, "this identity has no access to Digital Kingdom; ask an administrator to map it");
+    const existing = this.db.prepare("SELECT id, name, role FROM api_tokens WHERE oidc_issuer = ? AND oidc_subject = ? AND revoked = 0").get(issuer, subject) as { id: string; name: string; role: Role } | undefined;
+    if (existing) return existing;
+    const t = this.createToken(`sso:${m.name}`, m.role as Role, m.project_ids === "*" ? "*" : J(m.project_ids, [] as string[]), undefined, "human", { oidc: { issuer, subject } });
+    return { id: t.id, name: `sso:${m.name}`, role: m.role as Role };
+  }
+
+  hasLiveProjects(): boolean { return !!this.db.prepare("SELECT 1 FROM projects WHERE dataset_kind = 'live' LIMIT 1").get(); }
 
   /** Token metadata for authorization decisions (never the hash). */
   getTokenMeta(id: string): { id: string; role: Role; projects: "*" | string[]; revoked: boolean; principalType: "human" | "service" } | undefined {
@@ -719,7 +764,7 @@ export class Store {
 
   authenticateToken(raw: string | undefined): Principal | undefined {
     if (!raw) return undefined;
-    const r = this.db.prepare("SELECT * FROM api_tokens WHERE token_hash = ? AND revoked = 0").get(sha256(raw)) as Record<string, string> | undefined;
+    const r = this.db.prepare("SELECT * FROM api_tokens WHERE token_hash = ? AND revoked = 0 AND (expires_at IS NULL OR expires_at > ?)").get(sha256(raw), this.iso()) as Record<string, string> | undefined;
     if (!r) return undefined;
     return { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]), principalType: (r.principal_type as "human" | "service") ?? "human" };
   }
@@ -732,11 +777,15 @@ export class Store {
 
   authenticateSession(sid: string | undefined): Principal | undefined {
     if (!sid) return undefined;
-    const r = this.db.prepare("SELECT t.* FROM sessions s JOIN api_tokens t ON t.id = s.token_id WHERE s.id_hash = ? AND s.expires_at > ? AND t.revoked = 0").get(sha256(sid), this.iso()) as Record<string, string> | undefined;
+    const r = this.db.prepare("SELECT t.* FROM sessions s JOIN api_tokens t ON t.id = s.token_id WHERE s.id_hash = ? AND s.expires_at > ? AND t.revoked = 0 AND (t.expires_at IS NULL OR t.expires_at > ?)").get(sha256(sid), this.iso(), this.iso()) as Record<string, string> | undefined;
     return r ? { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]), principalType: (r.principal_type as "human" | "service") ?? "human" } : undefined;
   }
 
-  deleteSession(sid: string) { this.db.prepare("DELETE FROM sessions WHERE id_hash = ?").run(sha256(sid)); }
+  deleteSession(sid: string): string | null {
+    const r = this.db.prepare("SELECT token_id FROM sessions WHERE id_hash = ?").get(sha256(sid)) as { token_id: string } | undefined;
+    this.db.prepare("DELETE FROM sessions WHERE id_hash = ?").run(sha256(sid));
+    return r?.token_id ?? null;
+  }
 
   audit(actor: string, action: string, projectId: string | null, target: string | null, detail: unknown) {
     this.db.prepare("INSERT INTO audit_log (at, actor, action, project_id, target, detail) VALUES (?, ?, ?, ?, ?, ?)").run(this.iso(), actor, action, projectId, target, canonicalJson(detail ?? null).slice(0, 4000));
