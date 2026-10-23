@@ -35,6 +35,8 @@ import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapter
 import { verifyIdToken, type OidcConfig } from "./oidc.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 import { runtimePolicy } from "./phase-policy.ts";
+import { parseLocalRun, provenanceOf } from "./provenance.ts";
+import { deriveCapability, LOCAL_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
 
 export interface AppConfig {
   store: Store;
@@ -268,13 +270,15 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/me", { preHandler: authed() }, async (req) => ({ name: req.principal!.name, role: req.principal!.role, kind: req.principal!.kind, demo_mode: cfg.demoMode }));
 
   // ---- projects ----
-  app.get("/api/projects", { preHandler: authed() }, async (req) => store.listProjects(req.principal!).map((p) => ({ id: p.id, name: p.name, dataset_kind: p.dataset_kind })));
+  app.get("/api/projects", { preHandler: authed() }, async (req) => store.listProjects(req.principal!).map((p) => ({ id: p.id, name: p.name, dataset_kind: p.dataset_kind, provenance: provenanceOf(p) })));
   app.post("/api/projects", { preHandler: authed("admin") }, async (req) => {
     if (req.principal!.projects !== "*") throw new HttpError(403, "only an installation admin may create projects");
-    const b = req.body as { id: string; name: string; dataset_kind?: "live" | "synthetic" };
-    const proj = store.createProject(b.id, b.name ?? b.id, b.dataset_kind ?? "live");
-    store.audit(who(req), "project.create", proj.id, null, { dataset_kind: proj.dataset_kind });
-    return proj;
+    const b = req.body as { id: string; name: string; dataset_kind?: "live" | "synthetic"; local_run?: unknown };
+    // LP03: optional local run provenance, validated against dk.local.run_provenance.v1; dataset_kind is unchanged by it
+    const localRun = b.local_run === undefined ? undefined : parseLocalRun(b.local_run);
+    const proj = store.createProject(b.id, b.name ?? b.id, b.dataset_kind ?? "live", localRun ? { local_run: localRun } : {});
+    store.audit(who(req), "project.create", proj.id, null, { dataset_kind: proj.dataset_kind, ...(localRun ? { local_run: localRun.run_id } : {}) });
+    return { ...proj, provenance: provenanceOf(proj) };
   });
 
   app.get("/api/projects/:p/snapshot", { preHandler: authed() }, async (req) => {
@@ -282,7 +286,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const events = store.listEvents(proj.id, { limit: 5000 });
     const head = store.outboxHead();
     return {
-      project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, meta: proj.meta },
+      project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, meta: proj.meta, provenance: provenanceOf(proj) },
       graph: store.getGraph(proj.id) ?? null,
       scene: store.getScene(proj.id) ?? null,
       sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision, connector_id }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision, connector_id })),
@@ -313,11 +317,11 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (recent.length >= 30) { reply.header("retry-after", "10"); throw new HttpError(429, "too many searches: at most 30 per 10 seconds per principal"); }
     recent.push(now); searchCalls.set(key, recent);
     const { query, cursor } = parseSearchQuery((req.query ?? {}) as Record<string, unknown>);
-    return searchEvents(store, proj.id, query, cfg.secret, cursor);
+    return { ...searchEvents(store, proj.id, query, cfg.secret, cursor), provenance: provenanceOf(proj) };
   });
   app.get("/api/projects/:p/events/:id", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
-    return eventDetail(store, proj.id, (req.params as { id: string }).id);
+    return { ...eventDetail(store, proj.id, (req.params as { id: string }).id), provenance: provenanceOf(proj) };
   });
   app.get("/api/projects/:p/evidence/:ref", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
@@ -483,7 +487,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/projects/:p/bundles/:bid/events", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
     const q = req.query as Record<string, unknown>;
-    return bundleEvents(store, proj.id, (req.params as { bid: string }).bid, intParam(q.offset, "offset", 0) ?? 0, intParam(q.limit, "limit", 1) ?? 200);
+    return { ...bundleEvents(store, proj.id, (req.params as { bid: string }).bid, intParam(q.offset, "offset", 0) ?? 0, intParam(q.limit, "limit", 1) ?? 200), provenance: provenanceOf(proj) };
   });
   app.post("/api/projects/:p/bundles/:bid/pin", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
@@ -586,7 +590,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const findings = store.listFindings(proj.id).filter((f) => f.lifecycle !== "closed");
     const ev = store.evaluation(proj.id);
     return {
-      project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind },
+      project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, provenance: provenanceOf(proj) },
       assets: graph?.assets.map((a) => ({ id: a.id, name: a.name, kind: a.kind, owner: a.owner, sensitivity: a.sensitivity })) ?? [],
       open_findings: findings.map(summarize),
       coverage: ev.coverage, unobserved_asset_ids: ev.unobserved_asset_ids,
@@ -667,12 +671,23 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (!graph) throw new HttpError(404, "project has no graph");
     const cov = store.health(proj.id).coverage;
     const ctl = controls.list(proj.id);
+    const prov = provenanceOf(proj);
+    const at = store.now().toISOString();
     const structures = graph.assets.filter((a) => a.lifecycle !== "tombstoned").map((a) => {
       const s = surfaceForAsset(a);
       const sources = cov.filter((c) => c.asset_ids.includes(a.id));
       const tested = ctl.filter((c) => c.asset_ids.includes(a.id) && c.state === "tested");
+      // LP03: the capability badge comes only from scoped records of this project and asset, never from the
+      // surface family or registry text (s.support stays the product-wide registry ceiling, unchanged).
+      const scope = { project_id: proj.id, asset_id: a.id };
+      const receipts: CapabilityReceipt[] = [
+        { schema: "dk.local.capability_receipt.v1", surface_id: s.id, level: "declared", scope, basis: "declared_inventory", evidence_refs: [`graph:${graph.graph_revision}#${a.id}`], recorded_at: at },
+        ...sources.filter((c) => c.last_event_at).map((c) => ({ schema: "dk.local.capability_receipt.v1" as const, surface_id: s.id, level: "instrumented" as const, scope, basis: "source_delivery" as const, evidence_refs: [`source:${c.source_id}`], recorded_at: c.last_event_at! })),
+        ...(prov.local_run ? tested.map((c) => ({ schema: "dk.local.capability_receipt.v1" as const, surface_id: s.id, level: "local_verified" as const, scope: { ...scope, run_id: prov.run_id }, basis: "control_test" as const, evidence_refs: [`control:${c.id}`], recorded_at: at })) : []),
+      ];
       return {
         entity: { kind: "asset", id: a.id }, surface: s.id, family: s.family, presentation: s.presentation, support: s.support, selectable: true,
+        capability: deriveCapability({ ...scope, surface_id: s.id }, receipts),
         // overlays exist only because a record exists
         overlays: [
           ...sources.map((c) => ({ kind: "watchtower", entity: { kind: "source", id: c.source_id }, state: c.state, note: c.state === "healthy" ? "reporting; not proof of complete detection" : `sensor ${c.state}` })),
@@ -683,7 +698,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     });
     const boundaries = [...new Set(graph.assets.map((a) => a.environment))].map((env) => ({ kind: "environment_boundary", id: `env:${env}`, category: "boundary", note: "organizational boundary, not an enforcement control" }));
     const decorations = [{ kind: "lawn_and_trees", category: "decoration", selectable: false, note: "decoration only; carries no data" }, { kind: "curtain_wall", category: "decoration", selectable: false, note: "the castle wall is a layout boundary, not a network perimeter" }];
-    return { surface_registry_version: SURFACE_REGISTRY_VERSION, structures, boundaries, decorations, unsupported_families: SURFACES.filter((x) => x.requires_data && !structures.some((st) => st.surface === x.id)).map((x) => ({ surface: x.id, family: x.family, reason: `not drawn: ${x.support_evidence}` })) };
+    return { surface_registry_version: SURFACE_REGISTRY_VERSION, provenance: prov, capability_note: "capability.tier is derived from scoped receipts for this project and asset; support is the product-wide registry ceiling for the surface family, not a per-asset badge.", structures, boundaries, decorations, unsupported_families: SURFACES.filter((x) => x.requires_data && !structures.some((st) => st.surface === x.id)).map((x) => ({ surface: x.id, family: x.family, reason: `not drawn: ${x.support_evidence}` })) };
   });
 
   // ---- security change review (R04.4) ----
@@ -699,7 +714,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const proj = store.require(req.principal!, P(req), "viewer");
     const b = (req.body ?? {}) as { finding_id?: unknown; max_queries?: unknown; case_id?: unknown; expected_version?: unknown };
     if (typeof b.finding_id !== "string") throw new HttpError(400, "finding_id is required");
-    const result = runRecipe(store, proj.id, (req.params as { rid: string }).rid, b.finding_id, cfg.secret, typeof b.max_queries === "number" ? b.max_queries : 6);
+    const result = { ...runRecipe(store, proj.id, (req.params as { rid: string }).rid, b.finding_id, cfg.secret, typeof b.max_queries === "number" ? b.max_queries : 6), provenance: provenanceOf(proj) };
     if (typeof b.case_id !== "string") return result;
     // Attaching to a case is an explicit analyst write: open hypotheses become case hypotheses.
     store.require(req.principal!, proj.id, "analyst");
@@ -726,7 +741,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   });
   app.get("/api/capabilities", { preHandler: authed() }, async () => ({
     schema: "dk.capabilities.v1", api_version: "v1", ruleset: RULESET_VERSION,
-    contracts: { recipe_run: "dk.recipe_run.v2", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2" },
+    contracts: { recipe_run: "dk.recipe_run.v2", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2", access_decision: EVALUATOR_VERSION, local: LOCAL_CONTRACTS },
     recipes: RECIPES.map((r) => `${r.id}@${r.version}`),
     budgets: { search_limit_max: 100, search_window_days_max: 31, recipe_queries_max: 12, case_changes_page: 50 },
     delivery: { incremental: "poll /cases/changes with next_since every poll_after_seconds", push: "not supported" },

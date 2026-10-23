@@ -1,3 +1,4 @@
+import { provenanceOf } from "./provenance.ts";
 import { canonicalJson } from "@dk/contracts";
 import { hmac, sha256 } from "./security.ts";
 import { HttpError, type Store } from "./store.ts";
@@ -266,7 +267,7 @@ export class Cases {
     });
     const sections = { case: { ...c, history: undefined }, history: c.history, bundles, independent_events: events, unavailable };
     const manifest = {
-      format: "digital-kingdom-case/2", kind: "case", project_id: projectId, case_id: id, case_version: c.version,
+      format: "digital-kingdom-case/2", kind: "case", project_id: projectId, provenance: provenanceOf(this.store.getProject(projectId)!), case_id: id, case_version: c.version,
       exported_at: this.now(), exported_by: actor, complete: unavailable.length === 0,
       bundle_digests: Object.fromEntries(bundles.map((b) => [b.bundle_id as string, b.bundle_digest as string])),
       section_sha256: Object.fromEntries(Object.entries(sections).map(([k, v]) => [k, sha256(canonicalJson(v))])),

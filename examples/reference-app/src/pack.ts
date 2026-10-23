@@ -57,7 +57,10 @@ export async function startPack(opts: { dataDir?: string; port?: number; appPort
   const steps: PackStep[] = [];
   const me = await api("GET", "/api/me");
   steps.push({ step: "authorize", ok: me.role === "admin", detail: "Local admin token for this pack only; the server listens on 127.0.0.1." });
-  if (!store.getProject("local")) await api("POST", "/api/projects", { id: "local", name: "Local application pack", dataset_kind: "live" });
+  // LP03: the pack is real local traffic from a synthetic reference application. dataset_kind stays "live" (it uses
+  // real source keys and live ingestion); the separate local run provenance labels it synthetic and local-only.
+  if (!store.getProject("local")) await api("POST", "/api/projects", { id: "local", name: "Local application pack", dataset_kind: "live",
+    local_run: { schema: "dk.local.run_provenance.v1", run_id: `pack-${randomUUID().slice(0, 8)}`, world_plan_id: "reference-pack-1", catalog_version: "reference-app-r02.2", execution_mode: "local_runtime", data_origin: "synthetic_local", scope: "local_run_only", external_validation: "not_performed", started_at: new Date().toISOString() } });
   steps.push({ step: "preview", ok: true, detail: "Inventory: edge, checkout-api, checkout-db, support-agent, support-tools, controlled-sink (declared, not discovered)." });
   const imp = await api("POST", "/api/projects/local/graph?format=manifest&revision=pack-1", PACK_MANIFEST, "application/yaml");
   steps.push({ step: "import", ok: !!imp.graph_revision, detail: `Imported graph revision ${String(imp.graph_revision)}.` });

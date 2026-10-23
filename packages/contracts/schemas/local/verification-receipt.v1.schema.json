@@ -1,0 +1,146 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "urn:dk:local:verification-receipt:v1",
+ "title": "Local verification receipt v1: observed outcome of a repair inside one disposable local run. Scope is always local_run_only.",
+ "type": "object",
+ "properties": {
+  "schema": {
+   "const": "dk.local.verification_receipt.v1"
+  },
+  "run_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "plan_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "tested_target_revision": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "probes": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "operation_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+     },
+     "expectation": {
+      "enum": [
+       "prohibited",
+       "permitted"
+      ]
+     },
+     "actual_effect": {
+      "enum": [
+       "observed",
+       "not_observed",
+       "unknown"
+      ]
+     },
+     "observer_scope": {
+      "enum": [
+       "sufficient",
+       "partial",
+       "unavailable"
+      ]
+     },
+     "evidence_refs": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "minItems": 0,
+      "maxItems": 200
+     },
+     "result": {
+      "enum": [
+       "as_expected",
+       "unexpected",
+       "inconclusive"
+      ]
+     }
+    },
+    "required": [
+     "operation_id",
+     "expectation",
+     "actual_effect",
+     "observer_scope",
+     "evidence_refs",
+     "result"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 2,
+   "maxItems": 50
+  },
+  "security_verdict": {
+   "enum": [
+    "pass",
+    "fail",
+    "inconclusive",
+    "refused"
+   ]
+  },
+  "cleanup": {
+   "type": "object",
+   "properties": {
+    "outcome": {
+     "enum": [
+      "not_needed",
+      "completed",
+      "failed",
+      "pending"
+     ]
+    },
+    "notes": {
+     "type": "string",
+     "maxLength": 2000
+    }
+   },
+   "required": [
+    "outcome",
+    "notes"
+   ],
+   "additionalProperties": false
+  },
+  "overall_outcome": {
+   "enum": [
+    "pass",
+    "fail",
+    "inconclusive",
+    "refused"
+   ]
+  },
+  "scope": {
+   "const": "local_run_only"
+  },
+  "unassessed_paths": {
+   "type": "array",
+   "items": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 1000
+   },
+   "minItems": 0,
+   "maxItems": 100
+  }
+ },
+ "required": [
+  "schema",
+  "run_id",
+  "plan_id",
+  "tested_target_revision",
+  "probes",
+  "security_verdict",
+  "cleanup",
+  "overall_outcome",
+  "scope",
+  "unassessed_paths"
+ ],
+ "additionalProperties": false
+}

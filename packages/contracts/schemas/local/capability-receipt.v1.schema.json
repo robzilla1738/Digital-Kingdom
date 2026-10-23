@@ -1,0 +1,77 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "urn:dk:local:capability-receipt:v1",
+ "title": "Capability receipt v1: one scoped record that supports a capability level for one surface and asset in one project. Badges derive only from these; a surface family or a model statement is not a receipt.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "surface_id",
+  "level",
+  "scope",
+  "basis",
+  "evidence_refs",
+  "recorded_at"
+ ],
+ "properties": {
+  "schema": {
+   "const": "dk.local.capability_receipt.v1"
+  },
+  "surface_id": {
+   "type": "string",
+   "pattern": "^DK-S-[a-z_]{1,40}$"
+  },
+  "level": {
+   "enum": [
+    "declared",
+    "instrumented",
+    "local_verified",
+    "externally_verified"
+   ]
+  },
+  "scope": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "project_id",
+    "asset_id"
+   ],
+   "properties": {
+    "project_id": {
+     "type": "string",
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "asset_id": {
+     "type": "string",
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "run_id": {
+     "type": "string",
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    }
+   }
+  },
+  "basis": {
+   "enum": [
+    "declared_inventory",
+    "source_delivery",
+    "control_test",
+    "local_verification_receipt",
+    "external_validation"
+   ]
+  },
+  "evidence_refs": {
+   "type": "array",
+   "minItems": 1,
+   "maxItems": 50,
+   "items": {
+    "type": "string",
+    "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:#/-]{0,199}$"
+   }
+  },
+  "recorded_at": {
+   "type": "string",
+   "format": "date-time"
+  }
+ }
+}

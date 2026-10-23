@@ -176,7 +176,7 @@
     "LP00"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
+   "commit": "01de8b9",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP02.md",
    "before": {
@@ -199,10 +199,18 @@
    "depends_on": [
     "LP00"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP03.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "94 files passed, 1 skipped; 673 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "build": "exit 0",
+    "frozen_digests": "12/12 same"
+   }
   },
   {
    "id": "LP04",
@@ -657,23 +665,32 @@
   },
   "LP03-A1": {
    "package": "LP03",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp03-contracts.test.ts > LP03-A1 (4 tests: enums unchanged, v0.3 fixture upgrade, dataset_kind untouched, explicit proposal-id migration)"
+   ]
   },
   "LP03-A2": {
    "package": "LP03",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp03-contracts.test.ts > LP03-A2 (API 9 surfaces incl. both exports; MCP overview/search/event; invalid local_run 422)",
+    "apps/web/src/panels/localProvenance.test.ts (UI pill + dataset mapping)"
+   ]
   },
   "LP03-A3": {
    "package": "LP03",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp03-contracts.test.ts > LP03-A3 (package negative fixtures; 17 forbidden fields at every level of 4 contracts; semantic rules)"
+   ]
   },
   "LP03-A4": {
    "package": "LP03",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp03-contracts.test.ts > LP03-A4 (5 tests incl. surfaces API from project records)"
+   ]
   },
   "LP04-A1": {
    "package": "LP04",
@@ -1318,6 +1335,21 @@
    "id": "D-LP02-2",
    "date": "2026-10-23",
    "decision": "Recipe budget unit is one search page or one coverage question (max 12). Running out produces partial/not_run obligations and outstanding continuations, never an implied answer."
+  },
+  {
+   "id": "D-LP03-1",
+   "date": "2026-10-23",
+   "decision": "Run provenance is project-level in projects.meta.local_run (no DB migration), validated against dk.local.run_provenance.v1, orthogonal to dataset_kind. Reference pack uses dataset_kind live + local_run."
+  },
+  {
+   "id": "D-LP03-2",
+   "date": "2026-10-23",
+   "decision": "Adopted world-plan and verification-receipt proposals as dk.local.*.v1 (proposal ids rejected until migrated). investigation-contract, conclusion and repair-plan proposals deferred to the packages that implement them."
+  },
+  {
+   "id": "D-LP03-3",
+   "date": "2026-10-23",
+   "decision": "Surface registry support stays the product-wide ceiling; per-asset capability tier is derived only from scoped receipts and capped by the ceiling. externally_verified receipts are rejected while EXT01 is deferred."
   }
  ],
  "model_spend_usd": {
