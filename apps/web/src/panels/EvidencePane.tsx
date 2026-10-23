@@ -43,7 +43,7 @@ export function EvidencePane({ expanded = false, findingQueue = [], onExpand, on
     const frame = requestAnimationFrame(() => {
       // A later user action takes precedence over this deferred restoration.
       const active = document.activeElement;
-      if (active && active !== document.body && active !== document.documentElement && !pane.current?.contains(active)) return;
+      if (active instanceof HTMLElement && active !== document.body && active !== document.documentElement && active.getClientRects().length && !pane.current?.contains(active)) return;
       const target = invoker.current;
       if (target?.isConnected && target.getClientRects().length) target.focus();
       else document.getElementById('main')?.focus();
