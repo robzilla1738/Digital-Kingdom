@@ -9,7 +9,7 @@ import { planScene, type ModelCall } from "@dk/scene-compiler";
 import { HttpError, Store, type Principal } from "./store.ts";
 import { eventDetail, parseSearchQuery, searchEvents } from "./investigate.ts";
 import { checkShape, atLeast, sha256, type Role } from "./security.ts";
-import { canonicalJson } from "@dk/contracts";
+import { canonicalJson, SURFACES, SURFACE_REGISTRY_VERSION, SUPPORT_LEVELS, surfaceForAsset } from "@dk/contracts";
 import { exportCase, verifyCase } from "./export.ts";
 import { falcoToIngest } from "./adapters/falco.ts";
 import { otlpToIngest, gunzipCapped } from "./adapters/otlp.ts";
@@ -637,6 +637,33 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const a = deception.activate(fromCanarytokens((req.body ?? {}) as Record<string, unknown>));
     if (a && a.projectId === src.projectId) { decoyEvent(a); return { recorded: true, activation_id: a.id }; }
     return { recorded: false };
+  });
+
+  // ---- surfaces (R06.2) ----
+  app.get("/api/surfaces", { preHandler: authed() }, async () => ({ version: SURFACE_REGISTRY_VERSION, support_levels: SUPPORT_LEVELS, surfaces: SURFACES }));
+  app.get("/api/projects/:p/surfaces", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const graph = store.getGraph(proj.id);
+    if (!graph) throw new HttpError(404, "project has no graph");
+    const cov = store.health(proj.id).coverage;
+    const ctl = controls.list(proj.id);
+    const structures = graph.assets.filter((a) => a.lifecycle !== "tombstoned").map((a) => {
+      const s = surfaceForAsset(a);
+      const sources = cov.filter((c) => c.asset_ids.includes(a.id));
+      const tested = ctl.filter((c) => c.asset_ids.includes(a.id) && c.state === "tested");
+      return {
+        entity: { kind: "asset", id: a.id }, surface: s.id, family: s.family, presentation: s.presentation, support: s.support, selectable: true,
+        // overlays exist only because a record exists
+        overlays: [
+          ...sources.map((c) => ({ kind: "watchtower", entity: { kind: "source", id: c.source_id }, state: c.state, note: c.state === "healthy" ? "reporting; not proof of complete detection" : `sensor ${c.state}` })),
+          ...tested.map((c) => ({ kind: "shield", entity: { kind: "control", id: c.id }, state: "tested", note: c.state_reason })),
+        ],
+        untested_controls: ctl.filter((c) => c.asset_ids.includes(a.id) && c.state !== "tested").map((c) => ({ id: c.id, state: c.state })),
+      };
+    });
+    const boundaries = [...new Set(graph.assets.map((a) => a.environment))].map((env) => ({ kind: "environment_boundary", id: `env:${env}`, category: "boundary", note: "organizational boundary, not an enforcement control" }));
+    const decorations = [{ kind: "lawn_and_trees", category: "decoration", selectable: false, note: "decoration only; carries no data" }, { kind: "curtain_wall", category: "decoration", selectable: false, note: "the castle wall is a layout boundary, not a network perimeter" }];
+    return { surface_registry_version: SURFACE_REGISTRY_VERSION, structures, boundaries, decorations, unsupported_families: SURFACES.filter((x) => x.requires_data && !structures.some((st) => st.surface === x.id)).map((x) => ({ surface: x.id, family: x.family, reason: `not drawn: ${x.support_evidence}` })) };
   });
 
   // ---- investigation recipes (R03.2) ----

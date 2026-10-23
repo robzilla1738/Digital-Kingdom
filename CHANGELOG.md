@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R06.2: capability-aware surface mappings
+
+- `packages/contracts/src/surfaces.ts` (`dk-surfaces-1`): all 28 surfaces with presentation, family (the ten modules plus dns_registry, dispatch_house, key_registry, supply_depot, archive and outpost, drawn only when data supports them), element category and an explicit support level with evidence. `GET /api/surfaces` and `GET /api/projects/:p/surfaces` resolve each asset to a surface; watchtower overlays come only from sources covering the asset and shields only from controls with a current passing test; boundaries and decorations are labelled as such.
+
 ### Roadmap R03.4: registered deception assets
 
 - Decoy registry (`apps/server/src/deception.ts`, migration 19): inert generated values shown once and stored as fingerprints, unique per-placement ids with propagation lineage, retirement, authorized test windows, a local controlled receiver (`/ingest/decoy/:placement`, same answer for any id) and a Canarytokens webhook adapter. Triggers are request, document fetch, credential use, DNS lookup or scanner validation; resolver and proxy addresses are recorded as non-identity locators. A value matching a real active key in the latest snapshot, or containing private-key material, is refused.
