@@ -17,3 +17,24 @@ Acceptance (`apps/server/test/connectors-r02.test.ts`, 4 tests; `e2e/cases-redes
 Limitations: "sandbox the connector" is a contract here (collect-only authority, scoped source keys), not process
 isolation; there are no pull connectors yet, so pagination/cursor fields describe push semantics; the first pull
 connector with real provider scopes is R02.4 (needs authorized provider access).
+
+## R02.3 repository and deployment discovery
+
+Delivered: `packages/graph-core/src/github.ts` (`inspectWorkflow`, `discoverGithub`, `previewMerge`),
+`apps/server/src/github-discovery.ts` (GET-only fetcher, preview/apply with base-revision check), routes, admin
+panel in Integrations → Connectors.
+
+Acceptance (`apps/server/test/github-r02.test.ts`, 4 tests, fixture fetch, no network):
+- Hostile workflow text (YAML anchors, `curl | sh`, `rm -rf /`, secret expressions, local actions) is parsed as data;
+  no `run:` content appears anywhere in the output and every request goes to api.github.com for that repository.
+- A repository rename keeps `gh-repo-<id>`; a replaced workflow shows as one addition and one removal.
+- A 403 with an exhausted rate limit is partial discovery; a 404 repository is a 502 with the partial record,
+  never an empty inventory.
+- The preview applies nothing; apply refuses a stale base revision.
+
+Live read-only check (2026-10-22, unauthenticated, robzilla1738/Digital-Kingdom): 4 assets (repository, ci.yml,
+pages.yml, github-pages environment), triggers and action references extracted, 7 deployments, head 628f1e0, no
+partial records (`/workspace/work/r00/live-github-discovery.txt`, not committed).
+
+Limitations: GitHub only; job permissions, secrets, reusable-workflow inputs and runner identity are listed as
+unsupported; artifact lineage is R04.1.

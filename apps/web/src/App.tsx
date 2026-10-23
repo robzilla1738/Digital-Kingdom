@@ -134,6 +134,8 @@ export function App() {
       findingDetail: (id, signal) => { check(); return api.get<FindingDetailResult>(`${prefix}/findings/${encodeURIComponent(id)}`, signal); },
       eventDetail: (id, signal) => { check(); return api.get(`${prefix}/events/${encodeURIComponent(id)}`, signal); },
       coverageHistory: (q, signal) => { check(); return api.get(`${prefix}/coverage/history?${new URLSearchParams(q as Record<string, string>)}`, signal); },
+      githubPreview: async (owner, repo) => { check(); return api.send("POST", `${prefix}/discovery/github/preview`, { owner, repo }); },
+      githubApply: async (previewId, expected) => { check(); await api.send("POST", `${prefix}/discovery/github/apply`, { preview_id: previewId, expected_graph_revision: expected }); check(); await reload.current(); },
       recipes: (signal) => { check(); return api.get(`/api/recipes`, signal); },
       runRecipe: async (recipeId, findingId, attach) => { check(); return api.send("POST", `${prefix}/recipes/${encodeURIComponent(recipeId)}/run`, { finding_id: findingId, ...(attach ? { case_id: attach.caseId, expected_version: attach.expectedVersion } : {}) }); },
       connectors: (signal) => { check(); return api.get(`/api/connectors`, signal); },

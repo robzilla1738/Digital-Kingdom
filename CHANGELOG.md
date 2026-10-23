@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R02.3: read-only repository discovery
+
+- `POST /discovery/github/preview` reads repository, workflow, deployment, release and head-commit metadata from the GitHub REST API (GET only; optional read-only `DK_GITHUB_TOKEN`). Workflow YAML is parsed as inert data: triggers, environments and referenced actions are kept; `run:` steps are never retained or executed. Stable ids come from GitHub numeric ids, so renames keep identity. Refused calls (rate limits, 403, 404) become partial discovery. The preview lists additions, removals, changes and id collisions; `POST /discovery/github/apply` needs the preview id and the base graph revision. Admin panel in Integrations → Connectors. Live-checked read-only against this repository.
+
 ### Roadmap R06.1: semantic world hierarchy
 
 - `GET /scene/hierarchy`: realm, environment, provider account, district and structure groups with stable ids derived from declarations (never positions or findings), a flat searchable index, environment/account boundaries, the layout version and a footprint-collision report for stored scenes. `GET /scene/locate/:asset` resolves current or historical positions. Compiled scenes keep `historical_rooms` for assets that left the graph and a `layout_version` that advances on reflow; both sit outside the geometry digest, so existing scene digests are unchanged. MCP `dk_world_hierarchy`.

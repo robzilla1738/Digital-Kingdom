@@ -28,7 +28,11 @@ export interface ServerActions {
   /** R03.2 recipes; with caseId the hypotheses are attached to the case. */
   recipes(signal?: AbortSignal): Promise<{ recipes: { id: string; version: number; title: string; applies_to: string[] }[] }>;
   runRecipe(recipeId: string, findingId: string, attach?: { caseId: string; expectedVersion: number }): Promise<RecipeRun>;
+  /** R02.3 read-only repository discovery. */
+  githubPreview(owner: string, repo: string): Promise<GithubPreview>;
+  githubApply(previewId: string, expectedGraphRevision: string | null): Promise<void>;
 }
+export interface GithubPreview { preview_id: string; base_graph_revision: string | null; repository: string; additions: string[]; removals: string[]; changes: string[]; collisions: string[]; partial: { resource: string; reason: string }[] }
 export interface RecipeRun {
   recipe: { id: string; version: number; title: string };
   hypotheses: { id: string; statement: string; status: string; needs: string; supporting_event_ids: string[]; counter_event_ids: string[]; notes: string[] }[];

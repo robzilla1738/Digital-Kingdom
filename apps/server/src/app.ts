@@ -16,6 +16,7 @@ import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } fro
 import { Cases } from "./cases.ts";
 import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
+import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 
 export interface AppConfig {
@@ -29,6 +30,9 @@ export interface AppConfig {
   secureCookies?: boolean;
   ssePollMs?: number;
   logger?: boolean;
+  /** R02.3: fetch used for read-only GitHub discovery (tests inject fixtures). Defaults to global fetch. */
+  githubFetch?: FetchLike;
+  githubToken?: string;
 }
 
 declare module "fastify" {
@@ -496,6 +500,11 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   // ---- connector manifests (R02.1) ----
   app.get("/api/connectors", { preHandler: authed() }, async () => ({ connectors: CONNECTORS, capability_levels: CAPABILITY_LEVELS,
     note: "Levels: declared < discovered < instrumented < analyzed < lab_verified < live_verified. Connectors collect only; response authority is never granted to a connector." }));
+
+  // ---- read-only repository discovery (R02.3) ----
+  const discovery = new GithubDiscovery(store, cfg.githubFetch ?? (globalThis.fetch as unknown as FetchLike), cfg.githubToken ?? process.env.DK_GITHUB_TOKEN);
+  app.post("/api/projects/:p/discovery/github/preview", { preHandler: authed("admin") }, async (req) => discovery.preview(store.require(req.principal!, P(req), "admin").id, (req.body ?? {}) as Record<string, unknown>));
+  app.post("/api/projects/:p/discovery/github/apply", { preHandler: authed("admin") }, async (req) => discovery.apply(store.require(req.principal!, P(req), "admin").id, (req.body ?? {}) as Record<string, unknown>, who(req)));
 
   // ---- investigation recipes (R03.2) ----
   app.get("/api/recipes", { preHandler: authed() }, async () => ({ recipes: RECIPES.map(({ id, version, title, applies_to, alternates }) => ({ id, version, title, applies_to, alternates })) }));

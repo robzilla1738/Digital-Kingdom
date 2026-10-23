@@ -133,12 +133,12 @@
   {
    "id": "R02.3",
    "title": "Add repository and deployment discovery",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R02-RECEIPT.md#r023-repository-and-deployment-discovery",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "github-r02.test.ts 4/4; live read-only check against this public repo. GitHub only."
   },
   {
    "id": "R02.4",
