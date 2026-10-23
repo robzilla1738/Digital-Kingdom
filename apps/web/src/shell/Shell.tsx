@@ -60,7 +60,7 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
   return <div className={`app ${ui.reducedMotion ? "reduce-motion" : ""}${ui.selection ? " has-selection" : ""}${showInspector && ui.workspace !== "integrations" ? " is-inspecting" : ""}`}>
     <a href="#main" className="skip" onClick={(event) => { event.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to workspace</a>
     <TopBar {...props} />
-    <nav className="primary-nav" aria-label="Primary navigation">{navigation.map((item) => <button key={item.id} className="nav-item" aria-current={ui.workspace === item.id ? "page" : undefined} onClick={() => { dispatch({ type: "workspace", workspace: item.id }); if (item.id === "coverage" || item.id === "integrations") dispatch({ type: "panel", panel: "inspector", open: false }); }}><Icon name={item.icon} size={20} /><span>{item.label}</span></button>)}<div className="nav-footer"><span className="small">Digital<br />Kingdom</span></div></nav>
+    <nav className="primary-nav" aria-label="Primary navigation">{navigation.map((item) => <button key={item.id} className="nav-item" aria-current={ui.workspace === item.id ? "page" : undefined} onClick={() => { dispatch({ type: "workspace", workspace: item.id }); if (item.id === "coverage" || item.id === "integrations") dispatch({ type: "panel", panel: "inspector", open: false }); }}><Icon name={item.icon} size={20} /><span>{item.label}</span></button>)}<div className="nav-footer"><span className="nav-monogram" aria-label="Digital Kingdom">DK</span></div></nav>
     <main id="main" tabIndex={-1} className="workspace" aria-label={`${navigation.find((n) => n.id === ui.workspace)?.label} workspace`}>
       <div className="workspace-toolbar">
         <h1>{navigation.find((n) => n.id === ui.workspace)?.label}</h1>
@@ -73,9 +73,9 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
           {ui.selection && <button className="icon-btn" onClick={() => dispatch({ type: "panel", panel: "inspector", open: !ui.inspector })} aria-label={ui.inspector ? "Hide inspector" : "Show inspector"} aria-pressed={ui.inspector}><Icon name="panel-right" /></button>}
         </>}
         {ui.workspace === "investigate" && <Tabs label="Investigation views" value={ui.investigateTab} onChange={(tab) => dispatch({ type: "investigateTab", tab })} options={[{ value: "findings", label: "Findings" }, { value: "events", label: "Events" }, { value: "cases", label: "Cases" }]} />}
-        {ui.workspace === "coverage" && <span className="toolbar-scope">Source reporting ≠ browser connection ≠ security posture</span>}
+
       </div>
-      {vm.data.project.dataset_kind === "synthetic" && <div className="workspace-data-banner">Synthetic demo · no production systems connected.<span className="wide-banner-detail"> All records and visual activity in this project are synthetic.</span></div>}
+      {vm.data.project.dataset_kind === "synthetic" && <div className="workspace-data-banner">Synthetic demo · no production systems connected.</div>}
       {props.connection && props.connection.state !== "live" && <div className="workspace-data-banner" role="alert" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "assertive"} data-testid="connection-banner">{CONNECTION_BANNER[props.connection.state]} Showing data as of {props.connection.since ? fmtTime(props.connection.since) : "the last confirmed sync"}. This view is not live monitoring.</div>}
       {vm.pendingUpdates > 0 && <div className="workspace-data-banner"><div className="inline-actions"><span>A newer confirmed snapshot is available. Your current selection and records are pinned.</span><button className="btn sm" disabled={!vm.isLatest} onClick={() => dispatch({ type: "acceptUpdates" })}>Load updates</button></div></div>}
       <div className={`workspace-content${showInspector && ui.workspace !== "integrations" ? " has-inspector" : ""}${expanded ? " expanded-finding" : ""}`}>

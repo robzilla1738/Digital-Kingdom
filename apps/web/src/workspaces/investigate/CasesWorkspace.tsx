@@ -1,3 +1,4 @@
+import { Icon } from "../../lib/icons.tsx";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useApp } from "../../lib/state.tsx";
 import { ActionsCtx, type CaseDetail, type CaseSummary, type RecipeRun } from "../../inspector/actions.tsx";
@@ -44,7 +45,7 @@ export function CasesWorkspace() {
   };
 
   return <section className="workspace-page cases-workspace" aria-label="Cases workspace">
-    <div className="workspace-heading"><div><div className="eyebrow">DURABLE INVESTIGATIONS</div><h1>Keep the case.</h1><p className="workspace-lede">A case holds your question, the evidence you pinned and how it was closed. Detector findings closing never closes a case.</p></div></div>
+    <div className="workspace-heading"><div><h1>Cases</h1><p className="workspace-lede">Track investigations, questions, and pinned evidence.</p></div></div>
     {message && <p className="scope-note" role="status">{message}</p>}
     <div className="cases-layout">
       <div className="section-card" aria-label="Case list">
@@ -52,6 +53,7 @@ export function CasesWorkspace() {
         {!list ? <p className="small faint">Loading…</p> : !list.length ? <p className="small faint">No cases yet.</p> : <ul className="mini-list">{list.map((c) => <li key={c.id}><button className={`link-btn${c.id === selected ? " active" : ""}`} disabled={busy} onClick={() => { setDetail(null); setSelected(c.id); }}>{c.title}</button> <small>{c.status} · v{c.version}{c.open_questions ? ` · ${c.open_questions} open question${c.open_questions > 1 ? "s" : ""}` : ""}</small></li>)}</ul>}
         {canEdit && <NewCase busy={busy} assets={vm.data.graph.assets.map((a) => ({ id: a.id, name: a.name }))} onCreate={(body) => act("Create case", () => actions.createCase(body))} />}
       </div>
+      {!detail && !selected && <div className="section-card empty case-placeholder"><Icon name="list" size={28} /><h2>{list?.length ? "Choose a case" : "No investigations yet"}</h2><p>{canEdit ? "Open a case or create one to keep questions, evidence, and review notes together." : "Cases shared with this project will appear here."}</p></div>}
       {detail && <CaseView key={detail.id} c={detail} canEdit={canEdit} busy={busy} findings={vm.latestData.findings.map((f) => ({ id: f.id, title: f.title }))}
         act={(label, path, body) => act(label, () => actions.caseAction(detail.id, path, { ...body, expected_version: detail.version }))}
         onExport={() => act("Export", () => actions.exportDurableCase(detail.id))}
@@ -62,14 +64,13 @@ export function CasesWorkspace() {
 
 function NewCase({ busy, assets, onCreate }: { busy: boolean; assets: { id: string; name: string }[]; onCreate: (b: Record<string, unknown>) => Promise<boolean> }) {
   const [title, setTitle] = useState(""), [question, setQuestion] = useState(""), [criteria, setCriteria] = useState(""), [scope, setScope] = useState<string[]>([]);
-  return <form className="case-new" onSubmit={async (e) => { e.preventDefault(); const saved = await onCreate({ title, scope: { question, asset_ids: scope }, closure_criteria: criteria }); if (!saved) return; setTitle(""); setQuestion(""); setCriteria(""); setScope([]); }}>
-    <h3>New case</h3>
+  return <details className="case-create"><summary className="btn"><Icon name="plus" />New case</summary><form className="case-new" onSubmit={async (e) => { e.preventDefault(); const saved = await onCreate({ title, scope: { question, asset_ids: scope }, closure_criteria: criteria }); if (!saved) return; setTitle(""); setQuestion(""); setCriteria(""); setScope([]); }}>
     <label className="field">Title<input disabled={busy} aria-label="Case title" value={title} maxLength={200} onChange={(e) => setTitle(e.target.value)} required /></label>
     <label className="field">Question<input disabled={busy} aria-label="Case question" value={question} maxLength={1000} onChange={(e) => setQuestion(e.target.value)} required /></label>
     <label className="field">Closure criteria<input disabled={busy} aria-label="Closure criteria" value={criteria} maxLength={2000} onChange={(e) => setCriteria(e.target.value)} required /></label>
     <label className="field">Assets in scope<select disabled={busy} aria-label="Assets in scope" multiple value={scope} onChange={(e) => setScope([...e.target.selectedOptions].map((o) => o.value))}>{assets.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
     <button className="btn" disabled={busy}>Create case</button>
-  </form>;
+  </form></details>;
 }
 
 function CaseView({ c, canEdit, busy, findings, act, onExport, recipeSlot }: { c: CaseDetail; canEdit: boolean; busy: boolean; findings: { id: string; title: string }[]; act: (label: string, path: string, body: Record<string, unknown>) => Promise<boolean>; onExport: () => void; recipeSlot?: React.ReactNode }) {

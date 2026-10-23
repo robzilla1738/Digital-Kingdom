@@ -20,7 +20,7 @@ import { cachedModuleGeometryCount, type DetailLevel } from "./geometry.ts";
 import type { ModuleFailureCode } from "./moduleRecovery.ts";
 import { watchRendererShaders } from "./shaderRecovery.ts";
 
-const BG = "#0B111B", ACCENT = "#A6B6FF", CAM_DIST = 110;
+const BG = "#0c0e12", ACCENT = "#c3cbf5", CAM_DIST = 110;
 type Command = { n: number; type: "in" | "out" | "fit" | "focus" | "back"; group?: string };
 type Pose = { pos: THREE.Vector3; target: THREE.Vector3; zoom: number };
 // Harmless camera-only context survives Castle/Graph toggles. Bounded; never contains evidence.
@@ -72,7 +72,7 @@ export function Castle3D() {
         <Rig scene={scene} command={cmd} groups={groups} />
         <Lights scene={scene} quality={quality} />
         <SceneLifecycle quality={quality} onSlow={() => { if (quality !== "low") { setQuality(quality === "high" ? "medium" : "low"); setReduced(true); } }} />
-        <LabelLayer budget={district ? 20 : 12} reservedLeft={grouped ? 320 : 0}>
+        <LabelLayer budget={district ? 12 : 5} reservedLeft={grouped ? 320 : 0}>
           <Suspense fallback={null}>
             <Environment scene={scene} groups={groups} quality={quality} highContrast={scene.style_profile === "high-contrast-v1"} />
             {visibleRooms.map(room => <Room key={room.asset_id} room={room} selected={focus.has(room.asset_id)} quality={quality} />)}

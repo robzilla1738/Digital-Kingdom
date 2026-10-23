@@ -12,6 +12,7 @@ test("CASE-01: create a case, link a finding, answer its question and close it; 
     await page.getByRole("button", { name: "Investigate", exact: true }).click();
     await page.getByRole("tab", { name: "Cases", exact: true }).click();
     await expect(page.getByLabel("Cases workspace")).toContainText("No cases yet.");
+    await page.locator(".case-create > summary").click();
     await page.getByLabel("Case title").fill("Synthetic checkout review");
     await page.getByLabel("Case question").fill("Did anything reach the database?");
     await page.getByLabel("Closure criteria").fill("Every database read in scope is explained.");
@@ -91,6 +92,7 @@ test("failed case creation and item saves retain the analyst draft", async ({ br
     await page.route("**/api/projects/*/cases", route => route.request().method() === "POST" && fail
       ? route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "Synthetic save outage" }) })
       : route.continue());
+    await page.locator(".case-create > summary").click();
     await page.getByLabel("Case title").fill("Retain this draft");
     await page.getByLabel("Case question").fill("What happened?");
     await page.getByLabel("Closure criteria").fill("Records reviewed");

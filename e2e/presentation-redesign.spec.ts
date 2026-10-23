@@ -23,7 +23,8 @@ async function expectCounts(page: Page, counts: { sourceCount: number; assetCoun
   const summary = page.getByRole('group', { name: 'Coverage summary' });
   await expect(summary.locator('.summary-item').filter({ hasText: 'sources without confirmed reporting' }).locator('strong')).toHaveText(String(counts.sourceCount));
   await expect(summary.locator('.summary-item').filter({ hasText: 'assets with visibility gaps' }).locator('strong')).toHaveText(String(counts.assetCount));
-  await expect(page.locator('.topbar .coverage-shortcut')).toHaveText(`${counts.assetCount} assets with visibility gaps`);
+  await expect(page.locator('.topbar .coverage-shortcut')).toHaveText(`${counts.assetCount} gaps`);
+  await expect(page.locator('.topbar .coverage-shortcut')).toHaveAccessibleName(`${counts.assetCount} assets with visibility gaps`);
 }
 
 test('COV-05: canonical source counts and distinct affected asset counts agree across Coverage and header', async ({ browser }) => {
@@ -33,6 +34,7 @@ test('COV-05: canonical source counts and distinct affected asset counts agree a
   try {
     await openCoverage(page); await expectCounts(page, counts);
     await expect(coverage(page).locator('tr[data-source-id]')).toHaveCount(data.sources.length);
+    await coverage(page).locator('.context-note > summary').click();
     await expect(coverage(page).getByText(/Current coverage as of/)).toBeVisible();
     await page.getByRole('tab', { name: 'Assets with gaps', exact: true }).click();
     expect(await coverage(page).locator('tr[data-asset-id]').evaluateAll(rows => rows.map(row => row.getAttribute('data-asset-id')).sort())).toEqual(counts.gapIds);

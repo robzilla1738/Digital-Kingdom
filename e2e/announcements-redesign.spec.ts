@@ -18,6 +18,7 @@ test('A11Y-21.4: local reduced automatic announcements keep sync visible and dir
     await expect(page.getByTestId('action-announcement')).toContainText('Direct action feedback remains enabled');
     await page.getByRole('button', { name: 'Investigate', exact: true }).click();
     const results = page.locator('.findings-workspace');
+    await results.getByRole('button', { name: 'Filter findings', exact: true }).click();
     await results.getByLabel('Severity', { exact: true }).selectOption('high');
     await expect(results.locator('.filter-summary [role="status"]')).toHaveAttribute('aria-live', 'off');
     const count = await results.locator('[data-finding-id]').count();
