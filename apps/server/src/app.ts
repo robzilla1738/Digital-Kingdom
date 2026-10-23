@@ -24,6 +24,7 @@ import { credentialAftermath } from "./aftermath.ts";
 import { Controls } from "./controls.ts";
 import { ChangeReviews, type ChangePlanInput } from "./change-review.ts";
 import { Notifier, type FetchLike as NotifyFetch } from "./notify.ts";
+import { Regressions } from "./regression.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
 import { assess as assessVulns } from "./vuln.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
@@ -736,6 +737,14 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (c.owner !== before) notifier.enqueue({ projectId: pid, kind: "case_assigned", severity: "medium", dedupKey: `case:${c.id}:owner:${c.owner}`, owner: c.owner, caseId: c.id });
     return c;
   });
+
+  // ---- regression proposals from closed cases (R07.4) ----
+  const regressions = new Regressions(store);
+  app.post("/api/projects/:p/cases/:id/regression-proposal", { preHandler: authed("analyst") }, async (req) => { const pid = store.require(req.principal!, P(req), "analyst").id; return regressions.propose(pid, CP(req), body(req), who(req), cases.get(pid, CP(req)) as never); });
+  app.get("/api/projects/:p/regressions", { preHandler: authed() }, async (req) => ({ proposals: regressions.list(store.require(req.principal!, P(req), "viewer").id) }));
+  app.get("/api/projects/:p/regressions/:id", { preHandler: authed() }, async (req) => regressions.get(store.require(req.principal!, P(req), "viewer").id, CP(req)));
+  app.post("/api/projects/:p/regressions/:id/decision", { preHandler: authed("analyst") }, async (req) => regressions.decide(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req), req.principal!.principalType));
+  app.post("/api/projects/:p/regressions/:id/export", { preHandler: authed("analyst") }, async (req) => regressions.exportPr(store.require(req.principal!, P(req), "analyst").id, CP(req)));
 
   // ---- notification outbox (R03.5) ----
   app.get("/api/notifications/destinations", { preHandler: authed("admin") }, async () => ({ destinations: notifier.listDestinations() }));

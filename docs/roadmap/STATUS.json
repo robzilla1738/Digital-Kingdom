@@ -423,12 +423,12 @@
   {
    "id": "R07.4",
    "title": "Convert resolved cases into sanitized regression proposals",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R07-RECEIPT.md#r074-regression-proposals",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Local; no external gate."
   },
   {
    "id": "R08.1",
