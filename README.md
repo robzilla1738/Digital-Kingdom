@@ -190,6 +190,14 @@ Details: [SECURITY.md](SECURITY.md) and [docs/THREAT_MODEL.md](docs/THREAT_MODEL
 
 The screenshots above are from the offline synthetic demo (`VITE_DK_STATIC_DEMO=1`) in headless Chromium with SwiftShader WebGL at 1440×900.
 
+## Support levels
+
+What this release supports, at which level, with which permissions, limits and uninstall steps, is in
+[support-matrix/SUPPORT_MATRIX.json](support-matrix/SUPPORT_MATRIX.json) ([summary](support-matrix/README.md)).
+Tiers: local reference (supported), read-only connected pilot (alpha), team investigation (preview), lab response
+(not available). No tier needs a paid model service, and nothing is sent home. Releases: [docs/RELEASE.md](docs/RELEASE.md);
+extensions: [docs/EXTENSIONS.md](docs/EXTENSIONS.md).
+
 ## Known limitations
 
 - Single node: SQLite (WAL, `synchronous=FULL`) stands in for PostgreSQL; the store is one class with a PostgreSQL-shaped schema. No HA, no multi-tenant SaaS.

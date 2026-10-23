@@ -30,3 +30,10 @@ See [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md) for assets, trust boundaries an
 - **TLS and proxies:** terminate TLS in front of the server and set `DK_SECURE_COOKIES=true`, or list the proxy in `DK_TRUSTED_PROXIES` so a forwarded `https` marks cookies Secure. Forwarded headers from any other peer are ignored.
 - **Recovery:** `DK_DATA_DIR=... DK_RECOVERY_REASON="..." pnpm admin:recover` needs filesystem access to the database, mints one human installation-admin token valid for 24 hours and audits it. No API path grants emergency authority, so a monitored agent's credential cannot use it.
 - **Browser storage:** the web app keeps the session in an HttpOnly cookie; a test fails if any code writes token-, key-, secret- or session-named values to local or session storage.
+
+## Supported versions and disclosure (roadmap R11.4)
+
+Security fixes are made on `main` and the latest tagged release only. Report privately as above; we confirm
+receipt within 5 working days, agree a fix and disclosure date with the reporter, and publish an advisory with the
+fixed version once a release is available. Every fix ships with a regression test, and the release notes list the
+integrations in `support-matrix/SUPPORT_MATRIX.json` it affected.

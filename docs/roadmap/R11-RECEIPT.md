@@ -17,3 +17,12 @@ Acceptance:
 
 Not done here (R11.2, gated on provider budget and human review): any model call, transcripts, held-out grading,
 blind human review.
+
+## R11.4 support tiers and maintenance commitments
+
+- Candidate: roadmap/batch4 (commit follows this receipt).
+- Changed: support-matrix/ (new), MAINTAINERS.md, SECURITY.md, README.md, docs/RELEASE_NOTES_TEMPLATE.md, apps/server/test/support-r11.test.ts.
+- Commands: pnpm -s typecheck (clean); npx vitest run apps/server/test/support-r11.test.ts (2 passed).
+- Acceptance: (1) every connector id and every Integrations card route maps to a matrix entry with a level, and no entry claims lab/live verification; (2) model_service_required false and the golden path runs with planner and assistant unset; (3) golden path test passes at this candidate; (4) each integration cites the tests that must rerun for a security correction, checked to exist.
+- Open: tier claims beyond local reference rest on gated work (outside testers R11.3, provider access R09, notification destination R03.5); the matrix states those gates.
+- Migration/rollback: none.

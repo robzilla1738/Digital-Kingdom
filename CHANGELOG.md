@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R11.4: Support tiers, matrix and maintenance commitments
+
+support-matrix/SUPPORT_MATRIX.json (tiers, every integration with level, permissions, limits, tests, troubleshooting, uninstall; compatibility policy; no required model service; no telemetry) with a CI test that fails when a connector or integration card lacks an entry, cites a missing test, or claims lab/live verification; support-matrix/README.md, MAINTAINERS.md, SECURITY.md supported-versions and disclosure policy, docs/RELEASE_NOTES_TEMPLATE.md citing candidate evidence and open gates, README support section; a golden-path test runs source events -> finding -> case -> deterministic assistance -> containment plan -> approval -> verification -> closure with no model.
+
 ### Roadmap R05.4: Optional bounded case assistance
 
 apps/server/src/assistant.ts and POST /cases/:id/assist (viewer, read-only): an authorized case projection plus evidence retrieved within a query budget; a configured model may only draft claims with evidence ids, counterevidence, uncertainty and next questions. Claims citing nothing retrieved are unsupported; any other requested action (tools, approvals, scope) is ignored and listed; event text travels as untrusted_text. Prompt template, input and output digests and the model id are recorded. With no model (the default), or on provider failure, timeout or invalid output, a deterministic summary is returned.

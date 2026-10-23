@@ -1,0 +1,201 @@
+{
+ "schema": "dk.support_matrix.v1",
+ "release": "0.3.2+roadmap",
+ "model_service_required": false,
+ "usage_telemetry": "none",
+ "tiers": [
+  {
+   "id": "local-reference",
+   "name": "Local reference",
+   "status": "supported",
+   "verified_by": [
+    "pnpm test",
+    "pnpm scenarios",
+    "pnpm quickstart",
+    "CI check job"
+   ],
+   "scope": "one machine, synthetic demo or your own declared inventory and local sources",
+   "not_included": [
+    "remote access",
+    "team identity",
+    "response execution"
+   ]
+  },
+  {
+   "id": "read-only-pilot",
+   "name": "Read-only connected pilot",
+   "status": "alpha",
+   "verified_by": [
+    "docs/PILOT_RESULTS.md (controlled non-production pilot)",
+    "CI browser-pilot job"
+   ],
+   "scope": "isolated non-production deployment with scoped source keys and read-only provider grants",
+   "not_included": [
+    "production certification",
+    "live provider validation beyond the pilot record"
+   ],
+   "open_gates": [
+    "authorized_provider_access",
+    "human_and_physical_device"
+   ]
+  },
+  {
+   "id": "team-investigation",
+   "name": "Team investigation",
+   "status": "preview",
+   "verified_by": [
+    "cases, approvals and notification tests (fixtures)"
+   ],
+   "scope": "several analysts, OIDC subjects, cases, two-person approval, notification outbox",
+   "not_included": [
+    "validated SSO against a real identity provider",
+    "validated delivery to a real notification destination",
+    "team-scale storage"
+   ],
+   "open_gates": [
+    "authorized_notification_destination",
+    "measured_capacity_need",
+    "multi_environment_authorization"
+   ]
+  },
+  {
+   "id": "lab-response",
+   "name": "Optional lab response",
+   "status": "not_available",
+   "verified_by": [],
+   "scope": "a laboratory-only executor for approved plans",
+   "not_included": [
+    "any executor: R08.3 is not built"
+   ],
+   "open_gates": [
+    "explicit_lab_execution_authorization"
+   ]
+  }
+ ],
+ "integrations": [
+  {
+   "id": "dk.events.http",
+   "name": "Digital Kingdom event API / @dk/sdk-node",
+   "level": "instrumented",
+   "permissions": "project source key: listed assets and actions only",
+   "limits": "application assertions; does not prove outcomes",
+   "tests": [
+    "apps/server/test/server.test.ts"
+   ],
+   "troubleshooting": "422 lists rejected fields; check Coverage for last receipt",
+   "uninstall": "disable the source (POST /sources/:id/state) and revoke its key"
+  },
+  {
+   "id": "dk.otlp.traces",
+   "name": "OpenTelemetry traces (OTLP/HTTP JSON)",
+   "level": "instrumented",
+   "permissions": "scoped source key",
+   "limits": "JSON encoding only; sampled traces are not unsampled coverage",
+   "tests": [
+    "apps/server/test/otlp.test.ts", "examples/reference-app/collector.test.ts"
+   ],
+   "troubleshooting": "inspect partialSuccess.rejectedSpans",
+   "uninstall": "remove the exporter, disable the source"
+  },
+  {
+   "id": "dk.aws.cloudtrail",
+   "name": "AWS CloudTrail (one account)",
+   "level": "analyzed",
+   "permissions": "read-only CloudTrail lookup and IAM read for snapshots",
+   "limits": "fixture-validated; live account validation pending authorized access",
+   "tests": [
+    "apps/server/test/aws-r02.test.ts"
+   ],
+   "troubleshooting": "collection reports show permission_denied/throttled",
+   "uninstall": "delete the read role, disable the source"
+  },
+  {
+   "id": "dk.falco",
+   "name": "Falco runtime alerts (http_output)",
+   "level": "instrumented",
+   "permissions": "scoped source key",
+   "limits": "an alert proves a rule match, not intent or effect",
+   "tests": [
+    "apps/server/test/server.test.ts"
+   ],
+   "troubleshooting": "check Falco http_output URL and key",
+   "uninstall": "remove http_output, disable the source"
+  },
+  {
+   "id": "dk.inventory.declared",
+   "name": "Declared inventory (manifest / Docker Compose)",
+   "level": "declared",
+   "permissions": "project administrator",
+   "limits": "declared dependencies, not discovered runtime paths",
+   "tests": [
+    "apps/server/test/server.test.ts"
+   ],
+   "troubleshooting": "422 lists invalid declarations",
+   "uninstall": "import the prior manifest"
+  },
+  {
+   "id": "dk.github.discovery",
+   "name": "GitHub repository discovery",
+   "level": "discovered",
+   "permissions": "read-only repository contents",
+   "limits": "declared metadata; previews must be applied explicitly",
+   "tests": [
+    "apps/server/test/github-r02.test.ts"
+   ],
+   "troubleshooting": "partial[] names unreadable resources",
+   "uninstall": "revoke the token"
+  },
+  {
+   "id": "dk.packs.r09",
+   "name": "Edge/API, workload, data/RAG, SaaS sample-data packs",
+   "level": "declared",
+   "permissions": "none (fixture logic only)",
+   "limits": "no live feeds until authorized provider access",
+   "tests": [
+    "packages/graph-core/test/packs-r09.test.ts"
+   ],
+   "troubleshooting": "n/a",
+   "uninstall": "n/a"
+  },
+  {
+   "id": "dk.notify.webhook",
+   "name": "Signed HTTPS notification webhook",
+   "level": "declared",
+   "permissions": "admin-configured destination per project",
+   "limits": "no real destination validated",
+   "tests": [
+    "apps/server/test/notify-r03.test.ts"
+   ],
+   "troubleshooting": "Integrations -> Notifications shows failures and last error",
+   "uninstall": "POST /api/notifications/destinations/:id/disable"
+  },
+  {
+   "id": "dk.mcp.stdio",
+   "name": "MCP (local stdio)",
+   "level": "analyzed",
+   "permissions": "project-scoped viewer service token",
+   "limits": "answers queries; not a watching agent; no remote MCP",
+   "tests": [
+    "apps/mcp/test"
+   ],
+   "troubleshooting": "DK_MCP_TOOLS selects the profile",
+   "uninstall": "remove from the MCP client config, revoke the token"
+  }
+ ],
+ "compatibility": {
+  "node": ">=22.13",
+  "database": "SQLite (node:sqlite), forward-only migrations; restore from backup to roll back",
+  "api": "/api v1; contract ids are versioned (dk.*.v1/v2) and never change meaning in place",
+  "extension_contracts": {
+   "connector": 1,
+   "rule": 1,
+   "module": 1
+  }
+ },
+ "ui_routes": {
+  "POST /ingest/events": "dk.events.http",
+  "POST /v1/traces": "dk.otlp.traces",
+  "POST /ingest/falco": "dk.falco",
+  "POST /api/projects/:project/graph": "dk.inventory.declared"
+ }
+}
