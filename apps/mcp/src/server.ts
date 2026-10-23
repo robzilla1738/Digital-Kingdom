@@ -54,7 +54,7 @@ export interface CreateServerOptions {
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
-export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_list_recipes", "dk_run_recipe", "dk_world_hierarchy", "dk_capabilities", "dk_case_changes", "dk_access_paths", "dk_containment_options"] as const;
+export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_list_recipes", "dk_run_recipe", "dk_world_hierarchy", "dk_capabilities", "dk_case_changes", "dk_access_paths", "dk_credential_aftermath", "dk_containment_options"] as const;
 
 /** The exact tool set used by Real-Agent Evaluation v1 (before event search). Kept so v1 runs stay reproducible. */
 export const INVESTIGATION_TOOLS_V1 = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
@@ -277,6 +277,12 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     description: "Whether a principal's CONFIGURED permissions allow an action on a resource, directly or via role assumption: feasible, conditional, blocked or unresolved, with policy statement evidence. This is never evidence that access happened; use dk_search_events for that.",
     inputSchema: { from: z.string().max(300), action: z.string().regex(/^[a-z0-9-]+:[A-Za-z*]+$/), resource: z.string().max(400), project }, annotations: RO,
   }, async ({ from, action, resource, project: p }) => out(await client.req("GET", client.p(`/access/paths?from=${encodeURIComponent(from)}&action=${encodeURIComponent(action)}&resource=${encodeURIComponent(resource)}`, p))));
+
+  server.registerTool("dk_credential_aftermath", {
+    title: "What survives an exposed AWS access key",
+    description: "Given an AWS access key ID (never the secret), the keys, sessions and grants it created, what each did, and which still work per the latest authorization snapshot. status unresolved means something survives; unknown means a snapshot or audit interval is missing. Never claims malice.",
+    inputSchema: { key_id: z.string().regex(/^(AKIA|ASIA)[A-Z0-9]{12,20}$/), project }, annotations: RO,
+  }, async ({ key_id, project: p }) => out(await client.req("GET", client.p(`/aftermath/aws-key/${key_id}`, p))));
 
   server.registerTool("dk_containment_options", {
     title: "Permitted containment steps",

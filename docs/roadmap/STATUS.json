@@ -186,12 +186,12 @@
   {
    "id": "R03.3",
    "title": "Build credential aftermath and residual-access investigation",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R03-RECEIPT.md#r033-credential-aftermath-and-residual-access-investigation",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "aftermath-r03.test.ts 4/4. Snapshot-based recheck; AWS only."
   },
   {
    "id": "R03.4",

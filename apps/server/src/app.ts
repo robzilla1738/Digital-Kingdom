@@ -20,6 +20,7 @@ import { Cases } from "./cases.ts";
 import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
+import { credentialAftermath } from "./aftermath.ts";
 import { accessPaths, type AuthSnapshot } from "./access/aws-policy.ts";
 import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
 import { verifyIdToken, type OidcConfig } from "./oidc.ts";
@@ -722,6 +723,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (!snap) return { schema: "dk.access_paths.v1", snapshot: null, paths: [], result: "unresolved", reasons: ["no authorization snapshot has been stored"] };
     const paths = accessPaths(snap, q.from, q.action, q.resource, Math.min(3, Math.max(0, Number(q.max_hops ?? 2) || 0)));
     return { schema: "dk.access_paths.v1", snapshot: { id: snap.snapshot_id, taken_at: snap.taken_at }, result: paths[0]?.decision.result ?? "unresolved", paths: paths.slice(0, 20), note: "Configured permission only. Use event search or coverage history for what actually happened." };
+  });
+  app.get("/api/projects/:p/aftermath/aws-key/:key", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const key = String((req.params as { key: string }).key);
+    if (!/^(AKIA|ASIA)[A-Z0-9]{12,20}$/.test(key)) throw new HttpError(400, "key must be an AWS access key id (never the secret)");
+    const audit = store.listSources(proj.id).find((s) => s.kind === "cloud_audit");
+    return credentialAftermath(store, proj.id, key, { snapshot: latestSnapshot(proj.id), ...(audit ? { auditAsset: audit.asset_ids[0]! } : {}) });
   });
   app.post("/ingest/aws/cloudtrail", { preHandler: sourceAuth, bodyLimit: 4_194_304 }, async (req, reply) => {
     const src = (req as SrcReq).source;

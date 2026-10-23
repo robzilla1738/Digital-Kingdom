@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R03.3: credential aftermath and residual access
+
+- `GET /aftermath/aws-key/:key` and MCP `dk_credential_aftermath`: from recorded CloudTrail events, the keys, sessions and grants an AWS access key created (transitively), each one's current state from the latest authorization snapshot, the surviving permission, audit gaps since first use, and a status of resolved, unresolved or unknown. Same-user key creation is flagged as possible rotation; malice is never claimed. Access key ids are stored in event attributes only as keyed fingerprints.
+
 ### Roadmap R04.3: scoped effective-access paths
 
 - AWS IAM evaluator for S3 actions and `sts:AssumeRole` (`apps/server/src/access/aws-policy.ts`): explicit denies, identity and resource policies, permission boundaries, session policies, SCPs and cross-account both-sides rules, returning feasible, conditional (condition keys listed), blocked or unresolved (any missing input) with statement evidence, including paths through role assumption. `POST /access/snapshot`, `GET /access/paths`, MCP `dk_access_paths`. Always labelled configured permission, never observed access.

@@ -25,6 +25,9 @@ const GRANT = new Set(["CreateAccessKey", "UpdateAccessKey", "DeleteAccessKey", 
 const KEY_RE = /^(AKIA|ASIA)[A-Z0-9]{12,20}$/;
 const ACCT_RE = /^\d{12}$/;
 
+/** Stable, non-reversible reference to an AWS access key id (the same id always gives the same fingerprint). */
+export const keyFingerprint = (id: string) => `kfp_${createHash("sha256").update(`dk-aws-key:${id}`).digest("hex").slice(0, 24)}`;
+
 export type MapResult = { ok: true; capability: "management" | "data"; event: Record<string, unknown> } | { ok: false; reason: "outside_authorization_boundary" | "region_not_in_scope" | "unsupported_event" | "data_event_not_configured" | "malformed"; detail: string };
 
 /** Asset resolution by ARN: the caller passes a map from resource ARN (or account root) to asset id. */
@@ -50,6 +53,9 @@ export function mapCloudTrail(rec: CloudTrailRecord, scope: AwsScope, assetFor: 
   const usedKey = rec.userIdentity?.accessKeyId && KEY_RE.test(rec.userIdentity.accessKeyId) ? rec.userIdentity.accessKeyId : undefined;
   const createdKey = (rec.responseElements as { accessKey?: { accessKeyId?: string } } | null)?.accessKey?.accessKeyId;
   const keyRef = createdKey && KEY_RE.test(createdKey) ? createdKey : usedKey;
+  const sk = (rec.responseElements as { credentials?: { accessKeyId?: string } } | null)?.credentials?.accessKeyId;
+  const sessionKey = sk && KEY_RE.test(sk) ? sk : undefined;
+  const rp = (rec.requestParameters ?? {}) as Record<string, unknown>;
   const principal = rec.userIdentity?.arn ? String(rec.userIdentity.arn).slice(0, 300) : rec.userIdentity?.principalId ? `principal:${String(rec.userIdentity.principalId).slice(0, 120)}` : undefined;
   const event: Record<string, unknown> = {
     source_event_id: `ct-${createHash("sha256").update(rec.eventID).digest("hex").slice(0, 32)}`,
@@ -62,7 +68,13 @@ export function mapCloudTrail(rec: CloudTrailRecord, scope: AwsScope, assetFor: 
     attributes: {
       provider: "aws", api: `${svc}:${name}`, region: String(rec.awsRegion ?? ""), cloudtrail_event_id: String(rec.eventID).slice(0, 80),
       ...(resourceArn ? { resource_arn: resourceArn.slice(0, 300) } : {}),
-      ...(createdKey ? { created_access_key_id: createdKey } : {}), ...(usedKey ? { used_access_key_id: usedKey } : {}),
+      // Access key ids are identifiers, but secret scanners flag them; store keyed fingerprints in attributes.
+      ...(createdKey ? { created_key_fp: keyFingerprint(createdKey) } : {}), ...(usedKey ? { used_key_fp: keyFingerprint(usedKey) } : {}),
+      ...(sessionKey ? { session_key_fp: keyFingerprint(sessionKey) } : {}),
+      // grant metadata only (names and ARNs), never policy documents or secrets
+      ...(typeof rp.userName === "string" ? { target_user: rp.userName.slice(0, 128) } : {}), ...(typeof rp.roleName === "string" ? { target_role: rp.roleName.slice(0, 128) } : {}),
+      ...(typeof rp.roleArn === "string" ? { target_role_arn: rp.roleArn.slice(0, 300) } : {}), ...(typeof rp.groupName === "string" ? { target_group: rp.groupName.slice(0, 128) } : {}),
+      ...(typeof rp.policyArn === "string" ? { policy_arn: rp.policyArn.slice(0, 300) } : {}), ...(typeof rp.policyName === "string" ? { policy_name: rp.policyName.slice(0, 128) } : {}),
       ...(exportRef ? { raw_source_ref: `${exportRef.slice(0, 200)}#${String(rec.eventID).slice(0, 80)}` } : {}),
     },
   };

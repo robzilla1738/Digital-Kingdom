@@ -34,3 +34,17 @@ Acceptance (`apps/server/test/recipes-r03.test.ts`, 5 tests):
 
 Limitations: four recipes cover seven of nine finding kinds' common questions; recipe budgets count queries and
 coverage checks (max 12), not rows; recipes never decide intent or authorization.
+
+## R03.3 credential aftermath and residual-access investigation
+
+Delivered: `apps/server/src/aftermath.ts`, CloudTrail mapping of grant targets and session keys (fingerprinted), route, MCP tool.
+
+Acceptance (`apps/server/test/aftermath-r03.test.ts`, 4 tests, synthetic CloudTrail records):
+- Exposed key inactive, but the key it created for another user is active and the policy it attached is still attached: unresolved, naming `svc-backup via active key ...; s3:GetObject on acme-exports is feasible` and the attached policy. The session that key obtained is reported expired (12-hour STS maximum).
+- Same-user key creation is flagged as consistent with routine rotation for owner confirmation; `malicious_claimed` is always false.
+- No snapshot, or an audit-coverage gap since first use, keeps the answer unknown.
+- With every descendant removed and the original inactive, the aftermath resolves.
+
+Found while building: the redaction layer masks AWS access key ids in event attributes (they match secret-scanner patterns). Key lineage now uses keyed fingerprints in attributes; ids are shown only when the query or the snapshot supplies them.
+
+Limits: one provider (AWS), recorded events only, no live recheck of credentials (snapshot-based).
