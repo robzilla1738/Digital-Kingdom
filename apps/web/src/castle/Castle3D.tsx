@@ -129,6 +129,9 @@ function SceneLifecycle({ quality, onSlow }: { quality: DetailLevel; onSlow: () 
   }, [gl, dispatch, invalidate, setFrameloop]);
   useFrame((_, dt) => {
     const c = gl.domElement; c.dataset.renderCount = String(++count.current); c.dataset.drawCalls = String(gl.info.render.calls); c.dataset.triangles = String(gl.info.render.triangles); c.dataset.quality = quality; c.dataset.moduleGeometryBuilds = String(cachedModuleGeometryCount()); c.dataset.gpuGeometries = String(gl.info.memory.geometries); c.dataset.gpuTextures = String(gl.info.memory.textures); c.dataset.gpuPrograms = String(gl.info.programs?.length ?? 0);
+    // These counters describe the previous render. A restored, stationary camera may
+    // need only one demand frame, so publish its completed render on one follow-up.
+    if (count.current === 1) invalidate();
     const sampled = sampleFrameBudget(budget.current, dt, c.dataset.cameraActive === "true");
     budget.current = sampled.state; if (sampled.reduce) onSlow();
   });
