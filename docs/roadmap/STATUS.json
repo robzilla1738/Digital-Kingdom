@@ -113,11 +113,11 @@
   {
    "id": "R02.1",
    "title": "Define versioned connector and support-pack contracts",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R02-RECEIPT.md#r021-connector-and-support-pack-contracts",
-   "head": null,
-   "ci_run": null,
+   "head": "26488ef",
+   "ci_run": 39895565470,
    "notes": "connectors-r02.test.ts 4/4; CONN-01 e2e passes locally. Process sandboxing not implemented (contract-level collect-only authority)."
   },
   {
@@ -243,11 +243,11 @@
   {
    "id": "R05.1",
    "title": "Define agent intent/decision/execution/effect contracts",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R05-RECEIPT.md#r051-agent-intent-decision-execution-and-effect-contracts",
-   "head": null,
-   "ci_run": null,
+   "head": "26488ef",
+   "ci_run": 39895565470,
    "notes": "agent-r05.test.ts 5/5 (all 5 failed pre-change). Ruleset dk-rules-1.2.0; prompt/payload keys dropped from agent events (breaking for producers sending them)."
   },
   {
