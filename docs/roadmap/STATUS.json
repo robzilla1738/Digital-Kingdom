@@ -478,12 +478,12 @@
   {
    "id": "R10.2",
    "title": "Measure ingestion resilience and recovery",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R10-RECEIPT.md#r102-measure-ingestion-resilience-and-recovery",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "resilience-r10.test.ts 6/6; soak measured; OPERATIONS_RECOVERY.md."
   },
   {
    "id": "R10.3",

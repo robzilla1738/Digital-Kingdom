@@ -19,3 +19,17 @@ Acceptance (`apps/server/test/identity-r10.test.ts`, 7 tests):
 
 External gate still open: live verification against a real identity provider (`identity_provider_for_live_verification`).
 Field-level access control is not implemented beyond project and role scope.
+
+## R10.2 measure ingestion resilience and recovery
+
+Delivered: `Store.admit` (per-source rolling budget), `maxBacklog` backpressure, disk-full mapping, `apps/server/src/backup.ts`, `scripts/backup.ts`, `scripts/soak.ts`, `docs/OPERATIONS_RECOVERY.md`.
+
+Acceptance (`apps/server/test/resilience-r10.test.ts`, 6 tests):
+- Disk full (forced with `PRAGMA max_page_count`), a crash inside the processing transaction, duplicate replay and a re-keyed source leave the checkpoint consistent and integrity ok.
+- Restore of an encrypted backup verifies integrity, foreign keys, finding-to-event references, checkpoint bounds and counts; wrong passphrase and a flipped byte fail closed; restore never overwrites.
+- A noisy source is held to its budget while a quiet source is admitted and processed.
+- No deletion was added; the journal is not pruned.
+
+Soak (100,000 events, ARM64 2-core): 9,400 events/s durable ingest, 3,500 events/s processing, 0.7 s backup and 1.0 s verified restore of 133 MB.
+
+Limitations: admission budgets are per process (in memory); single-node SQLite only (R10.3); no off-host backup shipping.

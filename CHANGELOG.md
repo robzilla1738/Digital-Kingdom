@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R10.2: ingestion resilience and recovery
+
+- Per-source admission budgets (`429 Retry-After`, counted as `rejected:throttled`), bounded backlog backpressure (`503 Retry-After`), disk-full answered as a retryable 503 with nothing written, AES-256-GCM encrypted backups (`pnpm backup`) and verified restores (`pnpm restore`: integrity, foreign keys, finding references, checkpoint bounds, counts), and `pnpm soak`. Measurements and RPO/RTO assumptions in `docs/OPERATIONS_RECOVERY.md`.
+
 ### Roadmap R05.3: MCP cases, capabilities and incremental delivery
 
 - MCP `dk_capabilities` (contract and recipe versions, budgets, delivery model), `dk_case_changes` (cursor-based incremental case delivery; changes made while a client is disconnected arrive on the next poll), and `digital-kingdom://cases/{id}` resources. Oversized tool results are withheld with an explicit budget error (`maxOutputBytes`, `DK_MCP_MAX_OUTPUT_BYTES`), never cut. Server: `GET /api/capabilities`, `GET /cases/changes`. Remote MCP transport is deliberately not offered.

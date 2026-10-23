@@ -40,6 +40,8 @@ export interface AppConfig {
   oidc?: OidcConfig | null;
   /** R10.1: reverse proxies whose X-Forwarded-* headers are honoured (addresses or CIDRs). Default: none. */
   trustedProxies?: string[];
+  /** R10.2: unprocessed journal records above which ingestion answers 503 Retry-After. Default 200000. */
+  maxBacklog?: number;
 }
 
 declare module "fastify" {
@@ -75,6 +77,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
 
   app.setErrorHandler((err, _req, reply) => {
     if (err instanceof HttpError) return reply.status(err.status).send({ ...(err.extra ?? {}), error: err.message, details: err.details });
+    if (/database or disk is full|SQLITE_FULL|ENOSPC/i.test(String((err as Error)?.message ?? ""))) { app.log.error(err); return reply.status(503).header("retry-after", "30").send({ error: "storage is full; nothing was written; retry after freeing space" }); }
     const status = (err as { statusCode?: number }).statusCode ?? 500;
     if (status >= 500) app.log.error(err);
     return reply.status(status).send({ error: status >= 500 ? "internal error" : err.message });
@@ -101,11 +104,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (req.viaCookie && req.method !== "GET" && req.headers["x-dk-request"] !== "1") throw new HttpError(403, "missing X-DK-Request header");
     req.principal = p;
   };
-  const sourceAuth = async (req: FastifyRequest) => {
+  const sourceAuth = async (req: FastifyRequest, reply: FastifyReply) => {
     const auth = req.headers.authorization;
     const key = auth?.startsWith("Bearer ") ? auth.slice(7).trim() : undefined;
     const src = store.authenticateSource(key);
     if (!src) throw new HttpError(401, "invalid source key");
+    // R10.2 bounded backpressure: refuse (retryable) instead of growing the journal without bound.
+    if (store.backlog() > (cfg.maxBacklog ?? 200_000)) { reply.header("retry-after", "5"); throw new HttpError(503, "ingestion backlog is full; retry later"); }
     (req as FastifyRequest & { source: typeof src }).source = src;
   };
   // Secure cookies when configured, or when a TRUSTED proxy says the client connection was HTTPS (R10.1).
@@ -652,12 +657,16 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
 
   // ---- ingestion (source-key authenticated) ----
   type SrcReq = FastifyRequest & { source: { projectId: string; sourceId: string } };
-  const ingestOne = (req: SrcReq, payload: unknown) => store.receive(req.source.projectId, req.source.sourceId, payload);
+  const ingestOne = (req: SrcReq, payload: unknown): ReturnType<Store["receive"]> => store.admit(req.source.projectId, req.source.sourceId)
+    ? store.receive(req.source.projectId, req.source.sourceId, payload)
+    : { status: "rejected", reason: "throttled", detail: "source ingest budget exceeded; retry later" };
   const respond = (reply: FastifyReply, results: ReturnType<typeof ingestOne>[]) => {
     const accepted = results.filter((r) => r.status === "accepted").length;
     const duplicate = results.filter((r) => r.status === "duplicate").length;
     const rejected = results.filter((r) => r.status === "rejected");
-    reply.status(rejected.length === results.length ? 422 : 202);
+    const throttled = rejected.filter((r) => r.status === "rejected" && r.reason === "throttled").length;
+    if (throttled) reply.header("retry-after", "30");
+    reply.status(rejected.length === results.length ? (throttled === results.length ? 429 : 422) : 202);
     return { accepted, duplicate, rejected: rejected.length, errors: rejected.slice(0, 20).map((r) => r.status === "rejected" && { reason: r.reason, detail: r.detail }), durable: true };
   };
   app.post("/ingest/events", { preHandler: sourceAuth, bodyLimit: 1_048_576 }, async (req, reply) => {

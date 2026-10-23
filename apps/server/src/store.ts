@@ -33,6 +33,8 @@ export interface StoreOptions {
   eventWindow?: number;
   /** Containment proposals expire for approval after this many hours (R01.4). Default 72. */
   containmentTtlHours?: number;
+  /** R10.2 per-source admission budget (events per rolling minute). Default 6000. */
+  sourceBudgetPerMinute?: number;
 }
 
 const J = <T>(s: string | null | undefined, fallback: T): T => (s ? (JSON.parse(s) as T) : fallback);
@@ -316,6 +318,21 @@ export class Store {
 
   checkpoint(name = "normalizer"): number {
     return (this.db.prepare("SELECT last_seq FROM checkpoints WHERE name = ?").get(name) as { last_seq: number } | undefined)?.last_seq ?? 0;
+  }
+
+  private admission = new Map<string, { windowStart: number; used: number; throttled: number }>();
+  /**
+   * R10.2 per-source admission control: each source gets its own rolling-minute budget, so one noisy source is
+   * throttled (and its loss counted as rejected:throttled) instead of filling the journal ahead of everyone else.
+   */
+  admit(projectId: string, sourceId: string): boolean {
+    const key = `${projectId}\u0000${sourceId}`, now = this.now().getTime();
+    const budget = this.opts.sourceBudgetPerMinute ?? 6000;
+    let a = this.admission.get(key);
+    if (!a || now - a.windowStart >= 60_000) { if (a?.throttled) this.reject(projectId, sourceId, "receive", "throttled", `${a.throttled} event(s) refused in the previous minute: source budget ${budget}/min`); a = { windowStart: now, used: 0, throttled: 0 }; this.admission.set(key, a); }
+    if (a.used >= budget) { a.throttled++; this.count(projectId, sourceId, "rejected:throttled"); return false; }
+    a.used++;
+    return true;
   }
 
   backlog(): number {
