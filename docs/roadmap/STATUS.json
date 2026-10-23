@@ -354,12 +354,12 @@
   {
    "id": "R07.2",
    "title": "Implement an isolated defense-lab runner",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R07-RECEIPT.md#r072-isolated-defense-lab-runner",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "lab.test.ts 4/4 against the reference app."
   },
   {
    "id": "R07.3",

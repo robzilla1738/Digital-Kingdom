@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R07.2: isolated defense-lab runner
+
+- `examples/reference-app/src/lab/runner.ts`: authorized tests against owned sandbox targets only (approved lab environment, allowlisted loopback or `*.lab.internal` host, never production), typed HTTP probes with no shell, request and time budgets, abort with cleanup receipts, an independent effect observer and a required positive control. 5xx, timeouts or an unavailable observer make the run inconclusive, never a pass. `toControlTest` turns a receipt into a control verification record.
+
 ### Roadmap R08.2: exact response plans and revalidation
 
 - `POST /containment/:id/plan` attaches an exact plan (typed parameters per action, targets with provider ids, optional artifact digest, state fingerprint, evidence bundle, policy revision, TTL, downstream blast radius, reversibility with rollback or compensation, effect-observer coverage). The plan digest is part of what approvals bind; `GET /containment/:id/precheck` and approval both refuse drifted targets, changed policy or an expired TTL. Untyped actions and parameters with shell metacharacters are refused; there is still no executor.
