@@ -39,8 +39,9 @@ const ledger = new BudgetLedger(5);
 const priorCharge = (previous.charged_upper_bound_usd ?? 0) + (previous.outstanding_usd ?? 0);
 if (priorCharge) { if (!ledger.reserve('previous', priorCharge)) throw new Error('previous charges exhausted the budget'); ledger.settle('previous', priorCharge); }
 const catalog = await fetch('https://ai-gateway.vercel.sh/v1/models').then(r => r.json()) as { data: { id: string; pricing: { input: string; output: string } }[] };
-const model = catalog.data.find(m => m.id === registration.model);
-if (!model) throw new Error('requested model absent from live catalog');
+const discoveredModel = catalog.data.find(m => m.id === registration.model);
+if (!discoveredModel) throw new Error('requested model absent from live catalog');
+const model = discoveredModel;
 const inputRate = Number(model.pricing.input), outputRate = Number(model.pricing.output);
 if (!(inputRate > 0 && outputRate > 0 && Number.isFinite(inputRate + outputRate))) throw new Error('invalid live pricing');
 const cfg: AgentConfig = { ...registration.limits, model: model.id, gatewayUrl: 'https://ai-gateway.vercel.sh/v1', apiKey: process.env.AI_GATEWAY_API_KEY, budget: { ledger, inputUsdPerToken: inputRate, outputUsdPerToken: outputRate } };
