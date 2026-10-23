@@ -276,6 +276,10 @@ export interface CompiledScene {
   reflow_zones: ZoneId[];
   wall: { minX: number; maxX: number; minZ: number; maxZ: number };
   bounds: { minX: number; maxX: number; minZ: number; maxZ: number };
+  /** R06.1: increments on approved reflow or capacity growth. Absent on scenes stored before it existed. */
+  layout_version?: number;
+  /** R06.1: last positions of assets no longer in the graph, for historical lookup only (never rendered as live). */
+  historical_rooms?: (SceneRoom & { retired_in_revision: string })[];
   digest: string;
 }
 

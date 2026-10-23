@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R06.1: semantic world hierarchy
+
+- `GET /scene/hierarchy`: realm, environment, provider account, district and structure groups with stable ids derived from declarations (never positions or findings), a flat searchable index, environment/account boundaries, the layout version and a footprint-collision report for stored scenes. `GET /scene/locate/:asset` resolves current or historical positions. Compiled scenes keep `historical_rooms` for assets that left the graph and a `layout_version` that advances on reflow; both sit outside the geometry digest, so existing scene digests are unchanged. MCP `dk_world_hierarchy`.
+
 ### Roadmap R03.2: investigation recipes
 
 - Four versioned, deterministic recipes (`auth-burst-then-success@1`, `blocked-request-scope@1`, `agent-effect-attribution@1`, `change-or-maintenance@1`) return competing hypotheses with supporting and counter event ids, alternate explanations, bounded follow-on queries that include events no finding references, coverage checks, and stop conditions that block a conclusion when the needed observer was not live. A shared client IP is always kept as an unresolved locator, never attribution. `GET /api/recipes`, `POST /api/projects/:p/recipes/:id/run` (optionally attaching hypotheses to a case); MCP `dk_list_recipes`, `dk_run_recipe`; the case view can run a recipe on a linked finding.

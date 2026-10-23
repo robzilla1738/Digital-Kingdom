@@ -283,12 +283,12 @@
   {
    "id": "R06.1",
    "title": "Add a semantic world hierarchy without remapping history",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R06-RECEIPT.md#r061-semantic-world-hierarchy-without-remapping-history",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "hierarchy-r06.test.ts 4/4. Web hierarchy list / semantic zoom UI not built (API+MCP list provided)."
   },
   {
    "id": "R06.2",

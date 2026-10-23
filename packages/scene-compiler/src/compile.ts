@@ -13,7 +13,7 @@ const DEFAULT_CAPACITY: Record<ZoneId, number> = { public: 3, application: 9, da
 
 export interface CompileOptions {
   /** Previously approved scene: its pins and capacities keep unrelated rooms stable. */
-  previous?: (Pick<CompiledScene, "pins" | "capacities"> & Partial<Pick<CompiledScene, "rooms">>) | null;
+  previous?: (Pick<CompiledScene, "pins" | "capacities"> & Partial<Pick<CompiledScene, "rooms" | "historical_rooms" | "layout_version">>) | null;
   /** Discard pins and capacities, and lay the castle out from scratch (an accepted reflow). */
   reflow?: boolean;
   source?: CompiledScene["proposal_source"];
@@ -234,7 +234,14 @@ export function compileScene(graph: Graph, proposal: SceneProposal, opts: Compil
     style_profile: proposal.style_profile, camera_profile: proposal.camera_profile, proposal_source: opts.source ?? "default",
     rooms, zones, paths, pins, capacities: caps, reflow_zones: reflow, wall, bounds,
   };
-  return { ...body, digest: digest({ ...body, proposal_source: undefined }) };
+  // R06.1: positions of assets that left the graph stay available for historical lookup (never re-placed), and an
+  // approved reflow or capacity growth starts a new layout version. Both are metadata outside the geometry digest.
+  const prior = opts.previous ?? null;
+  const current = new Set(rooms.map((r) => r.asset_id));
+  const historical = [...(prior?.historical_rooms ?? []), ...(prior?.rooms ?? []).map((r) => ({ ...r, retired_in_revision: graph.graph_revision }))]
+    .filter((r, i, all) => !current.has(r.asset_id) && all.findIndex((x) => x.asset_id === r.asset_id) === i).slice(-500);
+  const layoutVersion = (prior?.layout_version ?? 1) + (opts.reflow || reflow.length ? 1 : 0);
+  return { ...body, layout_version: layoutVersion, ...(historical.length ? { historical_rooms: historical } : {}), digest: digest({ ...body, proposal_source: undefined }) };
 }
 
 function route(a: Vec3, b: Vec3, h: number): Vec3[] {

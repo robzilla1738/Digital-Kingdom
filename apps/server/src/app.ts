@@ -14,6 +14,7 @@ import { assessChange, securityContext, summarize } from "./context.ts";
 import { coverageHistory, parseCoverageQuestion } from "./coverage-history.ts";
 import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } from "./bundles.ts";
 import { Cases } from "./cases.ts";
+import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 
@@ -290,6 +291,24 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       if (cur && ifMatch.replace(/^W\//, "").replace(/"/g, "").trim() !== cur) throw new HttpError(409, "the scene changed since you loaded it", [], { current: { scene_digest: cur } });
     }
     return store.applyProposal(proj.id, req.body, "user", who(req));
+  });
+  // R06.1: semantic hierarchy (presentation only), searchable index, layout version and legacy collision report.
+  app.get("/api/projects/:p/scene/hierarchy", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const scene = store.getScene(proj.id), graph = store.getGraph(proj.id);
+    if (!scene || !graph) throw new HttpError(404, "project has no scene");
+    return { ...buildHierarchy(graph, scene), layout_version: scene.layout_version ?? null, collisions: footprintCollisions(scene), scene_digest: scene.digest };
+  });
+  app.get("/api/projects/:p/scene/locate/:asset", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const scene = store.getScene(proj.id);
+    if (!scene) throw new HttpError(404, "project has no scene");
+    const id = (req.params as { asset: string }).asset;
+    const live = scene.rooms.find((r) => r.asset_id === id);
+    if (live) return { asset_id: id, state: "current", room: live };
+    const hist = scene.historical_rooms?.find((r) => r.asset_id === id);
+    if (hist) return { asset_id: id, state: "historical", room: hist, note: `Last position before it left the graph in revision ${hist.retired_in_revision}; not a live structure.` };
+    throw new HttpError(404, "asset has no current or historical position");
   });
   app.post("/api/projects/:p/scene/reflow", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");

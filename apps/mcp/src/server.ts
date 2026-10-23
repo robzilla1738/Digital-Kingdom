@@ -48,7 +48,7 @@ export interface CreateServerOptions {
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
-export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_list_recipes", "dk_run_recipe", "dk_containment_options"] as const;
+export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_list_recipes", "dk_run_recipe", "dk_world_hierarchy", "dk_containment_options"] as const;
 
 /** The exact tool set used by Real-Agent Evaluation v1 (before event search). Kept so v1 runs stay reproducible. */
 export const INVESTIGATION_TOOLS_V1 = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
@@ -246,6 +246,12 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     description: "Run a recipe on a finding: competing hypotheses with supporting and counter event ids, bounded follow-on queries (including events no finding references), coverage checks, and stop conditions. If conclusion_allowed is false, do not conclude; say which observer was missing. Read-only.",
     inputSchema: { recipe_id: z.string().max(80), finding_id: z.string().max(200), max_queries: z.number().int().min(1).max(12).optional(), project }, annotations: RO,
   }, async ({ recipe_id, finding_id, max_queries, project: p }) => out(await client.req("POST", client.p(`/recipes/${encodeURIComponent(recipe_id)}/run`, p), { finding_id, ...(max_queries ? { max_queries } : {}) })));
+
+  server.registerTool("dk_world_hierarchy", {
+    title: "Environments, accounts and districts",
+    description: "Presentation-only hierarchy (realm > environment > account > district > structure) from declared environment, provider account and zone, plus a flat searchable index with paths. Groups never imply an incident.",
+    inputSchema: { project }, annotations: RO,
+  }, async ({ project: p }) => out(await client.req("GET", client.p("/scene/hierarchy", p))));
 
   server.registerTool("dk_containment_options", {
     title: "Permitted containment steps",
