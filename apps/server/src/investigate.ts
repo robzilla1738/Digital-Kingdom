@@ -22,9 +22,9 @@ const FIELD_FILTERS = {
 } as const;
 type FieldFilter = keyof typeof FIELD_FILTERS;
 export const CORRELATION_NAMESPACES: Record<FieldFilter | "asset_id", { namespace: string; trust: string }> = {
-  actor_ref: { namespace: "per source", trust: "An account identifier as reported by one source. The same string from two different sources is a lead, not proof of the same principal: no source declares a shared identity namespace." },
-  session_ref: { namespace: "per source", trust: "A session handle issued by one source. Only meaningful within that source." },
-  run_id: { namespace: "per source", trust: "An agent/job run handle as reported by one source." },
+  actor_ref: { namespace: "per source unless an administrator declared a shared identity_namespace", trust: "An account identifier as reported by one source. The same string from two sources is the same principal only when both sources declare the same identity_namespace (detection rules correlate only then); otherwise it is a lead, not proof." },
+  session_ref: { namespace: "per source unless an administrator declared a shared identity_namespace", trust: "A session handle issued by one authority. Meaningful across sources only when they declare the same identity_namespace, and never equal to an account identifier." },
+  run_id: { namespace: "per source unless an administrator declared a shared run_namespace", trust: "An agent/job run handle. Equal run ids from runtimes without a common declared run_namespace are not the same run." },
   request_id: { namespace: "per source unless trusted", trust: "Correlates across sources only when the event says request_id_trust: trusted; otherwise it is client-supplied and can be forged or reused." },
   trace_id: { namespace: "per instrumentation", trust: "Trace context propagated by instrumentation; can be absent or client-influenced at the edge." },
   client_ip: { namespace: "network locator, not identity", trust: "Shared egress, NAT, VPN, proxies and CGNAT put unrelated people behind one address. Events sharing an address are NOT attributed to a common actor by Digital Kingdom and must not be treated as the same person." },

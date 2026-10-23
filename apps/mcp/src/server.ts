@@ -84,19 +84,19 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
 
   server.registerTool("dk_security_context", {
     title: "Security context for an asset or route",
-    description: "Everything relevant to one service or HTTP route: relationships, direct and adjacent findings, coverage, permitted containment, and deterministic engineering guidance. Pass an asset id/name/alias or a route such as /admin/roles.",
-    inputSchema: { asset: z.string().max(200).optional(), route: z.string().max(300).optional(), project }, annotations: RO,
-  }, async ({ asset, route, project: p }) => {
+    description: "Everything relevant to one service or HTTP route: relationships, direct and adjacent findings, coverage, permitted containment, and deterministic engineering guidance. Pass an asset id/name/alias or a route such as /admin/roles, \"POST /login\" or \"GET api.example.com/login\". Routes resolve against the declared route inventory first; route_resolution says whether ownership is declared or only inferred from events. A route served by several assets returns an error listing the candidates: qualify it (method, host, environment) or ask for one asset.",
+    inputSchema: { asset: z.string().max(200).optional(), route: z.string().max(300).optional(), environment: z.string().max(160).optional().describe("Asset environment, to disambiguate a route"), project }, annotations: RO,
+  }, async ({ asset, route, environment, project: p }) => {
     if (!asset && !route) throw new Error("provide asset or route");
-    const q = new URLSearchParams(); if (asset) q.set("asset", asset); if (route) q.set("route", route);
+    const q = new URLSearchParams(); if (asset) q.set("asset", asset); if (route) q.set("route", route); if (environment) q.set("environment", environment);
     return out(await client.req("GET", client.p(`/context?${q}`, p)));
   });
 
   server.registerTool("dk_assess_change", {
     title: "Assess a planned change",
-    description: "Before changing code or config, get a posture (schema dk.change_assessment.v2) for the assets or routes you will touch: hold (severe finding; still check evidence_sufficiency), proceed_with_care (all targets resolved and reporting; findings touch it), insufficient_context (a target is unknown OR its telemetry is missing, offline or stale: unknown, not safe), not_assessed (nothing resolved: NOT a clean result), or no_recorded_concerns (resolved, reporting, nothing recorded; still not proof of safety). target_resolution and evidence_sufficiency are reported separately; only favorable=true postures are favorable.",
-    inputSchema: { asset_ids: z.array(z.string().max(200)).max(20).optional(), routes: z.array(z.string().max(300)).max(20).optional(), summary: z.string().max(500).optional().describe("One line describing the change"), project }, annotations: RO,
-  }, async ({ asset_ids, routes, summary, project: p }) => out(await client.req("POST", client.p("/assess-change", p), { asset_ids, routes, summary })));
+    description: "Before changing code or config, get a posture (schema dk.change_assessment.v2) for the assets or routes you will touch: hold (severe finding; still check evidence_sufficiency), proceed_with_care (all targets resolved and reporting; findings touch it), insufficient_context (a target is unknown OR its telemetry is missing, offline or stale: unknown, not safe), not_assessed (nothing resolved: NOT a clean result), or no_recorded_concerns (resolved, reporting, nothing recorded; still not proof of safety). target_resolution and evidence_sufficiency are reported separately; only favorable=true postures are favorable. A route matching several assets is assessed against every candidate (see route_resolution); route ownership inferred only from events is never favorable.",
+    inputSchema: { asset_ids: z.array(z.string().max(200)).max(20).optional(), routes: z.array(z.string().max(300)).max(20).optional(), environment: z.string().max(160).optional().describe("Asset environment, to disambiguate routes"), summary: z.string().max(500).optional().describe("One line describing the change"), project }, annotations: RO,
+  }, async ({ asset_ids, routes, environment, summary, project: p }) => out(await client.req("POST", client.p("/assess-change", p), { asset_ids, routes, environment, summary })));
 
   server.registerTool("dk_list_findings", {
     title: "List findings",

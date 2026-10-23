@@ -14,6 +14,10 @@ export interface SourceConfig {
   allowed_actions?: EventAction[];
   /** Sources relaying the same underlying observations share a group; they never corroborate each other. */
   independence_group?: string;
+  /** Administrator-declared authority for actor_ref/session_ref. Undeclared sources never correlate identities with other sources. */
+  identity_namespace?: string;
+  /** Administrator-declared authority for run_id. */
+  run_namespace?: string;
 }
 
 export interface Delivery { source_id: string; received_at: string; payload: unknown; note?: string }

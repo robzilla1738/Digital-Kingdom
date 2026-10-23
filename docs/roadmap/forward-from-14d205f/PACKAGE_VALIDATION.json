@@ -1,0 +1,113 @@
+{
+  "schema": "dk.roadmap-package-validation.v1",
+  "baseline_sha": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+  "scope": "Package structure and references only; not execution of proposed product features",
+  "counts": {
+    "phases": 12,
+    "work_packages": 52,
+    "product_capabilities": 24,
+    "surface_mappings": 28,
+    "roadmap_words": 5386,
+    "backlog_words": 8039
+  },
+  "checks": [
+    {
+      "check": "all_json_parses",
+      "passed": true
+    },
+    {
+      "check": "52_unique_work_packages",
+      "passed": true
+    },
+    {
+      "check": "all_dependencies_resolve",
+      "passed": true
+    },
+    {
+      "check": "dependency_graph_acyclic",
+      "passed": true
+    },
+    {
+      "check": "24_capability_mappings_resolve",
+      "passed": true
+    },
+    {
+      "check": "28_surface_records",
+      "passed": true
+    },
+    {
+      "check": "all_tasks_have_deliverables_and_tests",
+      "passed": true
+    },
+    {
+      "check": "all_forward_statuses_are_proposed",
+      "passed": true
+    },
+    {
+      "check": "backlog_headings_match_task_ids",
+      "passed": true
+    },
+    {
+      "check": "roadmap_task_references_exist",
+      "passed": true
+    },
+    {
+      "check": "internal_markdown_links_resolve",
+      "passed": true
+    }
+  ],
+  "one_valid_topological_order": [
+    "R00.1",
+    "R00.2",
+    "R00.3",
+    "R00.4",
+    "R00.5",
+    "R01.1",
+    "R01.2",
+    "R01.3",
+    "R01.4",
+    "R01.5",
+    "R02.1",
+    "R02.2",
+    "R02.3",
+    "R02.4",
+    "R03.1",
+    "R03.2",
+    "R03.3",
+    "R03.4",
+    "R03.5",
+    "R04.1",
+    "R04.2",
+    "R04.3",
+    "R04.4",
+    "R05.1",
+    "R05.2",
+    "R10.1",
+    "R05.3",
+    "R11.1",
+    "R05.4",
+    "R06.1",
+    "R06.2",
+    "R06.3",
+    "R06.4",
+    "R07.1",
+    "R07.2",
+    "R07.3",
+    "R07.4",
+    "R08.1",
+    "R08.2",
+    "R10.2",
+    "R08.3",
+    "R08.4",
+    "R09.1",
+    "R09.2",
+    "R09.3",
+    "R09.4",
+    "R10.3",
+    "R10.4",
+    "R10.5",
+    "R11.2",
+    "R11.3",
+    "R11.4"
+  ]
+}

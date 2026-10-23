@@ -1,0 +1,1837 @@
+{
+  "schema": "dk.forward-roadmap.v1",
+  "repository": "robzilla1738/Digital-Kingdom",
+  "baseline_sha": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+  "mode": "continue_existing_main_no_restart",
+  "calendar": "dependency ordered; no delivery-time claims",
+  "status": "proposal_only_no_repository_changes",
+  "phases": [
+    {
+      "id": "R00",
+      "title": "Secure and reconcile the integrated baseline",
+      "goal": "Preserve main; close source-traced semantic gaps and update the delivery/acceptance record."
+    },
+    {
+      "id": "R01",
+      "title": "Make evidence reproducible across time and concurrent work",
+      "goal": "Provide version-pinned evidence, historical source capabilities, explicit coverage intervals and safe mutations."
+    },
+    {
+      "id": "R02",
+      "title": "Connect a real application with a complete supported pack",
+      "goal": "Turn manual setup into a least-privilege, diagnosable path from inventory to a useful recorded finding."
+    },
+    {
+      "id": "R03",
+      "title": "Complete investigations and credential aftermath",
+      "goal": "Persist cases, retrieve unlinked activity, test hypotheses and identify remaining authority."
+    },
+    {
+      "id": "R04",
+      "title": "Prevent dangerous changes through lineage and effective authority",
+      "goal": "Connect code and artifacts to running software, applicable weaknesses and prospective security changes."
+    },
+    {
+      "id": "R05",
+      "title": "Observe agents and serve bounded security context",
+      "goal": "Join intent, policy decisions, actual execution and independently observed effects; keep MCP scoped."
+    },
+    {
+      "id": "R06",
+      "title": "Expand the castle into a faithful operational world",
+      "goal": "Extend the current architectural kit with real surface semantics, meaningful layers and stable navigation."
+    },
+    {
+      "id": "R07",
+      "title": "Prove selected defenses in a controlled laboratory",
+      "goal": "Distinguish configured controls from controls tested successfully under specified conditions."
+    },
+    {
+      "id": "R08",
+      "title": "Authorize, execute and verify bounded response",
+      "goal": "Keep response independent from the reasoning agent and prove effects in explicitly authorized environments."
+    },
+    {
+      "id": "R09",
+      "title": "Broaden coverage through tested surface packs",
+      "goal": "Expand beyond the first stack without disguising unsupported sensors or provider-specific limitations."
+    },
+    {
+      "id": "R10",
+      "title": "Operate securely and scale from measured demand",
+      "goal": "Add deployment security, recovery, query isolation and optional team-scale operation without breaking the local product."
+    },
+    {
+      "id": "R11",
+      "title": "Validate usefulness and ship a maintainable ecosystem",
+      "goal": "Complete valid evaluations, human release gates, reproducible releases and contributor workflows."
+    }
+  ],
+  "work_packages": [
+    {
+      "id": "R00.1",
+      "phase": "R00",
+      "title": "Publish a current-main readiness receipt",
+      "status": "proposed_not_started",
+      "baseline": "integrated implementation; documentation partly historical",
+      "goal": "Replace outdated branch/pending-deployment statements with a separately dated receipt for the integrated candidate; preserve frozen historical receipts.",
+      "depends_on": [],
+      "existing_or_target_paths": [
+        "docs/redesign/ACCEPTANCE.md",
+        "docs/redesign/IMPLEMENTATION.md",
+        "README.md",
+        ".github/workflows/ci.yml",
+        ".github/workflows/pages.yml"
+      ],
+      "deliverables": [
+        "Record HEAD, build, CI run and artifact IDs and the served-build check",
+        "Separate implemented, CI-verified, visually inspected, manually accepted and live-provider-verified states",
+        "Reconcile every earlier open task with current main; no blind replay of old rebuild prompts"
+      ],
+      "acceptance_tests": [
+        "Record 376 tests/43 files and the exact-head browser results only where supported by this run",
+        "Preserve the hidden-tab skip and human/hardware gates",
+        "A future failed candidate cannot inherit a prior screenshot or pass label"
+      ],
+      "capabilities": [
+        "DK-C01",
+        "DK-C22"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R00.2",
+      "phase": "R00",
+      "title": "Enforce typed, namespaced event correlation",
+      "status": "proposed_not_started",
+      "baseline": "source-reviewed correctness risk; full regression reproduction pending",
+      "goal": "The reviewed authentication rule matches raw identifier strings across candidate successes; prevent unrelated sources, identifier kinds, or runs becoming a supported causal link.",
+      "depends_on": [
+        "R00.1"
+      ],
+      "existing_or_target_paths": [
+        "packages/detections/src/rules.ts",
+        "packages/detections/src/normalize.ts",
+        "packages/contracts/src/types.ts",
+        "packages/detections/test/"
+      ],
+      "deliverables": [
+        "Define a correlation identity with project, issuer/source namespace, identifier type and value",
+        "Audit authentication, authorization-change, request and agent-run joins",
+        "Make cross-source identity equivalence explicit and evidence-backed; preserve uncertainty for legacy records"
+      ],
+      "acceptance_tests": [
+        "Two sources using actor_ref=admin do not link without an explicit common issuer",
+        "actor_ref X does not match session_ref X",
+        "Equal run_id strings from unrelated runtimes do not corroborate an effect",
+        "Legitimate shared-issuer flow and independent-observer positive controls still work"
+      ],
+      "capabilities": [
+        "DK-C02",
+        "DK-C05",
+        "DK-C12"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R00.3",
+      "phase": "R00",
+      "title": "Resolve routes without guessing one owner",
+      "status": "proposed_not_started",
+      "baseline": "current asset/route posture exists; prospective analysis absent",
+      "goal": "Current route context selects a highest-frequency asset from a bounded recent event window. Make ambiguity, method/host scope and missing route inventory explicit.",
+      "depends_on": [
+        "R00.1"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/context.ts",
+        "packages/graph-core/",
+        "packages/contracts/schemas/agent/",
+        "apps/server/test/assessment-v2.test.ts"
+      ],
+      "deliverables": [
+        "Represent route identity using environment, service/host, HTTP method and normalized template",
+        "Return candidates/ambiguous resolution instead of silently choosing a dominant asset",
+        "Differentiate current-target posture from assessment of an actual proposed change"
+      ],
+      "acceptance_tests": [
+        "Two services with /login cannot produce an unexplained single owner",
+        "An important route outside the latest event window remains discoverable from authoritative inventory",
+        "No matching route or unsupported change scope stays insufficient_context/not_assessed"
+      ],
+      "capabilities": [
+        "DK-C02",
+        "DK-C13",
+        "DK-C15"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R00.4",
+      "phase": "R00",
+      "title": "Tighten contracts and adversarial data-boundary tests",
+      "status": "proposed_not_started",
+      "baseline": "extensive hardening present; extend rather than replace",
+      "goal": "Close inexpensive format, resource-budget and permission-revocation gaps before connecting more independent sources.",
+      "depends_on": [
+        "R00.1"
+      ],
+      "existing_or_target_paths": [
+        "packages/contracts/test/agent-schemas.test.ts",
+        "packages/contracts/schemas/",
+        "apps/server/src/security.ts",
+        "apps/server/test/",
+        "apps/mcp/test/"
+      ],
+      "deliverables": [
+        "Validate date-time formats rather than ignoring the format warning observed in CI",
+        "Test query budgets, cursor scope after revocation, oversized results and hostile identifiers",
+        "Define quarantine versus transient infrastructure retry behavior and observable counters"
+      ],
+      "acceptance_tests": [
+        "Invalid coverage_as_of fails schema validation",
+        "A revoked token cannot resume a previously authorized cursor",
+        "Malformed evidence cannot monopolize worker progress or inject UI/agent instructions",
+        "Schema failures never expose raw credentials in logs or error bodies"
+      ],
+      "capabilities": [
+        "DK-C02",
+        "DK-C22"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R00.5",
+      "phase": "R00",
+      "title": "Close the remaining design release gates honestly",
+      "status": "proposed_not_started",
+      "baseline": "automated coverage exists; manual gates open",
+      "goal": "Use the existing polished UI and screenshots as the starting point for real-device and human checks, not another redesign.",
+      "depends_on": [
+        "R00.1"
+      ],
+      "existing_or_target_paths": [
+        "docs/redesign/acceptance-results.json",
+        "docs/redesign/work-packages.json",
+        "e2e/",
+        "apps/web/src/"
+      ],
+      "deliverables": [
+        "Create a current candidate manual-review packet with task-specific evidence",
+        "Exercise keyboard/screen-reader, actual zoom/forced colors and physical GPU performance",
+        "Record architecture/composition/dense-label usability review and genuine hidden-tab behavior"
+      ],
+      "acceptance_tests": [
+        "Human reviewer IDs and actual device/browser conditions accompany pass claims",
+        "No automated screenshot or agent critique is relabeled human approval",
+        "Unavailable manual tests remain blocked without preventing independent implementation"
+      ],
+      "capabilities": [
+        "DK-C06",
+        "DK-C22"
+      ],
+      "external_gate": "human_and_physical_device"
+    },
+    {
+      "id": "R01.1",
+      "phase": "R01",
+      "title": "Version domain assertions and entity lifetimes",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "A stored graph revision is not yet a complete historical knowledge model. Keep provider identity, valid time and observation time separately.",
+      "depends_on": [
+        "R00.2",
+        "R00.3"
+      ],
+      "existing_or_target_paths": [
+        "packages/contracts/",
+        "packages/graph-core/",
+        "apps/server/src/db.ts",
+        "apps/server/src/store.ts"
+      ],
+      "deliverables": [
+        "Add stable entity references, scoped provider IDs and typed assertions",
+        "Store valid_from/valid_to and observed_at/recorded_at plus evidence provenance",
+        "Keep conflicting configuration assertions and explicit reconciliation decisions",
+        "Add versioned migrations and legacy unknown provenance"
+      ],
+      "acceptance_tests": [
+        "Late configuration discovery changes what is known without rewriting what was known earlier",
+        "A deleted/recreated resource with the same name is not silently the same identity",
+        "Graph history and current view agree for equivalent temporal inputs"
+      ],
+      "capabilities": [
+        "DK-C02",
+        "DK-C05"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R01.2",
+      "phase": "R01",
+      "title": "Persist source capability and coverage history",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Replace event-count freshness as the sole proxy with interval-specific observability for the question being investigated.",
+      "depends_on": [
+        "R01.1"
+      ],
+      "existing_or_target_paths": [
+        "packages/detections/src/rules.ts",
+        "apps/server/src/db.ts",
+        "apps/server/src/store.ts",
+        "apps/web/src/workspaces/coverage/"
+      ],
+      "deliverables": [
+        "Store source configuration revisions, enable/disable transitions, permissions, event classes, sampling, loss and retention",
+        "Separate heartbeat receipt, business-event time, collection completeness and observer capability",
+        "Return historical interval coverage and explicit unknown spans"
+      ],
+      "acceptance_tests": [
+        "Healthy request logs do not imply database-read visibility",
+        "Current sensor restoration does not backfill an outage",
+        "A heartbeat is evaluated by receipt/liveness rather than an unrelated future event timestamp",
+        "A bounded evaluation window cannot silently erase a quiet source history"
+      ],
+      "capabilities": [
+        "DK-C04",
+        "DK-C22"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R01.3",
+      "phase": "R01",
+      "title": "Serve revision-pinned evidence bundles",
+      "status": "proposed_not_started",
+      "baseline": "exact reference pagination exists; arbitrary revision pinning missing",
+      "goal": "Current UI detects some drift, but the backend cannot serve arbitrary immutable evidence revisions. Make historical investigation reproducible.",
+      "depends_on": [
+        "R01.1",
+        "R01.2"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/store.ts",
+        "apps/server/src/export.ts",
+        "apps/server/src/app.ts",
+        "apps/web/src/lib/investigation.ts",
+        "apps/mcp/src/server.ts"
+      ],
+      "deliverables": [
+        "Add immutable bundle IDs tying finding revision, event references, graph/source revisions and scope",
+        "Use paginated exact-reference retrieval with explicit retention/deletion failures",
+        "Document snapshot TTL, retained case pins and authorization rechecks"
+      ],
+      "acceptance_tests": [
+        "Concurrent new evidence cannot silently change an already pinned comparison",
+        "A historical bundle reopens with the same included record versions",
+        "Expired or deleted evidence produces missing/expired metadata, not an empty complete answer",
+        "UI, MCP and export report the same bundle digest and limits"
+      ],
+      "capabilities": [
+        "DK-C10",
+        "DK-C11"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R01.4",
+      "phase": "R01",
+      "title": "Add optimistic concurrency and annotation history",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Prevent stale analysts or agents from overwriting dispositions, source settings, scene proposals or case decisions.",
+      "depends_on": [
+        "R01.1"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/app.ts",
+        "apps/server/src/store.ts",
+        "apps/web/src/inspector/",
+        "packages/contracts/"
+      ],
+      "deliverables": [
+        "Require expected revision/ETag for mutable user state",
+        "Persist actor, before/after and decision timestamps",
+        "Offer conflict comparison rather than silent last-writer-wins"
+      ],
+      "acceptance_tests": [
+        "Two concurrent edits from the same base cannot both silently win",
+        "Historical replay labels current notes or retrieves historical notes explicitly",
+        "Expired approvals and changed policy snapshots require renewed review"
+      ],
+      "capabilities": [
+        "DK-C11",
+        "DK-C19",
+        "DK-C22"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R01.5",
+      "phase": "R01",
+      "title": "Bound query work and prove snapshot semantics",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "A 31-day window is not a row or CPU budget. Add measured indexes, isolation and explicit incompleteness under retention.",
+      "depends_on": [
+        "R01.1",
+        "R01.3"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/investigate.ts",
+        "apps/server/src/db.ts",
+        "apps/server/src/store.ts",
+        "apps/mcp/src/server.ts"
+      ],
+      "deliverables": [
+        "Measure representative 10k/100k/1m-event workloads on recorded hardware",
+        "Add selected source/time/identity/route indexes based on query plans",
+        "Define request cancellation, response-byte budgets and concurrent-search limits",
+        "Ensure retention cannot silently mutate an advertised frozen search"
+      ],
+      "acceptance_tests": [
+        "Late arrivals, tied timestamps and concurrent retention cannot skip or duplicate results without a stated expiration",
+        "Large searches cannot block ingestion indefinitely",
+        "Results include scanned scope, truncation, errors and current/historical coverage distinction"
+      ],
+      "capabilities": [
+        "DK-C10",
+        "DK-C23"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R02.1",
+      "phase": "R02",
+      "title": "Define versioned connector and support-pack contracts",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Turn adapter claims into inspectable support levels, permissions and repeatable conformance tests.",
+      "depends_on": [
+        "R00.4",
+        "R01.1"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/adapters/",
+        "packages/contracts/",
+        "apps/web/src/workspaces/integrations/",
+        "proposed packages/connectors/"
+      ],
+      "deliverables": [
+        "Manifest for provider/API version, read scopes, pagination, cursor, rate limits, cost and data handling",
+        "Capability levels: declared, discovered, instrumented, analyzed, lab-verified, live-verified",
+        "Sandbox the connector and keep collector authority separate from response authority"
+      ],
+      "acceptance_tests": [
+        "Permission denial, throttling, partial pagination, replay and revoked scopes produce honest coverage",
+        "Installing a connector never defaults to global administrator access",
+        "Only the supported protocol/versions appear enabled in UI"
+      ],
+      "capabilities": [
+        "DK-C03",
+        "DK-C22",
+        "DK-C24"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R02.2",
+      "phase": "R02",
+      "title": "Deliver a one-command local application pack",
+      "status": "proposed_not_started",
+      "baseline": "SDK/reference app exists; coherent onboarding pack incomplete",
+      "goal": "Make a new user reach a genuine controlled investigation without manually assembling every resource and source.",
+      "depends_on": [
+        "R02.1"
+      ],
+      "existing_or_target_paths": [
+        "examples/reference-app/",
+        "packages/sdk-node/",
+        "infra/compose/",
+        "apps/web/src/workspaces/integrations/"
+      ],
+      "deliverables": [
+        "Package app, auth outcome emitter, database audit fixture, agent runtime fixture and effect observer",
+        "Guided authorize/preview/import/validate/first-event workflow",
+        "Real OpenTelemetry Collector binary conformance test, plus removal/reset instructions"
+      ],
+      "acceptance_tests": [
+        "Fresh checkout produces a real SDK event on the correct asset and identical UI/MCP evidence",
+        "Deliberate source outage becomes a visible gap",
+        "Supported Collector retry/restart/decompressed-size behavior is tested",
+        "Static demo remains distinctly synthetic and offline"
+      ],
+      "capabilities": [
+        "DK-C03",
+        "DK-C18"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R02.3",
+      "phase": "R02",
+      "title": "Add repository and deployment discovery",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Connect one authorized repository to workflows and declared runtime inventory without executing untrusted repository code.",
+      "depends_on": [
+        "R02.1",
+        "R02.2"
+      ],
+      "existing_or_target_paths": [
+        "packages/graph-core/",
+        "proposed packages/connectors/github/",
+        "apps/web/src/workspaces/integrations/"
+      ],
+      "deliverables": [
+        "Read-only GitHub metadata, workflow and manifest importer",
+        "Owner-confirmed inventory preview and stable reconciliation",
+        "Track commit/workflow/artifact/deployment metadata with explicit unsupported fields"
+      ],
+      "acceptance_tests": [
+        "Hostile workflow text and repository hooks are never executed",
+        "Renames/redeploys preserve supported stable IDs",
+        "Rate limits and inaccessible repositories appear as partial discovery",
+        "Import preview reports additions, removals and uncertainty before applying"
+      ],
+      "capabilities": [
+        "DK-C03",
+        "DK-C07"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R02.4",
+      "phase": "R02",
+      "title": "Deliver the first real cloud identity/audit pack",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Use one tightly supported cloud scope as the first operational integration rather than launching many shallow connectors.",
+      "depends_on": [
+        "R02.1",
+        "R01.2",
+        "R01.5"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/connectors/aws/",
+        "apps/server/src/adapters/",
+        "packages/graph-core/",
+        "apps/web/src/workspaces/integrations/"
+      ],
+      "deliverables": [
+        "Recommended reference scope: one AWS account with read-only IAM/resource metadata and authorized CloudTrail exports/collection",
+        "Separate management and configured data-event capabilities",
+        "Track regions, missing permissions, supported resources and collection intervals",
+        "Support offline sanitized exports for development and fixture testing"
+      ],
+      "acceptance_tests": [
+        "A known key use and grant change are linked through provider IDs with raw source references",
+        "Missing data events never produce a no-read conclusion",
+        "Cross-account visibility stops at the authorization boundary",
+        "A real-account check is marked separately from fixture conformance"
+      ],
+      "capabilities": [
+        "DK-C03",
+        "DK-C04",
+        "DK-C05"
+      ],
+      "external_gate": "authorized_provider_access"
+    },
+    {
+      "id": "R03.1",
+      "phase": "R03",
+      "title": "Persist cases separately from findings",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "The UI has investigations, but durable cases need their own identity, questions, ownership and pinned evidence.",
+      "depends_on": [
+        "R01.3",
+        "R01.4"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/db.ts",
+        "apps/server/src/app.ts",
+        "apps/web/src/workspaces/investigate/",
+        "apps/mcp/src/server.ts"
+      ],
+      "deliverables": [
+        "Case, scope, owner, questions, timeline, linked findings and independent events",
+        "Immutable evidence bundles, revisions, notes and closure criteria",
+        "Role-gated collaboration and export that states limits"
+      ],
+      "acceptance_tests": [
+        "A case may contain an event that produced no finding",
+        "A closed detector finding does not silently close an unresolved case",
+        "Concurrent edits and scope changes retain history",
+        "Case export reopens with matching references and explicit unavailable records"
+      ],
+      "capabilities": [
+        "DK-C11"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R03.2",
+      "phase": "R03",
+      "title": "Add hypotheses and deterministic investigation recipes",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Help a person or agent distinguish explanations instead of receiving only a persuasive alert narrative.",
+      "depends_on": [
+        "R03.1",
+        "R01.2",
+        "R01.5"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/investigation/",
+        "apps/web/src/workspaces/investigate/",
+        "apps/mcp/src/server.ts"
+      ],
+      "deliverables": [
+        "Versioned recipes with required evidence, alternate explanations, next queries and stop conditions",
+        "Supporting/counterevidence and unresolved questions per hypothesis",
+        "Coverage-aware query recommendations with bounded budgets"
+      ],
+      "acceptance_tests": [
+        "Shared-IP attribution bait remains separate",
+        "A benign maintenance case can be resolved without changing facts",
+        "Missing observer capability stops an unjustified conclusion",
+        "Recipes query unlinked follow-on events rather than only finding references"
+      ],
+      "capabilities": [
+        "DK-C10",
+        "DK-C11",
+        "DK-C13"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R03.3",
+      "phase": "R03",
+      "title": "Build credential aftermath and residual-access investigation",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Make original-key rotation insufficient to close a case when recorded descendant access survives.",
+      "depends_on": [
+        "R02.4",
+        "R03.2"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/identity/",
+        "proposed packages/investigation/credential-aftermath/",
+        "apps/web/src/workspaces/investigate/"
+      ],
+      "deliverables": [
+        "Credential metadata and issuance/usage/grant lineage; never require the exposed secret",
+        "Investigate newly created keys, role trust changes, grants and sessions within supported provider scope",
+        "Recheck current authority with provider-specific session limitations"
+      ],
+      "acceptance_tests": [
+        "Original key inactive plus descendant grant active remains unresolved",
+        "Legitimate key rotation is not automatically malicious",
+        "A missing account or audit interval stays unknown",
+        "A synthetic residual-access case identifies the actionable surviving permission"
+      ],
+      "capabilities": [
+        "DK-C16"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R03.4",
+      "phase": "R03",
+      "title": "Integrate registered deception assets safely",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Connect planted decoys to placement history and exact trigger evidence without claiming human identification.",
+      "depends_on": [
+        "R03.1",
+        "R03.3"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/connectors/deception/",
+        "packages/detections/src/rules.ts",
+        "apps/web/src/workspaces/investigate/"
+      ],
+      "deliverables": [
+        "Decoy registry, unique placement IDs, propagation, authorized tests and retirement",
+        "One existing provider adapter plus local controlled receiver",
+        "Clear distinction among request, document fetch, credential use and scanner validation"
+      ],
+      "acceptance_tests": [
+        "Trigger maps to registered placement but not necessarily original compromise",
+        "DNS resolver/proxy IP is not treated as attacker identity",
+        "Authorized scanner/test activation is retained and annotated, not silently deleted",
+        "No decoy contains a working production secret"
+      ],
+      "capabilities": [
+        "DK-C17"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R03.5",
+      "phase": "R03",
+      "title": "Add reliable external attention delivery",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "An operational console must notify the right owner when they are not watching the castle.",
+      "depends_on": [
+        "R03.1",
+        "R02.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed apps/server/src/notifications/",
+        "apps/server/src/db.ts",
+        "apps/web/src/workspaces/integrations/"
+      ],
+      "deliverables": [
+        "Durable notification outbox, owner routing, deduplication, escalation and quiet-window controls",
+        "Minimal redacted summaries with authenticated case deep links",
+        "Delivery receipts, retries and test notifications"
+      ],
+      "acceptance_tests": [
+        "Restart does not lose acknowledged notifications or spam duplicate messages",
+        "Notification failures are visible inside Digital Kingdom",
+        "Shared external channel does not receive unauthorized project evidence",
+        "No alert-volume metric substitutes for useful investigation outcome"
+      ],
+      "capabilities": [
+        "DK-C11",
+        "DK-C22"
+      ],
+      "external_gate": "authorized_notification_destination"
+    },
+    {
+      "id": "R04.1",
+      "phase": "R04",
+      "title": "Establish source-to-running-artifact lineage",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "A pipeline building a safe commit is not proof that its artifact is the one running in the exposed service.",
+      "depends_on": [
+        "R02.3",
+        "R02.4",
+        "R01.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/lineage/",
+        "packages/contracts/",
+        "proposed packages/connectors/github/",
+        "apps/web/src/workspaces/kingdom/"
+      ],
+      "deliverables": [
+        "Repository\u2192commit\u2192workflow\u2192builder\u2192digest\u2192registry\u2192deployment\u2192runtime links",
+        "Digest and expected signer/issuer validation; provenance policy",
+        "Explicit undeclared/unsigned/unverified/verified states and drift"
+      ],
+      "acceptance_tests": [
+        "Mutable image tag resolving to a different digest is detected",
+        "Valid provenance from an unexpected issuer does not satisfy policy",
+        "Matching provenance is not labeled malware-free",
+        "The deployed fix is checked at runtime digest/version, not just merged PR"
+      ],
+      "capabilities": [
+        "DK-C07"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R04.2",
+      "phase": "R04",
+      "title": "Add contextual vulnerability applicability",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Rank affected deployed components by explicit exposure and authority, not a CVSS-only alarm list.",
+      "depends_on": [
+        "R04.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/vulnerabilities/",
+        "proposed packages/connectors/threat-intel/",
+        "packages/contracts/"
+      ],
+      "deliverables": [
+        "SBOM/package identity and OSV matching; cached feed versions",
+        "KEV and EPSS as separate global context; reviewed VEX provenance",
+        "Applicability, reachability, observed exploitation and verified remediation kept distinct"
+      ],
+      "acceptance_tests": [
+        "A dependency in source but not the running artifact is not reported as confirmed runtime exposure",
+        "Backports, missing version and stale feeds produce qualified results",
+        "A KEV match does not label this installation compromised",
+        "Each priority explanation cites specific affected resources and assumptions"
+      ],
+      "capabilities": [
+        "DK-C09"
+      ],
+      "external_gate": "external_feed_access"
+    },
+    {
+      "id": "R04.3",
+      "phase": "R04",
+      "title": "Compute conditional effective-access paths",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Add policy semantics and prerequisites to graph paths; a visual connection is not proof of exploitable access.",
+      "depends_on": [
+        "R02.4",
+        "R01.1",
+        "R01.2"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/identity/",
+        "proposed packages/exposure/",
+        "packages/graph-core/",
+        "apps/web/src/castle/"
+      ],
+      "deliverables": [
+        "Scoped policy evaluator for one provider/action family with documented limits",
+        "Account for explicit denies, resource/identity policies, boundaries, sessions and relevant organization policies",
+        "Return feasible/conditional/blocked/unresolved paths with evidence"
+      ],
+      "acceptance_tests": [
+        "An allow statement overridden by a known deny is not presented as effective access",
+        "Missing policy input makes the result unresolved",
+        "Cross-account cases use the applicable trust and resource sides",
+        "Configured permission is never mislabeled observed data access"
+      ],
+      "capabilities": [
+        "DK-C05",
+        "DK-C08"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R04.4",
+      "phase": "R04",
+      "title": "Replace target-only posture with a real security change diff",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "A deployment may introduce authority even when no current finding exists. Review the proposed before/after change.",
+      "depends_on": [
+        "R04.1",
+        "R04.2",
+        "R04.3",
+        "R03.1"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/context.ts",
+        "proposed packages/change-review/",
+        "apps/mcp/src/server.ts",
+        "apps/web/src/workspaces/investigate/"
+      ],
+      "deliverables": [
+        "Versioned ChangePlan tied to base/candidate commits, artifacts and configuration",
+        "Detect new ingress, broader grants, changed tools/model routes and lost telemetry",
+        "Suggested negative/positive tests, owner review and post-deploy check"
+      ],
+      "acceptance_tests": [
+        "A new broad permission with zero existing findings is surfaced",
+        "Unknown scope cannot be favorable",
+        "Changing the candidate after review invalidates the old assessment",
+        "Post-deploy observed state must match the reviewed change"
+      ],
+      "capabilities": [
+        "DK-C15"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R05.1",
+      "phase": "R05",
+      "title": "Define agent intent/decision/execution/effect contracts",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Extend generic tool events into an attributable, scoped agent run model without collecting hidden reasoning or raw secrets.",
+      "depends_on": [
+        "R00.2",
+        "R01.1",
+        "R01.2"
+      ],
+      "existing_or_target_paths": [
+        "packages/contracts/",
+        "proposed packages/agent-observability/",
+        "packages/sdk-node/"
+      ],
+      "deliverables": [
+        "Run identity, initiating principal, runtime/model route, tool version and policy revision",
+        "Separate refusal, enforcement denial, attempted execution and observed effect",
+        "Declared observation origins and independent evidence correlation"
+      ],
+      "acceptance_tests": [
+        "Runtime self-report cannot masquerade as independent corroboration",
+        "Identical run IDs from unrelated runtimes do not join",
+        "Legacy generic tool events remain valid but qualified",
+        "Private prompts/payloads are minimized before persistence"
+      ],
+      "capabilities": [
+        "DK-C12"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R05.2",
+      "phase": "R05",
+      "title": "Instrument one real agent workflow and independent observer",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Prove one supported agent boundary end to end instead of listing every AI framework as supported.",
+      "depends_on": [
+        "R05.1",
+        "R02.2"
+      ],
+      "existing_or_target_paths": [
+        "proposed examples/agent-reference/",
+        "proposed packages/connectors/agent-runtime/",
+        "proposed packages/observers/"
+      ],
+      "deliverables": [
+        "One adapter for a chosen open runtime/tool gateway",
+        "Separate controlled destination or file observer outside agent write authority",
+        "Document unobserved execution paths and permission assumptions"
+      ],
+      "acceptance_tests": [
+        "Prohibited synthetic egress never reaches the controlled receiver when enforcement succeeds",
+        "Permitted work still completes",
+        "Wrapper-bypass scenario exposes the observation gap without attributing an unlinked process",
+        "Monitoring cannot be disabled by the monitored agent identity"
+      ],
+      "capabilities": [
+        "DK-C12",
+        "DK-C18"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R05.3",
+      "phase": "R05",
+      "title": "Extend MCP with bounded cases and subscriptions",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Keep one shared evidence model while adding case context and client-aware incremental delivery.",
+      "depends_on": [
+        "R03.1",
+        "R05.1",
+        "R10.1"
+      ],
+      "existing_or_target_paths": [
+        "apps/mcp/src/",
+        "apps/server/src/app.ts",
+        "packages/contracts/schemas/agent/"
+      ],
+      "deliverables": [
+        "Versioned case, bundle, capability and change-context tools",
+        "Supported resource/update capabilities with incremental polling fallback",
+        "Optional remote transport only with authenticated, audience-bound and scoped access",
+        "Output/token budgets and expiry/revocation handling"
+      ],
+      "acceptance_tests": [
+        "Stdio and any supported remote mode agree on scope and evidence IDs",
+        "Read-only annotations are not used as authorization",
+        "No downstream token passthrough or unrestricted URL fetching",
+        "Model/client disconnection does not stop monitoring or lose case changes"
+      ],
+      "capabilities": [
+        "DK-C13"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R05.4",
+      "phase": "R05",
+      "title": "Add optional bounded investigation assistance",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Model assistance should summarize and choose evidence queries, not invent facts or become the final authority.",
+      "depends_on": [
+        "R03.2",
+        "R05.3",
+        "R11.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/assistant/",
+        "apps/mcp/",
+        "apps/web/src/workspaces/investigate/",
+        "eval/"
+      ],
+      "deliverables": [
+        "Authorized case projection, query budget, evidence-reference outputs and model/prompt provenance",
+        "Draft claims, uncertainty, counterevidence and suggested next questions",
+        "No model dependency in collection, detection, query, scene fallback or authorization"
+      ],
+      "acceptance_tests": [
+        "Injected instructions in logs do not grant tools, approvals or scope",
+        "Claims without retrieved support are marked unsupported",
+        "Provider outage leaves deterministic product usable",
+        "Observe recommendation effects in matched evaluations, not only blocked writes"
+      ],
+      "capabilities": [
+        "DK-C13"
+      ],
+      "external_gate": "model_provider_and_budget_approval"
+    },
+    {
+      "id": "R06.1",
+      "phase": "R06",
+      "title": "Add a semantic world hierarchy without remapping history",
+      "status": "proposed_not_started",
+      "baseline": "current grouped districts and module kit implemented",
+      "goal": "Preserve the current ten-module campus while supporting realm/environment/district/structure/interior navigation.",
+      "depends_on": [
+        "R01.1",
+        "R02.1"
+      ],
+      "existing_or_target_paths": [
+        "packages/contracts/src/catalog.ts",
+        "packages/scene-compiler/",
+        "apps/web/src/castle/scenePresentation.ts",
+        "apps/web/src/graph2d/"
+      ],
+      "deliverables": [
+        "Stable grouping identities and explicit environment/account boundaries",
+        "Persistent layout versions, approved reflow and tombstoned historical assets",
+        "Semantic zoom, group membership and equivalent searchable lists"
+      ],
+      "acceptance_tests": [
+        "Adding a resource does not rearrange unrelated districts",
+        "A group is presentation-only, not an invented incident",
+        "Selection survives 3D/2D switching and historical lookup",
+        "Legacy stored scenes preserve supported positions and report new footprint collisions"
+      ],
+      "capabilities": [
+        "DK-C06"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R06.2",
+      "phase": "R06",
+      "title": "Extend all 28 surface mappings with capability-aware architecture",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Turn the surrounding world into a readable model while exposing the actual level of integration for each surface.",
+      "depends_on": [
+        "R06.1",
+        "R02.1"
+      ],
+      "existing_or_target_paths": [
+        "packages/contracts/",
+        "assets/castle-kit/MANIFEST.json",
+        "apps/web/src/castle/architecture.ts",
+        "proposed surface-registry/"
+      ],
+      "deliverables": [
+        "Versioned surface descriptors and mappings from operational entities to presentation modules",
+        "Introduce DNS registry, dispatch house, key registry, supply depot, archive and outpost families when supported by data",
+        "Separate decoration, organizational boundaries and tested enforcement controls"
+      ],
+      "acceptance_tests": [
+        "A drawn watchtower cannot imply a connected sensor",
+        "Generic historical events keep their old meaning under a richer surface model",
+        "Every selectable operational structure resolves to a permitted entity",
+        "All surface support levels are visible and machine-readable"
+      ],
+      "capabilities": [
+        "DK-C06",
+        "DK-C24"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R06.3",
+      "phase": "R06",
+      "title": "Add meaningful security layers and interior views",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Allow the castle to explain why a relationship matters rather than display every edge at once.",
+      "depends_on": [
+        "R06.2",
+        "R04.3",
+        "R04.1",
+        "R05.1"
+      ],
+      "existing_or_target_paths": [
+        "apps/web/src/castle/",
+        "apps/web/src/inspector/",
+        "apps/web/src/graph2d/",
+        "packages/scene-compiler/"
+      ],
+      "deliverables": [
+        "Switch infrastructure, identity, data, delivery, agent-capability and coverage layers",
+        "Service interiors expose route/method, deployment, instances, permissions and tool capabilities",
+        "Evidence and proposed-change focus modes with explicit user camera control"
+      ],
+      "acceptance_tests": [
+        "Permissions remain distinguishable from observed activity",
+        "Hypothetical movement cannot look like recorded intrusion",
+        "Current coverage is not shown as historical truth",
+        "Equivalent evidence and actions remain usable in lists/2D/reduced motion"
+      ],
+      "capabilities": [
+        "DK-C06",
+        "DK-C08",
+        "DK-C12"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R06.4",
+      "phase": "R06",
+      "title": "Polish composition with measured usability and performance",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Improve the now-working castle instead of rebuilding its shell; prioritize legibility and scene scale over cinematic clutter.",
+      "depends_on": [
+        "R06.1",
+        "R00.5"
+      ],
+      "existing_or_target_paths": [
+        "apps/web/src/castle/Environment.tsx",
+        "apps/web/src/castle/labels.tsx",
+        "apps/web/src/castle/architecture.ts",
+        "e2e/redesign/"
+      ],
+      "deliverables": [
+        "Intentional district approach lines, meaningful connector endpoints and focused label hierarchy",
+        "Optional control-backed boundary structures only where records support their meaning",
+        "Physical-device quality profiles, label collision review and stable memory behavior",
+        "Human comparison of castle, graph and table tasks with equal evidence"
+      ],
+      "acceptance_tests": [
+        "A user can identify selected resource, supported relationship and evidence in each representation",
+        "Large-world labels and camera preserve orientation",
+        "Quality reduction removes decoration before evidence",
+        "Actual hardware measurements and named review scope accompany claims"
+      ],
+      "capabilities": [
+        "DK-C06",
+        "DK-C23"
+      ],
+      "external_gate": "human_and_physical_device"
+    },
+    {
+      "id": "R07.1",
+      "phase": "R07",
+      "title": "Create control inventory and verification records",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Make shields and checkpoints represent an actual control with scope, policy and validation history.",
+      "depends_on": [
+        "R01.2",
+        "R04.3"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/controls/",
+        "packages/contracts/",
+        "apps/server/src/db.ts",
+        "apps/web/src/workspaces/coverage/"
+      ],
+      "deliverables": [
+        "Declared/configured/tested/stale/failed/unknown control states",
+        "Policy version, supported scope, evidence and test expiration/invalidation",
+        "Avoid calling a configured control effective without behavioral evidence"
+      ],
+      "acceptance_tests": [
+        "Relevant config change invalidates the old test claim",
+        "An unavailable observer yields inconclusive, not a pass",
+        "Positive and negative test results retain their conditions",
+        "Every control marker opens a defensible record"
+      ],
+      "capabilities": [
+        "DK-C14"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R07.2",
+      "phase": "R07",
+      "title": "Implement an isolated defense-lab runner",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Run reproducible authorized tests with independent observations, cleanup and protected production boundaries.",
+      "depends_on": [
+        "R07.1",
+        "R05.2",
+        "R10.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed apps/lab/",
+        "examples/",
+        "proposed packages/controls/",
+        "infra/"
+      ],
+      "deliverables": [
+        "Synthetic fixtures, owned sandbox targets, action allowlists and environment assertions",
+        "Resource/time/request budgets, abort handling and cleanup receipts",
+        "Separate effect observer and permitted-operation positive control"
+      ],
+      "acceptance_tests": [
+        "Test cannot target an unapproved environment or arbitrary external address",
+        "A prohibited action is blocked while legitimate work still functions",
+        "Failed cleanup and partial outcomes stay visible",
+        "No availability failure is mistaken for successful security enforcement"
+      ],
+      "capabilities": [
+        "DK-C18"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R07.3",
+      "phase": "R07",
+      "title": "Complete the 16 scenario packs",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Turn the blueprint scenarios into complete inventory\u2192evidence\u2192case\u2192verification demonstrations, including benign alternatives. Implement non-response scenarios first; response-dependent cases remain explicitly gated until R08.3/R08.4 and are not required to falsely pass before those capabilities exist.",
+      "depends_on": [
+        "R07.2",
+        "R03.3",
+        "R04.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed scenarios/",
+        "proposed apps/lab/",
+        "eval/",
+        "apps/web/src/workspaces/investigate/"
+      ],
+      "deliverables": [
+        "Implement DK-T01\u2013DK-T16 as versioned scenario manifests",
+        "Include shared-IP bait, absent database audit, unlinked reads, origin bypass, artifact mismatch, control no-op and backup restore failure",
+        "Mark executor-dependent scenarios unavailable until executor gates pass",
+        "Separate locally executable scenarios from response-dependent cases; require a final integrated rerun after R08 without labeling blocked scenarios passed"
+      ],
+      "acceptance_tests": [
+        "Each scenario has explicit expected observations, disallowed claims and missing-evidence variants",
+        "UI/MCP and independent observer agree on record identity",
+        "Scenarios are not a claim of universal attack coverage",
+        "A scenario can fail without the runner hiding its result"
+      ],
+      "capabilities": [
+        "DK-C18"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R07.4",
+      "phase": "R07",
+      "title": "Convert resolved cases into sanitized regression proposals",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Close the learning loop without leaking private incidents or treating generated tests as validated defenses.",
+      "depends_on": [
+        "R07.3",
+        "R03.2"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/controls/",
+        "proposed packages/investigation/",
+        "proposed scenarios/"
+      ],
+      "deliverables": [
+        "User-reviewed transformation from case lesson to minimized synthetic fixture",
+        "Sensitive-data checks, provenance and versioned expected outcome",
+        "PR-ready regression proposal with no automatic public publication"
+      ],
+      "acceptance_tests": [
+        "Private identifiers and secrets are absent from generated fixtures",
+        "The proposed regression fails the broken condition and passes the corrected one",
+        "An agent cannot self-approve publication",
+        "A new rule preserves benign counterexamples"
+      ],
+      "capabilities": [
+        "DK-C18",
+        "DK-C24"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R08.1",
+      "phase": "R08",
+      "title": "Bind response authorization to real subjects and policy",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Move beyond distinct human-typed tokens before enabling execution.",
+      "depends_on": [
+        "R10.1",
+        "R03.1",
+        "R07.1"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/security.ts",
+        "apps/server/src/containment.ts",
+        "apps/server/src/store.ts",
+        "proposed apps/response-controller/"
+      ],
+      "deliverables": [
+        "Identity-provider subjects, service identities, roles, resource scope and separation of duties",
+        "Policy-required approvals tied to exact plan digest and expiry",
+        "Independent break-glass path and protected monitoring authority"
+      ],
+      "acceptance_tests": [
+        "Two tokens for the same person do not satisfy a two-person requirement",
+        "Agent cannot approve itself, edit approval policy or disable its verifier",
+        "Revocation or policy change invalidates stale authority",
+        "Audit identifies the actual authenticated subject"
+      ],
+      "capabilities": [
+        "DK-C19"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R08.2",
+      "phase": "R08",
+      "title": "Define exact response plans and revalidation",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Make the plan a bounded executable contract, not an ambiguous action name and rationale.",
+      "depends_on": [
+        "R08.1",
+        "R01.3",
+        "R01.4"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/containment.ts",
+        "packages/contracts/",
+        "proposed apps/response-controller/"
+      ],
+      "deliverables": [
+        "Exact targets, parameters, state fingerprint, evidence bundle, policy revision, TTL and blast radius",
+        "Rollback or compensation and explicit irreversibility",
+        "Recheck preconditions immediately before execution and after material drift"
+      ],
+      "acceptance_tests": [
+        "Changed target, parameters or artifact digest cannot reuse approval",
+        "A key revocation is not falsely labeled reversible",
+        "Missing effect-observer capability blocks verified-success claims",
+        "Unsupported action never falls back to arbitrary shell"
+      ],
+      "capabilities": [
+        "DK-C19"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R08.3",
+      "phase": "R08",
+      "title": "Build a separate laboratory-only executor first",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Introduce meaningful response without putting broad provider authority in the investigation agent.",
+      "depends_on": [
+        "R08.2",
+        "R07.2",
+        "R10.2"
+      ],
+      "existing_or_target_paths": [
+        "proposed apps/response-controller/",
+        "proposed packages/response-adapters/",
+        "infra/"
+      ],
+      "deliverables": [
+        "Typed provider API adapters, separate scoped credentials and action journal",
+        "Idempotency, crash reconciliation, bounded retry, lease/expiry and manual stop",
+        "Initially one explicitly owned non-production environment"
+      ],
+      "acceptance_tests": [
+        "Crash after provider success is reconciled before retry",
+        "Repeated delivery does not apply the action twice",
+        "Timeout is not interpreted as confirmed failure or success",
+        "Production credentials/targets are rejected unless separately configured and authorized"
+      ],
+      "capabilities": [
+        "DK-C20"
+      ],
+      "external_gate": "explicit_lab_execution_authorization"
+    },
+    {
+      "id": "R08.4",
+      "phase": "R08",
+      "title": "Verify containment and service recovery independently",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "An accepted provider call does not close the case; verify effects and surviving authority.",
+      "depends_on": [
+        "R08.3",
+        "R03.3",
+        "R07.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/verification/",
+        "proposed apps/response-controller/",
+        "apps/web/src/workspaces/investigate/"
+      ],
+      "deliverables": [
+        "State, behavior, permitted-control, residual-access and observability checks",
+        "Pending/verified/failed/inconclusive/compensated states with propagation windows",
+        "Separate containment, service restoration and historical exposure conclusions"
+      ],
+      "acceptance_tests": [
+        "Provider accepts a no-op yet observer sees access: case remains unresolved",
+        "Original credential is disabled but descendant access survives: verification fails",
+        "Legitimate service disruption is detected",
+        "All claims name their tested scope and unassessed paths"
+      ],
+      "capabilities": [
+        "DK-C21"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R09.1",
+      "phase": "R09",
+      "title": "Add edge, DNS, browser, API and webhook packs",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Expand public-facing coverage through authoritative inventories and authorized tests, not unrestricted external scanning.",
+      "depends_on": [
+        "R02.1",
+        "R01.2",
+        "R04.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/connectors/edge/",
+        "proposed packages/connectors/api/",
+        "packages/graph-core/",
+        "apps/web/src/workspaces/integrations/"
+      ],
+      "deliverables": [
+        "DNS/certificate and declared-origin inventory; optional Cloudflare/WAF feed with version/plan support",
+        "OpenAPI routes, browser dependency metadata and webhook authorization/replay configuration",
+        "Separate discovered leads from verified ownership and instrumented paths"
+      ],
+      "acceptance_tests": [
+        "A certificate hostname is not assumed owned",
+        "Alternate origin validation only runs against authorized targets",
+        "A route is scoped by method/service/environment",
+        "Frontend and webhook observations disclose blind spots"
+      ],
+      "capabilities": [
+        "DK-C03",
+        "DK-C08"
+      ],
+      "external_gate": "authorized_provider_access"
+    },
+    {
+      "id": "R09.2",
+      "phase": "R09",
+      "title": "Add workload, serverless, queue and runtime packs",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Represent dynamic compute and asynchronous delivery without one permanent building per transient instance.",
+      "depends_on": [
+        "R02.1",
+        "R01.1",
+        "R06.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/connectors/kubernetes/",
+        "proposed packages/connectors/runtime/",
+        "packages/contracts/",
+        "apps/web/src/castle/"
+      ],
+      "deliverables": [
+        "Logical workload, pod/process/function lifecycle and queue/topic producers/consumers",
+        "Falco/Hubble or equivalent supported feed adapters with precise semantics",
+        "Message correlation and provider identity scopes; replica-level drilldown"
+      ],
+      "acceptance_tests": [
+        "Pod/process-ID reuse does not join different lifetimes",
+        "Queue adjacency alone does not prove message lineage",
+        "Missing node coverage is surfaced",
+        "Scale-up does not rearrange all logical service locations"
+      ],
+      "capabilities": [
+        "DK-C03",
+        "DK-C05",
+        "DK-C06"
+      ],
+      "external_gate": "authorized_provider_access"
+    },
+    {
+      "id": "R09.3",
+      "phase": "R09",
+      "title": "Add data, RAG, secrets and backup packs",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Make sensitive information boundaries and recovery capability inspectable without ingesting the sensitive content by default.",
+      "depends_on": [
+        "R02.1",
+        "R01.2",
+        "R07.2"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/connectors/data/",
+        "proposed packages/connectors/rag/",
+        "proposed packages/connectors/backup/",
+        "proposed packages/controls/"
+      ],
+      "deliverables": [
+        "One database audit adapter, object-storage events and resource-level access metadata",
+        "RAG document origin, tenant permissions, retrieval and memory mutation lineage",
+        "Secret/signing metadata and backup/restore-test evidence"
+      ],
+      "acceptance_tests": [
+        "Database audit absent is not no reads",
+        "Cross-tenant synthetic retrieval is denied while own-tenant retrieval works",
+        "Backup configuration success plus failed restore remains failed recovery",
+        "No raw document, secret or customer row is required for baseline inventory"
+      ],
+      "capabilities": [
+        "DK-C03",
+        "DK-C14",
+        "DK-C18"
+      ],
+      "external_gate": "authorized_provider_access"
+    },
+    {
+      "id": "R09.4",
+      "phase": "R09",
+      "title": "Add SaaS, endpoint and correspondence packs",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Extend the external world only where the provider grants sufficient authoritative data.",
+      "depends_on": [
+        "R02.1",
+        "R01.1",
+        "R03.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/connectors/saas/",
+        "proposed packages/connectors/endpoint/",
+        "proposed packages/connectors/collaboration/"
+      ],
+      "deliverables": [
+        "One identity-provider/SaaS grant integration, endpoint feed and mail/collaboration security feed at a time",
+        "Delegated scope, forwarding/config changes and developer-device relationships",
+        "No invented visibility into provider interiors or employee behavior"
+      ],
+      "acceptance_tests": [
+        "Shared service account does not establish a particular human actor",
+        "Provider permissions/licensing limitations are visible",
+        "Changing delegated grant is separated from actual data access",
+        "Feed installation/removal has tested coverage effects"
+      ],
+      "capabilities": [
+        "DK-C03",
+        "DK-C05"
+      ],
+      "external_gate": "authorized_provider_access"
+    },
+    {
+      "id": "R10.1",
+      "phase": "R10",
+      "title": "Strengthen deployment identity and secret handling",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Prepare for real team use before remote agent access or response execution.",
+      "depends_on": [
+        "R00.4"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/security.ts",
+        "apps/server/src/store.ts",
+        "infra/compose/",
+        "Dockerfile",
+        "SECURITY.md"
+      ],
+      "deliverables": [
+        "OIDC/SSO subjects, scoped service credentials, expiry/rotation and least-privilege token issuance",
+        "TLS deployment, trusted proxy policy, secret storage and sensitive export authorization",
+        "Demo disabled by default for real telemetry deployments; auditable login/logout and scope changes"
+      ],
+      "acceptance_tests": [
+        "Tenant/project and field-level access survives token rotation and session revocation",
+        "No secret persists in browser local storage, logs, trace artifacts or screenshots",
+        "Cross-origin/CSRF and proxy boundary tests pass",
+        "A user can recover access without granting the monitored agent emergency authority"
+      ],
+      "capabilities": [
+        "DK-C22"
+      ],
+      "external_gate": "identity_provider_for_live_verification"
+    },
+    {
+      "id": "R10.2",
+      "phase": "R10",
+      "title": "Measure ingestion resilience and recovery",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "A trustworthy product must state what it can recover under failure and what it cannot.",
+      "depends_on": [
+        "R01.5",
+        "R10.1"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/worker.ts",
+        "apps/server/src/store.ts",
+        "packages/sdk-node/",
+        "infra/",
+        "docs/UPGRADING.md"
+      ],
+      "deliverables": [
+        "Load/soak/fault harness, per-source budgets, bounded backpressure and visible loss accounting",
+        "Supported encrypted backup, restore and upgrade procedure",
+        "RPO/RTO and queue/disk assumptions documented from tests"
+      ],
+      "acceptance_tests": [
+        "Disk full, duplicate replay, process crash and revoked source do not corrupt checkpoints",
+        "Backup restoration preserves references and required integrity checks",
+        "A noisy source cannot indefinitely starve others",
+        "No undocumented deletion is introduced to meet a benchmark"
+      ],
+      "capabilities": [
+        "DK-C22"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R10.3",
+      "phase": "R10",
+      "title": "Add team-scale storage only after workload proof",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Preserve local SQLite while introducing a tested storage boundary where measured concurrency/retention requires it.",
+      "depends_on": [
+        "R01.5",
+        "R10.2"
+      ],
+      "existing_or_target_paths": [
+        "apps/server/src/db.ts",
+        "apps/server/src/store.ts",
+        "proposed packages/storage/",
+        "infra/"
+      ],
+      "deliverables": [
+        "Storage interface extracted with behavior-preserving conformance suite",
+        "Optional PostgreSQL/event store and object storage selected from measurements",
+        "Migration and rollback/forward-recovery plan with evidence immutability"
+      ],
+      "acceptance_tests": [
+        "Same fixtures produce equivalent authorized queries across backends",
+        "Cross-project concurrency and retention preserve case pins",
+        "Cursor/snapshot semantics do not change silently",
+        "No graph database is required merely for 3D rendering"
+      ],
+      "capabilities": [
+        "DK-C23"
+      ],
+      "external_gate": "measured_capacity_need"
+    },
+    {
+      "id": "R10.4",
+      "phase": "R10",
+      "title": "Add safe multi-environment federation",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Provide a realm-level view without silently exporting raw security data or weakening tenant boundaries.",
+      "depends_on": [
+        "R10.3",
+        "R06.1",
+        "R01.1"
+      ],
+      "existing_or_target_paths": [
+        "proposed packages/federation/",
+        "apps/server/",
+        "apps/mcp/",
+        "apps/web/src/castle/"
+      ],
+      "deliverables": [
+        "Federated summaries with provenance and local deep-link retrieval",
+        "Independent trust domains, scoped service identities and data residency rules",
+        "Explicit partial failure and duplicate entity reconciliation"
+      ],
+      "acceptance_tests": [
+        "One realm cannot fetch another realm evidence through a shared cursor",
+        "Offline spoke remains unavailable rather than healthy",
+        "Identity collisions across accounts/regions do not merge",
+        "Aggregated view preserves the scope and age of each observation"
+      ],
+      "capabilities": [
+        "DK-C23"
+      ],
+      "external_gate": "multi_environment_authorization"
+    },
+    {
+      "id": "R10.5",
+      "phase": "R10",
+      "title": "Secure releases and the extension ecosystem",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Make it possible to trust, install, update and contribute without turning plugins into an unrestricted execution route.",
+      "depends_on": [
+        "R02.1",
+        "R10.1"
+      ],
+      "existing_or_target_paths": [
+        ".github/workflows/",
+        "CONTRIBUTING.md",
+        "SECURITY.md",
+        "proposed packages/extension-sdk/",
+        "infra/"
+      ],
+      "deliverables": [
+        "Reviewed release process, dependency inventory, verified artifact provenance and license notices",
+        "Versioned connector/rule/module contracts with isolated permissions",
+        "Opt-in usage telemetry only, no required hosted model dependency",
+        "Branch protection/rulesets proposed for owner approval, not bypassed"
+      ],
+      "acceptance_tests": [
+        "Release artifacts match recorded source/build identity",
+        "Malformed or overprivileged plugin is rejected",
+        "A contributor pack includes benign, missing-evidence and failure fixtures",
+        "Upgrade removal/revocation and disconnected installation are documented and tested"
+      ],
+      "capabilities": [
+        "DK-C24",
+        "DK-C22"
+      ],
+      "external_gate": "owner_release_settings"
+    },
+    {
+      "id": "R11.1",
+      "phase": "R11",
+      "title": "Complete the offline v2 evaluation runner",
+      "status": "proposed_not_started",
+      "baseline": "plan and six objective tests exist; full v2 runner absent",
+      "goal": "The plan and objective helpers exist; implement the complete equal-access harness before any provider spend.",
+      "depends_on": [
+        "R00.2",
+        "R01.3",
+        "R03.2"
+      ],
+      "existing_or_target_paths": [
+        "eval/src/",
+        "eval/test/",
+        "docs/AGENT_EVAL_V2_PLAN.md"
+      ],
+      "deliverables": [
+        "Condition-specific tool profiles, common metadata and exhaustive evidence access-equivalence preflight",
+        "Seeded held-out generation, preregistered ordering, clean/injected pairing",
+        "Separate retrieval, conditional reasoning, task success and pending human review",
+        "Budget reservation logic tested with a fake provider"
+      ],
+      "acceptance_tests": [
+        "Required evidence never retrieved fails retrieval/task success",
+        "Unavailable evidence invalidates preflight rather than improving scores",
+        "C2 is not labeled raw-only when it includes derived context",
+        "v1 trees and transcripts remain unchanged"
+      ],
+      "capabilities": [
+        "DK-C13",
+        "DK-C18"
+      ],
+      "external_gate": "local"
+    },
+    {
+      "id": "R11.2",
+      "phase": "R11",
+      "title": "Run approved model evaluation with independent review",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Measure the product claims without replacing human judgments or hiding failures.",
+      "depends_on": [
+        "R11.1"
+      ],
+      "existing_or_target_paths": [
+        "eval/",
+        "docs/AGENT_EVAL_V2_PLAN.md",
+        "proposed eval/v2/"
+      ],
+      "deliverables": [
+        "Pin candidate, provider route, model, prompt, clock, tool schemas and approved cost cap",
+        "Preserve every started attempt and all preflight failures",
+        "Blinded/scope-recorded review and uncertainty at case/family level"
+      ],
+      "acceptance_tests": [
+        "No provider request before route/budget approval",
+        "Injection-direction changes compared with normal clean variation",
+        "Scores distinguish operator-LLM screens from actual human judgments",
+        "No claim of immunity, superiority or production readiness follows from a small synthetic evaluation"
+      ],
+      "capabilities": [
+        "DK-C13",
+        "DK-C18"
+      ],
+      "external_gate": "provider_budget_and_human_review"
+    },
+    {
+      "id": "R11.3",
+      "phase": "R11",
+      "title": "Validate outside-user utility and interface advantage",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Prove the castle and MCP help users complete real investigation tasks, not merely attract attention.",
+      "depends_on": [
+        "R02.2",
+        "R03.1",
+        "R06.4"
+      ],
+      "existing_or_target_paths": [
+        "docs/redesign/",
+        "proposed docs/usability/",
+        "examples/",
+        "apps/web/"
+      ],
+      "deliverables": [
+        "Consenting outside-user onboarding and task protocol with equal-evidence 3D/2D/table comparisons",
+        "Measure successful setup, correct conclusions, time, errors, recognition of gaps and return use",
+        "Record accessibility and real-device results separately from automated CI"
+      ],
+      "acceptance_tests": [
+        "Report unsuccessful installations and abandoned tasks",
+        "A visually impressive but slower task is not declared better",
+        "MCP-only adoption is recorded as a valid product signal",
+        "Keep review privacy and data-sharing consent explicit"
+      ],
+      "capabilities": [
+        "DK-C06",
+        "DK-C22"
+      ],
+      "external_gate": "external_participants"
+    },
+    {
+      "id": "R11.4",
+      "phase": "R11",
+      "title": "Ship supported product tiers and maintenance commitments",
+      "status": "proposed_not_started",
+      "baseline": "new work",
+      "goal": "Publish only the capability and assurance level actually verified for the release.",
+      "depends_on": [
+        "R10.5",
+        "R11.3"
+      ],
+      "existing_or_target_paths": [
+        "README.md",
+        "CHANGELOG.md",
+        "docs/",
+        "proposed support-matrix/",
+        ".github/workflows/"
+      ],
+      "deliverables": [
+        "Define local reference, read-only connected pilot, team investigation and optional lab-response tiers",
+        "Versioned supported providers, permissions, limits, troubleshooting and uninstall",
+        "Maintainer ownership, disclosure policy, regression/scenario contributions and compatibility policy",
+        "Release notes cite exact candidate evidence and remaining gates"
+      ],
+      "acceptance_tests": [
+        "No integration logo without its declared support level",
+        "Open-source core works without paid model service",
+        "One complete source\u2192case\u2192verification demo matches the shipped candidate",
+        "Security corrections propagate to supported packs and tests"
+      ],
+      "capabilities": [
+        "DK-C24"
+      ],
+      "external_gate": "local"
+    }
+  ],
+  "execution_notes": [
+    "Phase numbering groups work; it is not a timeline or a mandatory waterfall. Follow package dependencies.",
+    "External human/provider/hardware gates block the corresponding verification claim, not independent local work.",
+    "Response-dependent scenario tests complete after R08; the executor depends on the proven lab foundation, not on all such scenarios already passing.",
+    "All proposed work must be reconciled against newer branches before editing. Preserve existing code and immutable historical records."
+  ]
+}

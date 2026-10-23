@@ -45,8 +45,9 @@ Event detail reports `evidence_completeness`: expected, returned and `missing_ev
 
 | Field | Namespace | Trust limit |
 |---|---|---|
-| `actor_ref` | per source | An account id as one source reports it. The same string from two sources is a lead, not proof of one principal (no source declares a shared identity namespace). |
-| `session_ref`, `run_id`, `rule_ref` | per source | Meaningful only within the source that issued it. |
+| `actor_ref`, `session_ref` | per source, unless an administrator declared a shared `identity_namespace` | The same string from two sources is the same principal only when both declare the same `identity_namespace`; detection rules correlate only then. An account id never matches a session handle. |
+| `run_id` | per source, unless a shared `run_namespace` is declared | Equal run ids from runtimes without a common declared `run_namespace` are not the same run and never corroborate an effect. |
+| `rule_ref` | per source | Meaningful only within the source that issued it. |
 | `request_id` | per source unless trusted | Correlates across sources only when the event says `request_id_trust: trusted`. Otherwise it is client-supplied. |
 | `trace_id` | per instrumentation | Can be absent or client-influenced at the edge. |
 | `client_ip` | **network locator, not identity** | Shared egress, NAT, VPN, proxies and CGNAT put unrelated people behind one address. Digital Kingdom never attributes events to a common actor because they share an address, and agents must not either. |
@@ -54,6 +55,8 @@ Event detail reports `evidence_completeness`: expected, returned and `missing_ev
 | `source_id`, `asset_id` | project | Source authenticated by its key; assets as that source is configured to report them. |
 
 Each response carries the notes for the filters used, plus `client_ip` whenever returned events contain addresses.
+
+Namespaces are set on the source by an administrator (`POST /api/projects/:p/sources` with `identity_namespace` / `run_namespace`, 1-96 characters of letters, digits and `_ . : / -`; the `source:` prefix is reserved). They are never taken from event payloads. Declare one only when the sources really share the authority, for example an application that accepts sessions issued by the identity provider (rules `dk-rules-1.1.0`, roadmap R00.2).
 
 ## 2. Change assessment v2 (`dk.change_assessment.v2`)
 
@@ -69,6 +72,7 @@ Each response carries the notes for the filters used, plus `client_ip` whenever 
   4. Findings: `proceed_with_care`.
   5. Otherwise: `no_recorded_concerns`.
 - `favorable` is true only for the last two, and the schema requires full resolution and sufficient evidence whenever it is true.
+- Routes (R00.3): a route target may be `"/path"`, `"METHOD /path"` or `"METHOD host/path"`, with an optional `environment` input. It resolves against the graph's declared route inventory (asset `routes`) first, independent of any event window. Several owners are never reduced to the most frequent one: the assessment covers every candidate and `route_resolution` lists them. Ownership inferred only from recorded events is labelled `inferred_from_events` and adds an `ownership_inferred` sufficiency reason, so it is never favorable. `GET /context?route=` returns 409 with the candidates when a route is ambiguous.
 - **Breaking:** v1's `assessment_complete` was removed. It read `true` when a target's coverage was stale or offline. Consumers updated: the MCP tool description, server tests, and the README. The web app never read it.
 
 ## 3. Validation errors

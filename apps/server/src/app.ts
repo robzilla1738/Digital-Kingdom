@@ -149,6 +149,24 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     store.audit(who(req), "token.create", scope === "*" ? null : scope.length === 1 ? scope[0]! : null, t.id, { role: b.role, principal_type: type, projects: scope });
     return { id: t.id, token: t.token, role: b.role, principal_type: type, projects: scope, note: "Shown once; only its hash is stored." };
   });
+  /**
+   * Revocation (R00.4). A human admin may revoke a token whose scope lies inside their own; only an
+   * installation admin may revoke "*"-scoped tokens. The last active installation admin cannot be revoked.
+   */
+  app.post("/api/tokens/:id/revoke", { preHandler: authed("admin") }, async (req) => {
+    const issuer = req.principal!;
+    if (issuer.kind !== "token" || issuer.principalType !== "human") throw new HttpError(403, "only human admin tokens may revoke tokens");
+    const id = String((req.params as { id: string }).id).slice(0, 64);
+    const t = store.getTokenMeta(id);
+    if (!t) throw new HttpError(404, "unknown token");
+    if (t.projects === "*" ? issuer.projects !== "*" : issuer.projects !== "*" && t.projects.some((p) => !(issuer.projects as string[]).includes(p))) throw new HttpError(403, "cannot revoke a token outside your scope");
+    if (!t.revoked && t.role === "admin" && t.projects === "*" && t.principalType === "human") {
+      const others = store.db.prepare("SELECT COUNT(*) AS n FROM api_tokens WHERE role = 'admin' AND project_ids = '*' AND principal_type = 'human' AND revoked = 0 AND id <> ?").get(id) as { n: number };
+      if (!others.n) throw new HttpError(409, "cannot revoke the last active installation admin");
+    }
+    const changed = store.revokeToken(id, who(req));
+    return { id, revoked: true, changed };
+  });
   app.get("/api/me", { preHandler: authed() }, async (req) => ({ name: req.principal!.name, role: req.principal!.role, kind: req.principal!.kind, demo_mode: cfg.demoMode }));
 
   // ---- projects ----
@@ -169,7 +187,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, meta: proj.meta },
       graph: store.getGraph(proj.id) ?? null,
       scene: store.getScene(proj.id) ?? null,
-      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions })),
+      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace })),
       events,
       evidence: store.evidenceFor(proj.id, events.flatMap((e) => e.evidence_refs)),
       findings: store.listFindings(proj.id),
@@ -270,13 +288,15 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/projects/:p/sources", { preHandler: authed() }, async (req) => store.listSources(store.require(req.principal!, P(req), "viewer").id));
   app.post("/api/projects/:p/sources", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");
-    const b = req.body as { id: string; label: string; kind?: string; asset_ids?: string[]; trusts_request_ids?: boolean; stale_after_seconds?: number; dataset_kind?: "live" | "synthetic"; allowed_actions?: string[]; independence_group?: string };
+    const b = req.body as { id: string; label: string; kind?: string; asset_ids?: string[]; trusts_request_ids?: boolean; stale_after_seconds?: number; dataset_kind?: "live" | "synthetic"; allowed_actions?: string[]; independence_group?: string; identity_namespace?: string; run_namespace?: string };
     if (!b?.id || !b.label) throw new HttpError(400, "id and label are required");
     const r = store.upsertSource(proj.id, {
       id: b.id, label: b.label, kind: b.kind ?? "generic", asset_ids: Array.isArray(b.asset_ids) ? b.asset_ids.map(String).slice(0, 200) : [], trusts_request_ids: !!b.trusts_request_ids,
       ...(b.stale_after_seconds ? { stale_after_seconds: Number(b.stale_after_seconds) } : {}), ...(b.dataset_kind ? { dataset_kind: b.dataset_kind } : {}),
       ...(Array.isArray(b.allowed_actions) ? { allowed_actions: b.allowed_actions.map(String) as never } : {}),
       ...(b.independence_group ? { independence_group: String(b.independence_group).slice(0, 64) } : {}),
+      ...(b.identity_namespace !== undefined && b.identity_namespace !== "" ? { identity_namespace: b.identity_namespace as string } : {}),
+      ...(b.run_namespace !== undefined && b.run_namespace !== "" ? { run_namespace: b.run_namespace as string } : {}),
     }, who(req));
     return { ...r, note: "Store this key now; it is shown once and only its hash is kept." };
   });
@@ -301,12 +321,16 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   // ---- agent context (shared with the MCP server) ----
   app.get("/api/projects/:p/context", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
-    const q = req.query as { asset?: string; route?: string };
-    return securityContext(store, proj.id, q);
+    const q = req.query as { asset?: string; route?: string; environment?: string };
+    return securityContext(store, proj.id, { ...(q.asset ? { asset: String(q.asset) } : {}), ...(q.route ? { route: String(q.route) } : {}), ...(q.environment ? { environment: String(q.environment).slice(0, 160) } : {}) });
   });
   app.post("/api/projects/:p/assess-change", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
-    return assessChange(store, proj.id, req.body as { asset_ids?: string[]; routes?: string[]; summary?: string });
+    const b = (req.body ?? {}) as Record<string, unknown>;
+    const strList = (v: unknown, k: string) => { if (v === undefined) return undefined; if (!Array.isArray(v) || v.some((x) => typeof x !== "string" || x.length > 300)) throw new HttpError(400, `${k} must be a list of strings (at most 300 characters each)`); return v as string[]; };
+    if (b.environment !== undefined && (typeof b.environment !== "string" || b.environment.length > 160)) throw new HttpError(400, "environment must be a string of at most 160 characters");
+    const asset_ids = strList(b.asset_ids, "asset_ids"), routes = strList(b.routes, "routes");
+    return assessChange(store, proj.id, { ...(asset_ids ? { asset_ids } : {}), ...(routes ? { routes } : {}), ...(b.environment ? { environment: b.environment as string } : {}), ...(typeof b.summary === "string" ? { summary: b.summary } : {}) });
   });
   app.get("/api/projects/:p/overview", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");

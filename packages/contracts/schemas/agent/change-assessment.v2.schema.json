@@ -15,10 +15,21 @@
       "type": "object", "required": ["sufficient", "insufficient_targets"],
       "properties": {
         "sufficient": { "type": "boolean" },
-        "insufficient_targets": { "type": "array", "items": { "type": "object", "required": ["asset_id", "sufficient", "reasons"], "properties": { "reasons": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["source_id", "state", "detail"], "properties": { "state": { "enum": ["stale", "offline", "not_assessed", "unobserved"] } } } } } } }
+        "insufficient_targets": { "type": "array", "items": { "type": "object", "required": ["asset_id", "sufficient", "reasons"], "properties": { "reasons": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["source_id", "state", "detail"], "properties": { "state": { "enum": ["stale", "offline", "not_assessed", "unobserved", "ownership_inferred"] } } } } } } }
       }
     },
-    "targets": { "type": "array", "items": { "type": "object", "required": ["asset", "direct_findings", "coverage", "evidence_sufficient"] } }
+    "targets": { "type": "array", "items": { "type": "object", "required": ["asset", "direct_findings", "coverage", "evidence_sufficient"] } },
+    "route_resolution": {
+      "description": "R00.3 (additive): how each requested route resolved. Declared ownership comes from the graph's route inventory; ownership inferred from recorded events is never favorable; an ambiguous route is assessed against every candidate.",
+      "type": "array",
+      "items": { "type": "object", "required": ["route", "status", "ownership", "candidates", "notes"], "properties": {
+        "route": { "type": "string" },
+        "status": { "enum": ["declared", "inferred", "ambiguous", "no_match", "invalid"] },
+        "ownership": { "enum": ["declared", "inferred_from_events", "none"] },
+        "candidates": { "type": "array", "items": { "type": "object", "required": ["asset_id", "provenance"], "properties": { "asset_id": { "type": "string" }, "provenance": { "type": "string" } } } },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      } }
+    }
   },
   "allOf": [
     { "if": { "properties": { "favorable": { "const": true } } }, "then": { "properties": { "target_resolution": { "properties": { "complete": { "const": true } } }, "evidence_sufficiency": { "properties": { "sufficient": { "const": true } } } } } }

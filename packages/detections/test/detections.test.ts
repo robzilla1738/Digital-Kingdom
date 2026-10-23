@@ -10,10 +10,11 @@ const SRC: SourceConfig[] = [
   { id: "edge-src", label: "Edge", kind: "waf", asset_ids: ["edge"], trusts_request_ids: true },
   { id: "auth-src", label: "Auth", kind: "app_auth", asset_ids: ["auth"], trusts_request_ids: true },
   { id: "app-src", label: "App", kind: "app_security", asset_ids: ["api"], trusts_request_ids: false },
-  { id: "observer", label: "Observer", kind: "effect_observer", asset_ids: ["blob", "tools"], trusts_request_ids: true },
-  { id: "observer-relay", label: "Observer via second collector", kind: "effect_observer", asset_ids: ["blob", "tools"], trusts_request_ids: true, independence_group: "observer" },
+  // The observer receives the agent runtime's propagated run ids, so both declare that run authority (R00.2).
+  { id: "observer", label: "Observer", kind: "effect_observer", asset_ids: ["blob", "tools"], trusts_request_ids: true, run_namespace: "runtime:agent" },
+  { id: "observer-relay", label: "Observer via second collector", kind: "effect_observer", asset_ids: ["blob", "tools"], trusts_request_ids: true, independence_group: "observer", run_namespace: "runtime:agent" },
   { id: "edge-relay", label: "Edge via log shipper", kind: "effect_observer", asset_ids: ["blob"], trusts_request_ids: true, independence_group: "edge-src" },
-  { id: "agent-src", label: "Agent wrapper", kind: "agent_observer", asset_ids: ["agent", "tools"], trusts_request_ids: true },
+  { id: "agent-src", label: "Agent wrapper", kind: "agent_observer", asset_ids: ["agent", "tools"], trusts_request_ids: true, run_namespace: "runtime:agent" },
   { id: "decoy-src", label: "Decoys", kind: "honeytoken", asset_ids: ["agent"] },
   { id: "db-audit", label: "DB audit", kind: "db_audit", asset_ids: ["db"] },
 ];

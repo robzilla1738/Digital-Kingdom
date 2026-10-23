@@ -31,6 +31,19 @@ export interface Asset {
   instance_count?: number;
   secondary_label?: string;
   deployment?: string;
+  /** Declared HTTP routes this asset serves: the authoritative route inventory (R00.3). */
+  routes?: DeclaredRoute[];
+}
+
+export const HTTP_METHODS = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "CONNECT", "TRACE"] as const;
+export type HttpMethod = (typeof HTTP_METHODS)[number];
+export interface DeclaredRoute {
+  /** Normalized path template: {param} or :param match one segment; a trailing /* matches the rest. */
+  path: string;
+  /** Omitted: any method. */
+  methods?: HttpMethod[];
+  /** Omitted: any host. A leading "*." matches subdomains. */
+  hosts?: string[];
 }
 
 export interface Relationship {

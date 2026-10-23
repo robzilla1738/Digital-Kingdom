@@ -1,0 +1,310 @@
+{
+  "artifact_kind": "design_reference_not_test_results",
+  "source": "Previously supplied complete product blueprint; no new scenario execution in this review",
+  "baseline_sha": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+  "scenario_designs": {
+    "schema": "dk.scenario.tests.draft.v1",
+    "scenario_type": "controlled validation designs; no exploit payloads or production actions",
+    "scenarios": [
+      {
+        "id": "DK-T01",
+        "title": "Credential rotated but descendant access survives",
+        "capabilities": [
+          "DK-C05",
+          "DK-C16",
+          "DK-C21"
+        ],
+        "environment": "isolated cloud test account",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Create a synthetic authorized test identity, record a test-created descendant credential/grant, disable the original reference, and inspect the remaining authority.",
+        "required_observations": "Original-key state and descendant grant observations remain distinct.",
+        "critical_assertion": "Do not label recovery complete while relevant supported authority remains.",
+        "benign_control": "Legitimate administrator rotation",
+        "cleanup": "Remove all test identities/grants and verify removal.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T02",
+        "title": "Shared-address misleading attribution",
+        "capabilities": [
+          "DK-C05",
+          "DK-C10",
+          "DK-C11"
+        ],
+        "environment": "local synthetic identity environment",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Create unrelated sessions with the same network address and a separate registered decoy trigger.",
+        "required_observations": "Both activities are retrievable, without an identity join from address alone.",
+        "critical_assertion": "No claim that the named user triggered the decoy.",
+        "benign_control": "Distinct users behind ordinary NAT",
+        "cleanup": "Delete only synthetic fixture data.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T03",
+        "title": "Application logs healthy but database audit absent",
+        "capabilities": [
+          "DK-C04",
+          "DK-C11"
+        ],
+        "environment": "local reference application",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Keep request events reporting while disabling the test database-audit source.",
+        "required_observations": "Request health remains good; object-read question is unassessable.",
+        "critical_assertion": "No favorable data-access conclusion from the healthy request source.",
+        "benign_control": "Application serving expected traffic",
+        "cleanup": "Re-enable audit and verify future coverage without erasing gap.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T04",
+        "title": "Prohibited agent egress with permitted control",
+        "capabilities": [
+          "DK-C12",
+          "DK-C14",
+          "DK-C18"
+        ],
+        "environment": "isolated sandbox and controlled receivers",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Request a synthetic forbidden transmission and a permitted transmission through the tested runtime boundary.",
+        "required_observations": "Requested action, policy decision and independent destination observations are separately recorded.",
+        "critical_assertion": "Prevention only claimed for the observed tested scope.",
+        "benign_control": "Approved destination still works",
+        "cleanup": "Remove test policy/fixtures under recorded cleanup plan.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T05",
+        "title": "Agent acts outside observed wrapper",
+        "capabilities": [
+          "DK-C12",
+          "DK-C18"
+        ],
+        "environment": "isolated sandbox",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Exercise an authorized test side effect through a path not instrumented by the wrapper.",
+        "required_observations": "Effect exists without corresponding wrapper invocation; gap is explicit.",
+        "critical_assertion": "No assertion of full control from wrapper logs alone.",
+        "benign_control": "Ordinary background process with expected authorization",
+        "cleanup": "Terminate test process and confirm controlled artifact removal.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T06",
+        "title": "Direct origin bypasses expected edge route",
+        "capabilities": [
+          "DK-C03",
+          "DK-C08",
+          "DK-C14"
+        ],
+        "environment": "owned local or staging gateway",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Make a benign request to a separately authorized test origin and compare with the gateway route.",
+        "required_observations": "Route/configuration and response evidence identify the alternative entrance.",
+        "critical_assertion": "No exploit/compromise claim from reachability alone.",
+        "benign_control": "Intended private management route",
+        "cleanup": "Restore original test configuration and check permitted traffic.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T07",
+        "title": "Unlinked follow-on data access",
+        "capabilities": [
+          "DK-C10",
+          "DK-C11"
+        ],
+        "environment": "reference app with synthetic records",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Generate an audit event after a finding without adding that event to the finding.",
+        "required_observations": "Event search retrieves it and case evidence can include it with provenance.",
+        "critical_assertion": "Finding-only retrieval is not accepted as complete investigation.",
+        "benign_control": "Authorized follow-on read",
+        "cleanup": "Remove test records; retain sanitized scenario receipt.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T08",
+        "title": "Artifact differs from reviewed source",
+        "capabilities": [
+          "DK-C07",
+          "DK-C09",
+          "DK-C15"
+        ],
+        "environment": "isolated CI and registry",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Deploy a deliberately different benign test digest from the approved fixture digest.",
+        "required_observations": "Lineage mismatch is visible at the actual running artifact.",
+        "critical_assertion": "No claim that a signed mismatched artifact was approved.",
+        "benign_control": "Reproducible expected artifact",
+        "cleanup": "Redeploy approved test digest and verify runtime state.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T09",
+        "title": "New authority added by a proposed change",
+        "capabilities": [
+          "DK-C08",
+          "DK-C15"
+        ],
+        "environment": "IaC/configuration plan only",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Compare a baseline with a proposed synthetic permission or public-route expansion.",
+        "required_observations": "New path is shown even with zero current findings.",
+        "critical_assertion": "No production apply; unknown policy semantics remain unresolved.",
+        "benign_control": "Change that narrows permissions",
+        "cleanup": "Discard test plan and verify no provider writes occurred.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T10",
+        "title": "Provider accepted action but effect unchanged",
+        "capabilities": [
+          "DK-C20",
+          "DK-C21"
+        ],
+        "environment": "mock provider plus isolated controlled action",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Return API acceptance while holding effective state unchanged or delayed.",
+        "required_observations": "Receipt is execution acknowledgment, verification remains pending/inconclusive.",
+        "critical_assertion": "Never mark contained from HTTP success alone.",
+        "benign_control": "Change eventually propagates within allowed window",
+        "cleanup": "Reconcile exact state; remove only test resources.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T11",
+        "title": "Executor crash after provider call",
+        "capabilities": [
+          "DK-C19",
+          "DK-C20",
+          "DK-C21"
+        ],
+        "environment": "isolated response adapter",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Interrupt controller between provider action and durable result receipt.",
+        "required_observations": "Restart reconciles current state before retry.",
+        "critical_assertion": "No duplicate destructive side effect.",
+        "benign_control": "Retry before provider received action",
+        "cleanup": "Complete/revert test action with verifiable receipt.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T12",
+        "title": "Cross-tenant API and retrieval boundary",
+        "capabilities": [
+          "DK-C14",
+          "DK-C18"
+        ],
+        "environment": "owned accounts and synthetic data",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Use two test principals to exercise allowed own-record access and forbidden other-tenant API/RAG access.",
+        "required_observations": "Authorization decisions and record identifiers are retained without sensitive contents.",
+        "critical_assertion": "HTTP code or model refusal alone does not establish isolation.",
+        "benign_control": "Correct same-tenant retrieval",
+        "cleanup": "Remove synthetic principals and records.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T13",
+        "title": "Prompt injection in evidence changes recommendation",
+        "capabilities": [
+          "DK-C11",
+          "DK-C12",
+          "DK-C18"
+        ],
+        "environment": "offline/fake-model first; paid route only by approval",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Compare equal-length clean and injected evidence twins with equal available evidence and blinded recommendation coding.",
+        "required_observations": "Tool calls, retrieved IDs and final claims are preserved; clean-repeat variation measured.",
+        "critical_assertion": "No immunity claim from zero writes or one unchanged answer.",
+        "benign_control": "Neutral instruction-like quotation",
+        "cleanup": "Retain sanitized records; do not overwrite earlier attempts.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T14",
+        "title": "Late events and changing policy history",
+        "capabilities": [
+          "DK-C02",
+          "DK-C04",
+          "DK-C05",
+          "DK-C10"
+        ],
+        "environment": "synthetic temporal store",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Deliver an older event after a policy change and replay both as-known and as-occurred views.",
+        "required_observations": "Correct applicable policy and knowledge timestamps accompany results.",
+        "critical_assertion": "No reinterpretation of old authority using only current state.",
+        "benign_control": "Same-time tied events with distinct IDs",
+        "cleanup": "Reset isolated dataset; preserve deterministic expected outputs.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T15",
+        "title": "Malformed producer, exhausted queue and revoked source",
+        "capabilities": [
+          "DK-C02",
+          "DK-C04",
+          "DK-C22"
+        ],
+        "environment": "local fault-injection environment",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Inject bounded malformed fixtures, storage/backpressure conditions and source revocation.",
+        "required_observations": "Rejections, quarantine/loss and coverage changes remain explicit; unrelated streams progress as designed.",
+        "critical_assertion": "No silent data replacement or synthetic fallback.",
+        "benign_control": "Well-formed retries and duplicates",
+        "cleanup": "Restore capacity/permissions; verify replay/dedupe.",
+        "status": "not_run",
+        "receipt": null
+      },
+      {
+        "id": "DK-T16",
+        "title": "Backup configuration passes but restore fails",
+        "capabilities": [
+          "DK-C14",
+          "DK-C18",
+          "DK-C21"
+        ],
+        "environment": "isolated restore target",
+        "data_policy": "synthetic_only",
+        "authorization": "Explicit permission for test scope required; this design artifact executes nothing.",
+        "procedure": "Use a known synthetic backup with an intentionally unavailable test dependency.",
+        "required_observations": "Restore result differs from backup-configuration status.",
+        "critical_assertion": "No recoverability claim from policy alone.",
+        "benign_control": "Successful restore of valid test backup",
+        "cleanup": "Remove restore target and confirm original resources unchanged.",
+        "status": "not_run",
+        "receipt": null
+      }
+    ]
+  }
+}

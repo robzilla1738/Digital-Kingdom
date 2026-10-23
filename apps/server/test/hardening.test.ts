@@ -153,6 +153,7 @@ describe("upgrading a v0.2 database purges raw journal payloads", () => {
     for (const n of [1, 2]) db.prepare("UPDATE journal SET payload = ? WHERE source_event_id = ?").run(JSON.stringify(raw(n)), `legacy-${n}`);
     db.exec(`DROP TABLE quarantine; ALTER TABLE journal DROP COLUMN meta; ALTER TABLE journal DROP COLUMN minimized;
       DROP INDEX events_project_seq; ALTER TABLE sources DROP COLUMN allowed_actions; ALTER TABLE sources DROP COLUMN independence_group;
+      ALTER TABLE sources DROP COLUMN identity_namespace; ALTER TABLE sources DROP COLUMN run_namespace;
       ALTER TABLE api_tokens DROP COLUMN principal_type; ALTER TABLE containment_requests DROP COLUMN requested_by_type;
       DELETE FROM schema_migrations WHERE version > 1; PRAGMA wal_checkpoint(TRUNCATE);`);
     db.close();

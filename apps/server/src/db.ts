@@ -39,6 +39,10 @@ export const MIGRATIONS: string[] = [
   `ALTER TABLE journal ADD COLUMN meta TEXT;
    ALTER TABLE journal ADD COLUMN minimized INTEGER NOT NULL DEFAULT 0;
    CREATE TABLE quarantine (journal_seq INTEGER PRIMARY KEY, project_id TEXT NOT NULL, source_id TEXT NOT NULL, source_event_id TEXT NOT NULL, error TEXT NOT NULL, created_at TEXT NOT NULL);`,
+  // R00.2: administrator-declared correlation authorities. NULL = private per-source namespace (no
+  // cross-source identity joins), which is the safe default for every existing source.
+  `ALTER TABLE sources ADD COLUMN identity_namespace TEXT;
+   ALTER TABLE sources ADD COLUMN run_namespace TEXT;`,
 ];
 
 export function openDb(path: string): DB {

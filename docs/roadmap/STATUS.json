@@ -1,0 +1,534 @@
+{
+  "schema": "dk.roadmap_ledger.v1",
+  "roadmap": "docs/roadmap/forward-from-14d205f",
+  "baseline_sha": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+  "status_vocabulary": {
+    "proposed_not_started": "In the roadmap; no implementation in this repository yet (foundations may exist).",
+    "implemented_locally_verified": "Code and tests exist; full local checks ran and passed on the recorded revision. Not CI-verified until ci_run is filled.",
+    "ci_verified": "implemented_locally_verified plus a passing CI run on the exact head recorded here.",
+    "blocked_external": "Needs a human reviewer, physical hardware, provider access, spend approval or owner authorization; independent work may continue around it.",
+    "failed": "Attempted; checks failed. Receipt kept."
+  },
+  "packages": [
+    {
+      "id": "R00.1",
+      "title": "Publish a current-main readiness receipt",
+      "status": "implemented_locally_verified",
+      "external_gate": "local",
+      "receipt": "docs/roadmap/R00-RECEIPT.md#r001-current-main-receipt",
+      "head": null,
+      "ci_run": null,
+      "notes": "Receipt for 14d205f with exact-head CI/Pages ids and served build. Frozen redesign receipts untouched."
+    },
+    {
+      "id": "R00.2",
+      "title": "Enforce typed, namespaced event correlation",
+      "status": "implemented_locally_verified",
+      "external_gate": "local",
+      "receipt": "docs/roadmap/R00-RECEIPT.md#r002-typed-namespaced-correlation",
+      "head": null,
+      "ci_run": null,
+      "notes": "8 of 16 new regressions failed on dk-rules-1.0.1 before the fix; all pass after. Expired-session lifetime is NOT modelled (no session lifetime data in events)."
+    },
+    {
+      "id": "R00.3",
+      "title": "Resolve routes without guessing one owner",
+      "status": "implemented_locally_verified",
+      "external_gate": "local",
+      "receipt": "docs/roadmap/R00-RECEIPT.md#r003-route-resolution",
+      "head": null,
+      "ci_run": null,
+      "notes": "6 of 11 new regressions failed on the previous resolver. Real candidate-diff assessment remains R04.4."
+    },
+    {
+      "id": "R00.4",
+      "title": "Tighten contracts and adversarial data-boundary tests",
+      "status": "implemented_locally_verified",
+      "external_gate": "local",
+      "receipt": "docs/roadmap/R00-RECEIPT.md#r004-contracts-and-data-boundaries",
+      "head": null,
+      "ci_run": null,
+      "notes": "Reproduced and fixed: token-shaped values echoed in rejection/quarantine details. Added token revocation API. Query cost budgets (beyond page/size/interval limits) remain R01.5."
+    },
+    {
+      "id": "R00.5",
+      "title": "Close the remaining design release gates honestly",
+      "status": "blocked_external",
+      "external_gate": "human_and_physical_device",
+      "receipt": "docs/roadmap/R00.5-MANUAL-REVIEW-PACKET.md",
+      "head": null,
+      "ci_run": null,
+      "notes": "Packet prepared; every human/device check is unrun. No automated result is relabelled approval."
+    },
+    {
+      "id": "R01.1",
+      "title": "Version domain assertions and entity lifetimes",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R01.2",
+      "title": "Persist source capability and coverage history",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R01.3",
+      "title": "Serve revision-pinned evidence bundles",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R01.4",
+      "title": "Add optimistic concurrency and annotation history",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R01.5",
+      "title": "Bound query work and prove snapshot semantics",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R02.1",
+      "title": "Define versioned connector and support-pack contracts",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R02.2",
+      "title": "Deliver a one-command local application pack",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R02.3",
+      "title": "Add repository and deployment discovery",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R02.4",
+      "title": "Deliver the first real cloud identity/audit pack",
+      "status": "proposed_not_started",
+      "external_gate": "authorized_provider_access",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R03.1",
+      "title": "Persist cases separately from findings",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R03.2",
+      "title": "Add hypotheses and deterministic investigation recipes",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R03.3",
+      "title": "Build credential aftermath and residual-access investigation",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R03.4",
+      "title": "Integrate registered deception assets safely",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R03.5",
+      "title": "Add reliable external attention delivery",
+      "status": "proposed_not_started",
+      "external_gate": "authorized_notification_destination",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R04.1",
+      "title": "Establish source-to-running-artifact lineage",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R04.2",
+      "title": "Add contextual vulnerability applicability",
+      "status": "proposed_not_started",
+      "external_gate": "external_feed_access",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R04.3",
+      "title": "Compute conditional effective-access paths",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R04.4",
+      "title": "Replace target-only posture with a real security change diff",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R05.1",
+      "title": "Define agent intent/decision/execution/effect contracts",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R05.2",
+      "title": "Instrument one real agent workflow and independent observer",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R05.3",
+      "title": "Extend MCP with bounded cases and subscriptions",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R05.4",
+      "title": "Add optional bounded investigation assistance",
+      "status": "proposed_not_started",
+      "external_gate": "model_provider_and_budget_approval",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R06.1",
+      "title": "Add a semantic world hierarchy without remapping history",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R06.2",
+      "title": "Extend all 28 surface mappings with capability-aware architecture",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R06.3",
+      "title": "Add meaningful security layers and interior views",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R06.4",
+      "title": "Polish composition with measured usability and performance",
+      "status": "proposed_not_started",
+      "external_gate": "human_and_physical_device",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R07.1",
+      "title": "Create control inventory and verification records",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R07.2",
+      "title": "Implement an isolated defense-lab runner",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R07.3",
+      "title": "Complete the 16 scenario packs",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R07.4",
+      "title": "Convert resolved cases into sanitized regression proposals",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R08.1",
+      "title": "Bind response authorization to real subjects and policy",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R08.2",
+      "title": "Define exact response plans and revalidation",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R08.3",
+      "title": "Build a separate laboratory-only executor first",
+      "status": "proposed_not_started",
+      "external_gate": "explicit_lab_execution_authorization",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R08.4",
+      "title": "Verify containment and service recovery independently",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R09.1",
+      "title": "Add edge, DNS, browser, API and webhook packs",
+      "status": "proposed_not_started",
+      "external_gate": "authorized_provider_access",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R09.2",
+      "title": "Add workload, serverless, queue and runtime packs",
+      "status": "proposed_not_started",
+      "external_gate": "authorized_provider_access",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R09.3",
+      "title": "Add data, RAG, secrets and backup packs",
+      "status": "proposed_not_started",
+      "external_gate": "authorized_provider_access",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R09.4",
+      "title": "Add SaaS, endpoint and correspondence packs",
+      "status": "proposed_not_started",
+      "external_gate": "authorized_provider_access",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R10.1",
+      "title": "Strengthen deployment identity and secret handling",
+      "status": "proposed_not_started",
+      "external_gate": "identity_provider_for_live_verification",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R10.2",
+      "title": "Measure ingestion resilience and recovery",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R10.3",
+      "title": "Add team-scale storage only after workload proof",
+      "status": "proposed_not_started",
+      "external_gate": "measured_capacity_need",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R10.4",
+      "title": "Add safe multi-environment federation",
+      "status": "proposed_not_started",
+      "external_gate": "multi_environment_authorization",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R10.5",
+      "title": "Secure releases and the extension ecosystem",
+      "status": "proposed_not_started",
+      "external_gate": "owner_release_settings",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R11.1",
+      "title": "Complete the offline v2 evaluation runner",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R11.2",
+      "title": "Run approved model evaluation with independent review",
+      "status": "proposed_not_started",
+      "external_gate": "provider_budget_and_human_review",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R11.3",
+      "title": "Validate outside-user utility and interface advantage",
+      "status": "proposed_not_started",
+      "external_gate": "external_participants",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    },
+    {
+      "id": "R11.4",
+      "title": "Ship supported product tiers and maintenance commitments",
+      "status": "proposed_not_started",
+      "external_gate": "local",
+      "receipt": null,
+      "head": null,
+      "ci_run": null,
+      "notes": null
+    }
+  ]
+}

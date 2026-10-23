@@ -1,0 +1,369 @@
+{
+  "baseline_sha": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+  "surfaces": [
+    {
+      "id": "DK-S-dns",
+      "name": "Domains, DNS and certificates",
+      "presentation": "DNS registry / approach signs",
+      "operational_work_package": "R09.1",
+      "current_status": "missing provider inventory",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-edge",
+      "name": "CDN, WAF and reverse proxy",
+      "presentation": "Gatehouse / configured checkpoint",
+      "operational_work_package": "R09.1",
+      "current_status": "existing edge representation and generic events; no provider feed",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-origin",
+      "name": "Direct or alternate origin",
+      "presentation": "Separate service entrance",
+      "operational_work_package": "R09.1",
+      "current_status": "no verified alternate-origin discovery",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-api",
+      "name": "API methods and authorization",
+      "presentation": "Service interior doors / route registry",
+      "operational_work_package": "R09.1",
+      "current_status": "event routes exist; authoritative method/host inventory incomplete",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-browser",
+      "name": "Browser frontend and scripts",
+      "presentation": "Storefront / script supply layer",
+      "operational_work_package": "R09.1",
+      "current_status": "no dedicated browser security inventory",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-webhook",
+      "name": "Webhooks and asynchronous ingress",
+      "presentation": "Dispatch gate",
+      "operational_work_package": "R09.1",
+      "current_status": "no dedicated webhook lifecycle",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-service",
+      "name": "Logical application and replicas",
+      "presentation": "Hall / keep with replica drilldown",
+      "operational_work_package": "R09.2",
+      "current_status": "logical services already represented",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-serverless",
+      "name": "Functions and scheduled jobs",
+      "presentation": "Task pavilion / temporary workshop",
+      "operational_work_package": "R09.2",
+      "current_status": "worker representation only, no provider lifecycle",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-queue",
+      "name": "Queues, topics and event buses",
+      "presentation": "Dispatch house / typed delivery lanes",
+      "operational_work_package": "R09.2",
+      "current_status": "no native queue/topic/message lineage",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-human_identity",
+      "name": "Human identities and sessions",
+      "presentation": "Identity registry / guardhouse",
+      "operational_work_package": "R04.3",
+      "current_status": "auth events represented; no authoritative subject inventory",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-machine_identity",
+      "name": "Workload identities and credentials",
+      "presentation": "Key registry / identity layer",
+      "operational_work_package": "R03.3",
+      "current_status": "generic references only",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-authorization",
+      "name": "IAM and application permissions",
+      "presentation": "Permission overlays / policy checkpoint",
+      "operational_work_package": "R04.3",
+      "current_status": "declared edges and change events; no effective-policy solver",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-database",
+      "name": "Databases and collections",
+      "presentation": "Vault / collection interior",
+      "operational_work_package": "R09.3",
+      "current_status": "generic database assets and data_access events; no pgAudit adapter",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-storage",
+      "name": "Object stores and file shares",
+      "presentation": "Archive / bucket interior",
+      "operational_work_package": "R09.3",
+      "current_status": "generic storage representation; no full provider audit pack",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-secrets",
+      "name": "Secret managers and signing services",
+      "presentation": "Key vault / mint",
+      "operational_work_package": "R03.3",
+      "current_status": "no secret-manager metadata lifecycle",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-repository",
+      "name": "Repositories and code changes",
+      "presentation": "Design archive",
+      "operational_work_package": "R02.3",
+      "current_status": "no repository discovery pack",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-pipeline",
+      "name": "CI/CD and runners",
+      "presentation": "Forge / assembly line",
+      "operational_work_package": "R04.1",
+      "current_status": "pipeline asset exists; verified build lineage missing",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-registry",
+      "name": "Artifacts and package/container registries",
+      "presentation": "Supply depot",
+      "operational_work_package": "R04.1",
+      "current_status": "no artifact digest/provenance lifecycle",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-agent",
+      "name": "AI agents and model gateways",
+      "presentation": "Observatory / bounded workroom",
+      "operational_work_package": "R05.2",
+      "current_status": "agent asset and generic tool/effect events exist",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-tool",
+      "name": "MCP and other tool servers",
+      "presentation": "Tool annex",
+      "operational_work_package": "R05.2",
+      "current_status": "tool-server asset exists; capability/version/runtime identity incomplete",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-rag",
+      "name": "RAG, retrieval and memory",
+      "presentation": "Indexed archive / intake room",
+      "operational_work_package": "R09.3",
+      "current_status": "not implemented",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-device",
+      "name": "Endpoints and developer workstations",
+      "presentation": "Registered outpost",
+      "operational_work_package": "R09.4",
+      "current_status": "not implemented",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-email",
+      "name": "Email and collaboration",
+      "presentation": "Correspondence house",
+      "operational_work_package": "R09.4",
+      "current_status": "not implemented",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-saas",
+      "name": "Third-party services",
+      "presentation": "External pavilion / portal",
+      "operational_work_package": "R09.4",
+      "current_status": "third-party representation only",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-backup",
+      "name": "Backups and restore resources",
+      "presentation": "Reserve archive",
+      "operational_work_package": "R09.3",
+      "current_status": "no restore-test lifecycle",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-sensor",
+      "name": "Telemetry and enforcement components",
+      "presentation": "Watchtower / observer overlay",
+      "operational_work_package": "R01.2",
+      "current_status": "current source records and gaps exist; historical capabilities missing",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-decoy",
+      "name": "Deception assets",
+      "presentation": "Registered sealed decoy",
+      "operational_work_package": "R03.4",
+      "current_status": "decoy events exist; placement registry missing",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    },
+    {
+      "id": "DK-S-unknown",
+      "name": "Unresolved/unmanaged observations",
+      "presentation": "Explicit unresolved observation",
+      "operational_work_package": "R02.1",
+      "current_status": "unmapped input reported/rejected; no full reconciliation queue",
+      "visual_work_packages": [
+        "R06.1",
+        "R06.2",
+        "R06.3"
+      ],
+      "rule": "Representation never implies discovery, instrumentation, analysis or verified enforcement."
+    }
+  ]
+}

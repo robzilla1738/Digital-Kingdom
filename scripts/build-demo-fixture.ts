@@ -47,12 +47,13 @@ R("rel-ci-api", "ci", "api", "deploys"); R("rel-ci-web", "ci", "web", "deploys")
 
 const sources = [
   { id: "src-edge", label: "Edge WAF", kind: "waf", asset_ids: ["edge"], trusts_request_ids: true, stale_after_seconds: 600 },
-  { id: "src-auth", label: "Identity audit log", kind: "app_auth", asset_ids: ["auth"], trusts_request_ids: true, stale_after_seconds: 1800 },
-  { id: "src-app", label: "Application security events", kind: "app_security", asset_ids: ["web", "api", "pay"], trusts_request_ids: true, stale_after_seconds: 1800 },
+  // The application accepts sessions issued by the identity service, so both declare that authority (R00.2).
+  { id: "src-auth", label: "Identity audit log", kind: "app_auth", asset_ids: ["auth"], trusts_request_ids: true, stale_after_seconds: 1800, identity_namespace: "idp:castle-gate" },
+  { id: "src-app", label: "Application security events", kind: "app_security", asset_ids: ["web", "api", "pay"], trusts_request_ids: true, stale_after_seconds: 1800, identity_namespace: "idp:castle-gate" },
   { id: "src-db-audit", label: "Database audit", kind: "db_audit", asset_ids: ["db"], trusts_request_ids: false, stale_after_seconds: 1800 },
   { id: "src-decoy", label: "Decoy credential service", kind: "honeytoken", asset_ids: ["agent", "tools"], trusts_request_ids: false },
-  { id: "src-agent", label: "Agent tool wrapper", kind: "agent_observer", asset_ids: ["agent", "tools"], trusts_request_ids: true, stale_after_seconds: 1800 },
-  { id: "src-sink", label: "Egress observer (controlled sink)", kind: "effect_observer", asset_ids: ["blob", "tools"], trusts_request_ids: true },
+  { id: "src-agent", label: "Agent tool wrapper", kind: "agent_observer", asset_ids: ["agent", "tools"], trusts_request_ids: true, stale_after_seconds: 1800, run_namespace: "agent-runtime:support-agent" },
+  { id: "src-sink", label: "Egress observer (controlled sink)", kind: "effect_observer", asset_ids: ["blob", "tools"], trusts_request_ids: true, run_namespace: "agent-runtime:support-agent" },
   { id: "src-falco", label: "Runtime sensor (Falco)", kind: "falco", asset_ids: ["worker", "sched"], trusts_request_ids: false, stale_after_seconds: 1800 },
 ];
 

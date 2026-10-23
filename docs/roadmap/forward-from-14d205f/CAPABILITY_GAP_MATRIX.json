@@ -1,0 +1,288 @@
+{
+  "baseline_sha": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+  "capabilities": [
+    {
+      "id": "DK-C01",
+      "title": "Preserved reproducible baseline",
+      "current_main_status": "implemented; ongoing release discipline",
+      "basis": "Pinned main and exact-head CI/artifacts exist. Acceptance/handoff documentation includes historical candidate states.",
+      "forward_work_packages": [
+        "R00.1"
+      ]
+    },
+    {
+      "id": "DK-C02",
+      "title": "Versioned evidence and domain contracts",
+      "current_main_status": "implemented core; extend",
+      "basis": "Versioned asset/event/finding/scene/agent contracts exist; temporal identity/control/response domains need expansion.",
+      "forward_work_packages": [
+        "R00.2",
+        "R00.3",
+        "R00.4",
+        "R01.1"
+      ]
+    },
+    {
+      "id": "DK-C03",
+      "title": "Complete installation and discovery pack",
+      "current_main_status": "partial",
+      "basis": "Manual manifest/Compose, generic ingest, SDK, Falco HTTP and OTLP JSON exist; automated cloud discovery packs do not.",
+      "forward_work_packages": [
+        "R02.1",
+        "R02.2",
+        "R02.3",
+        "R02.4",
+        "R09.1",
+        "R09.2",
+        "R09.3",
+        "R09.4"
+      ]
+    },
+    {
+      "id": "DK-C04",
+      "title": "Historical capability coverage",
+      "current_main_status": "not implemented end to end",
+      "basis": "Current source health is explicit; historical capability/configuration/loss intervals are not available.",
+      "forward_work_packages": [
+        "R01.2",
+        "R02.4"
+      ]
+    },
+    {
+      "id": "DK-C05",
+      "title": "Namespaced temporal identity graph",
+      "current_main_status": "partial; correctness work first",
+      "basis": "Stable graph IDs and temporal fields exist; raw actor/session/run correlation still needs issuer/namespace semantics.",
+      "forward_work_packages": [
+        "R00.2",
+        "R01.1",
+        "R02.4",
+        "R04.3",
+        "R09.2",
+        "R09.4"
+      ]
+    },
+    {
+      "id": "DK-C06",
+      "title": "Faithful semantic world",
+      "current_main_status": "implemented redesigned core; broader world proposed",
+      "basis": "Four workspaces, ten modules, LOD, grouped scenes and recovery exist; 28-surface semantic world is not implemented.",
+      "forward_work_packages": [
+        "R00.5",
+        "R06.1",
+        "R06.2",
+        "R06.3",
+        "R06.4",
+        "R09.2",
+        "R11.3"
+      ]
+    },
+    {
+      "id": "DK-C07",
+      "title": "Artifact-to-runtime lineage",
+      "current_main_status": "not implemented as a verified chain",
+      "basis": "Pipeline asset/declared deploy edges are not source-build-digest-runtime provenance.",
+      "forward_work_packages": [
+        "R02.3",
+        "R04.1"
+      ]
+    },
+    {
+      "id": "DK-C08",
+      "title": "Conditional exposure and path analysis",
+      "current_main_status": "partial foundations",
+      "basis": "Graph traversal and typed relationships exist; effective conditional permission/exposure solving does not.",
+      "forward_work_packages": [
+        "R04.3",
+        "R06.3",
+        "R09.1"
+      ]
+    },
+    {
+      "id": "DK-C09",
+      "title": "Contextual vulnerability applicability",
+      "current_main_status": "not implemented",
+      "basis": "No reviewed SBOM/feed/applicability pipeline is present in the baseline.",
+      "forward_work_packages": [
+        "R04.2"
+      ]
+    },
+    {
+      "id": "DK-C10",
+      "title": "Exact investigation retrieval",
+      "current_main_status": "implemented core; revision and capacity gaps",
+      "basis": "Exact evidence retrieval and search exist. Historical bundle pinning and measured scale remain.",
+      "forward_work_packages": [
+        "R01.3",
+        "R01.5",
+        "R03.2"
+      ]
+    },
+    {
+      "id": "DK-C11",
+      "title": "Case and hypothesis workspace",
+      "current_main_status": "partial",
+      "basis": "Finding-centric investigations/notes/exports exist, but no independent persistent case/hypothesis domain in the reviewed schema.",
+      "forward_work_packages": [
+        "R01.3",
+        "R01.4",
+        "R03.1",
+        "R03.2",
+        "R03.5"
+      ]
+    },
+    {
+      "id": "DK-C12",
+      "title": "Agent intent/decision/execution/effect telemetry",
+      "current_main_status": "partial",
+      "basis": "Tool invocation and effect events exist. Complete intent/decision/execution/effect instrumentation is not established.",
+      "forward_work_packages": [
+        "R00.2",
+        "R05.1",
+        "R05.2",
+        "R06.3"
+      ]
+    },
+    {
+      "id": "DK-C13",
+      "title": "Scoped MCP and coding workflow",
+      "current_main_status": "implemented scoped core; extend",
+      "basis": "Read-mostly stdio MCP with event tools and target posture exists; actual change diff and continuous subscriptions are separate work.",
+      "forward_work_packages": [
+        "R00.3",
+        "R03.2",
+        "R05.3",
+        "R05.4",
+        "R11.1",
+        "R11.2"
+      ]
+    },
+    {
+      "id": "DK-C14",
+      "title": "Control inventory and independent tests",
+      "current_main_status": "not implemented",
+      "basis": "No complete control inventory and independently verified behavior-test lifecycle.",
+      "forward_work_packages": [
+        "R07.1",
+        "R09.3"
+      ]
+    },
+    {
+      "id": "DK-C15",
+      "title": "Pre-change security diff",
+      "current_main_status": "partial",
+      "basis": "Current-target findings/coverage assessment exists, not analysis of candidate code/config/artifact diffs.",
+      "forward_work_packages": [
+        "R00.3",
+        "R04.4"
+      ]
+    },
+    {
+      "id": "DK-C16",
+      "title": "Credential aftermath and residual access",
+      "current_main_status": "not implemented",
+      "basis": "No supported credential/descendant authority investigation and provider recheck pack.",
+      "forward_work_packages": [
+        "R03.3"
+      ]
+    },
+    {
+      "id": "DK-C17",
+      "title": "Deception placement and trigger evidence",
+      "current_main_status": "partial",
+      "basis": "Decoy-use events and detections exist; registered placement/propagation/provider lifecycle is missing.",
+      "forward_work_packages": [
+        "R03.4"
+      ]
+    },
+    {
+      "id": "DK-C18",
+      "title": "Defense laboratory and scenario packs",
+      "current_main_status": "partial lab ingredients",
+      "basis": "Synthetic fixtures/reference app/browser tests exist; operator-facing defense lab and full scenario packs are missing.",
+      "forward_work_packages": [
+        "R02.2",
+        "R05.2",
+        "R07.2",
+        "R07.3",
+        "R07.4",
+        "R09.3",
+        "R11.1",
+        "R11.2"
+      ]
+    },
+    {
+      "id": "DK-C19",
+      "title": "Exact response-plan authorization",
+      "current_main_status": "partial; proposal only",
+      "basis": "Human-typed-token decisions exist, not real-person/plan-digest/expiry/precondition execution authorization.",
+      "forward_work_packages": [
+        "R01.4",
+        "R08.1",
+        "R08.2"
+      ]
+    },
+    {
+      "id": "DK-C20",
+      "title": "Optional isolated executor",
+      "current_main_status": "intentionally absent",
+      "basis": "No executor. Preserve this boundary until separate gated implementation.",
+      "forward_work_packages": [
+        "R08.3"
+      ]
+    },
+    {
+      "id": "DK-C21",
+      "title": "Independent containment/recovery verification",
+      "current_main_status": "not implemented",
+      "basis": "No provider-action/effect/residual-access recovery verification workflow.",
+      "forward_work_packages": [
+        "R08.4"
+      ]
+    },
+    {
+      "id": "DK-C22",
+      "title": "Operational and security foundation",
+      "current_main_status": "substantial single-node foundation; incomplete team operations",
+      "basis": "Durable journal, source auth, redaction, quarantine, replay/recovery tests exist; SSO, broader operations and independent review remain.",
+      "forward_work_packages": [
+        "R00.1",
+        "R00.4",
+        "R00.5",
+        "R01.2",
+        "R01.4",
+        "R02.1",
+        "R03.5",
+        "R10.1",
+        "R10.2",
+        "R10.5",
+        "R11.3"
+      ]
+    },
+    {
+      "id": "DK-C23",
+      "title": "Measured scale and federation",
+      "current_main_status": "not implemented beyond local foundations",
+      "basis": "SQLite and bounded windows; no proven HA/team-scale/federation capability.",
+      "forward_work_packages": [
+        "R01.5",
+        "R06.4",
+        "R10.3",
+        "R10.4"
+      ]
+    },
+    {
+      "id": "DK-C24",
+      "title": "Extensible open-source ecosystem",
+      "current_main_status": "partial",
+      "basis": "Apache-2.0, contribution docs and original kit exist; pack ecosystem/release conformance and broad adoption need development.",
+      "forward_work_packages": [
+        "R02.1",
+        "R06.2",
+        "R07.4",
+        "R10.5",
+        "R11.4"
+      ]
+    }
+  ]
+}

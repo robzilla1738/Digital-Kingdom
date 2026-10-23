@@ -1,0 +1,89 @@
+{
+  "schema": "dk.main-review-evidence.v1",
+  "repository": "robzilla1738/Digital-Kingdom",
+  "reviewed_sha": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+  "review_method": "Repository metadata/source/documents and CI review; independently parsed downloaded CI artifact; selected actual CI screenshots visually inspected. No local full application/test rerun or repository writes.",
+  "main_ci_run": 39872878689,
+  "main_pages_run": 39872878685,
+  "artifact_id": 12467382603,
+  "unit_tests": {
+    "reported_in_exact_head_ci_log": 376,
+    "test_files": 43,
+    "result": "passed"
+  },
+  "pilot": {
+    "startTime": "2026-10-22T23:37:37.834Z",
+    "duration": 46943.595,
+    "expected": 11,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "redesign": {
+    "startTime": "2026-10-22T23:38:32.870Z",
+    "duration": 361647.778,
+    "expected": 77,
+    "skipped": 1,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "screenshot_sample": [
+    {
+      "name": "V01-kingdom-overview-1440",
+      "build": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+      "sha256": "1de52ae9b8410fd0868584f3944adb05bab7eefcf4cf523c3fe5f92d713732a0",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "evidence_class": "explicit offline synthetic design fixture"
+    },
+    {
+      "name": "V09-ten-module-sheet",
+      "build": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+      "sha256": "dd45a1a5f39c3715662cf17f56584010709749dc174ae92ebde7cecfb8707c7f",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "evidence_class": "explicit offline synthetic design fixture"
+    },
+    {
+      "name": "V04b-contradiction-supporting-counter",
+      "build": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+      "sha256": "0a0ca9de8a58b66f939e781e5f0664ddb84d4f0cc49f7dea1bc1a8dbf5f1b2f6",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "evidence_class": "explicit offline synthetic design fixture"
+    },
+    {
+      "name": "V05-event-search-separate-completeness",
+      "build": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+      "sha256": "dfb69d27b1b7658493aed8e97fc08bed20784e918001a0cc1dc5b2658703cd41",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "evidence_class": "explicit offline synthetic design fixture"
+    },
+    {
+      "name": "V07b-partial-unobserved-assets",
+      "build": "14d205fc295d0d8584f8c81d183193c4d75dc96d",
+      "sha256": "a9f99ef594fa6e1d3459e4dadfa705e1fb58ad47891ab0f23f9b73477a55cc83",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "evidence_class": "explicit offline synthetic design fixture"
+    }
+  ],
+  "limitations": [
+    "Source review is not a line-by-line audit of every repository file.",
+    "Current CI success is not production certification or human acceptance.",
+    "Downloaded screenshots are CI captures, not a new interactive browser test by the reviewer.",
+    "Archive download through the local shell was unavailable, so the full repository test suite was not independently rerun.",
+    "Static Pages success is not backend/MCP production deployment."
+  ]
+}

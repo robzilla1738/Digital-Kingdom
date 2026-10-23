@@ -5,7 +5,7 @@ import {
 } from "@dk/contracts";
 import { GraphIndex, validateGraph } from "@dk/graph-core";
 import { compileScene, defaultProposal, validateProposal } from "@dk/scene-compiler";
-import { checkCapability, evaluate, minimizeIngest, normalizeIngest, sanitizeStoredRedaction, sourceCapabilities, toStoredRedaction, type StoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
+import { checkCapability, evaluate, redactString, validateNamespace, minimizeIngest, normalizeIngest, sanitizeStoredRedaction, sourceCapabilities, toStoredRedaction, type StoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
 import { tx, type DB } from "./db.ts";
 import { atLeast, newToken, sha256, type Role } from "./security.ts";
 import { CONTAINMENT_CATALOG, type ContainmentAction } from "./containment.ts";
@@ -144,10 +144,11 @@ export class Store {
     if (graph) { const unknown = cfg.asset_ids.filter((a) => !graph.assets.some((x) => x.id === a)); if (unknown.length) throw new HttpError(422, `unknown asset ids: ${unknown.join(", ")}`); }
     if (cfg.dataset_kind && cfg.dataset_kind !== proj.dataset_kind) throw new HttpError(422, `a ${cfg.dataset_kind} source cannot write to a ${proj.dataset_kind} project`);
     if (!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/.test(cfg.id)) throw new HttpError(400, "invalid source id");
+    for (const f of ["identity_namespace", "run_namespace"] as const) { const err = validateNamespace(cfg[f]); if (err) throw new HttpError(400, `${f}: ${err}`); }
     const key = newToken(proj.dataset_kind === "synthetic" ? "dks_demo" : "dks");
-    this.db.prepare(`INSERT INTO sources (id, project_id, label, kind, asset_ids, trusts_request_ids, stale_after_seconds, key_hash, created_at, allowed_actions, independence_group) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT (project_id, id) DO UPDATE SET label = excluded.label, kind = excluded.kind, asset_ids = excluded.asset_ids, trusts_request_ids = excluded.trusts_request_ids, stale_after_seconds = excluded.stale_after_seconds, key_hash = excluded.key_hash, allowed_actions = excluded.allowed_actions, independence_group = excluded.independence_group`)
-      .run(cfg.id, projectId, cfg.label.slice(0, 120), cfg.kind ?? "generic", JSON.stringify(cfg.asset_ids), cfg.trusts_request_ids ? 1 : 0, cfg.stale_after_seconds ?? null, sha256(key), this.iso(), cfg.allowed_actions?.length ? JSON.stringify(cfg.allowed_actions) : null, cfg.independence_group ?? null);
+    this.db.prepare(`INSERT INTO sources (id, project_id, label, kind, asset_ids, trusts_request_ids, stale_after_seconds, key_hash, created_at, allowed_actions, independence_group, identity_namespace, run_namespace) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT (project_id, id) DO UPDATE SET label = excluded.label, kind = excluded.kind, asset_ids = excluded.asset_ids, trusts_request_ids = excluded.trusts_request_ids, stale_after_seconds = excluded.stale_after_seconds, key_hash = excluded.key_hash, allowed_actions = excluded.allowed_actions, independence_group = excluded.independence_group, identity_namespace = excluded.identity_namespace, run_namespace = excluded.run_namespace`)
+      .run(cfg.id, projectId, cfg.label.slice(0, 120), cfg.kind ?? "generic", JSON.stringify(cfg.asset_ids), cfg.trusts_request_ids ? 1 : 0, cfg.stale_after_seconds ?? null, sha256(key), this.iso(), cfg.allowed_actions?.length ? JSON.stringify(cfg.allowed_actions) : null, cfg.independence_group ?? null, cfg.identity_namespace ?? null, cfg.run_namespace ?? null);
     this.audit(actor, "source.key_issued", projectId, cfg.id, { kind: cfg.kind ?? "generic" });
     return { id: cfg.id, key };
   }
@@ -158,6 +159,8 @@ export class Store {
       trusts_request_ids: r.trusts_request_ids === 1, ...(r.stale_after_seconds ? { stale_after_seconds: Number(r.stale_after_seconds) } : {}), disabled: r.disabled === 1,
       ...(r.allowed_actions ? { allowed_actions: J(String(r.allowed_actions), [] as EventAction[]) } : {}),
       ...(r.independence_group ? { independence_group: String(r.independence_group) } : {}),
+      ...(r.identity_namespace ? { identity_namespace: String(r.identity_namespace) } : {}),
+      ...(r.run_namespace ? { run_namespace: String(r.run_namespace) } : {}),
     }));
   }
 
@@ -186,9 +189,9 @@ export class Store {
   receive(projectId: string, sourceId: string, payload: unknown, receivedAtOverride?: string): { status: "accepted" | "duplicate"; seq?: number } | { status: "rejected"; reason: string; detail: string } {
     // Minimize + redact BEFORE the first durable write. The raw payload never reaches disk.
     const m = minimizeIngest(payload);
-    if (!m.ok) { this.reject(projectId, sourceId, "receive", "schema", m.detail); return { status: "rejected", reason: "schema", detail: m.detail }; }
+    if (!m.ok) { this.reject(projectId, sourceId, "receive", "schema", m.detail); return { status: "rejected", reason: "schema", detail: safeDetail(m.detail) }; }
     const cap = this.checkCapability(projectId, sourceId, m.event);
-    if (cap) { this.reject(projectId, sourceId, "receive", cap.reason, cap.detail); return { status: "rejected", reason: cap.reason, detail: cap.detail }; }
+    if (cap) { this.reject(projectId, sourceId, "receive", cap.reason, cap.detail); return { status: "rejected", reason: cap.reason, detail: safeDetail(cap.detail) }; }
     const p = m.event;
     if (p.project_id !== undefined && p.project_id !== projectId) {
       const detail = `source is bound to ${projectId}; payload asserted ${p.project_id}`;
@@ -210,7 +213,7 @@ export class Store {
 
   reject(projectId: string, sourceId: string, stage: string, reason: string, detail: string) {
     tx(this.db, () => {
-      this.db.prepare("INSERT INTO rejections (project_id, source_id, stage, reason, detail, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(projectId, sourceId, stage, reason, detail.slice(0, 500), this.iso());
+      this.db.prepare("INSERT INTO rejections (project_id, source_id, stage, reason, detail, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(projectId, sourceId, stage, reason, safeDetail(detail), this.iso());
       this.count(projectId, sourceId, `rejected:${reason}`);
     });
   }
@@ -257,9 +260,9 @@ export class Store {
         } catch (err) {
           this.db.exec("ROLLBACK TO rec"); this.db.exec("RELEASE rec");
           if (isInfrastructureError(err)) throw err;
-          const msg = String((err as Error)?.message ?? err).slice(0, 300);
+          const msg = safeDetail(String((err as Error)?.message ?? err)).slice(0, 300);
           this.db.prepare("INSERT OR REPLACE INTO quarantine (journal_seq, project_id, source_id, source_event_id, error, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(row.seq, row.project_id, row.source_id, row.source_event_id, msg, this.iso());
-          this.db.prepare("INSERT INTO rejections (project_id, source_id, stage, reason, detail, created_at) VALUES (?, ?, 'process', 'quarantined', ?, ?)").run(row.project_id, row.source_id, `journal seq ${row.seq}: ${msg}`, this.iso());
+          this.db.prepare("INSERT INTO rejections (project_id, source_id, stage, reason, detail, created_at) VALUES (?, ?, 'process', 'quarantined', ?, ?)").run(row.project_id, row.source_id, safeDetail(`journal seq ${row.seq}: ${msg}`), this.iso());
           this.count(row.project_id, row.source_id, "rejected:quarantined");
           this.audit("system", "journal.quarantine", row.project_id, String(row.seq), { error: msg });
           quarantined++;
@@ -327,7 +330,7 @@ export class Store {
   }
 
   private rejectInTx(projectId: string, sourceId: string, reason: string, detail: string) {
-    this.db.prepare("INSERT INTO rejections (project_id, source_id, stage, reason, detail, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(projectId, sourceId, "normalize", reason, detail.slice(0, 500), this.iso());
+    this.db.prepare("INSERT INTO rejections (project_id, source_id, stage, reason, detail, created_at) VALUES (?, ?, ?, ?, ?, ?)").run(projectId, sourceId, "normalize", reason, safeDetail(detail), this.iso());
     this.count(projectId, sourceId, `rejected:${reason}`);
   }
 
@@ -365,6 +368,23 @@ export class Store {
     const limit = Math.min(Math.max(q.limit ?? 5000, 1), 50_000);
     const rows = this.db.prepare(`SELECT body FROM (SELECT body, occurred_at, id FROM events WHERE ${where.join(" AND ")} ORDER BY occurred_at DESC, id DESC LIMIT ?) ORDER BY occurred_at, id`).all(...args, limit) as { body: string }[];
     return rows.map((r) => JSON.parse(r.body) as SecurityEvent);
+  }
+
+  /**
+   * Route observations over stored events (R00.3), independent of the evaluation window: which assets
+   * recorded a matching route and how often. Bounded to the newest `scanLimit` routed events.
+   */
+  routeObservations(projectId: string, matches: (route: string) => boolean, scanLimit = 200_000): { byAsset: Map<string, number>; eventIds: string[]; scanned: number; limited: boolean } {
+    const rows = this.db.prepare("SELECT id, asset_ids, json_extract(body, '$.route') AS route FROM events WHERE project_id = ? AND json_extract(body, '$.route') IS NOT NULL ORDER BY seq DESC LIMIT ?").all(projectId, scanLimit + 1) as { id: string; asset_ids: string; route: string }[];
+    const limited = rows.length > scanLimit;
+    const byAsset = new Map<string, number>();
+    const eventIds: string[] = [];
+    for (const r of rows.slice(0, scanLimit)) {
+      if (!matches(String(r.route).split(/[?#]/, 1)[0]!)) continue;
+      if (eventIds.length < 5000) eventIds.push(r.id);
+      for (const a of J(r.asset_ids, [] as string[])) byAsset.set(a, (byAsset.get(a) ?? 0) + 1);
+    }
+    return { byAsset, eventIds, scanned: Math.min(rows.length, scanLimit), limited };
   }
 
   /** Exact, project-scoped lookup by event id (chunked), independent of any recency window. */
@@ -504,6 +524,26 @@ export class Store {
     return { id, token };
   }
 
+  /** Token metadata for authorization decisions (never the hash). */
+  getTokenMeta(id: string): { id: string; role: Role; projects: "*" | string[]; revoked: boolean; principalType: "human" | "service" } | undefined {
+    const r = this.db.prepare("SELECT id, role, project_ids, revoked, principal_type FROM api_tokens WHERE id = ?").get(id) as Record<string, string | number> | undefined;
+    if (!r) return undefined;
+    return { id: String(r.id), role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(String(r.project_ids), [] as string[]), revoked: r.revoked === 1, principalType: (r.principal_type as "human" | "service") ?? "human" };
+  }
+
+  /**
+   * Revoke a token immediately (R00.4): its bearer use and every browser session derived from it stop at
+   * the next request, including requests that resume an event-search cursor issued while it was valid.
+   */
+  revokeToken(id: string, actor: string): boolean {
+    return tx(this.db, () => {
+      const changed = this.db.prepare("UPDATE api_tokens SET revoked = 1 WHERE id = ? AND revoked = 0").run(id).changes > 0;
+      this.db.prepare("DELETE FROM sessions WHERE token_id = ?").run(id);
+      if (changed) this.audit(actor, "token.revoke", null, id, {});
+      return changed;
+    });
+  }
+
   hasAdmin(): boolean {
     return !!this.db.prepare("SELECT 1 FROM api_tokens WHERE role = 'admin' AND revoked = 0 LIMIT 1").get();
   }
@@ -629,6 +669,12 @@ export function isInfrastructureError(err: unknown): boolean {
   const e = err as { code?: string; errcode?: number; message?: string };
   return (typeof e?.code === "string" && /SQLITE|ERR_SQLITE|EIO|ENOSPC/.test(e.code)) || typeof e?.errcode === "number" || /database is locked|disk I\/O|SQLITE_/i.test(String(e?.message ?? ""));
 }
+
+/**
+ * Rejection and quarantine details echo producer-supplied values (asset ids, parser messages). Token-shaped
+ * values are masked before they are stored or returned (R00.4), and details stay bounded.
+ */
+export function safeDetail(detail: string): string { return redactString(detail.slice(0, 2000)).slice(0, 500); }
 
 export class HttpError extends Error {
   constructor(readonly status: number, message: string, readonly details: string[] = []) { super(message); }

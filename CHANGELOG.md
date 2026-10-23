@@ -2,6 +2,13 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R00: correctness baseline (branch `roadmap/r00-correctness`)
+
+- **Typed, namespaced correlation (R00.2).** Rules join identifiers only inside an administrator-declared authority (`identity_namespace`, `run_namespace` on sources; undeclared = private). Two sources reporting `admin`, an account id equal to a session id, a success on another asset, or equal run ids from unrelated runtimes no longer link or corroborate. Ruleset `dk-rules-1.1.0`; history kept as revisions.
+- **Route resolution (R00.3).** Optional declared route inventory on graph assets (schema and manifest). Ambiguous routes return every candidate (context 409; assessments cover all); event-inferred ownership is labelled and never favorable. The resolver no longer picks the most frequently observed asset.
+- **Boundaries (R00.4).** Token-shaped values are masked in rejection and quarantine details (they could previously be echoed); `date-time` formats enforced in agent-schema tests; token revocation endpoint with cursor/session tests; budget, hostile-identifier and poison-row tests.
+- **Receipts.** `docs/roadmap/` holds the owner's forward roadmap, the package ledger (`STATUS.json`), the R00 receipt and the R00.5 manual review packet (unrun).
+
 ### Castle visual refresh
 
 - **Architecture.** The gatehouse now has two crenellated towers with slate spires and a crenellated gate walk, the guardhouse gains a round watch turret with a conical roof, and the vault gets corner buttresses. Every module stays inside its catalogued footprint, height and triangle budget, and roof-off still shows each interior floor.

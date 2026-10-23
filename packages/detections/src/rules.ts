@@ -1,10 +1,15 @@
 import { independenceGroups } from "./capabilities.ts";
+import { identityOf, namespaces, sameIdentity, type CorrelationRefType } from "./correlation.ts";
 import {
   stableId, toMs, byTimeThenId,
   type CoverageRecord, type Finding, type FindingKind, type Graph, type SecurityEvent, type Severity,
 } from "@dk/contracts";
 
-export const RULESET_VERSION = "dk-rules-1.0.1";
+/**
+ * 1.1.0 (R00.2): identifier joins use typed, namespaced correlation identities. Findings produced by
+ * 1.0.x keep their stored revisions; re-evaluation records a new revision rather than rewriting them.
+ */
+export const RULESET_VERSION = "dk-rules-1.1.0";
 
 export interface SourceDeclaration {
   id: string;
@@ -15,6 +20,10 @@ export interface SourceDeclaration {
   disabled?: boolean;
   /** Silence longer than this (live mode) degrades coverage. */
   stale_after_seconds?: number;
+  /** Administrator-declared authority for actor_ref/session_ref (see correlation.ts). Undeclared: private to this source. */
+  identity_namespace?: string;
+  /** Administrator-declared authority for run_id. Undeclared: private to this source. */
+  run_namespace?: string;
 }
 
 export interface EvaluateOptions {
@@ -49,6 +58,8 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
   const assetName = (id: string) => graph.assets.find((a) => a.id === id)?.name ?? id;
   // Independence is judged by observation origin, not by source id: relays of one report share a group.
   const group = independenceGroups(opts.sources);
+  // Identifier joins happen inside a declared authority only (R00.2), never on the bare string.
+  const ns = namespaces(opts.sources);
 
   // ---------- contradictions first (they adjust other findings) ----------
   const trustedByRequest = new Map<string, SecurityEvent[]>();
@@ -93,55 +104,80 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
     });
   }
 
-  // ---------- R2 repeated authentication failures (trusted identifiers only) ----------
+  // ---------- R2 repeated authentication failures (typed, namespaced identifiers only) ----------
   const threshold = opts.authFailureThreshold ?? 5;
   const windowMs = (opts.authFailureWindowSeconds ?? 300) * 1000;
-  const failuresByKey = new Map<string, SecurityEvent[]>();
+  // legacy key (asset|type:value) -> namespace -> failures. The key shape is kept so findings from
+  // dk-rules-1.0.x keep their ids when only one authority uses the identifier.
+  const failuresByKey = new Map<string, Map<string, SecurityEvent[]>>();
   for (const e of events) if (e.action === "authentication" && e.outcome === "failure") {
-    const key = e.session_ref ? `session:${e.session_ref}` : e.actor_ref ? `actor:${e.actor_ref}` : null;
-    if (key) push(failuresByKey, `${e.asset_ids[0]}|${key}`, e);
+    const type: CorrelationRefType | null = e.session_ref ? "session" : e.actor_ref ? "actor" : null;
+    if (!type) continue;
+    const id = identityOf(e, type, ns)!;
+    const legacy = `${e.asset_ids[0]}|${type}:${id.value}`;
+    const byNs = failuresByKey.get(legacy) ?? new Map<string, SecurityEvent[]>();
+    failuresByKey.set(legacy, byNs);
+    push(byNs, id.namespace, e);
   }
-  for (const [k, evs] of failuresByKey) {
-    let best: SecurityEvent[] = [];
-    for (let i = 0, j = 0; j < evs.length; j++) {
-      while (toMs(evs[j]!.occurred_at) - toMs(evs[i]!.occurred_at) > windowMs) i++;
-      if (j - i + 1 > best.length) best = evs.slice(i, j + 1);
+  for (const [legacy, byNs] of failuresByKey) {
+    const namespacesForKey = [...byNs.keys()].sort();
+    for (const [nsIndex, namespace] of namespacesForKey.entries()) {
+      const evs = byNs.get(namespace)!;
+      const k = nsIndex === 0 ? legacy : `${legacy}|ns:${namespace}`;
+      let best: SecurityEvent[] = [];
+      for (let i = 0, j = 0; j < evs.length; j++) {
+        while (toMs(evs[j]!.occurred_at) - toMs(evs[i]!.occurred_at) > windowMs) i++;
+        if (j - i + 1 > best.length) best = evs.slice(i, j + 1);
+      }
+      if (best.length < threshold) continue;
+      const asset = legacy.slice(0, legacy.indexOf("|"));
+      const key = legacy.slice(legacy.indexOf("|") + 1);
+      const type = key.slice(0, key.indexOf(":")) as CorrelationRefType;
+      const failId = identityOf(best[0]!, type, ns);
+      const lastFail = toMs(best[best.length - 1]!.occurred_at);
+      const inWindow = (e: SecurityEvent) => e.action === "authentication" && e.outcome === "success" && toMs(e.occurred_at) >= lastFail && toMs(e.occurred_at) - lastFail <= 15 * 60_000;
+      // Linked: the same identifier type, the same declared authority and the same asset.
+      const sameIdSuccess = events.filter((e) => inWindow(e) && e.asset_ids.includes(asset) && sameIdentity(identityOf(e, type, ns), failId));
+      // Equal text in another namespace, another reference type or on another asset is disclosed, never linked.
+      const textOnly = events.filter((e) => inWindow(e) && !sameIdSuccess.includes(e) && (e.session_ref === failId!.value || e.actor_ref === failId!.value));
+      const ips = new Set(best.map((e) => e.client_ip).filter(Boolean));
+      const ipOnly = events.filter((e) => inWindow(e) && e.client_ip && ips.has(e.client_ip) && !sameIdSuccess.includes(e) && !textOnly.includes(e));
+      drafts.push({
+        key: `authfail:${k}`, kind: "repeated_auth_failure", title: `${best.length} failed sign-ins for one ${type === "session" ? "session" : "account"}`,
+        claim: `${best.length} authentication failures for ${key.replace(":", " ")} at ${assetName(asset)} within ${Math.round(windowMs / 60000)} minutes.${sameIdSuccess.length ? " A later success for the same identifier from the same authority was recorded." : ""}`,
+        evidence_level: "source_reported", outcome_state: sameIdSuccess.length ? "needs_review" : "attempted", severity: sameIdSuccess.length ? "medium" : "low",
+        affected_asset_ids: [asset], event_ids: [...best, ...sameIdSuccess].map((e) => e.id), counterevidence_event_ids: [],
+        coverage_gaps: [],
+        not_claimed: [
+          "Failed sign-ins do not show that an account was compromised.",
+          ...(textOnly.length ? [`${textOnly.length} later successful sign-in(s) carried the same identifier text but from a different identity namespace, a different identifier type or a different asset; equal text is not the same principal, so they are not linked.`] : []),
+          ...(ipOnly.length ? [`${ipOnly.length} later successful sign-in(s) shared a network address but not the identifier; shared addresses (NAT, proxies) are weak association, so they are not linked.`] : []),
+        ],
+        next_steps: sameIdSuccess.length ? ["Confirm the later success with the account owner.", "Review session activity after the success."] : ["Check whether rate limiting engaged."],
+        rule_id: "auth.repeated_failure", rule_version: "2", events: [...best, ...sameIdSuccess],
+      });
     }
-    if (best.length < threshold) continue;
-    const [asset, key] = k.split("|") as [string, string];
-    const lastFail = toMs(best[best.length - 1]!.occurred_at);
-    const keyVal = key.slice(key.indexOf(":") + 1);
-    const sameIdSuccess = events.filter((e) => e.action === "authentication" && e.outcome === "success" && (e.session_ref === keyVal || e.actor_ref === keyVal) && toMs(e.occurred_at) >= lastFail && toMs(e.occurred_at) - lastFail <= 15 * 60_000);
-    const ips = new Set(best.map((e) => e.client_ip).filter(Boolean));
-    const ipOnly = events.filter((e) => e.action === "authentication" && e.outcome === "success" && e.client_ip && ips.has(e.client_ip) && !sameIdSuccess.includes(e) && toMs(e.occurred_at) >= lastFail && toMs(e.occurred_at) - lastFail <= 15 * 60_000);
-    drafts.push({
-      key: `authfail:${k}`, kind: "repeated_auth_failure", title: `${best.length} failed sign-ins for one ${key.startsWith("session") ? "session" : "account"}`,
-      claim: `${best.length} authentication failures for ${key.replace(":", " ")} at ${assetName(asset)} within ${Math.round(windowMs / 60000)} minutes.${sameIdSuccess.length ? " A later success for the same identifier was recorded." : ""}`,
-      evidence_level: "source_reported", outcome_state: sameIdSuccess.length ? "needs_review" : "attempted", severity: sameIdSuccess.length ? "medium" : "low",
-      affected_asset_ids: [asset], event_ids: [...best, ...sameIdSuccess].map((e) => e.id), counterevidence_event_ids: [],
-      coverage_gaps: [],
-      not_claimed: [
-        "Failed sign-ins do not show that an account was compromised.",
-        ...(ipOnly.length ? [`${ipOnly.length} later successful sign-in(s) shared a network address but not the identifier; shared addresses (NAT, proxies) are weak association, so they are not linked.`] : []),
-      ],
-      next_steps: sameIdSuccess.length ? ["Confirm the later success with the account owner.", "Review session activity after the success."] : ["Check whether rate limiting engaged."],
-      rule_id: "auth.repeated_failure", rule_version: "1", events: [...best, ...sameIdSuccess],
-    });
   }
 
   // ---------- R3 sensitive privilege change ----------
   for (const e of events) if (e.action === "authorization_change" && e.outcome === "success") {
-    const linked = events.filter((x) => x !== e && x.action === "authentication" && x.outcome === "success" &&
-      ((e.session_ref && x.session_ref === e.session_ref) || (e.request_id && e.request_id_trust === "trusted" && x.request_id === e.request_id && x.request_id_trust === "trusted")));
+    const sess = identityOf(e, "session", ns);
+    const isSignIn = (x: SecurityEvent) => x !== e && x.action === "authentication" && x.outcome === "success";
+    const linked = events.filter((x) => isSignIn(x) &&
+      (sameIdentity(sess, identityOf(x, "session", ns)) || (e.request_id && e.request_id_trust === "trusted" && x.request_id === e.request_id && x.request_id_trust === "trusted")));
+    const textOnly = sess ? events.filter((x) => isSignIn(x) && !linked.includes(x) && (x.session_ref === sess.value || x.actor_ref === sess.value)) : [];
     drafts.push({
       key: `priv:${e.id}`, kind: "sensitive_privilege_change", title: `Privilege change on ${assetName(e.asset_ids[0]!)}`,
-      claim: `${e.source_id} recorded a successful authorization change${e.actor_ref ? ` by ${e.actor_ref}` : ""} on ${e.asset_ids.map(assetName).join(", ")}.${linked.length ? " It is linked to a sign-in by a trusted session/request identifier." : ""}`,
+      claim: `${e.source_id} recorded a successful authorization change${e.actor_ref ? ` by ${e.actor_ref}` : ""} on ${e.asset_ids.map(assetName).join(", ")}.${linked.length ? " It is linked to a sign-in by a session issued in the same declared identity namespace or a trusted request identifier." : ""}`,
       evidence_level: "source_reported", outcome_state: "needs_review", severity: e.severity ?? "medium",
       affected_asset_ids: e.asset_ids, event_ids: [e.id, ...linked.map((x) => x.id)], counterevidence_event_ids: [],
       coverage_gaps: linked.length ? [] : ["No trusted identifier links this change to a sign-in."],
-      not_claimed: ["A privilege change can be legitimate administration.", "Intent is not established."],
+      not_claimed: [
+        "A privilege change can be legitimate administration.", "Intent is not established.",
+        ...(textOnly.length ? [`${textOnly.length} sign-in(s) carried the same identifier text outside this change's identity namespace or as a different identifier type; they are not linked.`] : []),
+      ],
       next_steps: ["Confirm the change with its owner or change ticket.", "Revert if unexpected (manual, outside Digital Kingdom)."],
-      rule_id: "authz.sensitive_change", rule_version: "1", events: [e, ...linked],
+      rule_id: "authz.sensitive_change", rule_version: "2", events: [e, ...linked],
     });
   }
 
@@ -162,37 +198,52 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
     });
   }
 
-  // ---------- R7 agent tool activity ----------
-  const runs = new Map<string, SecurityEvent[]>();
-  for (const e of events) if (e.run_id && (e.action === "tool_invocation" || e.action === "side_effect_observed")) push(runs, e.run_id, e);
-  for (const [run, evs] of runs) {
-    const denied = evs.filter((e) => e.action === "tool_invocation" && (e.outcome === "denied" || e.outcome === "blocked"));
-    const refused = evs.filter((e) => e.action === "tool_invocation" && e.outcome === "refused");
-    const reported = evs.filter((e) => e.action === "tool_invocation" && (e.outcome === "success" || e.outcome === "allowed" || e.outcome === "attempted"));
-    const observed = evs.filter((e) => e.action === "side_effect_observed");
-    if (denied.length) drafts.push({
-      key: `agentdeny:${run}`, kind: "agent_action_denied", title: `Agent tool call denied by policy (${run})`,
-      claim: `Policy enforcement denied ${denied.length} tool call(s) in agent run ${run}.${refused.length ? ` The model also declined ${refused.length} request(s) itself (a refusal, not enforcement).` : ""}`,
-      evidence_level: "source_reported", outcome_state: "blocked", severity: "medium",
-      affected_asset_ids: unique(denied.flatMap((e) => e.asset_ids)), event_ids: [...denied, ...refused].map((e) => e.id), counterevidence_event_ids: [],
-      coverage_gaps: ["Only actions passing through the instrumented tool wrapper are visible."],
-      not_claimed: ["A denied call did not execute.", "A model refusal is not an enforcement decision."],
-      next_steps: ["Review why the agent requested a disallowed tool.", "Check the prompt or input that led to it."],
-      rule_id: "agent.enforcement_denied", rule_version: "1", events: [...denied, ...refused],
-    });
-    if (observed.length) {
-      const independent = observed.filter((o) => !reported.some((r) => group(r.source_id) === group(o.source_id)));
-      drafts.push({
-        key: `agenteffect:${run}`, kind: "agent_effect_observed", title: `Agent action had an observed effect (${run})`,
-        claim: `${unique(observed.map((e) => e.source_id)).join(", ")} observed ${observed.length} effect(s) from agent run ${run}${reported.length ? `, matching ${reported.length} tool call(s) the agent runtime reported` : ", with no matching tool call reported by the runtime"}.`,
-        evidence_level: reported.length && independent.length ? "corroborated" : "source_reported", outcome_state: "observed_effect",
-        severity: reported.length ? "low" : "high",
-        affected_asset_ids: unique([...observed, ...reported].flatMap((e) => e.asset_ids)), event_ids: [...reported, ...observed].map((e) => e.id), counterevidence_event_ids: [],
-        coverage_gaps: reported.length ? [] : ["The effect was not reported by the tool wrapper: a bypass path or unsupported transport may exist."],
-        not_claimed: ["An observed effect is not automatically harmful."],
-        next_steps: reported.length ? ["Confirm the effect matched the approved destination."] : ["Investigate how the agent acted outside the instrumented wrapper."],
-        rule_id: "agent.effect_observed", rule_version: "1", events: [...reported, ...observed],
+  // ---------- R7 agent tool activity (run ids correlate only inside a declared run namespace) ----------
+  const runs = new Map<string, Map<string, SecurityEvent[]>>(); // run text -> namespace -> events
+  for (const e of events) if (e.run_id && (e.action === "tool_invocation" || e.action === "side_effect_observed")) {
+    const byNs = runs.get(e.run_id) ?? new Map<string, SecurityEvent[]>();
+    runs.set(e.run_id, byNs);
+    push(byNs, ns.run(e.source_id), e);
+  }
+  for (const [runText, byNs] of runs) {
+    const nsList = [...byNs.keys()].sort();
+    for (const [nsIndex, runNs] of nsList.entries()) {
+      const evs = byNs.get(runNs)!;
+      const run = nsIndex === 0 ? runText : `${runText}|ns:${runNs}`;
+      const label = runText;
+      const otherNsCalls = nsList.filter((x) => x !== runNs).flatMap((x) => byNs.get(x)!).filter((e) => e.action === "tool_invocation");
+      const denied = evs.filter((e) => e.action === "tool_invocation" && (e.outcome === "denied" || e.outcome === "blocked"));
+      const refused = evs.filter((e) => e.action === "tool_invocation" && e.outcome === "refused");
+      const reported = evs.filter((e) => e.action === "tool_invocation" && (e.outcome === "success" || e.outcome === "allowed" || e.outcome === "attempted"));
+      const observed = evs.filter((e) => e.action === "side_effect_observed");
+      if (denied.length) drafts.push({
+        key: `agentdeny:${run}`, kind: "agent_action_denied", title: `Agent tool call denied by policy (${label})`,
+        claim: `Policy enforcement denied ${denied.length} tool call(s) in agent run ${label}.${refused.length ? ` The model also declined ${refused.length} request(s) itself (a refusal, not enforcement).` : ""}`,
+        evidence_level: "source_reported", outcome_state: "blocked", severity: "medium",
+        affected_asset_ids: unique(denied.flatMap((e) => e.asset_ids)), event_ids: [...denied, ...refused].map((e) => e.id), counterevidence_event_ids: [],
+        coverage_gaps: ["Only actions passing through the instrumented tool wrapper are visible."],
+        not_claimed: ["A denied call did not execute.", "A model refusal is not an enforcement decision."],
+        next_steps: ["Review why the agent requested a disallowed tool.", "Check the prompt or input that led to it."],
+        rule_id: "agent.enforcement_denied", rule_version: "2", events: [...denied, ...refused],
       });
+      if (observed.length) {
+        const independent = observed.filter((o) => !reported.some((r) => group(r.source_id) === group(o.source_id)));
+        const unlinked = !reported.length && otherNsCalls.length > 0;
+        drafts.push({
+          key: `agenteffect:${run}`, kind: "agent_effect_observed", title: `Agent action had an observed effect (${label})`,
+          claim: `${unique(observed.map((e) => e.source_id)).join(", ")} observed ${observed.length} effect(s) from agent run ${label}${reported.length ? `, matching ${reported.length} tool call(s) the agent runtime reported in the same declared run namespace` : unlinked ? ", with no tool call reported in the same run namespace" : ", with no matching tool call reported by the runtime"}.`,
+          evidence_level: reported.length && independent.length ? "corroborated" : "source_reported", outcome_state: "observed_effect",
+          // Equal run text from an undeclared/unrelated runtime is neither corroboration nor proof of a bypass.
+          severity: reported.length ? "low" : unlinked ? "medium" : "high",
+          affected_asset_ids: unique([...observed, ...reported].flatMap((e) => e.asset_ids)), event_ids: [...reported, ...observed].map((e) => e.id), counterevidence_event_ids: [],
+          coverage_gaps: reported.length ? [] : unlinked
+            ? [`${otherNsCalls.length} tool call(s) from ${unique(otherNsCalls.map((e) => e.source_id)).join(", ")} use the same run identifier text, but no common run namespace is declared for these sources, so the effect cannot be attributed to them or to a bypass.`]
+            : ["The effect was not reported by the tool wrapper: a bypass path or unsupported transport may exist."],
+          not_claimed: ["An observed effect is not automatically harmful.", ...(unlinked ? ["Equal run identifiers from unrelated runtimes are not treated as the same run."] : [])],
+          next_steps: reported.length ? ["Confirm the effect matched the approved destination."] : unlinked ? ["Declare a shared run namespace only if the observer really receives this runtime's propagated run ids.", "Otherwise investigate the effect's origin independently."] : ["Investigate how the agent acted outside the instrumented wrapper."],
+          rule_id: "agent.effect_observed", rule_version: "2", events: [...reported, ...observed],
+        });
+      }
     }
   }
 

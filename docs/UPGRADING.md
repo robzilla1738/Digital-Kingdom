@@ -1,5 +1,18 @@
 # Upgrading
 
+## Unreleased: correlation namespaces, route inventory, ruleset dk-rules-1.1.0 (roadmap R00)
+
+- Migration 4 adds `sources.identity_namespace` and `sources.run_namespace`. Existing sources get NULL, which
+  means private to that source: after upgrading, events from two different sources no longer correlate on an
+  equal `actor_ref`, `session_ref` or `run_id`. If two sources genuinely share an authority (an app accepting
+  the identity provider's sessions; an observer that receives a runtime's run ids), re-register both with the
+  same namespace.
+- The ruleset is now `dk-rules-1.1.0`. Re-evaluation appends a finding revision; earlier revisions stay in
+  `finding_revisions`. Finding ids are unchanged unless two authorities used the same identifier text.
+- Graphs may declare asset `routes`. Without them, route lookups are labelled inferred and assessments that
+  rest on them are never favorable.
+- New admin endpoint `POST /api/tokens/:id/revoke`.
+
 ## v0.3 → v0.3.2: pending rows with in-payload redaction metadata
 
 v0.3 kept its own redaction report inside each journal payload, as `evidence._dk_redaction`. v0.3.1 rejects every `_dk_` key, so in an in-place upgrade **v0.3.1 tombstoned pending v0.3 rows that carried this report**. Those were acknowledged events that had not yet been processed. **Don't upgrade a v0.3 database with a backlog to v0.3.1; go straight to v0.3.2 or later.**

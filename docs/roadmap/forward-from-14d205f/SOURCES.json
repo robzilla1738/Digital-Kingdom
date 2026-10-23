@@ -1,0 +1,134 @@
+[
+  {
+    "id": "R01",
+    "title": "Main snapshot and source inventory",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/commit/14d205fc295d0d8584f8c81d183193c4d75dc96d",
+    "scope": "Branch resolved through GitHub connector; main remained at this SHA on final check. Full tree enumerated; selected implementation files read."
+  },
+  {
+    "id": "R02",
+    "title": "Exact-head CI",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/actions/runs/39872878689",
+    "scope": "Check-job log inspected; 376 tests/43 files. Downloaded artifact 12467382603 parsed independently: pilot 11 expected; redesign 77 expected/1 skipped/0 unexpected/0 flaky."
+  },
+  {
+    "id": "R03",
+    "title": "Exact-head Pages workflow",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/actions/runs/39872878685",
+    "scope": "Workflow success observed; static demo, not production backend deployment."
+  },
+  {
+    "id": "R04",
+    "title": "Current change log",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/CHANGELOG.md",
+    "scope": "Merged redesign and current architectural refresh; history is not automatically current acceptance."
+  },
+  {
+    "id": "R05",
+    "title": "Historical redesign acceptance",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/docs/redesign/ACCEPTANCE.md",
+    "scope": "Frozen earlier candidate receipt; manual and physical-hardware gates retained, not automatically cleared by merge."
+  },
+  {
+    "id": "R06",
+    "title": "Redesign implementation notes",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/docs/redesign/IMPLEMENTATION.md",
+    "scope": "Prior candidates, supported recovery boundaries, clean-checkout and artifact-isolation context."
+  },
+  {
+    "id": "R07",
+    "title": "Capability audit",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/docs/redesign/CAPABILITIES.md",
+    "scope": "Actual workspace controls and explicit unsupported backend capabilities."
+  },
+  {
+    "id": "R08",
+    "title": "Presentation and replay state",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/apps/web/src/lib/state.tsx",
+    "scope": "Pinned selection, explicit updates, current coverage during replay, graph/time limitations."
+  },
+  {
+    "id": "R09",
+    "title": "Current README scope and limitations",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/README.md",
+    "scope": "Supported adapters, single-node scope, no response execution, current test documentation."
+  },
+  {
+    "id": "R10",
+    "title": "Detection rules",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/packages/detections/src/rules.ts",
+    "scope": "Typed/source namespace omissions identified by source review in authentication/session joins. Needs executable regression, not an alleged production incident."
+  },
+  {
+    "id": "R11",
+    "title": "Event normalization",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/packages/detections/src/normalize.ts",
+    "scope": "Stable event IDs include project/source; raw actor/session/run references are preserved, not automatically issuer-namespaced."
+  },
+  {
+    "id": "R12",
+    "title": "Agent context and change assessment",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/apps/server/src/context.ts",
+    "scope": "Route ownership heuristic and current-target assessment; no prospective candidate diff in this implementation."
+  },
+  {
+    "id": "R13",
+    "title": "Storage schema",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/apps/server/src/db.ts",
+    "scope": "Existing graph/finding revisions and current source table; no independent case/hypothesis/control/executor domain."
+  },
+  {
+    "id": "R14",
+    "title": "MCP implementation",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/apps/mcp/src/server.ts",
+    "scope": "Read-mostly shared backend tools; bounded transport client; proposal boundary."
+  },
+  {
+    "id": "R15",
+    "title": "Canonical types",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/packages/contracts/src/types.ts",
+    "scope": "Ten current asset kinds/modules, six zones, nine relationship kinds and current event vocabulary."
+  },
+  {
+    "id": "R16",
+    "title": "Castle environment implementation",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/apps/web/src/castle/Environment.tsx",
+    "scope": "Deterministic nonselectable lawn/trees/terraces; explicitly no invented security perimeter."
+  },
+  {
+    "id": "R17",
+    "title": "Store and proposal workflow",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/apps/server/src/store.ts",
+    "scope": "Bounded current evaluation window, token identities, proposal decisions without execution."
+  },
+  {
+    "id": "R18",
+    "title": "Evaluation v2 plan",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/14d205fc295d0d8584f8c81d183193c4d75dc96d/docs/AGENT_EVAL_V2_PLAN.md",
+    "scope": "Plan and offline accounting, not a completed paid evaluation. Separate approval and honest human-review scope."
+  },
+  {
+    "id": "E01",
+    "title": "OpenTelemetry Collector resiliency",
+    "url": "https://opentelemetry.io/docs/collector/resiliency/",
+    "scope": "Official guidance on queues, retries, persistent buffering and remaining loss scenarios."
+  },
+  {
+    "id": "E02",
+    "title": "AWS effective policy evaluation",
+    "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html",
+    "scope": "Official applicable policy and explicit-deny semantics; pin provider behavior when implementing."
+  },
+  {
+    "id": "E03",
+    "title": "GitHub artifact attestations",
+    "url": "https://docs.github.com/en/actions/concepts/security/artifact-attestations",
+    "scope": "Official provenance and verification guidance; attestations do not guarantee secure source/artifacts."
+  },
+  {
+    "id": "E04",
+    "title": "MCP security guidance",
+    "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/docs/2026-07-28/tutorials/security/security_best_practices.mdx",
+    "scope": "Official project guidance including audience validation, token passthrough and confused-deputy risk. Resolve and pin the supported protocol revision during implementation."
+  }
+]

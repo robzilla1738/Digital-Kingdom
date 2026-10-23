@@ -151,6 +151,57 @@
           "deployment": {
             "type": "string",
             "maxLength": 200
+          },
+          "routes": {
+            "description": "Declared HTTP routes this asset serves (authoritative route inventory, R00.3). Path templates use {param} or :param for one segment and a trailing /* for the remainder. Omitted methods/hosts mean any.",
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 300,
+                  "pattern": "^/[^\\s?#]*$"
+                },
+                "methods": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 9,
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "GET",
+                      "HEAD",
+                      "POST",
+                      "PUT",
+                      "PATCH",
+                      "DELETE",
+                      "OPTIONS",
+                      "CONNECT",
+                      "TRACE"
+                    ]
+                  }
+                },
+                "hosts": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 32,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 253,
+                    "pattern": "^[A-Za-z0-9*]([A-Za-z0-9.-]*[A-Za-z0-9])?(:[0-9]{1,5})?$"
+                  }
+                }
+              }
+            }
           }
         },
         "required": [

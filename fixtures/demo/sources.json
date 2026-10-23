@@ -17,7 +17,8 @@
       "auth"
     ],
     "trusts_request_ids": true,
-    "stale_after_seconds": 1800
+    "stale_after_seconds": 1800,
+    "identity_namespace": "idp:castle-gate"
   },
   {
     "id": "src-app",
@@ -29,7 +30,8 @@
       "pay"
     ],
     "trusts_request_ids": true,
-    "stale_after_seconds": 1800
+    "stale_after_seconds": 1800,
+    "identity_namespace": "idp:castle-gate"
   },
   {
     "id": "src-db-audit",
@@ -60,7 +62,8 @@
       "tools"
     ],
     "trusts_request_ids": true,
-    "stale_after_seconds": 1800
+    "stale_after_seconds": 1800,
+    "run_namespace": "agent-runtime:support-agent"
   },
   {
     "id": "src-sink",
@@ -70,7 +73,8 @@
       "blob",
       "tools"
     ],
-    "trusts_request_ids": true
+    "trusts_request_ids": true,
+    "run_namespace": "agent-runtime:support-agent"
   },
   {
     "id": "src-falco",

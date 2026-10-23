@@ -1,5 +1,5 @@
 import { parse as parseYaml } from "yaml";
-import { ASSET_KINDS, RELATIONSHIP_KINDS, type Asset, type AssetKind, type Graph, type Relationship, type ZoneId } from "@dk/contracts";
+import { ASSET_KINDS, HTTP_METHODS, RELATIONSHIP_KINDS, type Asset, type DeclaredRoute, type HttpMethod, type AssetKind, type Graph, type Relationship, type ZoneId } from "@dk/contracts";
 
 /** Local metadata import only: never execute code, resolve environment variables, or fetch URLs. */
 const ID_RE = /[^A-Za-z0-9_.:/-]+/g;
@@ -159,6 +159,7 @@ export function importManifest(text: string, opts: { revision: string; sourceRef
       if (!Array.isArray(raw.aliases) || raw.aliases.length > 32) issues.push(`${path}/aliases: must be a list of at most 32 strings`);
       else raw.aliases.forEach((v, j) => { if (typeof v !== "string" || !v.trim() || v.length > 160) issues.push(`${path}/aliases/${j}: must be a non-empty string of at most 160 characters`); });
     }
+    if (raw.routes !== undefined) validateRoutes(raw.routes, `${path}/routes`, issues);
   });
   rawRelationships.forEach((raw, i) => {
     const path = `/relationships/${i}`;
@@ -180,6 +181,7 @@ export function importManifest(text: string, opts: { revision: string; sourceRef
     if (Array.isArray(a.aliases)) out.aliases = a.aliases as string[];
     if (typeof a.sensitivity === "string") out.sensitivity = a.sensitivity as Asset["sensitivity"];
     if (typeof a.secondary_label === "string") out.secondary_label = a.secondary_label;
+    if (Array.isArray(a.routes)) out.routes = (a.routes as unknown[]).map(toDeclaredRoute);
     return out;
   });
   const ids = new Set(assets.map((a) => a.id));
@@ -191,4 +193,35 @@ export function importManifest(text: string, opts: { revision: string; sourceRef
     relationships.push({ id: sanitizeId(String(r.id ?? `rel-${s}-${t}-${String(r.kind ?? "calls")}`)), source_id: s, target_id: t, kind: (r.kind as Relationship["kind"]) ?? "calls", evidence_level: "declared", evidence_refs: [sourceRef] });
   }
   return { graph: { schema_version: "0.2", dataset_kind: "live", project_id: sanitizeId((doc.project as string | undefined) ?? "project"), graph_revision: sanitizeId(opts.revision), assets, relationships }, unresolved, ignoredKeys: [] };
+}
+
+/**
+ * Manifest routes (R00.3): a list of "METHOD /path" / "/path" strings or { path, methods, hosts } mappings.
+ * They become the asset's declared route inventory, mirrored by graph.schema.json.
+ */
+function validateRoutes(routes: unknown, path: string, issues: string[]) {
+  if (!Array.isArray(routes) || routes.length > 256) { issues.push(`${path}: must be a list of at most 256 routes`); return; }
+  routes.forEach((r, j) => {
+    const p = `${path}/${j}`;
+    const m = typeof r === "string" ? /^(?:([A-Z]+)\s+)?(\/[^\s?#]*)$/.exec(r.trim()) : null;
+    if (typeof r === "string") {
+      if (!m || r.length > 300) issues.push(`${p}: must look like "/path" or "METHOD /path"`);
+      else if (m[1] && !(HTTP_METHODS as readonly string[]).includes(m[1])) issues.push(`${p}: unsupported HTTP method ${m[1]}`);
+      return;
+    }
+    if (!isMapping(r)) { issues.push(`${p}: must be a string or a mapping with path`); return; }
+    if (typeof r.path !== "string" || !/^\/[^\s?#]*$/.test(r.path) || r.path.length > 300) issues.push(`${p}/path: required, must start with / and contain no spaces, query or fragment`);
+    if (r.methods !== undefined && (!Array.isArray(r.methods) || !r.methods.length || r.methods.some((x) => !(HTTP_METHODS as readonly string[]).includes(String(x))))) issues.push(`${p}/methods: must be a non-empty list of ${HTTP_METHODS.join(", ")}`);
+    if (r.hosts !== undefined && (!Array.isArray(r.hosts) || !r.hosts.length || r.hosts.length > 32 || r.hosts.some((x) => typeof x !== "string" || !/^[A-Za-z0-9*]([A-Za-z0-9.-]*[A-Za-z0-9])?(:[0-9]{1,5})?$/.test(x) || x.length > 253))) issues.push(`${p}/hosts: must be a non-empty list of host names`);
+    for (const k of Object.keys(r)) if (!["path", "methods", "hosts"].includes(k)) issues.push(`${p}/${k}: unsupported route key`);
+  });
+}
+
+function toDeclaredRoute(r: unknown): DeclaredRoute {
+  if (typeof r === "string") {
+    const m = /^(?:([A-Z]+)\s+)?(\/[^\s?#]*)$/.exec(r.trim())!;
+    return { path: m[2]!, ...(m[1] ? { methods: [m[1] as HttpMethod] } : {}) };
+  }
+  const o = r as Record<string, unknown>;
+  return { path: o.path as string, ...(Array.isArray(o.methods) ? { methods: [...new Set(o.methods as string[])] as DeclaredRoute["methods"] } : {}), ...(Array.isArray(o.hosts) ? { hosts: [...new Set((o.hosts as string[]).map((h) => h.toLowerCase()))] } : {}) };
 }

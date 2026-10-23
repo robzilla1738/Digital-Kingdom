@@ -1,0 +1,76 @@
+{
+  "schema": "dk.file-manifest.v1",
+  "purpose": "Detect changes in packaged files relative to this manifest; not proof of product correctness or provenance authenticity",
+  "files": [
+    {
+      "path": "00_START_HERE.md",
+      "bytes": 2104,
+      "sha256": "8cde8353e98c8b211f73fa66f410cd81dbdac51d87ffd2c52680782e2bff21e7"
+    },
+    {
+      "path": "AGENT_CONTINUE_FROM_MAIN.md",
+      "bytes": 4463,
+      "sha256": "343232fbc5ec4907c457e853c9d55b64ed6bd52dc571c277ddcc0fb26af8d801"
+    },
+    {
+      "path": "BACKLOG.json",
+      "bytes": 73110,
+      "sha256": "a138f6ec0f676e96b0f7677a1f5b2d39bb3c200f32cf25f2f70f320c498a34ea"
+    },
+    {
+      "path": "CAPABILITY_GAP_MATRIX.json",
+      "bytes": 9025,
+      "sha256": "92cb77653121befdaffb8632f72806bcc4196e2f95dfd3018a132eeadd9b9c3d"
+    },
+    {
+      "path": "CONTROLLED_SCENARIOS.json",
+      "bytes": 15153,
+      "sha256": "dd611108568005b522ed61fcaaf70770f9d997a85231fa75a9248b9406a5dd88"
+    },
+    {
+      "path": "CURRENT_MAIN_EVIDENCE.json",
+      "bytes": 3152,
+      "sha256": "5434907c8e448a84992ccf9bae6e10c0c4e2465ef4f7b0d8e727d8e81c348c83"
+    },
+    {
+      "path": "CURRENT_MAIN_OVERVIEW.jpg",
+      "bytes": 135150,
+      "sha256": "a41682b83f835fa248808a9f46f9effe302b70c347a4a10cb074497aa86f5a6c"
+    },
+    {
+      "path": "IMPLEMENTATION_BACKLOG.md",
+      "bytes": 69798,
+      "sha256": "f37e4309ae9ed0738dd5b2207789989c603a1bdf34b4e2607bd844c57abaaadc"
+    },
+    {
+      "path": "INSPECTION_SCOPE.md",
+      "bytes": 2554,
+      "sha256": "65384d5d137df25a7204611fb2c654b51e04481a35e3e39bcb5c606bc06e1442"
+    },
+    {
+      "path": "PACKAGE_VALIDATION.json",
+      "bytes": 1995,
+      "sha256": "da9609ab8f06191da907c55f388fde50134d03bb9fb59acdc826a1d7ccc337bb"
+    },
+    {
+      "path": "ROADMAP_FROM_MAIN.md",
+      "bytes": 40421,
+      "sha256": "cf3a3104fe19a2da5871d347abc3898c1e209ca37efaa96406b5c586e6912d53"
+    },
+    {
+      "path": "SOURCES.json",
+      "bytes": 6953,
+      "sha256": "4d777ba687e598bddc6116ac760b94a36327f252ed95c89e6d402b588abcfccb"
+    },
+    {
+      "path": "SOURCES.md",
+      "bytes": 6025,
+      "sha256": "c79f1953d532ab4b3c0d307546882e84c2f96cc7cba50e60666315cba1a22f0a"
+    },
+    {
+      "path": "SURFACE_EXPANSION_MATRIX.json",
+      "bytes": 12729,
+      "sha256": "4a8255061f5eaf4e061e5503d55f97c45818daee2f51788cd3353b5ff1d4383e"
+    }
+  ]
+}
