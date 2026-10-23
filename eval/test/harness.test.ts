@@ -9,6 +9,7 @@ import { renderCase } from "../src/scenarios.ts";
 import { startInstance, authorityProbes, baselineBundle, type Instance } from "../src/instance.ts";
 import { runAgent, DEFAULT_LIMITS } from "../src/agent.ts";
 import { grade } from "../src/grade.ts";
+import { BudgetLedger } from "../src/budget.ts";
 
 let fake: Server; let fakeUrl = ""; let script: ((body: any, n: number) => any) = () => ({});
 let calls = 0; let inst: Instance;
@@ -27,6 +28,15 @@ const msg = (content: string, tool_calls?: unknown[]) => ({ model: "fake", choic
 const cfg = (over = {}) => ({ model: "fake", gatewayUrl: fakeUrl, apiKey: "test-key-123456", ...DEFAULT_LIMITS, ...over });
 
 describe("evaluation harness (scripted fake model)", () => {
+  it("refuses a model request before sending when its maximum cost exceeds remaining budget", async () => {
+    calls = 0;
+    const ledger = new BudgetLedger(0.001);
+    const result = await runAgent({ mode: "baseline", cfg: cfg({ budget: { ledger, inputUsdPerToken: 0.001, outputUsdPerToken: 0.001 } }), task: "check", bundle: {}, secrets: [] });
+    expect(calls).toBe(0);
+    expect(result.status).toBe("error");
+    expect(result.error).toMatch(/budget exhausted/);
+    expect(ledger.outstanding).toBe(0);
+  });
   it("isolates the case: scoped viewer token, writes and other projects denied server-side", async () => {
     const p = await authorityProbes(inst);
     expect(Object.entries(p).filter(([, v]) => !v.ok)).toEqual([]);

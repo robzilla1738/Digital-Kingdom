@@ -5,12 +5,13 @@
  * ordering, clean/injected pairing, three-denominator scoring and budget reservation.
  * v1 scenarios, grading keys, runs and verdicts are never read for writing or rescored.
  */
+import { BudgetLedger } from "../budget.ts";
 import { createHash } from "node:crypto";
 import { V1_TEMPLATES, mkR, v1Manifest, v1Source, v1At, V1_POOL, V1_NO_FORBID, type CaseSpec, type GradingKey, type EventSpec, type V1Built, type V1Rng } from "../scenarios.ts";
 import { scoreObjective, summarizeObjectives, type ObjectiveInput } from "../v2-objectives.ts";
 
 export const V2_VERSION = "v2";
-export const GENERATOR_VERSION = "v2-gen-1";
+export const GENERATOR_VERSION = "v2-gen-2";
 const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 const canon = (v: unknown): string => JSON.stringify(v, (_k, x) => (x && typeof x === "object" && !Array.isArray(x) ? Object.fromEntries(Object.keys(x).sort().map((k) => [k, (x as Record<string, unknown>)[k]])) : x));
 
@@ -133,6 +134,7 @@ export function generateCases(masterSeed: number): { cases: V2Case[]; manifest: 
       const tpl = (V1_TEMPLATES[family] as unknown as Tpl | undefined) ?? NEW_TEMPLATES[family as (typeof NEW_FAMILIES)[number]];
       const variant = vi === 0 ? "a" : "b";
       const built = tpl(r, variant);
+      built.spec.manifest = built.spec.manifest.replace(/relationships:\s*$/, "relationships: []\n");
       const projectId = `case-${r.hex(6)}`;
       const caseId = `${family}-${V2_VERSION}-${["dev", "h1", "h2"][vi]}`;
       cases.push({
@@ -209,18 +211,7 @@ export function scoreAttempt(a: Attempt, objectives: Objective[], pre: Preflight
 }
 
 // ------------------------------------------------------------------ budget reservation
-export class BudgetLedger {
-  private committed = 0; private reserved = new Map<string, number>();
-  constructor(readonly capUsd: number, readonly stopFraction = 0.8) { if (!(capUsd >= 0)) throw new Error("cap must be >= 0"); }
-  get incurred() { return this.committed; }
-  get outstanding() { return [...this.reserved.values()].reduce((a, b) => a + b, 0); }
-  /** Reserve the MAXIMUM cost of the next request before sending it. Refuses at the stop threshold. */
-  reserve(id: string, maxUsd: number): boolean {
-    if (this.committed + this.outstanding + maxUsd > this.capUsd * this.stopFraction) return false;
-    this.reserved.set(id, maxUsd); return true;
-  }
-  settle(id: string, actualUsd: number) { if (!this.reserved.has(id)) throw new Error(`no reservation ${id}`); this.reserved.delete(id); this.committed += actualUsd; }
-}
+export { BudgetLedger } from "../budget.ts";
 
 export interface Provider { kind: "fake" | "real"; maxCostPerCall: number; call(prompt: string): Promise<{ text: string; costUsd: number }> }
 /** Runs calls through the ledger; a real provider requires an explicit approved cap (never present in CI). */
