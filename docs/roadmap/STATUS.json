@@ -242,13 +242,17 @@
   {
    "id": "R04.2",
    "title": "Add contextual vulnerability applicability",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "external_feed_access",
    "receipt": "docs/roadmap/R04-RECEIPT.md#r042-contextual-vulnerability-applicability",
    "head": null,
    "ci_run": null,
    "notes": "vuln-r04.test.ts 4/4 against synthetic OSV-format data. Live feeds (external gate) not used.",
-   "external_gate_open": true
+   "external_gate_open": true,
+   "ci": {
+    "run": 39907719279,
+    "head": "406deea"
+   }
   },
   {
    "id": "R04.3",
@@ -267,12 +271,16 @@
   {
    "id": "R04.4",
    "title": "Replace target-only posture with a real security change diff",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R04-RECEIPT.md#r044-replace-target-only-posture-with-a-real-security-change-diff",
    "head": null,
    "ci_run": null,
-   "notes": "change-r04.test.ts 4/4."
+   "notes": "change-r04.test.ts 4/4.",
+   "ci": {
+    "run": 39907719279,
+    "head": "406deea"
+   }
   },
   {
    "id": "R05.1",
@@ -339,12 +347,16 @@
   {
    "id": "R06.2",
    "title": "Extend all 28 surface mappings with capability-aware architecture",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R06-RECEIPT.md#r062-extend-all-28-surface-mappings-with-capability-aware-architecture",
    "head": null,
    "ci_run": null,
-   "notes": "surfaces-r06.test.ts 4/4. Renderer integration is R06.3."
+   "notes": "surfaces-r06.test.ts 4/4. Renderer integration is R06.3.",
+   "ci": {
+    "run": 39907719279,
+    "head": "406deea"
+   }
   },
   {
    "id": "R06.3",
@@ -397,12 +409,16 @@
   {
    "id": "R07.3",
    "title": "Complete the 16 scenario packs",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R07-RECEIPT.md#r073-complete-the-16-scenario-packs-locally-executable-part",
    "head": null,
    "ci_run": null,
-   "notes": "12 local scenarios pass via pnpm scenarios; T06 not implemented; T10/T11 executor-gated; T13 partial."
+   "notes": "12 local scenarios pass via pnpm scenarios; T06 not implemented; T10/T11 executor-gated; T13 partial.",
+   "ci": {
+    "run": 39907719279,
+    "head": "406deea"
+   }
   },
   {
    "id": "R07.4",
