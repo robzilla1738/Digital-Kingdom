@@ -63,7 +63,7 @@ test("CONN-01: connector manifests show supported versions and verification leve
     await page.getByRole("button", { name: "Integrations", exact: true }).click();
     await page.getByRole("tab", { name: "Connectors", exact: true }).click();
     const catalog = page.getByTestId("connector-catalog");
-    await expect(catalog.getByRole("article")).toHaveCount(3);
+    await expect(catalog.getByRole("article")).toHaveCount(4);
     await expect(catalog.getByLabel("Connector OpenTelemetry traces (OTLP/HTTP JSON)")).toContainText("Other versions and encodings are not supported");
     await expect(catalog).toContainText("Lab verified");
     await expect(catalog).not.toContainText("Live verified");
