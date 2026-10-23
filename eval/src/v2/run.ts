@@ -90,12 +90,18 @@ async function attempt(index: number, slot: Slot) {
   const progress = { attempt: attemptId, ...slot, status: record.status, charged_upper_bound_usd: ledger.incurred };
   summary.push(progress); appendFileSync(join(runDir, 'progress.jsonl'), JSON.stringify(progress) + '\n'); console.log(JSON.stringify(progress));
 }
-// Launch slots in the registered order; finish each batch before starting the next.
-// Eight divides the 48-regression prefix, so held-out calls cannot precede its completion.
-for (let index = 0; index < order.length && !halted; index += concurrency) {
-  const count = phase === 'full' && index < 48 ? Math.min(concurrency, 48 - index) : concurrency;
-  await Promise.all(order.slice(index, index + count).map((slot, offset) => attempt(index + offset, slot)));
-  if (count !== concurrency) index += count - concurrency;
+// Launch in registered order with a bounded worker pool and barriers between tracks.
+// A slow provider reply cannot leave the other approved slots idle for an entire batch.
+const stages = phase === 'full' ? [[0, 48], [48, 264], [264, order.length]] : [[0, order.length]];
+for (const [start, end] of stages as [number, number][]) {
+  let next = start;
+  await Promise.all(Array.from({ length: concurrency }, async () => {
+    while (!halted && next < end) {
+      const index = next++;
+      await attempt(index, order[index]!);
+    }
+  }));
+  if (halted) break;
 }
 write(`${runId}/summary.json`, { started: summary.length, planned: order.length, halted, charged_upper_bound_usd: ledger.incurred, attempts: summary, human_review: 'pending' });
 if (halted) process.exitCode = 1;
