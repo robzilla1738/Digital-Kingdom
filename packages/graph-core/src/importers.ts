@@ -160,6 +160,10 @@ export function importManifest(text: string, opts: { revision: string; sourceRef
       else raw.aliases.forEach((v, j) => { if (typeof v !== "string" || !v.trim() || v.length > 160) issues.push(`${path}/aliases/${j}: must be a non-empty string of at most 160 characters`); });
     }
     if (raw.routes !== undefined) validateRoutes(raw.routes, `${path}/routes`, issues);
+    if (raw.provider_ref !== undefined) {
+      const pr = raw.provider_ref;
+      if (!isMapping(pr) || typeof pr.scope !== "string" || !pr.scope || pr.scope.length > 200 || typeof pr.id !== "string" || !pr.id || pr.id.length > 512 || Object.keys(pr).some((k) => k !== "scope" && k !== "id")) issues.push(`${path}/provider_ref: must be a mapping with non-empty scope and id`);
+    }
   });
   rawRelationships.forEach((raw, i) => {
     const path = `/relationships/${i}`;
@@ -182,6 +186,7 @@ export function importManifest(text: string, opts: { revision: string; sourceRef
     if (typeof a.sensitivity === "string") out.sensitivity = a.sensitivity as Asset["sensitivity"];
     if (typeof a.secondary_label === "string") out.secondary_label = a.secondary_label;
     if (Array.isArray(a.routes)) out.routes = (a.routes as unknown[]).map(toDeclaredRoute);
+    if (isMapping(a.provider_ref)) out.provider_ref = { scope: String(a.provider_ref.scope), id: String(a.provider_ref.id) };
     return out;
   });
   const ids = new Set(assets.map((a) => a.id));

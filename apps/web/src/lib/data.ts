@@ -52,9 +52,13 @@ export class Api {
     const response = await fetch(this.base + path, { ...options, signal, credentials: "same-origin" });
     if (!response.ok) {
       if (!signal?.aborted && (response.status === 401 || response.status === 403) && path !== "/api/me" && typeof window !== "undefined") window.dispatchEvent(new CustomEvent("dk:access-denied", { detail: { status: response.status, path, scope } }));
-      let message = response.statusText, issues: string[] | undefined;
-      try { const body = await response.json(); if (typeof body.error === "string") message = body.error; const details = body.details ?? body.issues; if (Array.isArray(details)) issues = details.filter((issue: unknown): issue is string => typeof issue === "string"); } catch { /* Do not render an untrusted HTML error body. */ }
-      throw new ApiError(response.status, message, issues);
+      let message = response.statusText, issues: string[] | undefined, current: Record<string, string | number | boolean> | undefined;
+      try {
+        const body = await response.json(); if (typeof body.error === "string") message = body.error; const details = body.details ?? body.issues; if (Array.isArray(details)) issues = details.filter((issue: unknown): issue is string => typeof issue === "string");
+        // R01.4 conflicts carry the current server state; keep only scalar fields.
+        if (body.current && typeof body.current === "object" && !Array.isArray(body.current)) current = Object.fromEntries(Object.entries(body.current as Record<string, unknown>).filter((entry): entry is [string, string | number | boolean] => ["string", "number", "boolean"].includes(typeof entry[1])));
+      } catch { /* Do not render an untrusted HTML error body. */ }
+      throw new ApiError(response.status, message, issues, current);
     }
     return response.json() as Promise<T>;
   }
@@ -66,7 +70,7 @@ export class Api {
   }
   sendText<T>(method: string, path: string, body: string, signal?: AbortSignal): Promise<T> { return this.response(path, { method, signal, headers: { "content-type": "application/yaml", "x-dk-request": "1", accept: "application/json" }, body }); }
 }
-export class ApiError extends Error { constructor(readonly status: number, message: string, readonly issues?: string[]) { super(message); } }
+export class ApiError extends Error { constructor(readonly status: number, message: string, readonly issues?: string[], readonly current?: Record<string, string | number | boolean>) { super(message); } }
 
 interface Snapshot {
   project: { id: string; name: string; dataset_kind: "synthetic" | "live"; meta?: { description?: string; start?: string; end?: string } };

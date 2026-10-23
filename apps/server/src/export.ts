@@ -4,6 +4,7 @@ import { PARSER_VERSION, RULESET_VERSION } from "@dk/detections";
 import { GraphIndex } from "@dk/graph-core";
 import { hmac, safeEqual, sha256 } from "./security.ts";
 import { HttpError, type Store } from "./store.ts";
+import { createBundle } from "./bundles.ts";
 
 /**
  * Reproducible case export. The manifest digests each section; the signature (HMAC with the server's
@@ -31,6 +32,8 @@ export function exportCase(store: Store, projectId: string, findingId: string, a
   };
   const scene = store.getScene(projectId);
   const evaluation = store.evaluation(projectId);
+  // R01.3: the export names the immutable bundle for the exported revision, so UI, MCP and export agree.
+  const bundle = createBundle(store, projectId, findingId, actor, { revision: detail.finding.revision });
   const sections = {
     finding: detail.finding,
     revisions: detail.revisions,
@@ -50,6 +53,7 @@ export function exportCase(store: Store, projectId: string, findingId: string, a
     exported_at: store.now().toISOString(),
     exported_by: actor,
     complete: completeness.missing_event_ids.length === 0 && completeness.missing_evidence_refs.length === 0,
+    bundle: { bundle_id: bundle.bundle_id, bundle_digest: bundle.bundle_digest, finding_revision: bundle.finding_revision, expires_at: bundle.expires_at, pinned: bundle.pinned },
     coverage_window: { from: events[0]?.occurred_at ?? null, to: events[events.length - 1]?.occurred_at ?? null },
     section_sha256: Object.fromEntries(Object.entries(sections).map(([k, v]) => [k, sha256(canonicalJson(v))])),
     guarantee: "Tamper detection relative to this server's export record. Not proof of completeness, source truth, or admissibility.",

@@ -11,6 +11,8 @@ import { exportCase, verifyCase } from "./export.ts";
 import { falcoToIngest } from "./adapters/falco.ts";
 import { otlpToIngest, gunzipCapped } from "./adapters/otlp.ts";
 import { assessChange, securityContext, summarize } from "./context.ts";
+import { coverageHistory, parseCoverageQuestion } from "./coverage-history.ts";
+import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } from "./bundles.ts";
 
 export interface AppConfig {
   store: Store;
@@ -57,7 +59,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.addContentTypeParser(["text/plain", "application/yaml", "application/x-yaml", "text/yaml"], { parseAs: "string", bodyLimit: 524_288 }, (_req, body, done) => done(null, body));
 
   app.setErrorHandler((err, _req, reply) => {
-    if (err instanceof HttpError) return reply.status(err.status).send({ error: err.message, details: err.details });
+    if (err instanceof HttpError) return reply.status(err.status).send({ ...(err.extra ?? {}), error: err.message, details: err.details });
     const status = (err as { statusCode?: number }).statusCode ?? 500;
     if (status >= 500) app.log.error(err);
     return reply.status(status).send({ error: status >= 500 ? "internal error" : err.message });
@@ -187,7 +189,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, meta: proj.meta },
       graph: store.getGraph(proj.id) ?? null,
       scene: store.getScene(proj.id) ?? null,
-      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace })),
+      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision })),
       events,
       evidence: store.evidenceFor(proj.id, events.flatMap((e) => e.evidence_refs)),
       findings: store.listFindings(proj.id),
@@ -205,8 +207,15 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     return store.listEvents(proj.id, { ...q, limit: q.limit ? Number(q.limit) : 1000 });
   });
   // Event-level investigation: read-only, viewer role, project authorization re-checked on every page.
-  app.get("/api/projects/:p/events/search", { preHandler: authed() }, async (req) => {
+  // R01.5: searches run synchronously on the server's single event loop, so each request is bounded by work
+  // budgets and each principal by a rate limit; one caller cannot starve ingestion with back-to-back searches.
+  const searchCalls = new Map<string, number[]>();
+  app.get("/api/projects/:p/events/search", { preHandler: authed() }, async (req, reply) => {
     const proj = store.require(req.principal!, P(req), "viewer");
+    const key = req.principal!.id, now = Date.now();
+    const recent = (searchCalls.get(key) ?? []).filter((t) => now - t < 10_000);
+    if (recent.length >= 30) { reply.header("retry-after", "10"); throw new HttpError(429, "too many searches: at most 30 per 10 seconds per principal"); }
+    recent.push(now); searchCalls.set(key, recent);
     const { query, cursor } = parseSearchQuery((req.query ?? {}) as Record<string, unknown>);
     return searchEvents(store, proj.id, query, cfg.secret, cursor);
   });
@@ -223,7 +232,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/projects/:p/findings", { preHandler: authed() }, async (req) => store.listFindings(store.require(req.principal!, P(req), "viewer").id));
   app.get("/api/projects/:p/findings/:id", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
-    const d = store.getFinding(proj.id, (req.params as { id: string }).id);
+    const asOf = (req.query as { as_of?: string }).as_of;
+    if (asOf !== undefined && (typeof asOf !== "string" || asOf.length > 40 || Number.isNaN(Date.parse(asOf)) || !/T.*(Z|[+-]\d{2}:?\d{2})$/.test(asOf))) throw new HttpError(400, "as_of must be an ISO 8601 timestamp with an offset");
+    const d = store.getFinding(proj.id, (req.params as { id: string }).id, asOf ? { asOf } : {});
     if (!d) throw new HttpError(404, "finding not found");
     return d;
   });
@@ -238,10 +249,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   });
   app.post("/api/projects/:p/findings/:id/disposition", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
-    const b = req.body as { lifecycle?: "open" | "acknowledged" | "closed"; disposition?: "unreviewed" | "benign" | "expected_test" | "true_positive" | "false_positive"; note?: string };
+    const b = (req.body ?? {}) as { lifecycle?: "open" | "acknowledged" | "closed"; disposition?: "unreviewed" | "benign" | "expected_test" | "true_positive" | "false_positive"; note?: string; expected_state_version?: unknown };
     if (b.lifecycle && !["open", "acknowledged", "closed"].includes(b.lifecycle)) throw new HttpError(400, "invalid lifecycle");
     if (b.disposition && !["unreviewed", "benign", "expected_test", "true_positive", "false_positive"].includes(b.disposition)) throw new HttpError(400, "invalid disposition");
-    return store.setDisposition(proj.id, (req.params as { id: string }).id, who(req), b);
+    if (b.note !== undefined && typeof b.note !== "string") throw new HttpError(400, "note must be a string");
+    const ev = b.expected_state_version;
+    if (ev !== undefined && (typeof ev !== "number" || !Number.isInteger(ev) || ev < 0)) throw new HttpError(400, "expected_state_version must be a non-negative integer");
+    return store.setDisposition(proj.id, (req.params as { id: string }).id, who(req), { ...(b.lifecycle ? { lifecycle: b.lifecycle } : {}), ...(b.disposition ? { disposition: b.disposition } : {}), ...(b.note ? { note: b.note } : {}), ...(ev !== undefined ? { expected_state_version: ev as number } : {}) });
   });
   app.get("/api/projects/:p/health", { preHandler: authed() }, async (req) => store.health(store.require(req.principal!, P(req), "viewer").id));
 
@@ -265,6 +279,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/projects/:p/scene", { preHandler: authed() }, async (req) => store.getScene(store.require(req.principal!, P(req), "viewer").id) ?? null);
   app.post("/api/projects/:p/scene", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
+    // Layout is presentation, not security truth, so the precondition is optional: send If-Match with the scene
+    // digest you edited to get 409 instead of overwriting a newer layout (R01.4).
+    const ifMatch = req.headers["if-match"];
+    if (typeof ifMatch === "string" && ifMatch.trim()) {
+      const cur = store.getScene(proj.id)?.digest;
+      if (cur && ifMatch.replace(/^W\//, "").replace(/"/g, "").trim() !== cur) throw new HttpError(409, "the scene changed since you loaded it", [], { current: { scene_digest: cur } });
+    }
     return store.applyProposal(proj.id, req.body, "user", who(req));
   });
   app.post("/api/projects/:p/scene/reflow", { preHandler: authed("admin") }, async (req) => {
@@ -288,7 +309,8 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/projects/:p/sources", { preHandler: authed() }, async (req) => store.listSources(store.require(req.principal!, P(req), "viewer").id));
   app.post("/api/projects/:p/sources", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");
-    const b = req.body as { id: string; label: string; kind?: string; asset_ids?: string[]; trusts_request_ids?: boolean; stale_after_seconds?: number; dataset_kind?: "live" | "synthetic"; allowed_actions?: string[]; independence_group?: string; identity_namespace?: string; run_namespace?: string };
+    const b = req.body as { id: string; label: string; kind?: string; asset_ids?: string[]; trusts_request_ids?: boolean; stale_after_seconds?: number; dataset_kind?: "live" | "synthetic"; allowed_actions?: string[]; independence_group?: string; identity_namespace?: string; run_namespace?: string; expected_revision?: unknown; sampling_ratio?: unknown; retention_days?: unknown; outcomes_reported?: unknown };
+    if (b?.expected_revision !== undefined && (typeof b.expected_revision !== "number" || !Number.isInteger(b.expected_revision) || b.expected_revision < 0)) throw new HttpError(400, "expected_revision must be a non-negative integer");
     if (!b?.id || !b.label) throw new HttpError(400, "id and label are required");
     const r = store.upsertSource(proj.id, {
       id: b.id, label: b.label, kind: b.kind ?? "generic", asset_ids: Array.isArray(b.asset_ids) ? b.asset_ids.map(String).slice(0, 200) : [], trusts_request_ids: !!b.trusts_request_ids,
@@ -297,8 +319,102 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       ...(b.independence_group ? { independence_group: String(b.independence_group).slice(0, 64) } : {}),
       ...(b.identity_namespace !== undefined && b.identity_namespace !== "" ? { identity_namespace: b.identity_namespace as string } : {}),
       ...(b.run_namespace !== undefined && b.run_namespace !== "" ? { run_namespace: b.run_namespace as string } : {}),
-    }, who(req));
+      ...(b.sampling_ratio !== undefined ? { sampling_ratio: b.sampling_ratio as number } : {}),
+      ...(b.retention_days !== undefined ? { retention_days: b.retention_days as number } : {}),
+      ...(b.outcomes_reported !== undefined ? { outcomes_reported: b.outcomes_reported as string[] } : {}),
+    }, who(req), { requirePrecondition: true, ...(b.expected_revision !== undefined ? { expectedRevision: b.expected_revision as number } : {}) });
     return { ...r, note: "Store this key now; it is shown once and only its hash is kept." };
+  });
+
+  app.get("/api/projects/:p/sources/:id/history", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const id = (req.params as { id: string }).id;
+    if (!store.listSources(proj.id).some((x) => x.id === id)) throw new HttpError(404, "source not found");
+    return { source_id: id, revisions: store.sourceHistory(proj.id, id), note: "Revisions recorded since configuration history began (migration 5). Earlier history is unknown, not absent." };
+  });
+  app.post("/api/projects/:p/sources/:id/state", { preHandler: authed("admin") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "admin");
+    const b = (req.body ?? {}) as { disabled?: unknown; expected_revision?: unknown; reason?: unknown; effective_at?: unknown };
+    if (typeof b.disabled !== "boolean") throw new HttpError(400, "disabled must be true or false");
+    if (typeof b.expected_revision !== "number" || !Number.isInteger(b.expected_revision)) throw new HttpError(428, "expected_revision is required");
+    if (typeof b.reason !== "string" || !b.reason.trim()) throw new HttpError(400, "reason is required");
+    if (b.effective_at !== undefined && (typeof b.effective_at !== "string" || Number.isNaN(Date.parse(b.effective_at)) || !/T.*(Z|[+-]\d{2}:?\d{2})$/.test(b.effective_at))) throw new HttpError(400, "effective_at must be an ISO 8601 timestamp with an offset");
+    return store.setSourceState(proj.id, (req.params as { id: string }).id, b.disabled, who(req), { expectedRevision: b.expected_revision, reason: b.reason, ...(b.effective_at ? { effectiveAt: b.effective_at as string } : {}) });
+  });
+
+  // ---- immutable investigation bundles and historical revisions (R01.3) ----
+  const intParam = (v: unknown, k: string, min: number) => {
+    if (v === undefined || v === "") return undefined;
+    const n = Number(v);
+    if (!Number.isInteger(n) || n < min) throw new HttpError(400, `${k} must be an integer >= ${min}`);
+    return n;
+  };
+  app.get("/api/projects/:p/findings/:id/revisions/:rev", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const prm = req.params as { id: string; rev: string };
+    return findingRevision(store, proj.id, prm.id, intParam(prm.rev, "revision", 1)!);
+  });
+  app.post("/api/projects/:p/findings/:id/bundles", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const b = (req.body ?? {}) as { revision?: unknown };
+    const revision = intParam(b.revision, "revision", 1);
+    return createBundle(store, proj.id, (req.params as { id: string }).id, who(req), revision !== undefined ? { revision } : {});
+  });
+  app.get("/api/projects/:p/bundles/:bid", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    return getBundle(store, proj.id, (req.params as { bid: string }).bid);
+  });
+  app.get("/api/projects/:p/bundles/:bid/events", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const q = req.query as Record<string, unknown>;
+    return bundleEvents(store, proj.id, (req.params as { bid: string }).bid, intParam(q.offset, "offset", 0) ?? 0, intParam(q.limit, "limit", 1) ?? 200);
+  });
+  app.post("/api/projects/:p/bundles/:bid/pin", { preHandler: authed("analyst") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "analyst");
+    const reason = (req.body as { reason?: unknown } | undefined)?.reason;
+    if (typeof reason !== "string" || !reason.trim()) throw new HttpError(400, "reason is required");
+    return pinBundle(store, proj.id, (req.params as { bid: string }).bid, who(req), reason);
+  });
+
+  // ---- historical, question-specific coverage (R01.2) ----
+  app.get("/api/projects/:p/coverage/history", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    return coverageHistory(store, proj.id, parseCoverageQuestion(req.query as Record<string, unknown>));
+  });
+
+  // ---- versioned facts (R01.1) ----
+  const isoParam = (v: unknown, k: string) => {
+    if (v === undefined || v === "") return undefined;
+    if (typeof v !== "string" || v.length > 40 || Number.isNaN(Date.parse(v)) || !/T.*(Z|[+-]\d{2}:?\d{2})$/.test(v)) throw new HttpError(400, `${k} must be an ISO 8601 timestamp with an offset`);
+    return v;
+  };
+  app.get("/api/projects/:p/facts", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const q = req.query as Record<string, unknown>;
+    const validAt = isoParam(q.valid_at, "valid_at"), knownAt = isoParam(q.known_at, "known_at");
+    return store.facts.view(proj.id, { ...(validAt ? { validAt } : {}), ...(knownAt ? { knownAt } : {}), ...(typeof q.entity === "string" ? { entityRef: q.entity.slice(0, 300) } : {}), includeRetired: q.include_retired === "true" });
+  });
+  app.get("/api/projects/:p/facts/conflicts", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const q = req.query as Record<string, unknown>;
+    const validAt = isoParam(q.valid_at, "valid_at"), knownAt = isoParam(q.known_at, "known_at");
+    return store.facts.conflicts(proj.id, { ...(validAt ? { validAt } : {}), ...(knownAt ? { knownAt } : {}) });
+  });
+  app.get("/api/projects/:p/facts/entities/:ref", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    return store.facts.history(proj.id, String((req.params as { ref: string }).ref).slice(0, 300));
+  });
+  app.post("/api/projects/:p/facts/assertions", { preHandler: authed("admin") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "admin");
+    const r = store.facts.recordAssertion(proj.id, (req.body ?? {}) as Record<string, unknown>, who(req));
+    store.audit(who(req), "facts.assertion", proj.id, r.entity_ref, { id: r.id, attribute: r.attribute, source_ref: r.source_ref, type: r.assertion_type });
+    return r;
+  });
+  app.post("/api/projects/:p/facts/reconciliations", { preHandler: authed("analyst") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "analyst");
+    const r = store.facts.reconcile(proj.id, (req.body ?? {}) as Record<string, unknown>, who(req));
+    store.audit(who(req), "facts.reconcile", proj.id, r.entity_ref, r);
+    return r;
   });
 
   // ---- containment (proposals only) ----

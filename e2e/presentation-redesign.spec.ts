@@ -83,7 +83,7 @@ test('COV-06: failed refresh retains confirmed nonzero gaps and visibly marks th
 test('TIME-03: earlier replay visibly labels later server notes and dispositions as current annotations', async ({ browser }) => {
   const data = await snapshot(); const finding = data.findings.find(item => item.kind === 'blocked_request_reported') ?? data.findings[0]!;
   const replay = '2026-10-20T14:00:00Z', note = 'Synthetic current annotation recorded after the selected replay interval.';
-  const saved = await harness.api('POST', `/api/projects/${project}/findings/${encodeURIComponent(finding.id)}/disposition`, { lifecycle: 'acknowledged', disposition: 'expected_test', note });
+  const saved = await harness.api('POST', `/api/projects/${project}/findings/${encodeURIComponent(finding.id)}/disposition`, { lifecycle: 'acknowledged', disposition: 'expected_test', note, expected_state_version: finding.state_version ?? 0 });
   expect(saved.status).toBe(200); const created = saved.json.notes.find((entry: { note: string }) => entry.note === note); expect(created).toBeTruthy(); expect(Date.parse(created.created_at)).toBeGreaterThan(Date.parse(replay));
   const { context, page } = await loginRedesign(browser, harness);
   try {

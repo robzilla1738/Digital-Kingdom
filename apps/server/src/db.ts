@@ -1,3 +1,4 @@
+import { BUNDLES_MIGRATION, FACTS_MIGRATION } from "./schema-r01.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -43,6 +44,41 @@ export const MIGRATIONS: string[] = [
   // cross-source identity joins), which is the safe default for every existing source.
   `ALTER TABLE sources ADD COLUMN identity_namespace TEXT;
    ALTER TABLE sources ADD COLUMN run_namespace TEXT;`,
+  // R01.4: optimistic concurrency and decision history. Existing rows start at version 0 / revision 1;
+  // containment requests created before policy snapshots carry NULL and must be requested again to approve.
+  `ALTER TABLE findings ADD COLUMN state_version INTEGER NOT NULL DEFAULT 0;
+   CREATE TABLE state_changes (id INTEGER PRIMARY KEY AUTOINCREMENT, project_id TEXT NOT NULL, subject_type TEXT NOT NULL, subject_id TEXT NOT NULL, version INTEGER NOT NULL, actor TEXT NOT NULL, before TEXT NOT NULL, after TEXT NOT NULL, reason TEXT, at TEXT NOT NULL);
+   CREATE INDEX state_changes_subject ON state_changes (project_id, subject_type, subject_id, id);
+   ALTER TABLE sources ADD COLUMN config_revision INTEGER NOT NULL DEFAULT 1;
+   CREATE TABLE source_revisions (project_id TEXT NOT NULL, source_id TEXT NOT NULL, revision INTEGER NOT NULL, config TEXT NOT NULL, actor TEXT NOT NULL, reason TEXT NOT NULL, recorded_at TEXT NOT NULL, effective_at TEXT NOT NULL, PRIMARY KEY (project_id, source_id, revision));
+   ALTER TABLE containment_requests ADD COLUMN finding_revision INTEGER;
+   ALTER TABLE containment_requests ADD COLUMN policy_digest TEXT;
+   ALTER TABLE containment_requests ADD COLUMN expires_at TEXT;`,
+  // R01.1: bitemporal entities, assertions and reconciliations (see facts.ts). Existing projects are
+  // backfilled lazily from their stored graph revisions with legacy (unknown) provenance.
+  FACTS_MIGRATION,
+  // R01.2: capability declarations used by historical coverage, and indexes for receipt-based liveness.
+  `ALTER TABLE sources ADD COLUMN sampling_ratio REAL;
+   ALTER TABLE sources ADD COLUMN retention_days INTEGER;
+   ALTER TABLE sources ADD COLUMN outcomes_reported TEXT;
+   CREATE INDEX events_source_received ON events (project_id, source_id, received_at);
+   CREATE INDEX events_source_action ON events (project_id, source_id, action, occurred_at);`,
+  // R01.3: immutable, content-addressed investigation bundles.
+  BUNDLES_MIGRATION,
+  // R01.5: indexes chosen from EXPLAIN QUERY PLAN on the 10k/100k/1M benchmark (docs/roadmap/R01.5-BENCHMARK.md).
+  // Expression texts must match investigate.ts FIELD_FILTERS exactly for SQLite to use them.
+  `CREATE INDEX events_time_id ON events (project_id, occurred_at, id);
+   DROP INDEX events_project_time;
+   CREATE INDEX events_action_time ON events (project_id, action, occurred_at, id);
+   CREATE INDEX events_source_time ON events (project_id, source_id, occurred_at, id);
+   CREATE INDEX events_actor ON events (project_id, json_extract(body, '$.actor_ref'), occurred_at, id);
+   CREATE INDEX events_session ON events (project_id, json_extract(body, '$.session_ref'), occurred_at, id);
+   CREATE INDEX events_request ON events (project_id, json_extract(body, '$.request_id'), occurred_at, id);
+   CREATE INDEX events_run ON events (project_id, json_extract(body, '$.run_id'), occurred_at, id);
+   CREATE INDEX events_client_ip ON events (project_id, json_extract(body, '$.client_ip'), occurred_at, id);
+   CREATE INDEX events_route ON events (project_id, json_extract(body, '$.route'), occurred_at, id);
+   CREATE INDEX events_rule ON events (project_id, json_extract(body, '$.rule_ref'), occurred_at, id);
+   CREATE INDEX events_trace ON events (project_id, json_extract(body, '$.trace_id'), occurred_at, id);`,
 ];
 
 export function openDb(path: string): DB {

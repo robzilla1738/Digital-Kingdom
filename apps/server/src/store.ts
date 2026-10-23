@@ -1,12 +1,13 @@
 import {
   canonicalJson, digest,
-  EVENT_ACTIONS, type EventAction, type IngestEvent,
+  EVENT_ACTIONS, EVENT_OUTCOMES, type EventAction, type IngestEvent,
   type CompiledScene, type DatasetKind, type Finding, type Graph, type SceneProposal, type SecurityEvent,
 } from "@dk/contracts";
 import { GraphIndex, validateGraph } from "@dk/graph-core";
 import { compileScene, defaultProposal, validateProposal } from "@dk/scene-compiler";
-import { checkCapability, evaluate, redactString, validateNamespace, minimizeIngest, normalizeIngest, sanitizeStoredRedaction, sourceCapabilities, toStoredRedaction, type StoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
+import { checkCapability, deriveCoverage, evaluate, RULESET_VERSION, redactString, type SourceState, validateNamespace, minimizeIngest, normalizeIngest, sanitizeStoredRedaction, sourceCapabilities, toStoredRedaction, type StoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
 import { tx, type DB } from "./db.ts";
+import { Facts } from "./facts.ts";
 import { atLeast, newToken, sha256, type Role } from "./security.ts";
 import { CONTAINMENT_CATALOG, type ContainmentAction } from "./containment.ts";
 
@@ -29,6 +30,8 @@ export interface StoreOptions {
   /** Tests only: open a legacy database without running the v0.2 journal minimization. */
   skipLegacyMinimization?: boolean;
   eventWindow?: number;
+  /** Containment proposals expire for approval after this many hours (R01.4). Default 72. */
+  containmentTtlHours?: number;
 }
 
 const J = <T>(s: string | null | undefined, fallback: T): T => (s ? (JSON.parse(s) as T) : fallback);
@@ -36,9 +39,12 @@ const J = <T>(s: string | null | undefined, fallback: T): T => (s ? (JSON.parse(
 export class Store {
   private indexCache = new Map<string, { revision: string; index: GraphIndex; graph: Graph }>();
   readonly now: () => Date;
+  /** Bitemporal entities and assertions (R01.1). */
+  readonly facts: Facts;
 
   constructor(readonly db: DB, private readonly opts: StoreOptions = {}) {
     this.now = opts.now ?? (() => new Date());
+    this.facts = new Facts(db, this.now);
     if (!opts.skipLegacyMinimization) this.minimizeLegacyJournal();
   }
   private iso() { return this.now().toISOString(); }
@@ -81,6 +87,7 @@ export class Store {
       if (previous) proposal.style_profile = previous.style_profile;
       const scene = compileScene(graph, proposal, { previous, source: "default" });
       this.saveScene(projectId, scene, proposal);
+      this.facts.recordGraph(projectId, graph, actor, this.iso());
       this.audit(actor, "graph.put", projectId, graph.graph_revision, { assets: graph.assets.length, relationships: graph.relationships.length, reflow: scene.reflow_zones });
       this.emit(projectId, "graph", { graph_revision: graph.graph_revision });
       this.indexCache.delete(projectId);
@@ -135,7 +142,7 @@ export class Store {
 
   // ---------------- sources ----------------
 
-  upsertSource(projectId: string, cfg: SourceConfig & { kind?: string; dataset_kind?: DatasetKind }, actor: string): { id: string; key: string } {
+  upsertSource(projectId: string, cfg: SourceConfig & { kind?: string; dataset_kind?: DatasetKind }, actor: string, opts: { expectedRevision?: number; requirePrecondition?: boolean } = {}): { id: string; key: string; config_revision: number } {
     const proj = this.mustProject(projectId);
     if (!cfg.asset_ids?.length) throw new HttpError(400, "a source must be assigned at least one asset (asset_ids)");
     if (cfg.kind && !SOURCE_KINDS.includes(cfg.kind)) throw new HttpError(400, `unknown source kind ${cfg.kind} (known: ${SOURCE_KINDS.join(", ")})`);
@@ -145,22 +152,72 @@ export class Store {
     if (cfg.dataset_kind && cfg.dataset_kind !== proj.dataset_kind) throw new HttpError(422, `a ${cfg.dataset_kind} source cannot write to a ${proj.dataset_kind} project`);
     if (!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/.test(cfg.id)) throw new HttpError(400, "invalid source id");
     for (const f of ["identity_namespace", "run_namespace"] as const) { const err = validateNamespace(cfg[f]); if (err) throw new HttpError(400, `${f}: ${err}`); }
+    if (cfg.sampling_ratio !== undefined && !(typeof cfg.sampling_ratio === "number" && cfg.sampling_ratio > 0 && cfg.sampling_ratio <= 1)) throw new HttpError(400, "sampling_ratio must be a number in (0, 1]");
+    if (cfg.retention_days !== undefined && !(Number.isInteger(cfg.retention_days) && cfg.retention_days > 0 && cfg.retention_days <= 36500)) throw new HttpError(400, "retention_days must be a positive integer");
+    if (cfg.outcomes_reported !== undefined && (!Array.isArray(cfg.outcomes_reported) || !cfg.outcomes_reported.length || cfg.outcomes_reported.some((o) => !EVENT_OUTCOMES.includes(o as never)))) throw new HttpError(400, `outcomes_reported must be a non-empty list of: ${EVENT_OUTCOMES.join(", ")}`);
+    const existing = this.db.prepare("SELECT config_revision, disabled FROM sources WHERE project_id = ? AND id = ?").get(projectId, cfg.id) as { config_revision: number; disabled: number } | undefined;
+    if (existing && opts.requirePrecondition && opts.expectedRevision === undefined) throw new HttpError(428, `source ${cfg.id} exists: expected_revision is required to change it`, [`current config_revision is ${existing.config_revision}`], { current: { config_revision: Number(existing.config_revision) } });
+    if (existing && opts.expectedRevision !== undefined && opts.expectedRevision !== Number(existing.config_revision)) throw new HttpError(409, `source ${cfg.id} was changed since revision ${opts.expectedRevision}`, ["review the current configuration and its history, then resubmit"], { current: { config_revision: Number(existing.config_revision) }, history: this.sourceHistory(projectId, cfg.id).filter((h) => h.revision > opts.expectedRevision!) });
+    if (!existing && opts.expectedRevision !== undefined && opts.expectedRevision !== 0) throw new HttpError(409, `source ${cfg.id} does not exist (expected_revision must be 0 or omitted to create it)`);
+    const revision = existing ? Number(existing.config_revision) + 1 : 1;
     const key = newToken(proj.dataset_kind === "synthetic" ? "dks_demo" : "dks");
+    return tx(this.db, () => {
     this.db.prepare(`INSERT INTO sources (id, project_id, label, kind, asset_ids, trusts_request_ids, stale_after_seconds, key_hash, created_at, allowed_actions, independence_group, identity_namespace, run_namespace) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT (project_id, id) DO UPDATE SET label = excluded.label, kind = excluded.kind, asset_ids = excluded.asset_ids, trusts_request_ids = excluded.trusts_request_ids, stale_after_seconds = excluded.stale_after_seconds, key_hash = excluded.key_hash, allowed_actions = excluded.allowed_actions, independence_group = excluded.independence_group, identity_namespace = excluded.identity_namespace, run_namespace = excluded.run_namespace`)
       .run(cfg.id, projectId, cfg.label.slice(0, 120), cfg.kind ?? "generic", JSON.stringify(cfg.asset_ids), cfg.trusts_request_ids ? 1 : 0, cfg.stale_after_seconds ?? null, sha256(key), this.iso(), cfg.allowed_actions?.length ? JSON.stringify(cfg.allowed_actions) : null, cfg.independence_group ?? null, cfg.identity_namespace ?? null, cfg.run_namespace ?? null);
-    this.audit(actor, "source.key_issued", projectId, cfg.id, { kind: cfg.kind ?? "generic" });
-    return { id: cfg.id, key };
+    this.db.prepare("UPDATE sources SET config_revision = ?, sampling_ratio = ?, retention_days = ?, outcomes_reported = ? WHERE project_id = ? AND id = ?").run(revision, cfg.sampling_ratio ?? null, cfg.retention_days ?? null, cfg.outcomes_reported ? JSON.stringify(cfg.outcomes_reported) : null, projectId, cfg.id);
+    this.recordSourceRevision(projectId, cfg.id, revision, actor, existing ? "updated (key rotated)" : "created", this.iso());
+    this.audit(actor, "source.key_issued", projectId, cfg.id, { kind: cfg.kind ?? "generic", config_revision: revision });
+    return { id: cfg.id, key, config_revision: revision };
+    });
   }
 
-  listSources(projectId: string): (SourceConfig & { kind: string; disabled: boolean })[] {
+  /** Snapshot the source's current configuration (never its key) as a revision with an effective time (R01.2/R01.4). */
+  private recordSourceRevision(projectId: string, sourceId: string, revision: number, actor: string, reason: string, effectiveAt: string) {
+    const cfg = this.listSources(projectId).find((x) => x.id === sourceId)!;
+    this.db.prepare("INSERT INTO source_revisions (project_id, source_id, revision, config, actor, reason, recorded_at, effective_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+      .run(projectId, sourceId, revision, canonicalJson(cfg), actor, reason.slice(0, 300), this.iso(), effectiveAt);
+  }
+
+  sourceHistory(projectId: string, sourceId: string) {
+    return (this.db.prepare("SELECT revision, config, actor, reason, recorded_at, effective_at FROM source_revisions WHERE project_id = ? AND source_id = ? ORDER BY revision").all(projectId, sourceId) as { revision: number; config: string; actor: string; reason: string; recorded_at: string; effective_at: string }[])
+      .map((r) => ({ revision: r.revision, config: JSON.parse(r.config) as SourceConfig & { disabled: boolean; kind: string }, actor: r.actor, reason: r.reason, recorded_at: r.recorded_at, effective_at: r.effective_at }));
+  }
+
+  /**
+   * Administrative enable/disable with a precondition and an effective time (R01.2/R01.4). `effectiveAt` may be
+   * in the past (recording a known outage window late) but never in the future; the recording time is kept
+   * separately, so what was known earlier is not rewritten.
+   */
+  setSourceState(projectId: string, sourceId: string, disabled: boolean, actor: string, opts: { expectedRevision: number; reason: string; effectiveAt?: string }) {
+    return tx(this.db, () => {
+      const cur = this.db.prepare("SELECT config_revision, disabled FROM sources WHERE project_id = ? AND id = ?").get(projectId, sourceId) as { config_revision: number; disabled: number } | undefined;
+      if (!cur) throw new HttpError(404, "source not found");
+      if (opts.expectedRevision !== Number(cur.config_revision)) throw new HttpError(409, `source ${sourceId} was changed since revision ${opts.expectedRevision}`, [], { current: { config_revision: Number(cur.config_revision), disabled: cur.disabled === 1 }, history: this.sourceHistory(projectId, sourceId).filter((h) => h.revision > opts.expectedRevision) });
+      const effective = opts.effectiveAt ?? this.iso();
+      if (Date.parse(effective) > this.now().getTime() + 1000) throw new HttpError(400, "effective_at cannot be in the future");
+      const revision = Number(cur.config_revision) + 1;
+      this.db.prepare("UPDATE sources SET disabled = ?, config_revision = ? WHERE project_id = ? AND id = ?").run(disabled ? 1 : 0, revision, projectId, sourceId);
+      this.recordSourceRevision(projectId, sourceId, revision, actor, `${disabled ? "disabled" : "enabled"}: ${opts.reason}`, new Date(Date.parse(effective)).toISOString());
+      this.audit(actor, disabled ? "source.disabled" : "source.enabled", projectId, sourceId, { config_revision: revision, effective_at: effective, reason: opts.reason.slice(0, 300) });
+      this.emit(projectId, "source", { id: sourceId, disabled, config_revision: revision });
+      return { id: sourceId, disabled, config_revision: revision, effective_at: new Date(Date.parse(effective)).toISOString() };
+    });
+  }
+
+  listSources(projectId: string): (SourceConfig & { kind: string; disabled: boolean; config_revision: number; created_at: string })[] {
     return (this.db.prepare("SELECT * FROM sources WHERE project_id = ? ORDER BY id").all(projectId) as Record<string, unknown>[]).map((r) => ({
       id: String(r.id), label: String(r.label), kind: String(r.kind), asset_ids: J(String(r.asset_ids), [] as string[]),
       trusts_request_ids: r.trusts_request_ids === 1, ...(r.stale_after_seconds ? { stale_after_seconds: Number(r.stale_after_seconds) } : {}), disabled: r.disabled === 1,
+      config_revision: Number(r.config_revision ?? 1),
       ...(r.allowed_actions ? { allowed_actions: J(String(r.allowed_actions), [] as EventAction[]) } : {}),
       ...(r.independence_group ? { independence_group: String(r.independence_group) } : {}),
       ...(r.identity_namespace ? { identity_namespace: String(r.identity_namespace) } : {}),
       ...(r.run_namespace ? { run_namespace: String(r.run_namespace) } : {}),
+      ...(r.sampling_ratio !== null && r.sampling_ratio !== undefined ? { sampling_ratio: Number(r.sampling_ratio) } : {}),
+      ...(r.retention_days ? { retention_days: Number(r.retention_days) } : {}),
+      ...(r.outcomes_reported ? { outcomes_reported: J(String(r.outcomes_reported), [] as string[]) } : {}),
+      created_at: String(r.created_at),
     }));
   }
 
@@ -342,7 +399,7 @@ export class Store {
     const proj = this.getProject(projectId);
     if (!ix || !proj) return;
     const events = this.listEvents(projectId, { limit: this.opts.eventWindow ?? 50_000 });
-    const result = evaluate(ix.graph, events, { sources: this.listSources(projectId), ...(proj.dataset_kind === "live" ? { now: this.iso() } : {}) });
+    const result = evaluate(ix.graph, events, { sources: this.listSources(projectId), sourceState: this.sourceState(projectId), ...(proj.dataset_kind === "live" ? { now: this.iso() } : {}) });
     for (const f of result.findings) {
       const { revision: _r, lifecycle: _l, disposition: _d, ...content } = f;
       const cd = digest(content);
@@ -385,6 +442,32 @@ export class Store {
       for (const a of J(r.asset_ids, [] as string[])) byAsset.set(a, (byAsset.get(a) ?? 0) + 1);
     }
     return { byAsset, eventIds, scanned: Math.min(rows.length, scanLimit), limited };
+  }
+
+  /** Last receipt, last occurrence and last health report per source over ALL stored events (R01.2). */
+  sourceState(projectId: string): Record<string, SourceState> {
+    // R01.5: one index seek per declared source (events_source_received / events_source_time / events_source_action)
+    // instead of aggregating every stored event on each request.
+    const out: Record<string, SourceState> = {};
+    const lastRecv = this.db.prepare("SELECT MAX(received_at) AS r FROM events WHERE project_id = ? AND source_id = ?");
+    const lastOcc = this.db.prepare("SELECT MAX(occurred_at) AS o FROM events WHERE project_id = ? AND source_id = ?");
+    // one equality seek per health action on events_source_action (an IN list made SQLite sort a whole source)
+    const healthOf = this.db.prepare("SELECT id, action, occurred_at, received_at, json_extract(body, '$.coverage_note') AS note FROM events INDEXED BY events_source_action WHERE project_id = ? AND source_id = ? AND action = ? ORDER BY occurred_at DESC, received_at DESC LIMIT 1");
+    type H = { id: string; action: "sensor_unavailable" | "sensor_restored"; occurred_at: string; received_at: string; note: string | null };
+    const health = { get: (p: string, src: string): H | undefined => {
+      const a = healthOf.get(p, src, "sensor_unavailable") as H | undefined, b = healthOf.get(p, src, "sensor_restored") as H | undefined;
+      if (!a || !b) return a ?? b;
+      return a.occurred_at > b.occurred_at || (a.occurred_at === b.occurred_at && a.received_at > b.received_at) ? a : b;
+    } };
+    for (const { id } of this.db.prepare("SELECT id FROM sources WHERE project_id = ?").all(projectId) as { id: string }[]) {
+      const r = (lastRecv.get(projectId, id) as { r: string | null }).r;
+      if (!r) continue;
+      const st: SourceState = { last_received_at: r, last_occurred_at: (lastOcc.get(projectId, id) as { o: string }).o };
+      const h = health.get(projectId, id);
+      if (h) st.last_health = { id: h.id, action: h.action, occurred_at: h.occurred_at, ...(h.note ? { coverage_note: h.note } : {}) };
+      out[id] = st;
+    }
+    return out;
   }
 
   /** Exact, project-scoped lookup by event id (chunked), independent of any recency window. */
@@ -445,38 +528,89 @@ export class Store {
   }
 
   listFindings(projectId: string): Finding[] {
-    return (this.db.prepare("SELECT body, lifecycle, disposition FROM findings WHERE project_id = ?").all(projectId) as { body: string; lifecycle: Finding["lifecycle"]; disposition: Finding["disposition"] }[])
-      .map((r) => ({ ...(JSON.parse(r.body) as Finding), lifecycle: r.lifecycle, disposition: r.disposition }))
+    return (this.db.prepare("SELECT body, lifecycle, disposition, state_version FROM findings WHERE project_id = ?").all(projectId) as { body: string; lifecycle: Finding["lifecycle"]; disposition: Finding["disposition"]; state_version: number }[])
+      .map((r) => ({ ...(JSON.parse(r.body) as Finding), lifecycle: r.lifecycle, disposition: r.disposition, state_version: Number(r.state_version) }))
       .sort((a, b) => a.first_seen.localeCompare(b.first_seen) || a.id.localeCompare(b.id));
   }
 
-  getFinding(projectId: string, id: string) {
+  /**
+   * A finding with its revision history and analyst annotations. Annotations are CURRENT by default and say so
+   * (`annotations.basis`). With `asOf`, notes recorded after that instant are excluded and the analyst state is
+   * reconstructed from the recorded state changes, so historical replay never presents current notes as
+   * historical ones (R01.4).
+   */
+  getFinding(projectId: string, id: string, opts: { asOf?: string } = {}) {
     const f = this.listFindings(projectId).find((x) => x.id === id);
     if (!f) return undefined;
     const revisions = (this.db.prepare("SELECT revision, reason, created_at, body FROM finding_revisions WHERE project_id = ? AND finding_id = ? ORDER BY revision").all(projectId, id) as { revision: number; reason: string; created_at: string; body: string }[])
       .map((r) => ({ revision: r.revision, reason: r.reason, created_at: r.created_at, event_count: (JSON.parse(r.body) as Finding).event_count, evidence_level: (JSON.parse(r.body) as Finding).evidence_level }));
-    const notes = this.db.prepare("SELECT author, note, created_at FROM analyst_notes WHERE project_id = ? AND finding_id = ? ORDER BY id").all(projectId, id);
-    return { finding: f, revisions, notes };
+    const allNotes = this.db.prepare("SELECT author, note, created_at FROM analyst_notes WHERE project_id = ? AND finding_id = ? ORDER BY id").all(projectId, id) as { author: string; note: string; created_at: string }[];
+    const changes = this.stateChanges(projectId, "finding", id);
+    if (!opts.asOf) {
+      return { finding: f, revisions, notes: allNotes, state_changes: changes, annotations: { basis: "current" as const, note: "Notes, lifecycle and disposition are current annotations, not a reconstruction of any earlier moment." } };
+    }
+    const t = Date.parse(opts.asOf);
+    const notes = allNotes.filter((n) => Date.parse(n.created_at) <= t);
+    const before = changes.filter((c) => Date.parse(c.at) <= t).at(-1);
+    const state = before ? (before.after as { lifecycle: string; disposition: string }) : (changes[0]?.before as { lifecycle: string; disposition: string } | undefined) ?? { lifecycle: f.lifecycle, disposition: f.disposition };
+    return {
+      finding: f, revisions, notes, state_changes: changes.filter((c) => Date.parse(c.at) <= t),
+      annotations: { basis: "as_of" as const, as_of: new Date(t).toISOString(), lifecycle: state.lifecycle, disposition: state.disposition, excluded_later_notes: allNotes.length - notes.length,
+        note: "Notes and analyst state as recorded at as_of. The finding body is the current revision; use the revision list for evidence history." },
+    };
   }
 
-  setDisposition(projectId: string, id: string, actor: string, d: { lifecycle?: Finding["lifecycle"]; disposition?: Finding["disposition"]; note?: string }) {
-    if (!this.getFinding(projectId, id)) throw new HttpError(404, "finding not found");
-    tx(this.db, () => {
-      if (d.lifecycle) this.db.prepare("UPDATE findings SET lifecycle = ? WHERE project_id = ? AND id = ?").run(d.lifecycle, projectId, id);
-      if (d.disposition) this.db.prepare("UPDATE findings SET disposition = ? WHERE project_id = ? AND id = ?").run(d.disposition, projectId, id);
+  stateChanges(projectId: string, subjectType: string, subjectId: string) {
+    return (this.db.prepare("SELECT version, actor, before, after, reason, at FROM state_changes WHERE project_id = ? AND subject_type = ? AND subject_id = ? ORDER BY id").all(projectId, subjectType, subjectId) as { version: number; actor: string; before: string; after: string; reason: string | null; at: string }[])
+      .map((r) => ({ version: r.version, actor: r.actor, before: JSON.parse(r.before) as Record<string, unknown>, after: JSON.parse(r.after) as Record<string, unknown>, reason: r.reason, at: r.at }));
+  }
+
+  private recordChange(projectId: string, subjectType: string, subjectId: string, version: number, actor: string, before: unknown, after: unknown, reason?: string) {
+    this.db.prepare("INSERT INTO state_changes (project_id, subject_type, subject_id, version, actor, before, after, reason, at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+      .run(projectId, subjectType, subjectId, version, actor, canonicalJson(before), canonicalJson(after), reason ?? null, this.iso());
+  }
+
+  /**
+   * Analyst review with an optimistic-concurrency precondition (R01.4). Changing lifecycle or disposition
+   * requires `expected_state_version`; a stale version gets 409 with the current state and the changes made
+   * since, never a silent last-writer-wins. Appending a note alone needs no precondition (notes never overwrite).
+   */
+  setDisposition(projectId: string, id: string, actor: string, d: { lifecycle?: Finding["lifecycle"]; disposition?: Finding["disposition"]; note?: string; expected_state_version?: number }) {
+    return tx(this.db, () => {
+      const cur = this.db.prepare("SELECT lifecycle, disposition, state_version FROM findings WHERE project_id = ? AND id = ?").get(projectId, id) as { lifecycle: string; disposition: string; state_version: number } | undefined;
+      if (!cur) throw new HttpError(404, "finding not found");
+      const changesState = (d.lifecycle !== undefined && d.lifecycle !== cur.lifecycle) || (d.disposition !== undefined && d.disposition !== cur.disposition);
+      if (d.lifecycle !== undefined || d.disposition !== undefined) {
+        if (d.expected_state_version === undefined) throw new HttpError(428, "expected_state_version is required to change lifecycle or disposition", [`current state_version is ${cur.state_version}; reload the finding and resend with it`], { current: { lifecycle: cur.lifecycle, disposition: cur.disposition, state_version: Number(cur.state_version) } });
+        if (d.expected_state_version !== Number(cur.state_version)) {
+          throw new HttpError(409, "this finding was reviewed by someone else since you loaded it", ["review the current state and the changes since your version, then resubmit"], {
+            current: { lifecycle: cur.lifecycle, disposition: cur.disposition, state_version: Number(cur.state_version) },
+            changes_since: this.stateChanges(projectId, "finding", id).filter((c) => c.version > d.expected_state_version!),
+          });
+        }
+      }
+      if (changesState) {
+        const after = { lifecycle: d.lifecycle ?? cur.lifecycle, disposition: d.disposition ?? cur.disposition };
+        const version = Number(cur.state_version) + 1;
+        this.db.prepare("UPDATE findings SET lifecycle = ?, disposition = ?, state_version = ? WHERE project_id = ? AND id = ?").run(after.lifecycle, after.disposition, version, projectId, id);
+        this.recordChange(projectId, "finding", id, version, actor, { lifecycle: cur.lifecycle, disposition: cur.disposition }, after, d.note?.slice(0, 200));
+      }
       if (d.note) this.db.prepare("INSERT INTO analyst_notes (project_id, finding_id, author, note, created_at) VALUES (?, ?, ?, ?, ?)").run(projectId, id, actor, d.note.slice(0, 4000), this.iso());
-      this.audit(actor, "finding.disposition", projectId, id, d);
+      this.audit(actor, "finding.disposition", projectId, id, { lifecycle: d.lifecycle, disposition: d.disposition, note: !!d.note, expected_state_version: d.expected_state_version });
       this.emit(projectId, "finding", { id, analyst_update: true });
+      return this.getFinding(projectId, id)!;
     });
-    return this.getFinding(projectId, id)!;
   }
 
   evaluation(projectId: string) {
     const ix = this.index(projectId);
     const proj = this.mustProject(projectId);
     if (!ix) return { coverage: [], unobserved_asset_ids: [], ruleset_version: "" };
-    const r = evaluate(ix.graph, this.listEvents(projectId, { limit: this.opts.eventWindow ?? 50_000 }), { sources: this.listSources(projectId), ...(proj.dataset_kind === "live" ? { now: this.iso() } : {}) });
-    return { coverage: r.coverage, unobserved_asset_ids: r.unobserved_asset_ids, ruleset_version: r.ruleset_version };
+    // R01.5: current coverage needs only source declarations and per-source state, not a rule run over the
+    // event window. This is the same derivation evaluate() uses, at a fraction of the cost per request.
+    const coverage = deriveCoverage(ix.graph, [], { sources: this.listSources(projectId), sourceState: this.sourceState(projectId), ...(proj.dataset_kind === "live" ? { now: this.iso() } : {}) });
+    const covered = new Set(coverage.flatMap((c) => c.asset_ids));
+    return { coverage, unobserved_asset_ids: ix.graph.assets.map((a) => a.id).filter((id) => !covered.has(id)), ruleset_version: RULESET_VERSION };
   }
 
   health(projectId: string) {
@@ -596,8 +730,10 @@ export class Store {
     const kinds = new Set(f.finding.affected_asset_ids.map((id) => graph.assets.find((a) => a.id === id)?.kind));
     if (!action.applies_to_kinds.some((k) => kinds.has(k))) throw new HttpError(422, `${actionId} does not apply to the assets in this finding`);
     const id = "cr_" + sha256(`${projectId}:${findingId}:${actionId}:${this.iso()}:${Math.random()}`).slice(0, 16);
+    const expires = new Date(this.now().getTime() + (this.opts.containmentTtlHours ?? 72) * 3600_000).toISOString();
     tx(this.db, () => {
-      this.db.prepare("INSERT INTO containment_requests (id, project_id, finding_id, action_id, requested_by, rationale, status, created_at, requested_by_type) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?)").run(id, projectId, findingId, actionId, actor, rationale.slice(0, 2000), this.iso(), requesterType);
+      this.db.prepare("INSERT INTO containment_requests (id, project_id, finding_id, action_id, requested_by, rationale, status, created_at, requested_by_type, finding_revision, policy_digest, expires_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?)")
+        .run(id, projectId, findingId, actionId, actor, rationale.slice(0, 2000), this.iso(), requesterType, f.finding.revision, this.containmentPolicyDigest(projectId, actionId), expires);
       this.audit(actor, "containment.requested", projectId, id, { findingId, actionId });
       this.emit(projectId, "containment", { id, status: "pending" });
     });
@@ -615,6 +751,11 @@ export class Store {
     if (c.status !== "pending") throw new HttpError(409, "already decided");
     if (principalType !== "human") throw new HttpError(403, "service tokens cannot decide containment requests");
     if (c.requested_by === actor || c.requested_by === principalId || String(c.requested_by).endsWith(`(${principalId})`)) throw new HttpError(403, "the requesting token cannot decide its own containment request");
+    if (decision === "approved") {
+      // R01.4: an approval binds the exact policy and finding revision that were reviewed. Rejection stays possible.
+      const stale = this.containmentStaleness(projectId, c);
+      if (stale) throw new HttpError(409, `cannot approve: ${stale}`, ["reject this proposal or request it again so the current policy and evidence are reviewed"], { renewal_required: true });
+    }
     tx(this.db, () => {
       this.db.prepare("UPDATE containment_requests SET status = ?, decided_by = ?, decided_at = ? WHERE id = ?").run(decision, actor, this.iso(), id);
       this.audit(actor, `containment.${decision}`, projectId, id, {});
@@ -623,12 +764,35 @@ export class Store {
     return this.getContainment(projectId, id)!;
   }
 
+  /** Digest of what a reviewer approves against: the catalog entry and the project's permitted action set. */
+  containmentPolicyDigest(projectId: string, actionId: string): string {
+    const proj = this.mustProject(projectId);
+    return digest({ action: this.containmentCatalog(projectId).find((a) => a.id === actionId) ?? null, permitted: proj.meta.containment_action_ids ?? null });
+  }
+
+  /** Why a pending request can no longer be approved as reviewed, or null. */
+  private containmentStaleness(projectId: string, c: Record<string, unknown>): string | null {
+    if (!c.policy_digest || !c.expires_at) return "this proposal predates policy snapshots";
+    if (this.now().getTime() > Date.parse(String(c.expires_at))) return `the proposal expired at ${c.expires_at}`;
+    if (this.containmentPolicyDigest(projectId, String(c.action_id)) !== c.policy_digest) return "the containment policy changed since the proposal was made";
+    const f = this.getFinding(projectId, String(c.finding_id));
+    if (!f || f.finding.revision !== Number(c.finding_revision)) return `the finding changed since the proposal (revision ${c.finding_revision} -> ${f?.finding.revision ?? "missing"})`;
+    return null;
+  }
+
   getContainment(projectId: string, id: string) {
-    return this.db.prepare("SELECT * FROM containment_requests WHERE project_id = ? AND id = ?").get(projectId, id) as Record<string, string> | undefined;
+    const r = this.db.prepare("SELECT * FROM containment_requests WHERE project_id = ? AND id = ?").get(projectId, id) as Record<string, string> | undefined;
+    return r ? this.annotateContainment(projectId, r) : undefined;
   }
 
   listContainment(projectId: string) {
-    return this.db.prepare("SELECT * FROM containment_requests WHERE project_id = ? ORDER BY created_at DESC LIMIT 200").all(projectId);
+    return (this.db.prepare("SELECT * FROM containment_requests WHERE project_id = ? ORDER BY created_at DESC LIMIT 200").all(projectId) as Record<string, string>[]).map((r) => this.annotateContainment(projectId, r));
+  }
+
+  private annotateContainment(projectId: string, r: Record<string, string>): Record<string, string> {
+    if (r.status !== "pending") return r;
+    const why = this.containmentStaleness(projectId, r);
+    return { ...r, approvable: why === null, renewal_reason: why } as unknown as Record<string, string>;
   }
 
   mustProject(id: string): ProjectRow {
@@ -677,5 +841,6 @@ export function isInfrastructureError(err: unknown): boolean {
 export function safeDetail(detail: string): string { return redactString(detail.slice(0, 2000)).slice(0, 500); }
 
 export class HttpError extends Error {
-  constructor(readonly status: number, message: string, readonly details: string[] = []) { super(message); }
+  /** `extra` is merged into the JSON error body (for example the current state on a 409 conflict). */
+  constructor(readonly status: number, message: string, readonly details: string[] = [], readonly extra?: Record<string, unknown>) { super(message); }
 }

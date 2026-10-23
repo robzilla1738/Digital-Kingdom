@@ -1,0 +1,205 @@
+{
+  "machine": {
+    "cpu": "Neoverse-V2",
+    "cores": 2,
+    "memory_gb": 8,
+    "arch": "arm64",
+    "platform": "linux",
+    "node": "v22.23.3"
+  },
+  "note": "Synthetic events inserted directly; best of 3 runs per query; single process, file-backed SQLite (WAL, synchronous=FULL).",
+  "runs": [
+    {
+      "events": 10000,
+      "insert_ms": 203,
+      "db_mb": 13,
+      "searches": {
+        "7 days, no filter": {
+          "ms": 2.1,
+          "matching": 2333,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "31 days, no filter": {
+          "ms": 9.2,
+          "matching": 6666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, actor_ref": {
+          "ms": 1.4,
+          "matching": 1,
+          "returned": 1,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_actor (project_id=? AND <expr>=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, session_ref": {
+          "ms": 1.2,
+          "matching": 1,
+          "returned": 1,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, action=authentication": {
+          "ms": 1.7,
+          "matching": 583,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, asset_id=db": {
+          "ms": 2.3,
+          "matching": 466,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, client_ip": {
+          "ms": 1.3,
+          "matching": 9,
+          "returned": 9,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        }
+      },
+      "current_coverage_ms": 0.4
+    },
+    {
+      "events": 100000,
+      "insert_ms": 3010,
+      "db_mb": 131,
+      "searches": {
+        "7 days, no filter": {
+          "ms": 27.6,
+          "matching": 23333,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "31 days, no filter": {
+          "ms": 58.4,
+          "matching": 66666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, actor_ref": {
+          "ms": 16.1,
+          "matching": 5,
+          "returned": 5,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_actor (project_id=? AND <expr>=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, session_ref": {
+          "ms": 15.9,
+          "matching": 1,
+          "returned": 1,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, action=authentication": {
+          "ms": 26.6,
+          "matching": 5833,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, asset_id=db": {
+          "ms": 31.7,
+          "matching": 4666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, client_ip": {
+          "ms": 18,
+          "matching": 93,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        }
+      },
+      "current_coverage_ms": 0.5
+    },
+    {
+      "events": 1000000,
+      "insert_ms": 40090,
+      "db_mb": 1313,
+      "searches": {
+        "7 days, no filter": {
+          "ms": 95.2,
+          "matching": 100000,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "31 days, no filter": {
+          "ms": 174.9,
+          "matching": 100000,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, actor_ref": {
+          "ms": 29.3,
+          "matching": 47,
+          "returned": 47,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_actor (project_id=? AND <expr>=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, session_ref": {
+          "ms": 29,
+          "matching": 12,
+          "returned": 12,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, action=authentication": {
+          "ms": 109.9,
+          "matching": 58333,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, asset_id=db": {
+          "ms": 160.5,
+          "matching": 46666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        },
+        "7 days, client_ip": {
+          "ms": 32.6,
+          "matching": 933,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING COVERING INDEX events_time_id (project_id=? AND occurred_at>? AND occurred_at<?)"
+          ]
+        }
+      },
+      "current_coverage_ms": 0.4
+    }
+  ]
+}

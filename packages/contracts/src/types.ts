@@ -33,6 +33,8 @@ export interface Asset {
   deployment?: string;
   /** Declared HTTP routes this asset serves: the authoritative route inventory (R00.3). */
   routes?: DeclaredRoute[];
+  /** Provider-native identity (R01.1). A different provider id under a reused asset id is a different entity. */
+  provider_ref?: { scope: string; id: string };
 }
 
 export const HTTP_METHODS = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "CONNECT", "TRACE"] as const;
@@ -185,6 +187,8 @@ export interface Finding {
   last_received: string;
   event_count: number;
   revision: number;
+  /** Analyst-state version (lifecycle/disposition), the optimistic-concurrency precondition (R01.4). Server only. */
+  state_version?: number;
   dataset_kind: DatasetKind;
 }
 

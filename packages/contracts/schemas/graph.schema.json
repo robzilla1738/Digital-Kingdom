@@ -202,6 +202,27 @@
                 }
               }
             }
+          },
+          "provider_ref": {
+            "description": "Provider-native identity of the resource behind this asset (R01.1), e.g. scope aws:123456789012:us-east-1 and id an ARN. Two incarnations with different provider ids are different entities even when the asset id is reused.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "scope",
+              "id"
+            ],
+            "properties": {
+              "scope": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              }
+            }
           }
         },
         "required": [

@@ -2,6 +2,14 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R01: evidence and history (branch `roadmap/r01-evidence`)
+
+- **Versioned facts (R01.1).** Bitemporal entities and assertions (`valid_from`/`recorded_at`, typed: declared, observed, inferred, hypothesis, test result) with provenance. Late discovery adds knowledge without rewriting what was known; a deleted and recreated resource is a new incarnation; conflicting sources stay a conflict until an attributed, precondition-checked reconciliation. Optional asset `provider_ref`. `GET /facts`, `/facts/conflicts`, `/facts/entities/:ref`, `POST /facts/assertions`, `/facts/reconciliations`; MCP `dk_facts`.
+- **Historical coverage (R01.2).** `GET /coverage/history` answers "could this asset/action/outcome have been recorded in this interval" as covered, partial and unknown spans with per-source reasons. Source configuration revisions, precondition-checked enable/disable with effective times, and declared sampling, retention and outcome limits. Liveness is judged by receipt time. Current coverage now reads per-source state from all stored events, so a bounded window can no longer hide a quiet source's outage (it previously showed as "not assessed"). Coverage workspace gains a Historical question tab; MCP `dk_coverage_history`.
+- **Evidence bundles (R01.3).** Immutable, content-addressed bundles pin a finding revision's exact records and digests; deleted or altered records are reported, expiry returns 410 with metadata, pinning retains them. Historical finding revisions are retrievable. The case export names the same bundle; MCP `dk_create_bundle`, `dk_get_bundle_events`; the finding view can pin one.
+- **Concurrency (R01.4).** Preconditions for finding review, source configuration and (optionally, via If-Match) scene layout; recorded actor/before/after history; historical annotations by `as_of`; containment approvals bound to policy and evidence with expiry.
+- **Bounded queries (R01.5).** Benchmark at 10k/100k/1M events (`scripts/bench-search.ts`, results in `docs/roadmap/R01.5-BENCHMARK.md`), plan-driven indexes, capped counts, response byte budget, expiring cursors, removal detection mid-pagination, per-principal rate limit, and current coverage without a rule run per request.
+
 ### Roadmap R00: correctness baseline (branch `roadmap/r00-correctness`)
 
 - **Typed, namespaced correlation (R00.2).** Rules join identifiers only inside an administrator-declared authority (`identity_namespace`, `run_namespace` on sources; undeclared = private). Two sources reporting `admin`, an account id equal to a session id, a success on another asset, or equal run ids from unrelated runtimes no longer link or corroborate. Ruleset `dk-rules-1.1.0`; history kept as revisions.

@@ -133,6 +133,8 @@ export function App() {
       findingEvidence: (id, signal) => { check(); return loadFindingEvidence(api, project, id, signal); },
       findingDetail: (id, signal) => { check(); return api.get<FindingDetailResult>(`${prefix}/findings/${encodeURIComponent(id)}`, signal); },
       eventDetail: (id, signal) => { check(); return api.get(`${prefix}/events/${encodeURIComponent(id)}`, signal); },
+      coverageHistory: (q, signal) => { check(); return api.get(`${prefix}/coverage/history?${new URLSearchParams(q as Record<string, string>)}`, signal); },
+      createBundle: async (findingId, revision) => { check(); return api.send("POST", `${prefix}/findings/${encodeURIComponent(findingId)}/bundles`, revision ? { revision } : {}); },
       searchEvents: (input, signal) => { check(); return api.get(`${prefix}/events/search?${eventSearchParams(input)}`, signal); },
     };
   }, [data?.project.id, data?.mode, data?.role, data?.identity, api]);

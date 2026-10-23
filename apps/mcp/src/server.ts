@@ -48,7 +48,7 @@ export interface CreateServerOptions {
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
-export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_containment_options"] as const;
+export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_containment_options"] as const;
 
 /** The exact tool set used by Real-Agent Evaluation v1 (before event search). Kept so v1 runs stay reproducible. */
 export const INVESTIGATION_TOOLS_V1 = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
@@ -188,6 +188,39 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
   }, async ({ project: p }) => {
     const h = await client.req<{ coverage: unknown; unobserved_asset_ids: unknown; counters: unknown; backlog: unknown }>("GET", client.p("/health", p));
     return out({ coverage: h.coverage, unobserved_asset_ids: h.unobserved_asset_ids, ingestion: h.counters, backlog: h.backlog });
+  });
+
+  server.registerTool("dk_coverage_history", {
+    title: "Could this have been recorded?",
+    description: "Historical, question-specific coverage: for one asset, one event action (and optionally outcome) over an interval (at most 93 days), returns spans that were covered, partial (sampled or liveness unverifiable) or unknown, with each source's reason (not registered, disabled, not capable, reported unavailable, silent, beyond retention). Use before concluding that something did NOT happen. Covered means a capable source was live, not that anything was recorded.",
+    inputSchema: { asset: z.string().max(200), action: z.string().max(40), outcome: z.string().max(20).optional(), after: z.string().max(40).describe("ISO 8601 with offset"), before: z.string().max(40).describe("ISO 8601 with offset"), project }, annotations: RO,
+  }, async ({ asset, action, outcome, after, before, project: p }) => {
+    const q = new URLSearchParams({ asset, action, after, before }); if (outcome) q.set("outcome", outcome);
+    return out(await client.req("GET", client.p(`/coverage/history?${q}`, p)));
+  });
+
+  server.registerTool("dk_facts", {
+    title: "What was known about the environment, and when",
+    description: "Bitemporal view of declared and observed facts: entities (assets/relationships with incarnations), their attributes at valid_at as known at known_at, and conflicts between sources (never resolved by recency). Omit both times for now.",
+    inputSchema: { valid_at: z.string().max(40).optional(), known_at: z.string().max(40).optional(), entity: z.string().max(300).optional().describe("entity_ref, e.g. ent:<project>:asset:<id>"), project }, annotations: RO,
+  }, async ({ valid_at, known_at, entity, project: p }) => {
+    const q = new URLSearchParams(); if (valid_at) q.set("valid_at", valid_at); if (known_at) q.set("known_at", known_at); if (entity) q.set("entity", entity);
+    return out(await client.req("GET", client.p(`/facts?${q}`, p)));
+  });
+
+  server.registerTool("dk_create_bundle", {
+    title: "Pin the evidence for a finding revision",
+    description: "Create (or reuse) an immutable, content-addressed evidence bundle for a finding at its current or a given revision. Returns bundle_id and bundle_digest; cite the digest. New evidence never changes a bundle, so comparisons stay reproducible. Changes no security state.",
+    inputSchema: { finding_id: z.string().max(200), revision: z.number().int().min(1).optional(), project }, annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  }, async ({ finding_id, revision, project: p }) => out(await client.req("POST", client.p(`/findings/${encodeURIComponent(finding_id)}/bundles`, p), revision ? { revision } : {})));
+
+  server.registerTool("dk_get_bundle_events", {
+    title: "Read a pinned evidence bundle",
+    description: "Page through a bundle's exact event references (max 500 per page). Each record is checked against the digest pinned in the bundle; missing or changed records are listed, never silently dropped. complete_page=false means do not conclude from this page alone.",
+    inputSchema: { bundle_id: z.string().max(100), offset: z.number().int().min(0).optional(), limit: z.number().int().min(1).max(500).optional(), project }, annotations: RO,
+  }, async ({ bundle_id, offset, limit, project: p }) => {
+    const q = new URLSearchParams(); if (offset !== undefined) q.set("offset", String(offset)); if (limit !== undefined) q.set("limit", String(limit));
+    return out(await client.req("GET", client.p(`/bundles/${encodeURIComponent(bundle_id)}/events?${q}`, p)));
   });
 
   server.registerTool("dk_containment_options", {

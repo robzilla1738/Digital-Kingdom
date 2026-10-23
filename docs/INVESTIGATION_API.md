@@ -81,3 +81,35 @@ Namespaces are set on the source by an administrator (`POST /api/projects/:p/sou
 - Each detail starts with a JSON-pointer style path, for example `/assets/1/kind: unsupported asset kind "lambda"; allowed: edge, auth, ...`.
 - A manifest is fully validated before anything is built: asset ids and kinds, relationship kinds and shapes, YAML syntax, and size and count limits. An invalid import leaves the graph and the scene unchanged. Compose structure and YAML errors get the same treatment.
 - Unexpected internal errors stay HTTP 500 with `{ "error": "internal error" }` and no details.
+
+## 4. Evidence and history (roadmap R01)
+
+All endpoints below are project-scoped and recheck the caller's role on every request.
+
+| Endpoint | Role | Purpose |
+| --- | --- | --- |
+| `GET /facts?valid_at&known_at&entity&include_retired` | viewer | Bitemporal view of entities and attributes; conflicts reported per attribute |
+| `GET /facts/conflicts` | viewer | Attributes where sources disagree, with candidates |
+| `GET /facts/entities/:ref` | viewer | All assertions, incarnations and reconciliations for one entity |
+| `POST /facts/assertions` | admin | Record an observed configuration, hypothesis or test result (`source_ref` other than `graph`) |
+| `POST /facts/reconciliations` | analyst | Choose a candidate; requires `expected_version` |
+| `GET /coverage/history?asset&action&outcome&after&before` | viewer | Covered / partial / unknown spans with reasons (max 93 days) |
+| `GET /sources/:id/history` | viewer | Source configuration revisions (never keys) |
+| `POST /sources/:id/state` | admin | Enable/disable with `expected_revision`, `reason`, optional past `effective_at` |
+| `GET /findings/:id?as_of=` | viewer | Notes and analyst state as recorded at `as_of` (`annotations.basis`) |
+| `GET /findings/:id/revisions/:rev` | viewer | A stored finding revision exactly as recorded |
+| `POST /findings/:id/bundles` | viewer | Create or reuse an immutable bundle (`revision` optional) |
+| `GET /bundles/:id`, `GET /bundles/:id/events?offset&limit` | viewer | Bundle metadata; exact-reference pages checked against pinned digests |
+| `POST /bundles/:id/pin` | analyst | Retain a bundle for a case (no expiry) |
+
+**Bundles.** The id is derived from the content: finding revision and digest, each referenced event's digest,
+evidence digests, graph revision, source configuration revisions and ruleset. Re-pinning the same revision returns
+the same bundle and renews its 30-day expiry; a pinned bundle never expires. An expired bundle returns 410 with
+its metadata. A referenced record that is gone is listed in `missing_events` with a reason, and one that no longer
+matches its pinned digest in `changed_event_ids`; `complete_page` is then false.
+
+**Search budgets (v2 cursors).** `scanned_scope` reports the interval, snapshot sequence, sources in scope, the
+budgets (`count_cap` 100,000, `page_byte_budget` 1,000,000, `cursor_ttl_seconds` 3,600), `truncated_by` and
+`cursor_expires_at`. A count at the cap sets `matching_capped` and the result is never complete. Records removed
+after the first page set `removed_since_first_page`. Requests run synchronously; they are bounded by these
+budgets and by a per-principal limit of 30 searches per 10 seconds, not cancelled mid-query.

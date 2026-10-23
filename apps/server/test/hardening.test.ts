@@ -154,6 +154,13 @@ describe("upgrading a v0.2 database purges raw journal payloads", () => {
     db.exec(`DROP TABLE quarantine; ALTER TABLE journal DROP COLUMN meta; ALTER TABLE journal DROP COLUMN minimized;
       DROP INDEX events_project_seq; ALTER TABLE sources DROP COLUMN allowed_actions; ALTER TABLE sources DROP COLUMN independence_group;
       ALTER TABLE sources DROP COLUMN identity_namespace; ALTER TABLE sources DROP COLUMN run_namespace;
+      ALTER TABLE findings DROP COLUMN state_version; DROP TABLE state_changes; ALTER TABLE sources DROP COLUMN config_revision; DROP TABLE source_revisions;
+      ALTER TABLE containment_requests DROP COLUMN finding_revision; ALTER TABLE containment_requests DROP COLUMN policy_digest; ALTER TABLE containment_requests DROP COLUMN expires_at;
+      DROP TABLE entities; DROP TABLE assertions; DROP TABLE reconciliations;
+      ALTER TABLE sources DROP COLUMN sampling_ratio; ALTER TABLE sources DROP COLUMN retention_days; ALTER TABLE sources DROP COLUMN outcomes_reported;
+      DROP INDEX events_source_received; DROP INDEX events_source_action; DROP TABLE bundles;
+      DROP INDEX events_time_id; CREATE INDEX events_project_time ON events (project_id, occurred_at); DROP INDEX events_action_time; DROP INDEX events_source_time; DROP INDEX events_actor; DROP INDEX events_session; DROP INDEX events_request;
+      DROP INDEX events_run; DROP INDEX events_client_ip; DROP INDEX events_route; DROP INDEX events_rule; DROP INDEX events_trace;
       ALTER TABLE api_tokens DROP COLUMN principal_type; ALTER TABLE containment_requests DROP COLUMN requested_by_type;
       DELETE FROM schema_migrations WHERE version > 1; PRAGMA wal_checkpoint(TRUNCATE);`);
     db.close();

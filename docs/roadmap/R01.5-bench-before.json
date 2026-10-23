@@ -1,0 +1,226 @@
+{
+  "machine": {
+    "cpu": "unknown",
+    "cores": 2,
+    "memory_gb": 8,
+    "arch": "arm64",
+    "platform": "linux",
+    "node": "v22.23.3"
+  },
+  "note": "Synthetic events inserted directly; best of 3 runs per query; single process, file-backed SQLite (WAL, synchronous=FULL).",
+  "runs": [
+    {
+      "events": 10000,
+      "insert_ms": 94,
+      "db_mb": 7,
+      "searches": {
+        "7 days, no filter": {
+          "ms": 57,
+          "matching": 2333,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "31 days, no filter": {
+          "ms": 56.4,
+          "matching": 6666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, actor_ref": {
+          "ms": 55.7,
+          "matching": 1,
+          "returned": 1,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, session_ref": {
+          "ms": 56,
+          "matching": 1,
+          "returned": 1,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, action=authentication": {
+          "ms": 53.7,
+          "matching": 583,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, asset_id=db": {
+          "ms": 53.5,
+          "matching": 466,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, client_ip": {
+          "ms": 56.2,
+          "matching": 9,
+          "returned": 9,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        }
+      },
+      "current_coverage_ms": 48.6
+    },
+    {
+      "events": 100000,
+      "insert_ms": 859,
+      "db_mb": 68,
+      "searches": {
+        "7 days, no filter": {
+          "ms": 344.9,
+          "matching": 23333,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "31 days, no filter": {
+          "ms": 362.8,
+          "matching": 66666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, actor_ref": {
+          "ms": 378.7,
+          "matching": 5,
+          "returned": 5,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, session_ref": {
+          "ms": 382.7,
+          "matching": 1,
+          "returned": 1,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, action=authentication": {
+          "ms": 328.6,
+          "matching": 5833,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, asset_id=db": {
+          "ms": 338.4,
+          "matching": 4666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, client_ip": {
+          "ms": 368.9,
+          "matching": 93,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        }
+      },
+      "current_coverage_ms": 311.3
+    },
+    {
+      "events": 1000000,
+      "insert_ms": 8237,
+      "db_mb": 679,
+      "searches": {
+        "7 days, no filter": {
+          "ms": 1207.9,
+          "matching": 233333,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "31 days, no filter": {
+          "ms": 1790.6,
+          "matching": 666666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, actor_ref": {
+          "ms": 2049.2,
+          "matching": 47,
+          "returned": 47,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, session_ref": {
+          "ms": 1652.4,
+          "matching": 12,
+          "returned": 12,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, action=authentication": {
+          "ms": 1203.5,
+          "matching": 58333,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, asset_id=db": {
+          "ms": 1729,
+          "matching": 46666,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        },
+        "7 days, client_ip": {
+          "ms": 1771,
+          "matching": 933,
+          "returned": 50,
+          "plan": [
+            "SEARCH events USING INDEX events_project_time (project_id=? AND occurred_at>? AND occurred_at<?)",
+            "USE TEMP B-TREE FOR LAST TERM OF ORDER BY"
+          ]
+        }
+      },
+      "current_coverage_ms": 1052.7
+    }
+  ]
+}

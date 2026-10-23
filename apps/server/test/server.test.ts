@@ -50,7 +50,7 @@ describe("authentication and authorization (C)", () => {
     const f = (await ctx.app.inject({ url: "/api/projects/demo-castle/findings", headers: { cookie } })).json()[0];
     const url = `/api/projects/demo-castle/findings/${f.id}/disposition`;
     expect((await ctx.app.inject({ method: "POST", url, headers: { cookie }, payload: { lifecycle: "acknowledged" } })).statusCode).toBe(403);
-    expect((await ctx.app.inject({ method: "POST", url, headers: { cookie, "x-dk-request": "1" }, payload: { lifecycle: "acknowledged" } })).statusCode).toBe(200);
+    expect((await ctx.app.inject({ method: "POST", url, headers: { cookie, "x-dk-request": "1" }, payload: { lifecycle: "acknowledged", expected_state_version: f.state_version } })).statusCode).toBe(200);
   });
 });
 

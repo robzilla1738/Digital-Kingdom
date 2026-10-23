@@ -26,7 +26,7 @@ describe("investigation honesty over the documented stdio transport", () => {
       expect(first.events.untrusted).toBe(true);
       expect(first.page.has_more).toBe(true);
       expect(first.source_coverage.sources[0].current_state).toBe("healthy");
-      expect(first.limits.join(" ")).toMatch(/Historical coverage is not assessed/);
+      expect(first.limits.join(" ")).toMatch(/not a reconstruction of health during the searched interval/);
       clock += 1000;
       c.db.prepare("UPDATE sources SET disabled = 1 WHERE project_id = 'shop' AND id = 'app'").run();
       const second = await mcp.call("dk_search_events", { ...query, cursor: first.page.next_cursor });

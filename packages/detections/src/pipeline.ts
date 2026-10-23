@@ -18,6 +18,12 @@ export interface SourceConfig {
   identity_namespace?: string;
   /** Administrator-declared authority for run_id. */
   run_namespace?: string;
+  /** Fraction of matching activity the source forwards (0 < r <= 1). Omitted: not declared (R01.2). */
+  sampling_ratio?: number;
+  /** How long the source's own system keeps records it could backfill. Omitted: not declared. */
+  retention_days?: number;
+  /** Outcomes the source can report at all (for example only failures). Omitted: every outcome. */
+  outcomes_reported?: string[];
 }
 
 export interface Delivery { source_id: string; received_at: string; payload: unknown; note?: string }

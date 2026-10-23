@@ -1,5 +1,31 @@
 # Upgrading
 
+## Unreleased: evidence and history (roadmap R01, migrations 5 to 9)
+
+Breaking for API clients:
+
+- **Finding review needs a precondition.** Changing `lifecycle` or `disposition` through
+  `POST /findings/:id/disposition` now requires `expected_state_version` (from the finding's `state_version`).
+  Missing: 428. Stale: 409 with `current` and `changes_since`. A note alone needs none.
+- **Re-registering an existing source needs `expected_revision`** (its `config_revision`). Missing: 428; stale: 409.
+  Creating a new source is unchanged.
+- **Containment approvals bind a policy snapshot.** Proposals now carry `finding_revision`, `policy_digest` and
+  `expires_at` (72 h by default, `containmentTtlHours`). Approving an expired proposal, one whose finding
+  revision or permitted-action policy changed, or one created before this upgrade returns 409; reject it or
+  request it again. Rejection always works.
+- **Event search cursors are version 2.** Version 1 cursors are refused; restart the search. Cursors expire after
+  one hour (410 with the time). Match counts stop at 100,000 (`matching_capped`), pages at 1 MB of event bodies
+  (`truncated_by: byte_budget`), and each principal may run 30 searches per 10 seconds (429).
+
+Additive:
+
+- Facts (`/facts`, migration 6) are backfilled lazily from stored graph revisions with
+  `method: legacy_backfill` and unknown observation time.
+- Source configuration history begins at migration 5. Earlier history is not invented: historical coverage
+  assumes the current configuration since registration and says so (`history_basis`).
+- Migration 9 adds event indexes chosen from the R01.5 benchmark. On a large database the first start spends time
+  building them (about 35 s per million events on the benchmark machine) and the file grows (about 2x).
+
 ## Unreleased: correlation namespaces, route inventory, ruleset dk-rules-1.1.0 (roadmap R00)
 
 - Migration 4 adds `sources.identity_namespace` and `sources.run_namespace`. Existing sources get NULL, which

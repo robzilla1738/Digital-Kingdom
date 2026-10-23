@@ -32,6 +32,18 @@ export interface EvaluateOptions {
   now?: string;
   authFailureThreshold?: number;
   authFailureWindowSeconds?: number;
+  /**
+   * Per-source state read from ALL stored events, not just the evaluation window (R01.2). Without it a quiet
+   * source whose last receipt or outage report fell outside a bounded window would look unreported or healthy.
+   */
+  sourceState?: Record<string, SourceState>;
+}
+
+export interface SourceState {
+  last_received_at?: string;
+  last_occurred_at?: string;
+  /** Latest sensor_unavailable / sensor_restored report from this source. */
+  last_health?: { id: string; action: "sensor_unavailable" | "sensor_restored"; occurred_at: string; coverage_note?: string };
 }
 
 export interface EvaluationResult {
@@ -270,8 +282,8 @@ export function evaluate(graph: Graph, inputEvents: SecurityEvent[], opts: Evalu
     // A stale source has no event marking the moment it went quiet. Administrative disablement has
     // no historical timestamp in SourceDeclaration: use the assessment time, never invent a source event.
     const decl = opts.sources?.find((x) => x.id === c.source_id);
-    const lastOwn = events.filter((e) => e.source_id === c.source_id).at(-1);
-    const at = decl?.disabled ? opts.now : c.state === "degraded" && lastOwn && decl?.stale_after_seconds ? new Date(toMs(lastOwn.received_at) + decl.stale_after_seconds * 1000).toISOString() : undefined;
+    const lastOwnReceived = opts.sourceState?.[c.source_id]?.last_received_at ?? events.filter((e) => e.source_id === c.source_id).at(-1)?.received_at;
+    const at = decl?.disabled ? opts.now : c.state === "degraded" && lastOwnReceived && decl?.stale_after_seconds ? new Date(toMs(lastOwnReceived) + decl.stale_after_seconds * 1000).toISOString() : undefined;
     drafts.push({
       ...(at ? { at } : {}),
       key: `coverage:${c.source_id}`, kind: "coverage_loss", title: `${c.label} ${c.state === "offline" ? "offline" : "stale"}`,
@@ -296,21 +308,25 @@ export function deriveCoverage(graph: Graph, events: SecurityEvent[], opts: Eval
   return decl.map((s) => {
     const own = events.filter((e) => e.source_id === s.id);
     const health = own.filter((e) => e.action === "sensor_unavailable" || e.action === "sensor_restored");
-    const lastHealth = health[health.length - 1];
+    const st = opts.sourceState?.[s.id];
+    const lastHealth: { id: string; action: string; coverage_note?: string } | undefined = st?.last_health ?? health[health.length - 1];
     const last = own[own.length - 1];
-    let state: CoverageRecord["state"] = own.length ? "healthy" : "not_assessed";
-    let note: string | undefined = own.length ? undefined : "No events received from this source yet.";
+    const lastReceived = st?.last_received_at ?? last?.received_at;
+    const seen = own.length > 0 || !!st?.last_received_at;
+    let state: CoverageRecord["state"] = seen ? "healthy" : "not_assessed";
+    let note: string | undefined = seen ? undefined : "No events received from this source yet.";
     const evIds: string[] = [];
     if (s.disabled) {
       state = "offline";
       note = `${s.label} is administratively disabled. Stored events do not establish current reporting; the disablement time is not recorded here.`;
     } else if (lastHealth?.action === "sensor_unavailable") {
       state = "offline"; note = lastHealth.coverage_note ?? `${s.label} reported itself unavailable.`; evIds.push(lastHealth.id);
-    } else if (opts.now && last && s.stale_after_seconds && toMs(opts.now) - toMs(last.received_at) > s.stale_after_seconds * 1000) {
+    } else if (opts.now && lastReceived && s.stale_after_seconds && toMs(opts.now) - toMs(lastReceived) > s.stale_after_seconds * 1000) {
       state = "degraded"; note = `No events for more than ${s.stale_after_seconds}s.`;
     }
     const rec: CoverageRecord = { source_id: s.id, label: s.label, asset_ids: s.asset_ids.filter((a) => graph.assets.some((x) => x.id === a)), state, event_ids: evIds };
-    if (last) rec.last_event_at = last.occurred_at;
+    const lastAt = st?.last_occurred_at ?? last?.occurred_at;
+    if (lastAt) rec.last_event_at = lastAt;
     if (note) rec.note = note;
     return rec;
   });
