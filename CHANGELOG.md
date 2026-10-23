@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R05.4: Optional bounded case assistance
+
+apps/server/src/assistant.ts and POST /cases/:id/assist (viewer, read-only): an authorized case projection plus evidence retrieved within a query budget; a configured model may only draft claims with evidence ids, counterevidence, uncertainty and next questions. Claims citing nothing retrieved are unsupported; any other requested action (tools, approvals, scope) is ignored and listed; event text travels as untrusted_text. Prompt template, input and output digests and the model id are recorded. With no model (the default), or on provider failure, timeout or invalid output, a deterministic summary is returned.
+
 ### Roadmap R09.4: SaaS, endpoint and correspondence sample-data pack
 
 packages/graph-core/src/packs/saas.ts: shared and service accounts never establish a human, provider plan/scope limits listed with every answer, delegated grant changes kept separate from data access, coverage effects of feed install/removal over time, and developer-device agent state with unmanaged devices called unobserved.

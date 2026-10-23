@@ -26,6 +26,7 @@ import { ChangeReviews, type ChangePlanInput } from "./change-review.ts";
 import { Notifier, type FetchLike as NotifyFetch } from "./notify.ts";
 import { Regressions } from "./regression.ts";
 import { Verifications } from "./verification.ts";
+import { assistCase, type AssistModel } from "./assistant.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
 import { assess as assessVulns } from "./vuln.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
@@ -60,6 +61,8 @@ export interface AppConfig {
   publicUrl?: string | null;
   /** R03.5: permit http://127.0.0.1 destinations (local receivers and tests only). */
   notifyAllowLoopback?: boolean;
+  /** R05.4: optional case assistant model. None by default; every path works without it. */
+  assistant?: AssistModel | null;
 }
 
 declare module "fastify" {
@@ -741,6 +744,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const c = cases.update(pid, CP(req), body(req), who(req));
     if (c.owner !== before) notifier.enqueue({ projectId: pid, kind: "case_assigned", severity: "medium", dedupKey: `case:${c.id}:owner:${c.owner}`, owner: c.owner, caseId: c.id });
     return c;
+  });
+
+  // ---- optional bounded case assistance (R05.4): read-only drafts; deterministic without a model ----
+  app.post("/api/projects/:p/cases/:id/assist", { preHandler: authed() }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "viewer").id;
+    const b = body(req);
+    return assistCase(store, pid, cases.get(pid, CP(req)) as never, cfg.assistant ?? null, { max_queries: typeof b.max_queries === "number" ? b.max_queries : undefined });
   });
 
   // ---- regression proposals from closed cases (R07.4) ----

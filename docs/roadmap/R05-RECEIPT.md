@@ -47,3 +47,12 @@ Acceptance (`apps/mcp/test/mcp-r05.test.ts`, 5 tests):
 - Results above the budget are withheld with `truncated: true` and the budget, not partially returned.
 
 Limitations: no push subscriptions (polling every 30 s); no remote MCP.
+
+## R05.4 bounded case assistance
+
+- Candidate: roadmap/batch4 (commit follows this receipt).
+- Changed: apps/server/src/assistant.ts (new), app.ts (route, AppConfig.assistant), test/assistant-r05.test.ts.
+- Commands: pnpm -s typecheck (clean); npx vitest run apps/server/test/assistant-r05.test.ts (3 passed, stub models only).
+- Acceptance: (1) an obedient stub that asks to approve containment, call tools and widen scope changes nothing and its requests are listed as ignored; (2) claims citing non-retrieved ids or no ids are unsupported; (3) provider error and non-JSON output return the deterministic summary; collection, detection, queries, scene fallback and authorization never touch the assistant.
+- Blocked (gate model_provider_and_budget_approval): (4) observing recommendation effects in matched evaluations needs a real model and an approved budget; no provider is configured or called.
+- Migration/rollback: none.
