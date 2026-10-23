@@ -38,10 +38,10 @@ export async function prepareCase(instance: Instance & { clock: string }) {
         const detail = await call('dk_get_event', { id: event.id });
         if (JSON.stringify(detail.event) !== JSON.stringify(event)) throw new Error('event changed during preflight');
         for (const ref of event.evidence_refs.filter(ref => ref.startsWith('evidence:'))) {
-          const expected = evidence[ref] as { unavailable?: string } | undefined;
+          const expected = evidence[ref] as { unavailable?: string; ref?: string; record?: unknown } | undefined;
           if (expected?.unavailable === 'HTTP 404') {
             if (!detail.evidence_completeness.missing_evidence_refs.includes(ref)) throw new Error('missing evidence differs across conditions');
-          } else if (expected === undefined || canonicalJson(detail.evidence.records[ref]) !== canonicalJson(expected)) {
+          } else if (expected?.ref !== ref || canonicalJson(detail.evidence.records[ref]) !== canonicalJson(expected.record)) {
             throw new Error('stored evidence differs across conditions');
           }
         }
