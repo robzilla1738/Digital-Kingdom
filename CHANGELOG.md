@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R08.4: Independent containment and service-recovery verification
+
+Containment verification (apps/server/src/verification.ts, containment_verifications table): after the propagation window, recorded observations from the plan's independent effect observers decide pending, verified, failed, inconclusive or compensated. A provider acceptance with the contained behaviour still succeeding for the finding's identities is failed; surviving descendant authority (credential aftermath) is failed; no observer, silent observers or an unknown snapshot are inconclusive. Containment, service restoration (legitimate traffic before vs after; disruption detected) and historical exposure (never concluded here) are separate. Every result names its tested scope and unassessed paths and says the case stays unresolved unless verified for that scope. POST /containment/:id/verify, GET /containment/:id/verifications.
+
 ### Roadmap R07.4: Sanitized regression proposals from closed cases
 
 Closed cases become regression proposals (apps/server/src/regression.ts, REGRESSION_MIGRATION): linked events are minimized into a synthetic dk.regression_fixture.v1 (placeholders for every identifier, documentation-range IPs, times as offsets from 2030-01-01, no attributes, evidence, payloads or titles), refused with categories only when an original identifier or secret-shaped value survives; a versioned expected outcome is verified against the current rules (corrected condition) and with the rule removed (broken condition); at least one benign counterexample is required and must stay quiet. Only a human non-author can approve (agents get 403); export returns PR-ready files and never publishes. Committed fixtures in scenarios/regressions/ are replayed in CI.

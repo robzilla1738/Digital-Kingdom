@@ -21,3 +21,13 @@ Acceptance (`apps/server/test/plans-r08.test.ts`, 4 tests):
 - A target that becomes a different provider resource fails precheck and approval (409).
 - `secrets.rotate_credentials` is irreversible, with no rollback and explicit compensation.
 - Without an independent effect observer on the targets, `verified_success_possible` is false; an extra `command` parameter or shell metacharacters are refused; precheck states there is no executor.
+
+## R08.4 containment verification
+
+- Candidate: roadmap/batch4 (commit follows this receipt).
+- Changed: apps/server/src/verification.ts (new), db.ts (inline migration; verification.ts imports the store so importing it from db.ts would be circular), app.ts routes, test/verification-r08.test.ts, hardening teardown.
+- Commands: pnpm -s typecheck (clean); npx vitest run apps/server/test/verification-r08.test.ts (5 passed); npx vitest run (577 passed, 1 skipped, 81 files).
+- Acceptance: (1) provider accepted, observer records the attacker's success after the window: failed, case remains unresolved; (2) descendant key with surviving permission: failed and named; (3) legitimate traffic present before, absent after while the observer reports: disruption_detected; (4) results carry tested_scope (targets, observers, window, identities, actions) and unassessed paths (downstream assets without observers).
+- Scope: verification of a change made outside Digital Kingdom and reported by the operator (provider_accepted, accepted_at). There is no executor (R08.3 stays gated); nothing here calls a provider.
+- Migration/rollback: adds containment_verifications only.
+- Next: R08.3 lab executor (needs explicit lab execution authorization) would feed reports automatically.

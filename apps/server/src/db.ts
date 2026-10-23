@@ -106,6 +106,9 @@ export const MIGRATIONS: string[] = [
   NOTIFY_MIGRATION,
   // R07.4: regression proposals from closed cases.
   REGRESSION_MIGRATION,
+  // R08.4: containment verification records.
+  // (kept inline: verification.ts imports the store, and importing it here would be circular)
+  `CREATE TABLE containment_verifications (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, containment_id TEXT NOT NULL, state TEXT NOT NULL, result TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL);`,
 ];
 
 export function openDb(path: string): DB {

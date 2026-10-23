@@ -471,12 +471,12 @@
   {
    "id": "R08.4",
    "title": "Verify containment and service recovery independently",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R08-RECEIPT.md#r084-containment-verification",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Local; verifies operator-reported changes. Executor R08.3 remains gated."
   },
   {
    "id": "R09.1",

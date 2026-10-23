@@ -25,6 +25,7 @@ import { Controls } from "./controls.ts";
 import { ChangeReviews, type ChangePlanInput } from "./change-review.ts";
 import { Notifier, type FetchLike as NotifyFetch } from "./notify.ts";
 import { Regressions } from "./regression.ts";
+import { Verifications } from "./verification.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
 import { assess as assessVulns } from "./vuln.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
@@ -548,6 +549,10 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const proj = store.require(req.principal!, P(req), "analyst");
     return store.setContainmentPlan(proj.id, (req.params as { id: string }).id, (req.body ?? {}) as Record<string, unknown>, who(req));
   });
+  // ---- independent containment verification (R08.4) ----
+  const verifications = new Verifications(store);
+  app.post("/api/projects/:p/containment/:id/verify", { preHandler: authed("analyst"), bodyLimit: 4_194_304 }, async (req) => verifications.verify(store.require(req.principal!, P(req), "analyst").id, (req.params as { id: string }).id, (req.body ?? {}) as Record<string, unknown>, who(req)));
+  app.get("/api/projects/:p/containment/:id/verifications", { preHandler: authed() }, async (req) => verifications.list(store.require(req.principal!, P(req), "viewer").id, (req.params as { id: string }).id));
   app.get("/api/projects/:p/containment/:id/precheck", { preHandler: authed() }, async (req) => store.containmentPrecheck(store.require(req.principal!, P(req), "viewer").id, (req.params as { id: string }).id));
   app.post("/api/projects/:p/approval-policy", { preHandler: authed("admin") }, async (req) => {
     const p = req.principal!;
