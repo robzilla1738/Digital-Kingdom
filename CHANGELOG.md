@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R04.1: source-to-running-artifact lineage
+
+- `apps/server/src/lineage.ts` and `POST /lineage/evaluate`: repository, commit, workflow, artifact digest, registry tag, deployment and runtime links with DSSE/in-toto SLSA v1 provenance verified against a policy of expected signers, builders and repositories; explicit undeclared, unsigned, unverified and verified states; tag and runtime drift. A merged commit is not treated as deployed until the runtime digest matches. Sigstore keyless bundles are not verified.
+
 ### Roadmap R03.3: credential aftermath and residual access
 
 - `GET /aftermath/aws-key/:key` and MCP `dk_credential_aftermath`: from recorded CloudTrail events, the keys, sessions and grants an AWS access key created (transitively), each one's current state from the latest authorization snapshot, the surviving permission, audit gaps since first use, and a status of resolved, unresolved or unknown. Same-user key creation is flagged as possible rotation; malice is never claimed. Access key ids are stored in event attributes only as keyed fingerprints.

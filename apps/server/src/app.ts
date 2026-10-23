@@ -21,6 +21,7 @@ import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
+import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
 import { accessPaths, type AuthSnapshot } from "./access/aws-policy.ts";
 import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
 import { verifyIdToken, type OidcConfig } from "./oidc.ts";
@@ -730,6 +731,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (!/^(AKIA|ASIA)[A-Z0-9]{12,20}$/.test(key)) throw new HttpError(400, "key must be an AWS access key id (never the secret)");
     const audit = store.listSources(proj.id).find((s) => s.kind === "cloud_audit");
     return credentialAftermath(store, proj.id, key, { snapshot: latestSnapshot(proj.id), ...(audit ? { auditAsset: audit.asset_ids[0]! } : {}) });
+  });
+  // R04.1: evaluate one artifact lineage (pure; nothing is stored or fetched).
+  app.post("/api/projects/:p/lineage/evaluate", { preHandler: authed(), bodyLimit: 1_048_576 }, async (req) => {
+    store.require(req.principal!, P(req), "viewer");
+    const b = (req.body ?? {}) as { input?: LineageInput; policy?: ProvenancePolicy };
+    if (!b.input || !b.policy || typeof b.input.commit !== "string" || !b.input.registry || !Array.isArray(b.policy.signers)) throw new HttpError(400, "input (repository, commit, registry) and policy (signers, builders, repositories) are required");
+    return evaluateLineage(b.input, b.policy);
   });
   app.post("/ingest/aws/cloudtrail", { preHandler: sourceAuth, bodyLimit: 4_194_304 }, async (req, reply) => {
     const src = (req as SrcReq).source;

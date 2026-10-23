@@ -12,3 +12,15 @@ Acceptance (`apps/server/test/access-r04.test.ts`, 5 tests):
 - Role-assumption paths: build-bot cannot PutObject directly but can through the exporter role; an SCP without S3 blocks.
 
 Documented limits: no NotPrincipal, policy variables, ABAC tags, VPC endpoint or KMS key policies, ACLs or Block Public Access; snapshots are supplied (declared/exported), not collected from a live account.
+
+## R04.1 source-to-running-artifact lineage
+
+Delivered: `verifyEnvelope`, `evaluateLineage`, `digestOf`, route.
+
+Acceptance (`apps/server/test/lineage-r04.test.ts`, 4 tests, ECDSA P-256 DSSE envelopes):
+- `latest` resolving to a different digest than the build, and the runtime running it: two mismatch links and drift text.
+- A valid signature from an unexpected key, a correct key id with the wrong key, an unexpected builder, or a different source commit: unverified.
+- A verified chain carries a not-claimed note that provenance is not a malware or vulnerability verdict.
+- Verified provenance without an observed runtime digest leaves `running_matches_commit` unknown.
+
+Limits: pinned-key DSSE only (no Fulcio/Rekor keyless verification); registry and runtime digests are supplied by the caller or a connector, not fetched here.
