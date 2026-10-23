@@ -1,0 +1,30 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T03",
+ "version": 1,
+ "title": "Application logs healthy but database audit absent",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "Request logs present; database read coverage unknown for the window"
+ ],
+ "disallowed_claims": [
+  "No data was read"
+ ],
+ "missing_evidence_variant": "database audit source offline -> conclusion blocked",
+ "benign_alternative": "Audit permission revoked during maintenance",
+ "tests": [
+  {
+   "file": "apps/server/test/coverage-history-r01.test.ts",
+   "name": "healthy request logs do not imply database-read visibility"
+  },
+  {
+   "file": "apps/server/test/recipes-r03.test.ts",
+   "name": "missing observer capability stops"
+  },
+  {
+   "file": "apps/server/test/aws-r02.test.ts",
+   "name": "without configured data events"
+  }
+ ]
+}

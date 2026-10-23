@@ -1,0 +1,27 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T04",
+ "version": 1,
+ "title": "Prohibited agent egress with permitted control",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "Denied destination never reaches the controlled receiver",
+  "Permitted call completes and is independently corroborated"
+ ],
+ "disallowed_claims": [
+  "The agent is malicious"
+ ],
+ "missing_evidence_variant": "observer unavailable -> lab run inconclusive",
+ "benign_alternative": "Permitted work still completes",
+ "tests": [
+  {
+   "file": "examples/reference-app/agent-boundary.test.ts",
+   "name": "prohibited egress never reaches"
+  },
+  {
+   "file": "examples/reference-app/agent-boundary.test.ts",
+   "name": "permitted work still completes"
+  }
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T02",
+ "version": 1,
+ "title": "Shared-address misleading attribution",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "Activity from the same IP by another account is listed as a locator pivot"
+ ],
+ "disallowed_claims": [
+  "The other account is the attacker"
+ ],
+ "missing_evidence_variant": "no actor_ref on events -> next query asks for the account",
+ "benign_alternative": "NAT or shared egress",
+ "tests": [
+  {
+   "file": "apps/server/test/recipes-r03.test.ts",
+   "name": "shared-IP attribution bait stays separate"
+  },
+  {
+   "file": "apps/server/test/deception-r03.test.ts",
+   "name": "a DNS resolver or proxy address is never treated"
+  }
+ ]
+}

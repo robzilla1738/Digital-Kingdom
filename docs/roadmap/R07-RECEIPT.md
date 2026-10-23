@@ -24,3 +24,13 @@ Acceptance (`examples/reference-app/lab.test.ts`, 4 tests, real reference app on
 - A target answering 503 is inconclusive with the positive-control reason; an unavailable observer is inconclusive.
 
 Limits: HTTP probes only; sandbox targets are started by the caller; no container isolation of the runner itself.
+
+## R07.3 complete the 16 scenario packs (locally executable part)
+
+Delivered: 16 manifests, `scripts/run-scenarios.ts`, CI step, manifest test (`apps/server/test/scenarios-r07.test.ts`, 2 tests), local receipt `docs/roadmap/receipts/R07.3-scenarios-local.json`.
+
+Result: 12 passed (DK-T01-05, 07-09, 12, 14-16), DK-T13 partial_passed (inert-evidence half; model behaviour gated on R11.2), DK-T06 unavailable (alternate-origin discovery not built; R09.1 gated), DK-T10 and DK-T11 unavailable (response executor, R08.3 gated). None of the unavailable ones is labelled passed.
+
+The runner's own first run failed DK-T08 because a manifest named a test title that did not exist; it reported the failure and exited non-zero, then passed once the title was fixed. Independent-observer and UI/MCP record identity are exercised in DK-T04/T05 and the R02.2 pack test.
+
+Required later: an integrated rerun after R08 without relabelling blocked scenarios.

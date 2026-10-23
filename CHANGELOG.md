@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R07.3: 16 controlled scenario manifests
+
+- `scenarios/dk-t/DK-T01.json` … `DK-T16.json` (`dk.scenario.v1`): expected observations, disallowed claims, missing-evidence variant, benign alternative and the tests that demonstrate each. `pnpm scenarios` (also in CI) runs them and writes a receipt; a failing scenario fails the command. Twelve run locally, DK-T13 partially (model behaviour gated), DK-T06 is not implemented, and DK-T10/DK-T11 stay unavailable until the laboratory executor exists.
+
 ### Roadmap R04.4: security change diff
 
 - `apps/server/src/change-review.ts` (migration 20): a versioned ChangePlan pins base and candidate commits, artifacts, inventory, authorization snapshot, telemetry sources and agent tools/model routes. The review surfaces new ingress, broader effective grants (probe paths and new wildcard allows), tool and model-route changes and lost telemetry even with no finding, treats missing inputs as unknown (never favourable), suggests negative and positive tests, binds owner review to the candidate digest and checks post-deploy state against what was reviewed. Routes under `/changes`.

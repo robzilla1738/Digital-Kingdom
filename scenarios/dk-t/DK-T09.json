@@ -1,0 +1,26 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T09",
+ "version": 1,
+ "title": "New authority added by a proposed change",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "A new broad permission is surfaced with no finding involved"
+ ],
+ "disallowed_claims": [
+  "The change is safe"
+ ],
+ "missing_evidence_variant": "candidate snapshot missing -> unknown, never favourable",
+ "benign_alternative": "Intended scoped grant",
+ "tests": [
+  {
+   "file": "apps/server/test/change-r04.test.ts",
+   "name": "a new broad permission is surfaced"
+  },
+  {
+   "file": "apps/server/test/change-r04.test.ts",
+   "name": "unknown scope cannot be favourable"
+  }
+ ]
+}

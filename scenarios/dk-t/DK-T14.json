@@ -1,0 +1,30 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T14",
+ "version": 1,
+ "title": "Late events and changing policy history",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "Late discovery changes what is known without rewriting earlier knowledge; restoration does not backfill an outage"
+ ],
+ "disallowed_claims": [
+  "History was always as it is now"
+ ],
+ "missing_evidence_variant": "liveness judged by receipt",
+ "benign_alternative": "Late-arriving export file",
+ "tests": [
+  {
+   "file": "apps/server/test/facts-r01.test.ts",
+   "name": "late configuration discovery"
+  },
+  {
+   "file": "apps/server/test/coverage-history-r01.test.ts",
+   "name": "current sensor restoration does not backfill an outage"
+  },
+  {
+   "file": "apps/server/test/approvals-r08.test.ts",
+   "name": "revocation or a policy change invalidates"
+  }
+ ]
+}

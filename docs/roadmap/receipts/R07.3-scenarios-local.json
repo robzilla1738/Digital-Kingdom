@@ -1,0 +1,335 @@
+{
+ "schema": "dk.scenario_receipt.v1",
+ "run_at": "2026-10-23T05:46:58.707Z",
+ "commit": "876722f84caaa1913b2c3c5817e76104426fd39c",
+ "scenarios": [
+  {
+   "id": "DK-T01",
+   "title": "Credential rotated but descendant access survives",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/aftermath-r03.test.ts",
+     "name": "original key inactive plus a surviving descendant",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/aftermath-r03.test.ts",
+     "name": "legitimate same-user rotation",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/aftermath-r03.test.ts",
+     "name": "a missing snapshot or an audit interval gap",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T02",
+   "title": "Shared-address misleading attribution",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/recipes-r03.test.ts",
+     "name": "shared-IP attribution bait stays separate",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/deception-r03.test.ts",
+     "name": "a DNS resolver or proxy address is never treated",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T03",
+   "title": "Application logs healthy but database audit absent",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/coverage-history-r01.test.ts",
+     "name": "healthy request logs do not imply database-read visibility",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/recipes-r03.test.ts",
+     "name": "missing observer capability stops",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/aws-r02.test.ts",
+     "name": "without configured data events",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T04",
+   "title": "Prohibited agent egress with permitted control",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "examples/reference-app/agent-boundary.test.ts",
+     "name": "prohibited egress never reaches",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "examples/reference-app/agent-boundary.test.ts",
+     "name": "permitted work still completes",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T05",
+   "title": "Agent acts outside observed wrapper",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "examples/reference-app/agent-boundary.test.ts",
+     "name": "a wrapper bypass exposes the observation gap",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T06",
+   "title": "Direct origin bypasses expected edge route",
+   "status": "unavailable",
+   "reason": "capability not built yet; see roadmap"
+  },
+  {
+   "id": "DK-T07",
+   "title": "Unlinked follow-on data access",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/recipes-r03.test.ts",
+     "name": "recipes query unlinked follow-on events",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T08",
+   "title": "Artifact differs from reviewed source",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/lineage-r04.test.ts",
+     "name": "a mutable tag resolving",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/lineage-r04.test.ts",
+     "name": "a deployed fix is checked at the runtime digest",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/lineage-r04.test.ts",
+     "name": "valid provenance from an unexpected signer",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T09",
+   "title": "New authority added by a proposed change",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/change-r04.test.ts",
+     "name": "a new broad permission is surfaced",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/change-r04.test.ts",
+     "name": "unknown scope cannot be favourable",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T10",
+   "title": "Provider accepted action but effect unchanged",
+   "status": "unavailable",
+   "reason": "needs the laboratory executor (R08.3), which requires explicit lab execution authorization"
+  },
+  {
+   "id": "DK-T11",
+   "title": "Executor crash after provider call",
+   "status": "unavailable",
+   "reason": "needs the laboratory executor (R08.3), which requires explicit lab execution authorization"
+  },
+  {
+   "id": "DK-T12",
+   "title": "Cross-tenant API and retrieval boundary",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/boundaries-r00.test.ts",
+     "name": "a token scoped to another project cannot use the cursor",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/trust.test.ts",
+     "name": "a source scoped to one service cannot report about another service",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/identity-r10.test.ts",
+     "name": "service credentials expire by default",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T13",
+   "title": "Prompt injection in evidence changes recommendation",
+   "status": "partial_passed",
+   "tests": [
+    {
+     "file": "apps/server/test/boundaries-r00.test.ts",
+     "name": "instruction-like and markup identifiers",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/mcp/test/mcp.test.ts",
+     "name": "wraps evidence as untrusted data",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "eval/test/v2-harness.test.ts",
+     "name": "eight clean/injected pairs",
+     "status": [
+      "passed"
+     ]
+    }
+   ],
+   "reason": "model-behaviour part needs the approved v2 evaluation (R11.2)"
+  },
+  {
+   "id": "DK-T14",
+   "title": "Late events and changing policy history",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/facts-r01.test.ts",
+     "name": "late configuration discovery",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/coverage-history-r01.test.ts",
+     "name": "current sensor restoration does not backfill an outage",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/approvals-r08.test.ts",
+     "name": "revocation or a policy change invalidates",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T15",
+   "title": "Malformed producer, exhausted queue and revoked source",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/resilience-r10.test.ts",
+     "name": "a noisy source is throttled",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/resilience-r10.test.ts",
+     "name": "a full backlog answers 503",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/resilience-r10.test.ts",
+     "name": "a revoked source key is refused",
+     "status": [
+      "passed"
+     ]
+    },
+    {
+     "file": "apps/server/test/resilience-r10.test.ts",
+     "name": "disk full refuses writes",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DK-T16",
+   "title": "Backup configuration passes but restore fails",
+   "status": "passed",
+   "tests": [
+    {
+     "file": "apps/server/test/resilience-r10.test.ts",
+     "name": "restores with references and integrity intact",
+     "status": [
+      "passed"
+     ]
+    }
+   ]
+  }
+ ],
+ "note": "Synthetic demonstrations of specific behaviours; not a claim of universal attack coverage."
+}

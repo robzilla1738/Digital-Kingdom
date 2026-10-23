@@ -1,0 +1,18 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T10",
+ "version": 1,
+ "title": "Provider accepted action but effect unchanged",
+ "execution": "response_dependent",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "(requires executor) R08.3/R08.4 are gated on lab execution authorization"
+ ],
+ "disallowed_claims": [
+  "Containment succeeded"
+ ],
+ "missing_evidence_variant": "n/a",
+ "benign_alternative": "n/a",
+ "tests": [],
+ "unavailable_reason": "needs the laboratory executor (R08.3), which requires explicit lab execution authorization"
+}

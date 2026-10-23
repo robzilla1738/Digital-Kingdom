@@ -397,12 +397,12 @@
   {
    "id": "R07.3",
    "title": "Complete the 16 scenario packs",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R07-RECEIPT.md#r073-complete-the-16-scenario-packs-locally-executable-part",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "12 local scenarios pass via pnpm scenarios; T06 not implemented; T10/T11 executor-gated; T13 partial."
   },
   {
    "id": "R07.4",

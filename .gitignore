@@ -18,3 +18,4 @@ eval/runs/*/server-logs
 *.sqlite-wal
 *.sqlite-shm
 .dk-local/
+artifacts/scenarios/vitest.json

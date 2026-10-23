@@ -1,0 +1,18 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T06",
+ "version": 1,
+ "title": "Direct origin bypasses expected edge route",
+ "execution": "not_implemented",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "(not implemented) alternate-origin discovery is R09.1, gated on provider access"
+ ],
+ "disallowed_claims": [
+  "The edge protects every path"
+ ],
+ "missing_evidence_variant": "n/a",
+ "benign_alternative": "n/a",
+ "tests": [],
+ "unavailable_reason": "capability not built yet; see roadmap"
+}

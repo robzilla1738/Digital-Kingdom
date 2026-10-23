@@ -1,0 +1,18 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T11",
+ "version": 1,
+ "title": "Executor crash after provider call",
+ "execution": "response_dependent",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "(requires executor) R08.3 is gated"
+ ],
+ "disallowed_claims": [
+  "The action did or did not happen"
+ ],
+ "missing_evidence_variant": "n/a",
+ "benign_alternative": "n/a",
+ "tests": [],
+ "unavailable_reason": "needs the laboratory executor (R08.3), which requires explicit lab execution authorization"
+}

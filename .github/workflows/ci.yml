@@ -16,6 +16,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm validate:fixtures
+      - run: pnpm scenarios
       - run: pnpm build
       # R02.2: real OpenTelemetry Collector binary (pinned release, checksum-verified) against the OTLP endpoint
       - name: Collector conformance (otelcol 0.112.0)

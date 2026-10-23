@@ -1,0 +1,32 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T01",
+ "version": 1,
+ "title": "Credential rotated but descendant access survives",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "Original key inactive and descendant key/grant active are separate observations",
+  "Surviving permission names the identity, key and resource"
+ ],
+ "disallowed_claims": [
+  "Recovery is complete",
+  "The new key creation was malicious"
+ ],
+ "missing_evidence_variant": "no authorization snapshot or an audit gap -> status unknown",
+ "benign_alternative": "Same-user key rotation flagged for confirmation",
+ "tests": [
+  {
+   "file": "apps/server/test/aftermath-r03.test.ts",
+   "name": "original key inactive plus a surviving descendant"
+  },
+  {
+   "file": "apps/server/test/aftermath-r03.test.ts",
+   "name": "legitimate same-user rotation"
+  },
+  {
+   "file": "apps/server/test/aftermath-r03.test.ts",
+   "name": "a missing snapshot or an audit interval gap"
+  }
+ ]
+}

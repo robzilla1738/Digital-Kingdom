@@ -1,0 +1,30 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T12",
+ "version": 1,
+ "title": "Cross-tenant API and retrieval boundary",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "Project-scoped tokens and cursors cannot cross projects; sources cannot report about other assets"
+ ],
+ "disallowed_claims": [
+  "Data from another project is visible"
+ ],
+ "missing_evidence_variant": "n/a",
+ "benign_alternative": "n/a",
+ "tests": [
+  {
+   "file": "apps/server/test/boundaries-r00.test.ts",
+   "name": "a token scoped to another project cannot use the cursor"
+  },
+  {
+   "file": "apps/server/test/trust.test.ts",
+   "name": "a source scoped to one service cannot report about another service"
+  },
+  {
+   "file": "apps/server/test/identity-r10.test.ts",
+   "name": "service credentials expire by default"
+  }
+ ]
+}

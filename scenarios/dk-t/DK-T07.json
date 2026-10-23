@@ -1,0 +1,22 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T07",
+ "version": 1,
+ "title": "Unlinked follow-on data access",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "A later read by the same account that no finding references is returned"
+ ],
+ "disallowed_claims": [
+  "The read was exfiltration"
+ ],
+ "missing_evidence_variant": "read observer offline -> stop condition",
+ "benign_alternative": "Scheduled export job",
+ "tests": [
+  {
+   "file": "apps/server/test/recipes-r03.test.ts",
+   "name": "recipes query unlinked follow-on events"
+  }
+ ]
+}

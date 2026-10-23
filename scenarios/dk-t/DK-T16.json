@@ -1,0 +1,22 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T16",
+ "version": 1,
+ "title": "Backup configuration passes but restore fails",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "A modified backup fails authentication; restore verifies integrity and references before use"
+ ],
+ "disallowed_claims": [
+  "A backup existing means it restores"
+ ],
+ "missing_evidence_variant": "wrong passphrase -> fails closed",
+ "benign_alternative": "Successful verified restore",
+ "tests": [
+  {
+   "file": "apps/server/test/resilience-r10.test.ts",
+   "name": "restores with references and integrity intact"
+  }
+ ]
+}

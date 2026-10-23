@@ -1,0 +1,22 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T05",
+ "version": 1,
+ "title": "Agent acts outside observed wrapper",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "Independent effect without a wrapper report is a high-severity gap"
+ ],
+ "disallowed_claims": [
+  "A specific process or principal did it"
+ ],
+ "missing_evidence_variant": "no independent observer -> bypass cannot be ruled out",
+ "benign_alternative": "Delivery by an unrelated job",
+ "tests": [
+  {
+   "file": "examples/reference-app/agent-boundary.test.ts",
+   "name": "a wrapper bypass exposes the observation gap"
+  }
+ ]
+}

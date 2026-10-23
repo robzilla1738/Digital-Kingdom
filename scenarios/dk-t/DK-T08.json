@@ -1,0 +1,30 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "DK-T08",
+ "version": 1,
+ "title": "Artifact differs from reviewed source",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "expected_observations": [
+  "Mutable tag resolves to another digest; runtime digest mismatch"
+ ],
+ "disallowed_claims": [
+  "Verified provenance means malware-free"
+ ],
+ "missing_evidence_variant": "runtime digest not observed -> running_matches_commit unknown",
+ "benign_alternative": "Planned re-tag",
+ "tests": [
+  {
+   "file": "apps/server/test/lineage-r04.test.ts",
+   "name": "a mutable tag resolving"
+  },
+  {
+   "file": "apps/server/test/lineage-r04.test.ts",
+   "name": "a deployed fix is checked at the runtime digest"
+  },
+  {
+   "file": "apps/server/test/lineage-r04.test.ts",
+   "name": "valid provenance from an unexpected signer"
+  }
+ ]
+}
