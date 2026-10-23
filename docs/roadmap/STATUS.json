@@ -151,13 +151,17 @@
   {
    "id": "R02.4",
    "title": "Deliver the first real cloud identity/audit pack",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "authorized_provider_access",
    "receipt": "docs/roadmap/R02-RECEIPT.md#r024-first-cloud-identity-and-audit-pack",
    "head": null,
    "ci_run": null,
    "notes": "aws-r02.test.ts 5/5 against sanitized fixtures. Real-account check (external gate) NOT done.",
-   "external_gate_open": true
+   "external_gate_open": true,
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R03.1",
@@ -186,22 +190,30 @@
   {
    "id": "R03.3",
    "title": "Build credential aftermath and residual-access investigation",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R03-RECEIPT.md#r033-credential-aftermath-and-residual-access-investigation",
    "head": null,
    "ci_run": null,
-   "notes": "aftermath-r03.test.ts 4/4. Snapshot-based recheck; AWS only."
+   "notes": "aftermath-r03.test.ts 4/4. Snapshot-based recheck; AWS only.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R03.4",
    "title": "Integrate registered deception assets safely",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R03-RECEIPT.md#r034-integrate-registered-deception-assets-safely",
    "head": null,
    "ci_run": null,
-   "notes": "deception-r03.test.ts 4/4. Canarytokens adapter not live-checked."
+   "notes": "deception-r03.test.ts 4/4. Canarytokens adapter not live-checked.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R03.5",
@@ -216,12 +228,16 @@
   {
    "id": "R04.1",
    "title": "Establish source-to-running-artifact lineage",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R04-RECEIPT.md#r041-source-to-running-artifact-lineage",
    "head": null,
    "ci_run": null,
-   "notes": "lineage-r04.test.ts 4/4. Pinned-key DSSE only."
+   "notes": "lineage-r04.test.ts 4/4. Pinned-key DSSE only.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R04.2",
@@ -237,12 +253,16 @@
   {
    "id": "R04.3",
    "title": "Compute conditional effective-access paths",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R04-RECEIPT.md#r043-compute-conditional-effective-access-paths",
    "head": null,
    "ci_run": null,
-   "notes": "access-r04.test.ts 5/5. One provider (AWS), S3 + sts:AssumeRole only."
+   "notes": "access-r04.test.ts 5/5. One provider (AWS), S3 + sts:AssumeRole only.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R04.4",
@@ -281,12 +301,16 @@
   {
    "id": "R05.3",
    "title": "Extend MCP with bounded cases and subscriptions",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R05-RECEIPT.md#r053-extend-mcp-with-bounded-cases-and-subscriptions",
    "head": null,
    "ci_run": null,
-   "notes": "mcp-r05.test.ts 5/5. Polling only; no remote transport."
+   "notes": "mcp-r05.test.ts 5/5. Polling only; no remote transport.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R05.4",
@@ -345,22 +369,30 @@
   {
    "id": "R07.1",
    "title": "Create control inventory and verification records",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R07-RECEIPT.md#r071-control-inventory-and-verification-records",
    "head": null,
    "ci_run": null,
-   "notes": "controls-r07.test.ts 4/4; Coverage Controls tab."
+   "notes": "controls-r07.test.ts 4/4; Coverage Controls tab.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R07.2",
    "title": "Implement an isolated defense-lab runner",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R07-RECEIPT.md#r072-isolated-defense-lab-runner",
    "head": null,
    "ci_run": null,
-   "notes": "lab.test.ts 4/4 against the reference app."
+   "notes": "lab.test.ts 4/4 against the reference app.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R07.3",
@@ -385,22 +417,30 @@
   {
    "id": "R08.1",
    "title": "Bind response authorization to real subjects and policy",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R08-RECEIPT.md#r081-bind-response-authorization-to-real-subjects-and-policy",
    "head": null,
    "ci_run": null,
-   "notes": "approvals-r08.test.ts 4/4. Person subjects are admin-asserted unless SSO."
+   "notes": "approvals-r08.test.ts 4/4. Person subjects are admin-asserted unless SSO.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R08.2",
    "title": "Define exact response plans and revalidation",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R08-RECEIPT.md#r082-exact-response-plans-and-revalidation",
    "head": null,
    "ci_run": null,
-   "notes": "plans-r08.test.ts 4/4. No executor (R08.3 gated)."
+   "notes": "plans-r08.test.ts 4/4. No executor (R08.3 gated).",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R08.3",
@@ -480,12 +520,16 @@
   {
    "id": "R10.2",
    "title": "Measure ingestion resilience and recovery",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R10-RECEIPT.md#r102-measure-ingestion-resilience-and-recovery",
    "head": null,
    "ci_run": null,
-   "notes": "resilience-r10.test.ts 6/6; soak measured; OPERATIONS_RECOVERY.md."
+   "notes": "resilience-r10.test.ts 6/6; soak measured; OPERATIONS_RECOVERY.md.",
+   "ci": {
+    "run": 39906342991,
+    "head": "4dc7ae2"
+   }
   },
   {
    "id": "R10.3",
