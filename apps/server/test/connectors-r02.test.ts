@@ -24,7 +24,7 @@ describe("R02.1 manifests", () => {
   it("the catalog is served with capability levels", async () => {
     const { ctx } = await project();
     const r = (await ctx.app.inject({ url: "/api/connectors", headers: ctx.h(ctx.viewer) })).json();
-    expect(r.connectors.map((c: { id: string }) => c.id)).toEqual(["dk.events.http", "dk.otlp.traces", "dk.falco"]);
+    expect(r.connectors.map((c: { id: string }) => c.id)).toEqual(["dk.events.http", "dk.otlp.traces", "dk.aws.cloudtrail", "dk.falco"]);
     expect(r.capability_levels).toEqual(["declared", "discovered", "instrumented", "analyzed", "lab_verified", "live_verified"]);
   });
 });
