@@ -1,0 +1,1683 @@
+{
+  "schema": "dk.local_phase.program.v1",
+  "baseline": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+  "work_packages": [
+    {
+      "id": "LP00",
+      "milestone": "M0",
+      "title": "Recover baseline and phase boundaries",
+      "goal": "Continue current implementation and make this local-only phase explicit.",
+      "depends_on": [],
+      "reuse_or_inspect_paths": [
+        "docs/roadmap/STATUS.json",
+        "docs/quality/COMPLETION-2026-10-23.md",
+        "package.json",
+        ".github/workflows/ci.yml"
+      ],
+      "deliverables": [
+        "Current HEAD/working-tree and existing-work receipt; no reset or scaffold.",
+        "Existing-to-new requirement mapping, frozen-evaluation digests, and permission matrix.",
+        "New local-phase ledger alongside, not instead of, previous roadmap and receipts."
+      ],
+      "acceptance": [
+        {
+          "id": "LP00-A1",
+          "requirement": "Record the actual HEAD and preserve unknown/uncommitted work; rebase decisions are explicit, not automatic.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP00-A2",
+          "requirement": "Historical evaluation and receipt trees are fingerprinted and unchanged after bootstrap.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP00-A3",
+          "requirement": "Runtime network, model-budget and local-action policy default to no external access/no new provider calls.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP00-A4",
+          "requirement": "Baseline checks are executed where available; unavailable checks remain not_run and are not described as passed.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP01",
+      "milestone": "M0",
+      "title": "Repair scoped permission semantics",
+      "goal": "Prevent overstated feasible access before analysis becomes more prominent.",
+      "depends_on": [
+        "LP00"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/access/aws-policy.ts",
+        "apps/server/test/access-r04.test.ts",
+        "apps/server/src/change-review.ts",
+        "apps/server/src/aftermath.ts"
+      ],
+      "deliverables": [
+        "Reproducing module and API tests for conditional denies in every supported policy layer.",
+        "Conditional/blocked/unresolved precedence and explicit unsupported-semantics handling.",
+        "One authoritative result used by paths, change review, aftermath and UI."
+      ],
+      "acceptance": [
+        {
+          "id": "LP01-A1",
+          "requirement": "Boundary, session-policy and SCP conditional-deny fixtures reproduce the old behavior and return conditional after repair.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP01-A2",
+          "requirement": "A definitely applicable unconditional deny remains blocked; missing controlling inputs cannot become feasible.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP01-A3",
+          "requirement": "Unsupported policy constructs and case-sensitive resource identifiers are exercised and conservatively handled within declared support.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP01-A4",
+          "requirement": "The API, change review, aftermath and MCP expose consistent decision and evidence, without changing frozen evaluation records.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP02",
+      "milestone": "M0",
+      "title": "Harden recipe conclusions and incomplete work",
+      "goal": "Make recipes rigorous enough to drive an investigator rather than just produce plausible explanations.",
+      "depends_on": [
+        "LP00"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/recipes.ts",
+        "apps/server/src/investigate.ts",
+        "apps/server/src/coverage-history.ts",
+        "packages/detections/src/correlation.ts"
+      ],
+      "deliverables": [
+        "Recipe result version with obligation/query status and explicit unavailable/budget outcomes.",
+        "Namespace-aware follow-on pivots and page continuations.",
+        "Observable hypothesis predicates separated from intent and approval."
+      ],
+      "acceptance": [
+        {
+          "id": "LP02-A1",
+          "requirement": "Budget exhaustion, a null coverage result, a failed page and zero configured observers each remain partial/unknown and cannot imply visibility.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP02-A2",
+          "requirement": "A decisive event beyond the first 100 results is retrieved or explicitly outstanding; no silent completion.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP02-A3",
+          "requirement": "Same raw actor/session/run IDs under unrelated authorities do not support a joint hypothesis.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP02-A4",
+          "requirement": "Failed logins followed by success and benign activity never alone establish malicious guessing; allowed tool calls never alone establish approval.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP03",
+      "milestone": "M0",
+      "title": "Define run provenance and capability contracts",
+      "goal": "Separate local execution, fixture delivery, model output and external validation.",
+      "depends_on": [
+        "LP00"
+      ],
+      "reuse_or_inspect_paths": [
+        "packages/contracts/src/types.ts",
+        "packages/contracts/schemas",
+        "apps/server/src/adapters/connectors.ts",
+        "packages/contracts/src/surfaces.ts"
+      ],
+      "deliverables": [
+        "Versioned run/blueprint/verification contracts, schema validators and migration proposal.",
+        "Orthogonal local-run provenance without redefining synthetic/live compatibility.",
+        "Support matrix separating rendered, declared, instrumented, local-verified and externally verified."
+      ],
+      "acceptance": [
+        {
+          "id": "LP03-A1",
+          "requirement": "Existing synthetic/live examples remain valid or receive an explicit tested versioned migration; no silent semantic relabeling.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP03-A2",
+          "requirement": "Local recorded activity always exposes synthetic-data and local-scope qualifiers in API/UI/MCP/export.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP03-A3",
+          "requirement": "Every new contract rejects unknown executable, credential and arbitrary-target fields.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP03-A4",
+          "requirement": "Capability badges derive from scoped receipts, not from a surface family name or an LLM declaration.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP04",
+      "milestone": "M1",
+      "title": "Compile local application blueprints",
+      "goal": "Create coherent local worlds without hand-authoring the whole graph.",
+      "depends_on": [
+        "LP03"
+      ],
+      "reuse_or_inspect_paths": [
+        "packages/graph-core/src/importers.ts",
+        "packages/graph-core/src/routes.ts",
+        "packages/scene-compiler/src/compile.ts",
+        "examples/reference-app/src/pack.ts"
+      ],
+      "deliverables": [
+        "Reviewed templates for SaaS, agent workspace and delivery/identity.",
+        "Inert descriptor import, preview and deterministic plan compiler.",
+        "Stable asset/route/identity assignment and explicit observation gaps."
+      ],
+      "acceptance": [
+        {
+          "id": "LP04-A1",
+          "requirement": "An empty workspace can preview all three templates without provider credentials.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP04-A2",
+          "requirement": "Untrusted Compose/OpenAPI/manifest strings are treated as data; scripts, interpolation, remote refs and executable assets are rejected or ignored explicitly.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP04-A3",
+          "requirement": "Same blueprint version/seed yields the same logical graph and layout proposal; changed input yields a new revision.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP04-A4",
+          "requirement": "Adding a service preserves unrelated identities and coordinates; ambiguous routes stay ambiguous.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP05",
+      "milestone": "M1",
+      "title": "Own and isolate the local runtime",
+      "goal": "Build a run controller that cannot target arbitrary services merely because they are local.",
+      "depends_on": [
+        "LP03",
+        "LP04"
+      ],
+      "reuse_or_inspect_paths": [
+        "examples/reference-app/src/quickstart.ts",
+        "examples/reference-app/src/pack.ts",
+        "examples/reference-app/src/lab/runner.ts",
+        "infra/compose/docker-compose.yml"
+      ],
+      "deliverables": [
+        "Run-owned endpoint registry, nonce handshake, temp directories, process manifests and least-authority tokens.",
+        "Start/pause/resume/clone/stop/cleanup lifecycle; separate monotonic enforcement deadline.",
+        "Trusted host-process mode and optional constrained operator-launched container profile."
+      ],
+      "acceptance": [
+        {
+          "id": "LP05-A1",
+          "requirement": "A different localhost service, redirect, metadata/LAN/public address or unregistered endpoint is refused before action.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP05-A2",
+          "requirement": "A run token cannot reach another run or a non-lab project; forged environment labels do not grant authority.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP05-A3",
+          "requirement": "Stopping/aborting cleans only manifest-owned resources and records cleanup failure without removing user files.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP05-A4",
+          "requirement": "Frozen scenario time cannot suspend wall-clock limits; resource and network controls are checked or the execution mode is explicitly restricted/refused.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP06",
+      "milestone": "M1",
+      "title": "Run instrumented services and independent observers",
+      "goal": "Exercise actual local operations and effects, not only synthetic event insertion.",
+      "depends_on": [
+        "LP05"
+      ],
+      "reuse_or_inspect_paths": [
+        "examples/reference-app/src/app.ts",
+        "examples/reference-app/src/agent/boundary.ts",
+        "packages/sdk-node/src/index.ts",
+        "apps/server/src/adapters/otlp.ts"
+      ],
+      "deliverables": [
+        "Local gateway, auth/API, tenant data, queue/worker and artifact/token services with controlled data.",
+        "Per-operation effect observer with run/resource identity and health intervals.",
+        "CLI/UI setup that identifies exactly which local capabilities are reporting."
+      ],
+      "acceptance": [
+        {
+          "id": "LP06-A1",
+          "requirement": "A real local request reaches the expected service and appears identically in API, browser and MCP evidence.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP06-A2",
+          "requirement": "A permitted operation and a prohibited operation produce independently observed outcomes under the current policy.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP06-A3",
+          "requirement": "A deliberate observer outage becomes unknown for the affected interval, not a no-effect conclusion.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP06-A4",
+          "requirement": "Every source has independent declared authority; relayed/self-reported records cannot corroborate themselves.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP07",
+      "milestone": "M1",
+      "title": "Build a finite scenario and fault DSL",
+      "goal": "Make local worlds repeatable and variable without handing AI arbitrary execution.",
+      "depends_on": [
+        "LP06"
+      ],
+      "reuse_or_inspect_paths": [
+        "scenarios/dk-t",
+        "scripts/run-scenarios.ts",
+        "examples/reference-app/src/lab/runner.ts",
+        "eval/src/scenarios.ts"
+      ],
+      "deliverables": [
+        "Finite actions, event schedules, benign distractors, isolated mutations and deterministic seeds.",
+        "Separate private-truth store, observable evidence store and investigator output.",
+        "Snapshot/reset and partial-run accounting."
+      ],
+      "acceptance": [
+        {
+          "id": "LP07-A1",
+          "requirement": "DSL cannot execute scripts, shell, plugins or unrestricted network requests.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP07-A2",
+          "requirement": "Same seed/action schedule reproduces intended state; runtime timing differences are recorded, not hidden.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP07-A3",
+          "requirement": "Missing/delayed/dropped evidence affects observability without rewriting private operation truth.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP07-A4",
+          "requirement": "Investigator views contain no answer labels, hidden seeds, expected action IDs or oracle credentials.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP08",
+      "milestone": "M2",
+      "title": "Add investigation contracts and obligations",
+      "goal": "Turn a case question into auditable evidence requirements.",
+      "depends_on": [
+        "LP01",
+        "LP02",
+        "LP03"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/cases.ts",
+        "apps/server/src/recipes.ts",
+        "apps/server/src/bundles.ts",
+        "apps/server/src/facts.ts"
+      ],
+      "deliverables": [
+        "Versioned case contract with public goal, targets, interval, hypothesis and obligation state.",
+        "Explicit negative-claim coverage requirements and closure prerequisites.",
+        "Transition ledger linked to evidence/query revisions."
+      ],
+      "acceptance": [
+        {
+          "id": "LP08-A1",
+          "requirement": "Contracts derive from public case scope and supported recipes, never private scenario truth.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP08-A2",
+          "requirement": "An obligation is satisfied only by the required scoped evidence or a documented inapplicability reason.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP08-A3",
+          "requirement": "An incomplete investigation can honestly conclude unresolved without asserting a negative or malicious intent.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP08-A4",
+          "requirement": "Changing scope or evidence invalidates affected obligations without overwriting previous decisions.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP09",
+      "milestone": "M2",
+      "title": "Execute bounded investigation plans",
+      "goal": "Give AI a reliable next evidence step with resumable work.",
+      "depends_on": [
+        "LP08"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/investigate.ts",
+        "apps/server/src/recipes.ts",
+        "apps/server/src/store.ts",
+        "apps/server/test/search-budgets-r01.test.ts"
+      ],
+      "deliverables": [
+        "Typed query-plan jobs, continuations, quotas, cancellation and restart state.",
+        "Scope-safe pivots using declared identities, routes, run/resource IDs and versions.",
+        "Per-step purpose, results, errors, completeness and budget counters."
+      ],
+      "acceptance": [
+        {
+          "id": "LP09-A1",
+          "requirement": "A key event beyond page one is fetched under a stable snapshot without duplicate/skip at tied timestamps.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP09-A2",
+          "requirement": "No tool accepts raw SQL, arbitrary paths, unrestricted graph queries or source credentials.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP09-A3",
+          "requirement": "Restart resumes from committed job state; cancellation/revocation stops further authorized work.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP09-A4",
+          "requirement": "Budget/truncation/error states remain explicit and do not mark downstream obligations satisfied.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP10",
+      "milestone": "M2",
+      "title": "Deliver compact evidence and check claims",
+      "goal": "Reduce model overload without hiding decisive records or uncertainty.",
+      "depends_on": [
+        "LP09"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/bundles.ts",
+        "apps/server/src/assistant.ts",
+        "apps/mcp/src/server.ts",
+        "apps/web/src/lib/evidence-loader.ts"
+      ],
+      "deliverables": [
+        "Versioned compact packets with exact refs, roles, exposure records, revisions and continuations.",
+        "Structured claim checker for scoped predicates plus unsupported-narrative flags.",
+        "Non-destructive packet expansion and counterevidence preservation."
+      ],
+      "acceptance": [
+        {
+          "id": "LP10-A1",
+          "requirement": "A summary never substitutes for a missing required record; packet omissions are machine-readable.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP10-A2",
+          "requirement": "Citations to existing but not retrieved records fail availability checks; cross-run/revision refs fail scope checks.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP10-A3",
+          "requirement": "Arbitrary natural-language support is not labeled machine-proved merely because IDs exist.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP10-A4",
+          "requirement": "Counterevidence, source uncertainty and partial query status survive packet size limits and exports.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP11",
+      "milestone": "M2",
+      "title": "Expose a focused MCP workflow",
+      "goal": "Make the common investigation loop simpler than choosing among all tools.",
+      "depends_on": [
+        "LP10"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/mcp/src/server.ts",
+        "apps/mcp/test/mcp-r05.test.ts",
+        "apps/mcp/test/quality-gates-stdio.test.ts",
+        "apps/server/src/app.ts"
+      ],
+      "deliverables": [
+        "Focused read-only and analyst-service profiles, capability negotiation and stable output envelopes.",
+        "Open/read contract, next bounded step, inspect refs and propose conclusion actions.",
+        "Real stdio tests and an exportable configuration for an existing coding agent."
+      ],
+      "acceptance": [
+        {
+          "id": "LP11-A1",
+          "requirement": "Both profiles receive only permitted project/run evidence and the same records as the UI.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP11-A2",
+          "requirement": "Case/job writes have correct annotations and backend privileges; viewer cannot persist a change by calling a nominal read tool.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP11-A3",
+          "requirement": "Prompt text in an event/tool result cannot change profile, budget, target or approval policy.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP11-A4",
+          "requirement": "Tool outputs are bounded with resumable refs; disconnected clients can resume without hidden extra model calls.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP12",
+      "milestone": "M3",
+      "title": "Build the investigation workbench",
+      "goal": "Make obligations, hypotheses and AI drafts useful to a human reviewing the case.",
+      "depends_on": [
+        "LP08",
+        "LP10",
+        "LP11"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/web/src/workspaces/investigate/CasesWorkspace.tsx",
+        "apps/web/src/inspector/FindingView.tsx",
+        "apps/web/src/lib/navigation.ts"
+      ],
+      "deliverables": [
+        "Case progress, evidence/coverage questions, competing hypotheses and next-action panel.",
+        "Versioned agent proposals separate from accepted case records.",
+        "Shared anchors linking castle selections and actual evidence."
+      ],
+      "acceptance": [
+        {
+          "id": "LP12-A1",
+          "requirement": "Changing cases aborts stale reads and preserves unsaved drafts in the correct scope.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP12-A2",
+          "requirement": "A user can reach supporting/counterevidence, failed queries and uncertainty without navigating a 3D camera.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP12-A3",
+          "requirement": "Agent completion cannot silently resolve an unanswered case question or erase a person\u2019s note.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP12-A4",
+          "requirement": "Keyboard/reduced-motion/narrow-screen automated workflows retain the same critical evidence and status.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP13",
+      "milestone": "M3",
+      "title": "Add bounded path and change exploration",
+      "goal": "Make why-can-this-reach-that and what-changed inspectable.",
+      "depends_on": [
+        "LP01",
+        "LP08"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/access/aws-policy.ts",
+        "apps/server/src/change-review.ts",
+        "apps/server/src/lineage.ts",
+        "apps/server/src/facts.ts"
+      ],
+      "deliverables": [
+        "Provenance-linked conditional path inspector with explicit unsupported prerequisites.",
+        "Local/snapshot change comparisons for grants, routes, tools and artifacts.",
+        "Candidate state hashes and deterministic analysis receipts."
+      ],
+      "acceptance": [
+        {
+          "id": "LP13-A1",
+          "requirement": "Conditional permission never animates as observed use; unsupported provider semantics remain unresolved.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP13-A2",
+          "requirement": "A proposed candidate cannot modify baseline facts, findings, scenes or approval receipts.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP13-A3",
+          "requirement": "Same-name resources/versions under different authorities remain distinct throughout a comparison.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP13-A4",
+          "requirement": "A comparison records the exact state, policy version, conditions and unassessed paths.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP14",
+      "milestone": "M3",
+      "title": "Generate reviewable repair candidates",
+      "goal": "Suggest useful, narrow repairs rather than generic recommendations.",
+      "depends_on": [
+        "LP13"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/change-review.ts",
+        "apps/server/src/response-plan.ts",
+        "apps/server/src/controls.ts",
+        "apps/server/src/aftermath.ts"
+      ],
+      "deliverables": [
+        "Reviewed repair templates and candidate tradeoff ranking for finite local controls.",
+        "Disposable worktree/config patch output with exact baseline and artifact references.",
+        "Expected impact, positive controls, verification and compensation for each candidate."
+      ],
+      "acceptance": [
+        {
+          "id": "LP14-A1",
+          "requirement": "At least two valid candidates or an explicit no-supported-repair result are returned for applicable scenarios.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP14-A2",
+          "requirement": "Ranking records objective coverage, disruption, prerequisites and unknowns; it does not claim global optimality.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP14-A3",
+          "requirement": "A patch cannot execute evidence instructions, write the operator checkout or publish a PR.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP14-A4",
+          "requirement": "A stale baseline/candidate digest prevents old approval from authorizing a changed repair.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP15",
+      "milestone": "M3",
+      "title": "Create a local attention queue",
+      "goal": "Keep important case changes visible without external notification dependencies.",
+      "depends_on": [
+        "LP12"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/notify.ts",
+        "apps/server/src/cases.ts",
+        "apps/web/src/workspaces/investigate/CasesWorkspace.tsx"
+      ],
+      "deliverables": [
+        "In-app queue for new evidence, contradictions, incomplete repairs, observer gaps and stale checks.",
+        "Deduplication, acknowledgement, replay and bounded urgency rules.",
+        "Optional local webhook sink for testing only."
+      ],
+      "acceptance": [
+        {
+          "id": "LP15-A1",
+          "requirement": "Repeated source retries do not create a notification storm or discard the underlying case event.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP15-A2",
+          "requirement": "Acknowledging a queue item never closes a finding or case implicitly.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP15-A3",
+          "requirement": "Notifications contain scoped minimized summaries and never expose another project\u2019s details.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP15-A4",
+          "requirement": "The workflow works with every remote destination disabled and no outbound notification call.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP16",
+      "milestone": "M4",
+      "title": "Render world hierarchy and semantic zoom",
+      "goal": "Make the world navigable as environments grow.",
+      "depends_on": [
+        "LP04",
+        "LP12"
+      ],
+      "reuse_or_inspect_paths": [
+        "packages/scene-compiler/src/hierarchy.ts",
+        "apps/web/src/castle/scenePresentation.ts",
+        "apps/web/src/graph2d/Graph2D.tsx",
+        "apps/web/src/lib/state.tsx"
+      ],
+      "deliverables": [
+        "Searchable realm/environment/district/structure navigation with stable IDs.",
+        "Semantic zoom and focus history shared with list/2D view.",
+        "Current/historical/branch view labels and archived resource placement."
+      ],
+      "acceptance": [
+        {
+          "id": "LP16-A1",
+          "requirement": "Adding a service preserves unrelated coordinates; intentional reflow is previewed and versioned.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP16-A2",
+          "requirement": "Removed/recreated resources resolve to their own incarnation and historical location.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP16-A3",
+          "requirement": "Every aggregated district retains a complete accessible membership list and asset search.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP16-A4",
+          "requirement": "WebGL loss, resize, back navigation and selection changes retain the case and evidence scope.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP17",
+      "milestone": "M4",
+      "title": "Build six meaningful architectural families",
+      "goal": "Extend the kit beyond mapping every new surface to the same ten buildings.",
+      "depends_on": [
+        "LP16"
+      ],
+      "reuse_or_inspect_paths": [
+        "packages/contracts/src/surfaces.ts",
+        "apps/web/src/castle/modules.tsx",
+        "assets/castle-kit/MANIFEST.json",
+        "packages/scene-compiler/src/compile.ts"
+      ],
+      "deliverables": [
+        "DNS registry, dispatch house, key registry, supply depot, archive and outpost geometries.",
+        "Bounds, origins, anchors, roof groups, hit proxies, LOD and asset provenance.",
+        "Actual rendered contact sheet and mixed-world composition using supported records."
+      ],
+      "acceptance": [
+        {
+          "id": "LP17-A1",
+          "requirement": "Every family has a readable unique silhouette and in-bounds geometry at supported LOD; no placeholder cube is counted as finished art.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP17-A2",
+          "requirement": "Roof-off and selection proxies work at overview and interior scales without intercepting unrelated clicks.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP17-A3",
+          "requirement": "Geometry/material/manifest hashes and licenses are recorded; no user font files are distributed in handoff exports.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP17-A4",
+          "requirement": "Rendered families do not imply discovery or control verification; unsupported surfaces display honest capability state.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP18",
+      "milestone": "M4",
+      "title": "Add evidence-linked interiors",
+      "goal": "Reveal useful technical detail inside the world without forcing game navigation.",
+      "depends_on": [
+        "LP12",
+        "LP16",
+        "LP17"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/web/src/panels/EvidencePane.tsx",
+        "apps/web/src/lib/layers.ts",
+        "apps/web/src/castle/Castle3D.tsx",
+        "apps/web/src/graph2d/Graph2D.tsx"
+      ],
+      "deliverables": [
+        "Route, key/grant, data, tool/run, artifact and control interiors.",
+        "Typed relationships and observed/configured/hypothetical distinctions.",
+        "Direct evidence/obligation actions with equivalent conventional interface."
+      ],
+      "acceptance": [
+        {
+          "id": "LP18-A1",
+          "requirement": "Selecting an interior object opens the exact authoritative record and its provenance, not a generated description alone.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP18-A2",
+          "requirement": "Declared doors/grants are not drawn as observed attacker transit; status is never color-only.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP18-A3",
+          "requirement": "Agent decisions, executions and effects remain distinct and link to their independent evidence.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP18-A4",
+          "requirement": "The same workflow and selected IDs survive 3D/2D/list switching and narrow-screen use.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP19",
+      "milestone": "M4",
+      "title": "Add baseline-versus-repair world comparison",
+      "goal": "Make consequences understandable without repainting hypotheses as facts.",
+      "depends_on": [
+        "LP13",
+        "LP14",
+        "LP18"
+      ],
+      "reuse_or_inspect_paths": [
+        "packages/scene-compiler/src/compile.ts",
+        "apps/web/src/lib/state.tsx",
+        "apps/web/src/panels/Timeline.tsx",
+        "apps/server/src/change-review.ts"
+      ],
+      "deliverables": [
+        "Ghosted or side-by-side branches with common camera/layout and a change list.",
+        "Separate model-only and executed-local results.",
+        "Time-known/time-occurred replay with actual source/history scope."
+      ],
+      "acceptance": [
+        {
+          "id": "LP19-A1",
+          "requirement": "Creating or viewing a branch does not change baseline state or current source coverage.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP19-A2",
+          "requirement": "Removed/added/changed authority is visible with exact references and unresolved conditions.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP19-A3",
+          "requirement": "A simulated blocked path never appears as a verified executed control.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP19-A4",
+          "requirement": "Comparison export identifies both revisions and preserves incomplete/changed evidence warnings.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP20",
+      "milestone": "M5",
+      "title": "Introduce run-scoped local authority leases",
+      "goal": "Allow bounded lab execution without weakening existing human approval semantics.",
+      "depends_on": [
+        "LP05",
+        "LP14"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/response-plan.ts",
+        "apps/server/src/containment.ts",
+        "apps/server/src/verification.ts",
+        "apps/server/src/app.ts"
+      ],
+      "deliverables": [
+        "Supervisor-issued local-lab lease with run/resource/action/digest/TTL/budget restrictions.",
+        "Distinct lab authorization namespace and default plan-only behavior.",
+        "Preconditions, kill switch and audit transitions."
+      ],
+      "acceptance": [
+        {
+          "id": "LP20-A1",
+          "requirement": "An investigator/service token cannot issue, extend or approve its own lease.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP20-A2",
+          "requirement": "Lease targets are supervisor-owned resources; forged lab metadata or a real provider ARN is refused.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP20-A3",
+          "requirement": "Expired/stale/replayed approval or changed parameters cannot authorize execution.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP20-A4",
+          "requirement": "A local lease never counts as human approval and cannot authorize the existing production-facing response path.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP21",
+      "milestone": "M5",
+      "title": "Execute typed local repairs",
+      "goal": "Close the action loop only inside disposable run-owned services.",
+      "depends_on": [
+        "LP20",
+        "LP06"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/response-plan.ts",
+        "examples/reference-app/src/lab/runner.ts",
+        "examples/reference-app/src/pack.ts"
+      ],
+      "deliverables": [
+        "Allowlisted gateway policy, synthetic token/grant, local artifact and observer operations.",
+        "Journaled state machine, idempotency, recovery reconciliation and compensation.",
+        "Separate controller identity with no arbitrary shell/network capability."
+      ],
+      "acceptance": [
+        {
+          "id": "LP21-A1",
+          "requirement": "An approved local plan changes only the exact registered target revision and records an effect receipt.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP21-A2",
+          "requirement": "Crash after application but before receipt is reconciled without applying the change twice.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP21-A3",
+          "requirement": "Shell commands, arbitrary endpoints, host paths and production adapter requests are rejected.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP21-A4",
+          "requirement": "Cancellation, quota, partial failure and cleanup are surfaced; original compromised authority is not restored as rollback.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP22",
+      "milestone": "M5",
+      "title": "Verify effects independently",
+      "goal": "Prove scoped outcomes rather than equating API success with defense.",
+      "depends_on": [
+        "LP21",
+        "LP07"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/verification.ts",
+        "examples/reference-app/src/lab/runner.ts",
+        "examples/reference-app/src/agent/boundary.ts",
+        "apps/server/src/controls.ts"
+      ],
+      "deliverables": [
+        "Per-operation nonce/digest observations, bounded settling and repeated health checks.",
+        "Prohibited/allowed controls, residual-access and disruption evaluation.",
+        "Separate security verdict, execution state and cleanup outcome."
+      ],
+      "acceptance": [
+        {
+          "id": "LP22-A1",
+          "requirement": "An accepted action with unchanged target behavior fails verification.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP22-A2",
+          "requirement": "Delayed and unrelated concurrent effects are correlated correctly; unavailable observer yields inconclusive.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP22-A3",
+          "requirement": "Prohibited behavior blocked while legitimate behavior broken cannot be a verified repair.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP22-A4",
+          "requirement": "Cleanup failure remains visible and prevents whole-run success even when the security assertion passed.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP23",
+      "milestone": "M5",
+      "title": "Capture a repair as a replayable regression",
+      "goal": "Turn a resolved local case into reusable protection knowledge.",
+      "depends_on": [
+        "LP22",
+        "LP19"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/regression.ts",
+        "apps/server/src/cases.ts",
+        "apps/server/src/controls.ts",
+        "scenarios/dk-t"
+      ],
+      "deliverables": [
+        "Sanitized regression descriptor with exact prerequisites and positive/negative controls.",
+        "Case/control/test/version linkage and stale-test propagation.",
+        "Before/after case replay and explicit residual uncertainty."
+      ],
+      "acceptance": [
+        {
+          "id": "LP23-A1",
+          "requirement": "A regression reruns without an LLM and reproduces the supported boundary result.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP23-A2",
+          "requirement": "Changing a relevant policy/tool/artifact version marks the old validation stale.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP23-A3",
+          "requirement": "No secret, private oracle, arbitrary executable or unrelated record is exported in the descriptor.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP23-A4",
+          "requirement": "Closing a case requires scoped answers/accepted unknowns; a failed verification cannot silently close it.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP24",
+      "milestone": "M6",
+      "title": "Support a bring-your-agent local investigation",
+      "goal": "Let the owner\u2019s existing AI exercise the product without provisioning external services.",
+      "depends_on": [
+        "LP11",
+        "LP07"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/mcp/src/main.ts",
+        "apps/mcp/src/server.ts",
+        "eval/src/v2/instance.ts",
+        "eval/src/v2/harness.ts"
+      ],
+      "deliverables": [
+        "Native-agent task prompt, scoped MCP setup and evidence-exposure recorder.",
+        "Scripted, native-agent, local-model and approved-provider mode declarations.",
+        "Explicit distinction between developer-assisted runs and blinded evaluation."
+      ],
+      "acceptance": [
+        {
+          "id": "LP24-A1",
+          "requirement": "A real stdio client can investigate the local world through normal authenticated endpoints.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP24-A2",
+          "requirement": "No provider route is silently selected; missing model availability remains not_exercised for AI-specific checks.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP24-A3",
+          "requirement": "A native coding agent with repo/oracle access is labeled development_assisted, not held-out blinded.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP24-A4",
+          "requirement": "Captured traces include observable tool I/O and claims, not hidden model reasoning or tokens.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP25",
+      "milestone": "M6",
+      "title": "Separate private truth and admissible-evidence grading",
+      "goal": "Make local AI tests informative rather than self-grading theater.",
+      "depends_on": [
+        "LP24"
+      ],
+      "reuse_or_inspect_paths": [
+        "eval/src/v2/preflight.ts",
+        "eval/src/v2/report.ts",
+        "eval/src/v2/exposure.ts",
+        "scripts/run-scenarios.ts"
+      ],
+      "deliverables": [
+        "Private scenario controller/oracle with no investigator-readable endpoint or filesystem mount.",
+        "Independent expected predicates and admissibility under actual observer coverage.",
+        "Versioned seed commitments, data-equality preflight and leakage canaries."
+      ],
+      "acceptance": [
+        {
+          "id": "LP25-A1",
+          "requirement": "Investigator attempts to read oracle paths, seed/config keys and scoring endpoints are denied and recorded.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP25-A2",
+          "requirement": "Grading uses actual controlled operations/state, not the same detector/helper whose output is being tested.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP25-A3",
+          "requirement": "The answer key accepts uncertainty when decisive facts are unobservable; it never demands omniscience.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP25-A4",
+          "requirement": "Renaming resources or changing nuisance fields does not leak the answer or change a logically equivalent objective.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP26",
+      "milestone": "M6",
+      "title": "Evaluate guided versus current investigation loops",
+      "goal": "Measure whether the new workflow fixes missed evidence without expanding authority.",
+      "depends_on": [
+        "LP25",
+        "LP10"
+      ],
+      "reuse_or_inspect_paths": [
+        "eval/src/v2/harness.ts",
+        "eval/src/v2/report.ts",
+        "eval/src/budget.ts",
+        "artifacts/completion/evaluation/REPORT.md"
+      ],
+      "deliverables": [
+        "Preregistered local-loop comparison: existing full tools, event tools and guided contract.",
+        "Equal underlying evidence, randomized order, fresh conversations and retained failures.",
+        "Objective metrics plus separately labeled AI semantic critique and deferred human review."
+      ],
+      "acceptance": [
+        {
+          "id": "LP26-A1",
+          "requirement": "All conditions pass evidence-access/metadata equality before attempts; invalid preflight is not a model score.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP26-A2",
+          "requirement": "Missing reachable evidence counts against retrieval and end-to-end success; no outcome is inferred by subtracting automatic failures.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP26-A3",
+          "requirement": "Structured task/repair predicates, semantic critique and coverage limitations use separate denominators.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP26-A4",
+          "requirement": "No prior $5 budget or historical approval is reused; remote paid mode requires an explicit new route, cap and pre-reservation.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP27",
+      "milestone": "M6",
+      "title": "Exercise adversarial and fault variants",
+      "goal": "Find weaknesses using controlled changes, not broad attacks on outside systems.",
+      "depends_on": [
+        "LP25",
+        "LP22"
+      ],
+      "reuse_or_inspect_paths": [
+        "scenarios/dk-t",
+        "eval/src/scenarios.ts",
+        "packages/detections/test",
+        "apps/server/test"
+      ],
+      "deliverables": [
+        "24 new local families mapped to existing regressions without rewriting them.",
+        "Metamorphic and mutation tests for identity, pagination, coverage, enforcement and claims.",
+        "Budgeted noise, delayed evidence, outages and injected instructions."
+      ],
+      "acceptance": [
+        {
+          "id": "LP27-A1",
+          "requirement": "Removing a denial, skipping a required page or substituting a model refusal makes the corresponding test fail.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP27-A2",
+          "requirement": "Clean/injected pairs differ only in the intended field and are compared against clean-repeat variability.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP27-A3",
+          "requirement": "No scenario launches external scans, malware, arbitrary shell or real credential collection.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP27-A4",
+          "requirement": "Errors, partial runs, observer outages and budget exhaustion remain in the run/accounting records.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP28",
+      "milestone": "M7",
+      "title": "Package evidence-only and training capsules",
+      "goal": "Make a local case portable and inspectable without third-party storage.",
+      "depends_on": [
+        "LP23",
+        "LP25"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/server/src/export.ts",
+        "apps/server/src/backup.ts",
+        "apps/server/src/bundles.ts",
+        "apps/web/src/inspector/actions.tsx"
+      ],
+      "deliverables": [
+        "Minimized capsule manifest, evidence/scene revisions, optional synthetic regression descriptors.",
+        "Safe archive import into a new namespace with independent integrity checks.",
+        "Separate sealed oracle attachment only for training/evaluation packages."
+      ],
+      "acceptance": [
+        {
+          "id": "LP28-A1",
+          "requirement": "Round-trip retains exact supported evidence references and explicitly reports absent records.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP28-A2",
+          "requirement": "Zip-slip, absolute paths, links, oversized entries, decompression bombs and unsupported executables are rejected before extraction.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP28-A3",
+          "requirement": "Evidence-only exports exclude oracle data, tokens, secrets, provider credentials and private font files.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP28-A4",
+          "requirement": "Hash/signature validation is described as integrity/origin checking, not proof of truth, completeness or independent approval.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP29",
+      "milestone": "M7",
+      "title": "Build a local mission and scenario composer",
+      "goal": "Make the local capabilities usable beyond hand-written test files.",
+      "depends_on": [
+        "LP07",
+        "LP18",
+        "LP28"
+      ],
+      "reuse_or_inspect_paths": [
+        "apps/web/src/workspaces/integrations/IntegrationsWorkspace.tsx",
+        "apps/web/src/workspaces/investigate/CasesWorkspace.tsx",
+        "packages/contracts/src/surfaces.ts"
+      ],
+      "deliverables": [
+        "Blueprint selection, finite stimulus authoring, budget preview and run lifecycle controls.",
+        "Mission desk for investigate/compare/verify/replay without replacing four workspaces.",
+        "AI-assisted proposal as schema-validated data, never executable program."
+      ],
+      "acceptance": [
+        {
+          "id": "LP29-A1",
+          "requirement": "An operator creates, previews, runs and reopens a supported local mission without editing source.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP29-A2",
+          "requirement": "Builder and investigator views are distinct; opening truth explicitly taints the run as non-blinded.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP29-A3",
+          "requirement": "Invalid plans keep drafts and do not create partial resources or fabricated connected status.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP29-A4",
+          "requirement": "Local-only operation is obvious throughout UI/MCP/export; remote setup is not a prerequisite.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP30",
+      "milestone": "M7",
+      "title": "Measure local robustness and visual usability",
+      "goal": "Avoid shipping a large feature set that collapses under ordinary use.",
+      "depends_on": [
+        "LP29",
+        "LP27"
+      ],
+      "reuse_or_inspect_paths": [
+        "e2e",
+        "playwright.redesign.config.ts",
+        "scripts/bench-search.ts",
+        "apps/server/src/backup.ts",
+        "apps/web/src/castle"
+      ],
+      "deliverables": [
+        "Exact-candidate browser, latency, resource and recovery receipts.",
+        "Reduced-motion/keyboard/2D parity and actual rendered module/interior/compare screens.",
+        "Runtime-egress checks and same-environment before/after benchmarks."
+      ],
+      "acceptance": [
+        {
+          "id": "LP30-A1",
+          "requirement": "Existing tests still pass or changes have a versioned reason and retained old evidence; no weakened assertions for green CI.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP30-A2",
+          "requirement": "Repeated start/reset/project/camera/case cycles are bounded under recorded conditions and failed cleanup is surfaced.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP30-A3",
+          "requirement": "Real rendered screenshots and browser interactions cover new families, interiors, branches and failure states.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP30-A4",
+          "requirement": "Claims stay scoped to tested hardware/software; manual screen-reader, physical GPU and external-use acceptance remain deferred.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    },
+    {
+      "id": "LP31",
+      "milestone": "M7",
+      "title": "Deliver the integrated local phase",
+      "goal": "Finish a complete demonstrable loop with honest status and a continuation handoff.",
+      "depends_on": [
+        "LP30",
+        "LP26"
+      ],
+      "reuse_or_inspect_paths": [
+        "README.md",
+        "docs/roadmap/STATUS.json",
+        "docs/quality",
+        "docs/RELEASE.md"
+      ],
+      "deliverables": [
+        "One-command local demo, agent handoff, phase ledger and capability matrix.",
+        "Final scenario/claim/effect/repair replay with exact evidence parity across interfaces.",
+        "Readiness separated into engineering, AI-loop, external validation and production authority."
+      ],
+      "acceptance": [
+        {
+          "id": "LP31-A1",
+          "requirement": "An end-to-end scripted run covers launch, incident, investigation, repair, verification and export on the same candidate.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP31-A2",
+          "requirement": "An actually available approved AI route exercises the loop or AI status remains explicitly not_exercised without blocking truthful scripted completion.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP31-A3",
+          "requirement": "All phase requirements have receipts or explicit reasons; external deferred items are never silently approved.",
+          "status": "not_run",
+          "evidence": []
+        },
+        {
+          "id": "LP31-A4",
+          "requirement": "No unauthorized repository merge/deployment/provider call occurred; handoff names precise next work instead of declaring universal readiness.",
+          "status": "not_run",
+          "evidence": []
+        }
+      ],
+      "implementation_status": "not_started",
+      "verification_status": "not_run",
+      "remote_infrastructure_required": false
+    }
+  ],
+  "milestones": [
+    {
+      "id": "M0",
+      "title": "Correct foundations and phase contracts",
+      "packages": [
+        "LP00",
+        "LP01",
+        "LP02",
+        "LP03"
+      ],
+      "prompt": "prompts/M0.md"
+    },
+    {
+      "id": "M1",
+      "title": "Run a self-contained world",
+      "packages": [
+        "LP04",
+        "LP05",
+        "LP06",
+        "LP07"
+      ],
+      "prompt": "prompts/M1.md"
+    },
+    {
+      "id": "M2",
+      "title": "Make the agent investigate completely",
+      "packages": [
+        "LP08",
+        "LP09",
+        "LP10",
+        "LP11"
+      ],
+      "prompt": "prompts/M2.md"
+    },
+    {
+      "id": "M3",
+      "title": "Deliver actionable cases and comparisons",
+      "packages": [
+        "LP12",
+        "LP13",
+        "LP14",
+        "LP15"
+      ],
+      "prompt": "prompts/M3.md"
+    },
+    {
+      "id": "M4",
+      "title": "Make the castle an operational world",
+      "packages": [
+        "LP16",
+        "LP17",
+        "LP18",
+        "LP19"
+      ],
+      "prompt": "prompts/M4.md"
+    },
+    {
+      "id": "M5",
+      "title": "Close the local repair loop",
+      "packages": [
+        "LP20",
+        "LP21",
+        "LP22",
+        "LP23"
+      ],
+      "prompt": "prompts/M5.md"
+    },
+    {
+      "id": "M6",
+      "title": "Exercise the loop with AI and independent grading",
+      "packages": [
+        "LP24",
+        "LP25",
+        "LP26",
+        "LP27"
+      ],
+      "prompt": "prompts/M6.md"
+    },
+    {
+      "id": "M7",
+      "title": "Package, measure and deliver",
+      "packages": [
+        "LP28",
+        "LP29",
+        "LP30",
+        "LP31"
+      ],
+      "prompt": "prompts/M7.md"
+    }
+  ],
+  "execution_policy": "DAG dependencies are authoritative. Milestones organize review; independent ready tasks may proceed. Externally deferred work is not an implicit dependency."
+}

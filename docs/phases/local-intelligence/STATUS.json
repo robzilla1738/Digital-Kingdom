@@ -1,0 +1,1255 @@
+{
+ "schema": "dk.local_phase.status.v1",
+ "phase": "local-intelligence",
+ "package": "docs/phases/local-intelligence/package (copied verbatim from the owner's phase package, fingerprinted in FROZEN_DIGESTS.json)",
+ "branch": "phase/local-intelligence",
+ "status_vocabulary": {
+  "not_started": "No work on this package in this phase.",
+  "in_progress": "Work started; not all acceptance ids executed.",
+  "implemented_locally_verified": "Code and tests exist; typecheck and the full local suite passed on the recorded commit.",
+  "ci_verified": "implemented_locally_verified plus a passing GitHub CI run on the recorded head.",
+  "blocked": "Two genuine attempts failed; reason recorded; independent packages continue."
+ },
+ "requirement_status_vocabulary": {
+  "not_run": "No executed test yet.",
+  "passed_local": "An executed automated test passed; evidence names the test file and receipt.",
+  "failed": "An executed test failed; receipt kept.",
+  "not_exercised": "Needs an actual model/agent route that has not run (AI execution only).",
+  "deferred": "Depends on an external gate in DEFERRALS.json; never passed locally.",
+  "blocked": "Could not be executed in this environment; reason recorded."
+ },
+ "baseline": {
+  "package_baseline": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+  "recovered_head": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+  "recovered_at": "2026-10-23 (America/Chicago)",
+  "recovered_branch": "main (origin/main), clean",
+  "working_tree_at_recovery": "clean: git status reported nothing to commit; no stash; no uncommitted or unknown work to preserve",
+  "other_remote_branches": [
+   "design/castle-3d",
+   "eval/real-agent-readonly",
+   "fix/investigation-quality-gates",
+   "improve/investigation-honesty",
+   "pilot/browser-pilot",
+   "quality/completion",
+   "roadmap/batch3",
+   "roadmap/batch4",
+   "roadmap/r00-correctness",
+   "roadmap/r01-evidence"
+  ],
+  "other_branches_note": "Not touched, merged or rebased. eval/real-agent-readonly is the reference for prior eval code (also present on main under eval/).",
+  "rebase_decision": "Explicit: phase/local-intelligence was created from origin/main at 9fec7ed because no phase branch existed and main equalled the package baseline. No automatic rebase; if main moves, rebasing or merging is a recorded decision in this ledger, never implicit."
+ },
+ "previous_ledgers": [
+  "docs/roadmap/STATUS.json",
+  "docs/quality/COMPLETION-2026-10-23.md",
+  "support-matrix/SUPPORT_MATRIX.json"
+ ],
+ "frozen_history": {
+  "manifest": "docs/phases/local-intelligence/FROZEN_DIGESTS.json",
+  "verify": "tsx scripts/phase-frozen-digests.ts",
+  "test": "apps/server/test/phase-lp00-baseline.test.ts"
+ },
+ "permission_matrix": {
+  "note": "What this phase may do without new owner authorization. Derived from MASTER_PROMPT.md, 02_AGENT_HANDOFF.md, DEFERRALS.json and the implementer brief.",
+  "allowed": [
+   "edit code, tests and docs on branch phase/local-intelligence; push that branch",
+   "run local typecheck, unit/integration/browser/scenario tests and local reference applications on loopback",
+   "read GitHub CI status for the branch"
+  ],
+  "requires_fresh_approval": [
+   "any model/provider call (phase cap $3.00 total via the brief's AI Gateway route, only for packages that genuinely need a real model run; old $5 v2 ledger not inherited)",
+   "merge, deploy, GitHub settings changes, force-push, pushing main"
+  ],
+  "never_in_this_phase": [
+   "connecting real cloud/identity/SaaS accounts (EXT01)",
+   "remote notifications (EXT02)",
+   "production actions or executors (EXT03)",
+   "outside-user testing (EXT04)",
+   "recording human review or approval (EXT05)",
+   "physical GPU/assistive-technology certification claims (EXT06)",
+   "generic shell or arbitrary-URL executors",
+   "investigator access to private scenario truth"
+  ]
+ },
+ "existing_to_new_mapping": {
+  "LP01": {
+   "reuses": [
+    "R04.3 scoped AWS evaluator (apps/server/src/access/aws-policy.ts)",
+    "R04.4 change review",
+    "R03.3 credential aftermath",
+    "MCP dk_access_paths"
+   ],
+   "prior_receipts": [
+    "docs/roadmap/R04-RECEIPT.md",
+    "docs/roadmap/R03-RECEIPT.md"
+   ]
+  },
+  "LP02": {
+   "reuses": [
+    "R03.2 recipes (apps/server/src/recipes.ts)",
+    "R01.5 bounded event search with signed cursors",
+    "R01.2 historical coverage",
+    "R00.2 typed namespaced correlation"
+   ],
+   "prior_receipts": [
+    "docs/roadmap/R03-RECEIPT.md",
+    "docs/roadmap/R01-RECEIPT.md",
+    "docs/roadmap/R00-RECEIPT.md"
+   ]
+  },
+  "LP03": {
+   "reuses": [
+    "@dk/contracts schemas + precompiled validators",
+    "R06.2 surface registry and support levels",
+    "R02.1 connector manifests and capability levels",
+    "R11 support matrix"
+   ],
+   "prior_receipts": [
+    "docs/roadmap/R06-RECEIPT.md",
+    "docs/roadmap/R02-RECEIPT.md",
+    "docs/roadmap/R11-RECEIPT.md"
+   ]
+  },
+  "frozen_evaluation": {
+   "path": "artifacts/completion/evaluation/REPORT.md",
+   "heldout_full_tools_records": "485/534",
+   "heldout_event_tools_records": "534/534",
+   "note": "Context for LP05+ retrieval work only; not re-scored or rewritten."
+  }
+ },
+ "packages": [
+  {
+   "id": "LP00",
+   "milestone": "M0",
+   "title": "Recover baseline and phase boundaries",
+   "depends_on": [],
+   "status": "implemented_locally_verified",
+   "commit": null,
+   "ci_run": null,
+   "receipt": "docs/phases/local-intelligence/receipts/LP00.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "90 files passed, 1 skipped; 626 passed, 1 skipped"
+   }
+  },
+  {
+   "id": "LP01",
+   "milestone": "M0",
+   "title": "Repair scoped permission semantics",
+   "depends_on": [
+    "LP00"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP02",
+   "milestone": "M0",
+   "title": "Harden recipe conclusions and incomplete work",
+   "depends_on": [
+    "LP00"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP03",
+   "milestone": "M0",
+   "title": "Define run provenance and capability contracts",
+   "depends_on": [
+    "LP00"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP04",
+   "milestone": "M1",
+   "title": "Compile local application blueprints",
+   "depends_on": [
+    "LP03"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP05",
+   "milestone": "M1",
+   "title": "Own and isolate the local runtime",
+   "depends_on": [
+    "LP03",
+    "LP04"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP06",
+   "milestone": "M1",
+   "title": "Run instrumented services and independent observers",
+   "depends_on": [
+    "LP05"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP07",
+   "milestone": "M1",
+   "title": "Build a finite scenario and fault DSL",
+   "depends_on": [
+    "LP06"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP08",
+   "milestone": "M2",
+   "title": "Add investigation contracts and obligations",
+   "depends_on": [
+    "LP01",
+    "LP02",
+    "LP03"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP09",
+   "milestone": "M2",
+   "title": "Execute bounded investigation plans",
+   "depends_on": [
+    "LP08"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP10",
+   "milestone": "M2",
+   "title": "Deliver compact evidence and check claims",
+   "depends_on": [
+    "LP09"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP11",
+   "milestone": "M2",
+   "title": "Expose a focused MCP workflow",
+   "depends_on": [
+    "LP10"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP12",
+   "milestone": "M3",
+   "title": "Build the investigation workbench",
+   "depends_on": [
+    "LP08",
+    "LP10",
+    "LP11"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP13",
+   "milestone": "M3",
+   "title": "Add bounded path and change exploration",
+   "depends_on": [
+    "LP01",
+    "LP08"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP14",
+   "milestone": "M3",
+   "title": "Generate reviewable repair candidates",
+   "depends_on": [
+    "LP13"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP15",
+   "milestone": "M3",
+   "title": "Create a local attention queue",
+   "depends_on": [
+    "LP12"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP16",
+   "milestone": "M4",
+   "title": "Render world hierarchy and semantic zoom",
+   "depends_on": [
+    "LP04",
+    "LP12"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP17",
+   "milestone": "M4",
+   "title": "Build six meaningful architectural families",
+   "depends_on": [
+    "LP16"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP18",
+   "milestone": "M4",
+   "title": "Add evidence-linked interiors",
+   "depends_on": [
+    "LP12",
+    "LP16",
+    "LP17"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP19",
+   "milestone": "M4",
+   "title": "Add baseline-versus-repair world comparison",
+   "depends_on": [
+    "LP13",
+    "LP14",
+    "LP18"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP20",
+   "milestone": "M5",
+   "title": "Introduce run-scoped local authority leases",
+   "depends_on": [
+    "LP05",
+    "LP14"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP21",
+   "milestone": "M5",
+   "title": "Execute typed local repairs",
+   "depends_on": [
+    "LP20",
+    "LP06"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP22",
+   "milestone": "M5",
+   "title": "Verify effects independently",
+   "depends_on": [
+    "LP21",
+    "LP07"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP23",
+   "milestone": "M5",
+   "title": "Capture a repair as a replayable regression",
+   "depends_on": [
+    "LP22",
+    "LP19"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP24",
+   "milestone": "M6",
+   "title": "Support a bring-your-agent local investigation",
+   "depends_on": [
+    "LP11",
+    "LP07"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP25",
+   "milestone": "M6",
+   "title": "Separate private truth and admissible-evidence grading",
+   "depends_on": [
+    "LP24"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP26",
+   "milestone": "M6",
+   "title": "Evaluate guided versus current investigation loops",
+   "depends_on": [
+    "LP25",
+    "LP10"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP27",
+   "milestone": "M6",
+   "title": "Exercise adversarial and fault variants",
+   "depends_on": [
+    "LP25",
+    "LP22"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP28",
+   "milestone": "M7",
+   "title": "Package evidence-only and training capsules",
+   "depends_on": [
+    "LP23",
+    "LP25"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP29",
+   "milestone": "M7",
+   "title": "Build a local mission and scenario composer",
+   "depends_on": [
+    "LP07",
+    "LP18",
+    "LP28"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP30",
+   "milestone": "M7",
+   "title": "Measure local robustness and visual usability",
+   "depends_on": [
+    "LP29",
+    "LP27"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  },
+  {
+   "id": "LP31",
+   "milestone": "M7",
+   "title": "Deliver the integrated local phase",
+   "depends_on": [
+    "LP30",
+    "LP26"
+   ],
+   "status": "not_started",
+   "commit": null,
+   "ci_run": null,
+   "receipt": null
+  }
+ ],
+ "requirements": {
+  "LP00-A1": {
+   "package": "LP00",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp00-baseline.test.ts > LP00-A1",
+    "docs/phases/local-intelligence/receipts/LP00.md#recovered-state-lp00-a1"
+   ]
+  },
+  "LP00-A2": {
+   "package": "LP00",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp00-baseline.test.ts > LP00-A2",
+    "scripts/phase-frozen-digests.ts",
+    "docs/phases/local-intelligence/FROZEN_DIGESTS.json"
+   ]
+  },
+  "LP00-A3": {
+   "package": "LP00",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp00-baseline.test.ts > LP00-A3 (4 tests)",
+    "apps/server/src/phase-policy.ts"
+   ]
+  },
+  "LP00-A4": {
+   "package": "LP00",
+   "status": "passed_local",
+   "evidence": [
+    "docs/phases/local-intelligence/receipts/LP00.md#baseline-checks-lp00-a4 (typecheck, 620 tests, fixtures, scenarios, build executed; collector binary and Playwright recorded not_run locally)"
+   ]
+  },
+  "LP01-A1": {
+   "package": "LP01",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP01-A2": {
+   "package": "LP01",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP01-A3": {
+   "package": "LP01",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP01-A4": {
+   "package": "LP01",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP02-A1": {
+   "package": "LP02",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP02-A2": {
+   "package": "LP02",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP02-A3": {
+   "package": "LP02",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP02-A4": {
+   "package": "LP02",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP03-A1": {
+   "package": "LP03",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP03-A2": {
+   "package": "LP03",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP03-A3": {
+   "package": "LP03",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP03-A4": {
+   "package": "LP03",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP04-A1": {
+   "package": "LP04",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP04-A2": {
+   "package": "LP04",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP04-A3": {
+   "package": "LP04",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP04-A4": {
+   "package": "LP04",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP05-A1": {
+   "package": "LP05",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP05-A2": {
+   "package": "LP05",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP05-A3": {
+   "package": "LP05",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP05-A4": {
+   "package": "LP05",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP06-A1": {
+   "package": "LP06",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP06-A2": {
+   "package": "LP06",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP06-A3": {
+   "package": "LP06",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP06-A4": {
+   "package": "LP06",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP07-A1": {
+   "package": "LP07",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP07-A2": {
+   "package": "LP07",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP07-A3": {
+   "package": "LP07",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP07-A4": {
+   "package": "LP07",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP08-A1": {
+   "package": "LP08",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP08-A2": {
+   "package": "LP08",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP08-A3": {
+   "package": "LP08",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP08-A4": {
+   "package": "LP08",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP09-A1": {
+   "package": "LP09",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP09-A2": {
+   "package": "LP09",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP09-A3": {
+   "package": "LP09",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP09-A4": {
+   "package": "LP09",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP10-A1": {
+   "package": "LP10",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP10-A2": {
+   "package": "LP10",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP10-A3": {
+   "package": "LP10",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP10-A4": {
+   "package": "LP10",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP11-A1": {
+   "package": "LP11",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP11-A2": {
+   "package": "LP11",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP11-A3": {
+   "package": "LP11",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP11-A4": {
+   "package": "LP11",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP12-A1": {
+   "package": "LP12",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP12-A2": {
+   "package": "LP12",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP12-A3": {
+   "package": "LP12",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP12-A4": {
+   "package": "LP12",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP13-A1": {
+   "package": "LP13",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP13-A2": {
+   "package": "LP13",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP13-A3": {
+   "package": "LP13",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP13-A4": {
+   "package": "LP13",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP14-A1": {
+   "package": "LP14",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP14-A2": {
+   "package": "LP14",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP14-A3": {
+   "package": "LP14",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP14-A4": {
+   "package": "LP14",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP15-A1": {
+   "package": "LP15",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP15-A2": {
+   "package": "LP15",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP15-A3": {
+   "package": "LP15",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP15-A4": {
+   "package": "LP15",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP16-A1": {
+   "package": "LP16",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP16-A2": {
+   "package": "LP16",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP16-A3": {
+   "package": "LP16",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP16-A4": {
+   "package": "LP16",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP17-A1": {
+   "package": "LP17",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP17-A2": {
+   "package": "LP17",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP17-A3": {
+   "package": "LP17",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP17-A4": {
+   "package": "LP17",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP18-A1": {
+   "package": "LP18",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP18-A2": {
+   "package": "LP18",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP18-A3": {
+   "package": "LP18",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP18-A4": {
+   "package": "LP18",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP19-A1": {
+   "package": "LP19",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP19-A2": {
+   "package": "LP19",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP19-A3": {
+   "package": "LP19",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP19-A4": {
+   "package": "LP19",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP20-A1": {
+   "package": "LP20",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP20-A2": {
+   "package": "LP20",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP20-A3": {
+   "package": "LP20",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP20-A4": {
+   "package": "LP20",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP21-A1": {
+   "package": "LP21",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP21-A2": {
+   "package": "LP21",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP21-A3": {
+   "package": "LP21",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP21-A4": {
+   "package": "LP21",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP22-A1": {
+   "package": "LP22",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP22-A2": {
+   "package": "LP22",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP22-A3": {
+   "package": "LP22",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP22-A4": {
+   "package": "LP22",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP23-A1": {
+   "package": "LP23",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP23-A2": {
+   "package": "LP23",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP23-A3": {
+   "package": "LP23",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP23-A4": {
+   "package": "LP23",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP24-A1": {
+   "package": "LP24",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP24-A2": {
+   "package": "LP24",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP24-A3": {
+   "package": "LP24",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP24-A4": {
+   "package": "LP24",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP25-A1": {
+   "package": "LP25",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP25-A2": {
+   "package": "LP25",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP25-A3": {
+   "package": "LP25",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP25-A4": {
+   "package": "LP25",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP26-A1": {
+   "package": "LP26",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP26-A2": {
+   "package": "LP26",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP26-A3": {
+   "package": "LP26",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP26-A4": {
+   "package": "LP26",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP27-A1": {
+   "package": "LP27",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP27-A2": {
+   "package": "LP27",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP27-A3": {
+   "package": "LP27",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP27-A4": {
+   "package": "LP27",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP28-A1": {
+   "package": "LP28",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP28-A2": {
+   "package": "LP28",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP28-A3": {
+   "package": "LP28",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP28-A4": {
+   "package": "LP28",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP29-A1": {
+   "package": "LP29",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP29-A2": {
+   "package": "LP29",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP29-A3": {
+   "package": "LP29",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP29-A4": {
+   "package": "LP29",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP30-A1": {
+   "package": "LP30",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP30-A2": {
+   "package": "LP30",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP30-A3": {
+   "package": "LP30",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP30-A4": {
+   "package": "LP30",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP31-A1": {
+   "package": "LP31",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP31-A2": {
+   "package": "LP31",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP31-A3": {
+   "package": "LP31",
+   "status": "not_run",
+   "evidence": []
+  },
+  "LP31-A4": {
+   "package": "LP31",
+   "status": "not_run",
+   "evidence": []
+  }
+ },
+ "deferrals": [
+  {
+   "id": "EXT01",
+   "topic": "Real cloud/identity/SaaS accounts",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT02",
+   "topic": "Remote notifications",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT03",
+   "topic": "Production response",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT04",
+   "topic": "Outside users",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT05",
+   "topic": "Human semantic review",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT06",
+   "topic": "Manual accessibility and physical GPUs",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT07",
+   "topic": "Paid/new model provider",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT08",
+   "topic": "Federation/team storage",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT09",
+   "topic": "Merge/deploy/release administration",
+   "status": "deferred_by_owner"
+  }
+ ],
+ "decisions": [
+  {
+   "id": "D-LP00-1",
+   "date": "2026-10-23",
+   "decision": "Phase package copied into docs/phases/local-intelligence/package and fingerprinted, so the spec cannot drift silently and CI can read contracts/fixtures."
+  },
+  {
+   "id": "D-LP00-2",
+   "date": "2026-10-23",
+   "decision": "Runtime policy is computed from actual server configuration and exposed in /api/capabilities (runtime_policy); it authorizes nothing."
+  },
+  {
+   "id": "D-LP00-3",
+   "date": "2026-10-23",
+   "decision": "eval/src/v2/run.ts BudgetLedger(5) is historical; no phase model run may use it. Any LP24+ run needs a new ledger capped by the phase budget ($3.00 total)."
+  }
+ ],
+ "model_spend_usd": {
+  "phase_cap": 3.0,
+  "spent": 0.0,
+  "runs": []
+ },
+ "next_action": null
+}

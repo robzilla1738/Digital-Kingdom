@@ -1,0 +1,201 @@
+{
+  "algorithm": "sha256",
+  "scope": "All delivered files except this manifest and the generated validation report; integrity check, not signature or independent approval.",
+  "files": [
+    {
+      "path": "00_START_HERE.md",
+      "size": 3369,
+      "sha256": "15de6da048bdaa86c9745f763a9e65a1decdd1a5ad7fdea70ff62d7dae369978"
+    },
+    {
+      "path": "01_PHASE_SPEC.md",
+      "size": 33239,
+      "sha256": "883e829ebf0076429cf2bd952e17ff73ac9aae8de2d5656748b3ad07efabf3fc"
+    },
+    {
+      "path": "02_AGENT_HANDOFF.md",
+      "size": 5314,
+      "sha256": "519dac042a1db90ff4c530d4f4b7e5263998bd12250e07d843cd72846e110f98"
+    },
+    {
+      "path": "03_IMPLEMENTATION_BACKLOG.md",
+      "size": 44746,
+      "sha256": "dcbefc645e2eb4d36f4fe18d8d90fb9201b65a45484724136264fa36f3d4e708"
+    },
+    {
+      "path": "04_AI_LOOP_AND_EVALUATION.md",
+      "size": 12052,
+      "sha256": "ba92465973901101da55aa6b23400a00fd0852cc7c38d88fc7ffc0eb52d035e4"
+    },
+    {
+      "path": "05_CASTLE_WORLD_SPEC.md",
+      "size": 10500,
+      "sha256": "e77277d9282fb19dd1e93e6590f47460a56899b965f3a345c74df9c749b240d6"
+    },
+    {
+      "path": "06_SECURITY_AND_AUTHORITY.md",
+      "size": 6511,
+      "sha256": "68f3597a98d1192320ca232fe51f5b4f2c4215f65224422fbb53d3818b1f3edd"
+    },
+    {
+      "path": "07_CONTRACTS_AND_COMPATIBILITY.md",
+      "size": 6971,
+      "sha256": "596b2f3e012f7871919cd7fbe7e8c0baad80db03f29bf345d055ac21c07657d0"
+    },
+    {
+      "path": "ACCEPTANCE.json",
+      "size": 31220,
+      "sha256": "54d789f7c1a2f66dca49ba2c243e6205a9cf43667f467479c594ce9d6d584ac3"
+    },
+    {
+      "path": "BACKLOG.json",
+      "size": 62117,
+      "sha256": "6c7b5bc75caea386c4afc7bae7284960c511ea976b0b2a42141c571ec14af38e"
+    },
+    {
+      "path": "CONTINUE_PROMPT.md",
+      "size": 933,
+      "sha256": "c48db447f0fa3db9800f917dd6e54a5cd5ae7eb6db2843a61c13680bffdeb546"
+    },
+    {
+      "path": "CURRENT_MAIN_BASELINE.json",
+      "size": 3762,
+      "sha256": "9b82cb0e6a55aba52ccb80068239b744a7f607e9eb19244cbcd7faf6b0976276"
+    },
+    {
+      "path": "DEFERRALS.json",
+      "size": 3118,
+      "sha256": "430c40a343705d3d50d3f330e98b0ed65742712769e7c6b2974909ea4d19c1ff"
+    },
+    {
+      "path": "MASTER_PROMPT.md",
+      "size": 2593,
+      "sha256": "509cca9281c30f0218512732c36a55487cb5e63ccc9b65737ff4a8a949f9eec6"
+    },
+    {
+      "path": "SCENARIOS.json",
+      "size": 31310,
+      "sha256": "057fea9567f62c4250628c0ad036df0d78a89f03c7165759ca4404d1ffb17e6e"
+    },
+    {
+      "path": "SCENARIO_CATALOG.md",
+      "size": 17155,
+      "sha256": "4ec7ae82262d33e117fdd671d433d2f3795ac8b5a5f6dc48defff41de2568f0c"
+    },
+    {
+      "path": "SOURCES.json",
+      "size": 6433,
+      "sha256": "16e406bb5b731897c6fc08953d6abca79577c8df5b073df035d070864c4d2203"
+    },
+    {
+      "path": "SOURCES.md",
+      "size": 4729,
+      "sha256": "fefd68d87ab50cc53ec0c785b848560c186fa092bb7cee79a6ae1e022bff0f60"
+    },
+    {
+      "path": "contracts/conclusion.schema.json",
+      "size": 4015,
+      "sha256": "d2b606fb4b6ec2746cdaf84d6aca59d8ed4fb5eaf1cf8a217189591ff7ae0c18"
+    },
+    {
+      "path": "contracts/investigation-contract.schema.json",
+      "size": 3766,
+      "sha256": "64603ed184b5cbce1009fb8b4a47115e3131358079ca9e3383821798b1e6fe8e"
+    },
+    {
+      "path": "contracts/repair-plan.schema.json",
+      "size": 3796,
+      "sha256": "534ed1049b54a0fd95fcdf22c0cc341b686b770ae563321f4a2c3c1e39634222"
+    },
+    {
+      "path": "contracts/verification-receipt.schema.json",
+      "size": 3237,
+      "sha256": "d563b00f395069078137aa3ea1f3afc4eda3dec6dda8cbf4f35e9398ac051dc7"
+    },
+    {
+      "path": "contracts/world-plan.schema.json",
+      "size": 3619,
+      "sha256": "31c7f25d7bec7ab23f2a9c9df602e9d7bc24da821f5b7cc36312c4d4145cdf84"
+    },
+    {
+      "path": "examples/conclusion.json",
+      "size": 724,
+      "sha256": "076dba6a998606120a0b2ec6e9088770a1501c2398a9ae876da30f18b5ff7372"
+    },
+    {
+      "path": "examples/invalid-contracts.json",
+      "size": 11977,
+      "sha256": "369ef6c6e3573e2fc0758f87b3f90dfcbb2d29f0491df714bb4a616648ef5277"
+    },
+    {
+      "path": "examples/invalid-semantics.json",
+      "size": 6458,
+      "sha256": "b75075f4fbf37d918483de21945c2041ccb590202bcdbbd884b909808b03eea0"
+    },
+    {
+      "path": "examples/investigation-contract.json",
+      "size": 1079,
+      "sha256": "67729a6f1899155ae162e8e1ceb82f259d0e9ae75bfc03bfbee007ca583bc18e"
+    },
+    {
+      "path": "examples/repair-plan.json",
+      "size": 832,
+      "sha256": "29f1a13f33ea8fb7a833e7ea7e986cfb858d6956c2be0a46f0323aa9bc852de1"
+    },
+    {
+      "path": "examples/verification-receipt.json",
+      "size": 991,
+      "sha256": "5992536edbb352117a37eb6a04eaa40d73716d5e710badc3bca010351652d458"
+    },
+    {
+      "path": "examples/world-plan.json",
+      "size": 1065,
+      "sha256": "b7cd669de3e928653253295843479906d8bcbb8a6d42ba820e769befaebea754"
+    },
+    {
+      "path": "prompts/M0.md",
+      "size": 6164,
+      "sha256": "eb9137533a6333be18df48bcbf06c723a0278298c3a3ef72c05c1daaa51cec1e"
+    },
+    {
+      "path": "prompts/M1.md",
+      "size": 6108,
+      "sha256": "ee899e0c1c89222b555ae364cd6e6e07bcc07a4798d830831002a5cfe618dce4"
+    },
+    {
+      "path": "prompts/M2.md",
+      "size": 5834,
+      "sha256": "7dcd1fc5d95fe1f8184c9ff6ca0dc38589d7e64c3d0e2793a614db9d3918ddaa"
+    },
+    {
+      "path": "prompts/M3.md",
+      "size": 5710,
+      "sha256": "da4875a0f7f2faa1e2abdc1883bf3acb40bd967bb173ddcfce32017e6307776e"
+    },
+    {
+      "path": "prompts/M4.md",
+      "size": 5809,
+      "sha256": "ed2304a9ee1a2019fa56f8bead92dfe7eccd5028626d5d308dc4921f37923062"
+    },
+    {
+      "path": "prompts/M5.md",
+      "size": 5671,
+      "sha256": "6560b54e05e809d761ac96fa54aa1f6e60b200ae498aca474e364a5b4edac379"
+    },
+    {
+      "path": "prompts/M6.md",
+      "size": 5976,
+      "sha256": "2bbc3ae724735a849a6ceca8d3e548dd11c1b0035f1fc4aa553d0dfd461824c5"
+    },
+    {
+      "path": "prompts/M7.md",
+      "size": 6097,
+      "sha256": "cb73fd8f5cc06edf310c0d29c3637085c6f1a27df21bcb5f85e898a3adede673"
+    },
+    {
+      "path": "tools/validate_handoff.py",
+      "size": 7941,
+      "sha256": "77809b41fab1bf1030ade3f739c5476a7c080a7d9c1cb6bf4e25b579ea14cffb"
+    }
+  ]
+}

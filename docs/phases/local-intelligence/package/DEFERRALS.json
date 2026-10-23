@@ -1,0 +1,79 @@
+{
+  "schema": "dk.local_phase.deferrals.v1",
+  "phase_blocking": false,
+  "policy": "These gates constrain claims and actions, not independent local development. Do not mark them passed or repeatedly stop the phase requesting them.",
+  "items": [
+    {
+      "id": "EXT01",
+      "topic": "Real cloud/identity/SaaS accounts",
+      "decision": "No account connection or infrastructure credential required.",
+      "future_condition": "Owner-authorized provider/environment scope and separate later verification.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    },
+    {
+      "id": "EXT02",
+      "topic": "Remote notifications",
+      "decision": "No Slack, email or remote webhook setup. Local inbox/test receiver only.",
+      "future_condition": "An approved destination and privacy policy.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    },
+    {
+      "id": "EXT03",
+      "topic": "Production response",
+      "decision": "No production executor or live remediation.",
+      "future_condition": "Separate deployment-specific authority, controls and verification.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    },
+    {
+      "id": "EXT04",
+      "topic": "Outside users",
+      "decision": "No recruitment or user-demand claim.",
+      "future_condition": "Later actual participants and consented tasks.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    },
+    {
+      "id": "EXT05",
+      "topic": "Human semantic review",
+      "decision": "Existing review packets stay pending; AI critique separately labeled.",
+      "future_condition": "A real reviewer with recorded scope and decisions.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    },
+    {
+      "id": "EXT06",
+      "topic": "Manual accessibility and physical GPUs",
+      "decision": "Automated checks still run; no certification claim.",
+      "future_condition": "Actual assistive technology, people and named hardware.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    },
+    {
+      "id": "EXT07",
+      "topic": "Paid/new model provider",
+      "decision": "Scripted mode and existing authorized agent mode are default.",
+      "future_condition": "Fresh route/model/data/budget approval; old $5 authorization not inherited.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    },
+    {
+      "id": "EXT08",
+      "topic": "Federation/team storage",
+      "decision": "Do not add complexity without observed need.",
+      "future_condition": "Measured workload or future multi-environment scope.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    },
+    {
+      "id": "EXT09",
+      "topic": "Merge/deploy/release administration",
+      "decision": "No implicit GitHub settings changes, public deployment or merge.",
+      "future_condition": "Separate applicable owner authorization.",
+      "status": "deferred_by_owner",
+      "blocks_local_engineering": false
+    }
+  ]
+}

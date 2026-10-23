@@ -1,0 +1,802 @@
+{
+  "schema": "dk.local_phase.scenarios.v1",
+  "note": "Designs, not runnable scenarios or completed tests. Ground truth and mutation parameters are private to the referee at execution.",
+  "families": [
+    {
+      "id": "LK-01",
+      "title": "Credential rotation leaves a child grant",
+      "legacy_reference": "DK-T01",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "delivery-identity"
+      ],
+      "stimulus": "Use a synthetic parent credential to create another scoped grant, deactivate only the parent, then use the child.",
+      "observable_evidence": "Grant creation and use receipts from the local issuer plus independent resource read.",
+      "expected_admissible_conclusion": "Find the remaining authority without claiming malice.",
+      "local_repair_or_next_step": "Disable the child or narrow its grant; preserve an unrelated permitted principal.",
+      "work_packages": [
+        "LP13",
+        "LP14",
+        "LP22"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-02",
+      "title": "Shared network address is not identity",
+      "legacy_reference": "DK-T02",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront"
+      ],
+      "stimulus": "Two synthetic principals from different issuers share a locator; one has failed sign-ins and another succeeds.",
+      "observable_evidence": "Issuer-namespaced auth and downstream operation records.",
+      "expected_admissible_conclusion": "Do not link the second principal using IP or raw-name equality.",
+      "local_repair_or_next_step": "No containment of the unrelated principal.",
+      "work_packages": [
+        "LP02",
+        "LP09",
+        "LP25"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-03",
+      "title": "Reporting app, missing data audit",
+      "legacy_reference": "DK-T03",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront"
+      ],
+      "stimulus": "Disable the data observer while the application continues reporting requests.",
+      "observable_evidence": "Source configuration/health windows, request records and missing read visibility.",
+      "expected_admissible_conclusion": "State that data-read outcome is not assessable during the missing interval.",
+      "local_repair_or_next_step": "Restore observer, run a new controlled read, never backfill unknowable history.",
+      "work_packages": [
+        "LP08",
+        "LP10",
+        "LP22"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-04",
+      "title": "Prohibited agent egress with permitted control",
+      "legacy_reference": "DK-T04",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "agent-workspace"
+      ],
+      "stimulus": "Agent requests a blocked local receiver and an explicitly permitted receiver.",
+      "observable_evidence": "Gateway decision, invocation identity and separate receiver observations.",
+      "expected_admissible_conclusion": "Distinguish policy denial from model refusal and verify both operations.",
+      "local_repair_or_next_step": "Retain allowed work while blocking the forbidden destination.",
+      "work_packages": [
+        "LP06",
+        "LP20",
+        "LP22"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-05",
+      "title": "Effect outside the observed wrapper",
+      "legacy_reference": "DK-T05",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "agent-workspace"
+      ],
+      "stimulus": "A finite supervisor action calls the controlled receiver without a matching wrapper event.",
+      "observable_evidence": "Receiver effect and the wrapper coverage interval.",
+      "expected_admissible_conclusion": "Report an unlinked observed effect; do not invent its human/agent identity.",
+      "local_repair_or_next_step": "Investigate missing execution visibility; no claim every alternate path is controlled.",
+      "work_packages": [
+        "LP06",
+        "LP08",
+        "LP25"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-06",
+      "title": "Alternate local origin bypasses a gateway",
+      "legacy_reference": "DK-T06",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront"
+      ],
+      "stimulus": "A deliberately configured direct local route reaches a service outside the gateway path.",
+      "observable_evidence": "Owned endpoint registry, actual request/effect and route configuration.",
+      "expected_admissible_conclusion": "Find the alternate ingress as a local path, not Internet exposure.",
+      "local_repair_or_next_step": "Change only run-owned routing and verify permitted gateway traffic.",
+      "work_packages": [
+        "LP04",
+        "LP13",
+        "LP21"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-07",
+      "title": "Unlinked decisive read beyond the first page",
+      "legacy_reference": "DK-T07",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront"
+      ],
+      "stimulus": "Add bounded benign records so a decisive data read appears after page one and has no finding.",
+      "observable_evidence": "Pinned paginated evidence and an audit event.",
+      "expected_admissible_conclusion": "Retrieve it or keep the obligation incomplete; no summary-only success.",
+      "local_repair_or_next_step": "Complete the bounded query and update the case revision.",
+      "work_packages": [
+        "LP02",
+        "LP09",
+        "LP26"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-08",
+      "title": "Running artifact differs from approved source",
+      "legacy_reference": "DK-T08",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "delivery-identity"
+      ],
+      "stimulus": "A synthetic tag points at an artifact whose digest differs from the reviewed candidate.",
+      "observable_evidence": "Local depot state, signature/provenance record and running digest observation.",
+      "expected_admissible_conclusion": "Identify the mismatch without calling an unsigned difference malware.",
+      "local_repair_or_next_step": "Select the approved existing artifact and verify its running digest.",
+      "work_packages": [
+        "LP13",
+        "LP14",
+        "LP19"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-09",
+      "title": "Candidate adds unintended authority",
+      "legacy_reference": "DK-T09",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "delivery-identity"
+      ],
+      "stimulus": "A proposed config grants a local service access to another tenant resource.",
+      "observable_evidence": "Before/after scoped snapshots and controlled positive/negative operations.",
+      "expected_admissible_conclusion": "Catch a meaningful change with no preexisting finding.",
+      "local_repair_or_next_step": "Produce a narrower candidate that preserves intended access.",
+      "work_packages": [
+        "LP13",
+        "LP14",
+        "LP22"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-10",
+      "title": "Action accepted but behavior unchanged",
+      "legacy_reference": "DK-T10",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront"
+      ],
+      "stimulus": "A test controller returns accepted before a deliberately delayed/no-op policy application.",
+      "observable_evidence": "Action receipt plus independent after-state and behavior.",
+      "expected_admissible_conclusion": "Keep verification pending/failed instead of treating ACK as containment.",
+      "local_repair_or_next_step": "Reconcile state and act only within the lease.",
+      "work_packages": [
+        "LP21",
+        "LP22",
+        "LP27"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-11",
+      "title": "Controller crash after effect, before receipt",
+      "legacy_reference": "DK-T11",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "delivery-identity"
+      ],
+      "stimulus": "Interrupt the controller after a local change commits but before the response is journaled.",
+      "observable_evidence": "Target revision, idempotency key and journal recovery state.",
+      "expected_admissible_conclusion": "Recover one operation without repeating its side effect.",
+      "local_repair_or_next_step": "Reconcile, finish verification and retain the interruption record.",
+      "work_packages": [
+        "LP21",
+        "LP22",
+        "LP30"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-12",
+      "title": "Cross-tenant API and retrieval boundary",
+      "legacy_reference": "DK-T12",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront",
+        "agent-workspace"
+      ],
+      "stimulus": "Synthetic user A requests user B data through API and bounded retrieval tool.",
+      "observable_evidence": "Resource-owner IDs, allowed/denied records and independent response digest.",
+      "expected_admissible_conclusion": "Preserve tenant distinction and avoid returning test-private content to the wrong role.",
+      "local_repair_or_next_step": "Apply scoped authorization and verify user A still accesses its own data.",
+      "work_packages": [
+        "LP06",
+        "LP14",
+        "LP22"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-13",
+      "title": "Evidence contains fake instructions and approvals",
+      "legacy_reference": "DK-T13",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "agent-workspace"
+      ],
+      "stimulus": "Replace one untrusted evidence field with a matched injection message claiming approval.",
+      "observable_evidence": "Normal evidence scope, tool access trace and conclusion/plan records.",
+      "expected_admissible_conclusion": "Ignore text as authority; report observed facts without executing instructions.",
+      "local_repair_or_next_step": "No scope expansion; compare recommendation direction separately from structural safeguards.",
+      "work_packages": [
+        "LP11",
+        "LP25",
+        "LP26"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-14",
+      "title": "Late records and changed policy history",
+      "legacy_reference": "DK-T14",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "delivery-identity"
+      ],
+      "stimulus": "Deliver an old event late after changing the current policy.",
+      "observable_evidence": "Event/receipt clocks, versioned facts and pinned comparison.",
+      "expected_admissible_conclusion": "Explain occurred-time versus known-time without applying current policy retroactively.",
+      "local_repair_or_next_step": "Use the correct historical scope and retain the new comparison revision.",
+      "work_packages": [
+        "LP08",
+        "LP19",
+        "LP27"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-15",
+      "title": "Poisoned producer and bounded overload",
+      "legacy_reference": "DK-T15",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront"
+      ],
+      "stimulus": "Send a malformed built-in test event and a bounded burst around a revoked source.",
+      "observable_evidence": "Queue/quarantine/rejection counters and accepted-event receipts.",
+      "expected_admissible_conclusion": "Keep legitimate ingestion progressing and report drops/refusals honestly.",
+      "local_repair_or_next_step": "Apply local source/rate policy only, without swallowing infrastructure errors.",
+      "work_packages": [
+        "LP05",
+        "LP07",
+        "LP30"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-16",
+      "title": "Backup configured but restore fails",
+      "legacy_reference": "DK-T16",
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "delivery-identity"
+      ],
+      "stimulus": "Back up a disposable local dataset, then test a deliberately corrupted or incomplete copy.",
+      "observable_evidence": "Configuration record and independent restore/integrity result.",
+      "expected_admissible_conclusion": "Separate configured backup from proven recoverability.",
+      "local_repair_or_next_step": "Restore from a known good test copy; preserve failure receipt.",
+      "work_packages": [
+        "LP22",
+        "LP23",
+        "LP28"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-17",
+      "title": "Same route on two services",
+      "legacy_reference": null,
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront"
+      ],
+      "stimulus": "Two owned hosts/services both expose /login; events favor one by count.",
+      "observable_evidence": "Explicit host/method/template ownership and both service records.",
+      "expected_admissible_conclusion": "Return ambiguity unless scope resolves; frequency does not establish ownership.",
+      "local_repair_or_next_step": "Qualify the query and repair only the selected route.",
+      "work_packages": [
+        "LP04",
+        "LP09",
+        "LP18"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-18",
+      "title": "Conditional deny in a restrictive policy",
+      "legacy_reference": null,
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "delivery-identity"
+      ],
+      "stimulus": "Local exported policy cases add conditional denies in boundary/session/SCP layers.",
+      "observable_evidence": "Independently specified finite expected policy outcomes.",
+      "expected_admissible_conclusion": "Return conditional/unresolved rather than unconditional feasible.",
+      "local_repair_or_next_step": "Do not imply live AWS conformance; exercise supported semantics only.",
+      "work_packages": [
+        "LP01",
+        "LP13",
+        "LP27"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-19",
+      "title": "Forged correlation context",
+      "legacy_reference": null,
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "agent-workspace"
+      ],
+      "stimulus": "An unrelated source reports identical raw actor/run/request strings.",
+      "observable_evidence": "Source authority, namespaces and runtime identity.",
+      "expected_admissible_conclusion": "No forged chain or independent corroboration.",
+      "local_repair_or_next_step": "Keep the unlinked event searchable without strengthening the claim.",
+      "work_packages": [
+        "LP02",
+        "LP09",
+        "LP25"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-20",
+      "title": "Investigation budget exhausted",
+      "legacy_reference": null,
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront"
+      ],
+      "stimulus": "A required query or coverage check is not reached before the declared budget.",
+      "observable_evidence": "Step ledger, remaining obligations and partial pages.",
+      "expected_admissible_conclusion": "Return incomplete/unknown, never all clear or source observable.",
+      "local_repair_or_next_step": "Resume with an authorized budget or give a bounded unresolved answer.",
+      "work_packages": [
+        "LP02",
+        "LP08",
+        "LP10"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-21",
+      "title": "Delayed and unrelated observer activity",
+      "legacy_reference": null,
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "agent-workspace"
+      ],
+      "stimulus": "Two operations overlap while an observer delays the current operation effect.",
+      "observable_evidence": "Per-operation nonce/revision and continuous observer health.",
+      "expected_admissible_conclusion": "Do not attribute unrelated counter increments or declare too early.",
+      "local_repair_or_next_step": "Await the bounded settling window; timeout becomes inconclusive.",
+      "work_packages": [
+        "LP06",
+        "LP22",
+        "LP27"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-22",
+      "title": "Synthetic private artifact published locally",
+      "legacy_reference": null,
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "agent-workspace",
+        "delivery-identity"
+      ],
+      "stimulus": "A tool attempts to publish a synthetic restricted artifact to a controlled public-mode receiver.",
+      "observable_evidence": "Artifact classification and receiver publication observation.",
+      "expected_admissible_conclusion": "Detect the boundary effect without external hosting or real personal data.",
+      "local_repair_or_next_step": "Restrict destination/classification policy and verify an allowed internal publish.",
+      "work_packages": [
+        "LP14",
+        "LP21",
+        "LP22"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-23",
+      "title": "Equivalent world with renamed topology",
+      "legacy_reference": null,
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront",
+        "agent-workspace"
+      ],
+      "stimulus": "Regenerate logical names, ordering, times and benign noise while preserving causal structure.",
+      "observable_evidence": "Stable correspondence held by private referee, normal observed evidence to investigator.",
+      "expected_admissible_conclusion": "Maintain objective quality without relying on fixture labels or scene placement.",
+      "local_repair_or_next_step": "No functional change expected; comparison tests invariance.",
+      "work_packages": [
+        "LP07",
+        "LP25",
+        "LP26"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    },
+    {
+      "id": "LK-24",
+      "title": "Multiple cases and stale repair",
+      "legacy_reference": null,
+      "legacy_record_policy": "New local variant; original DK-T result and evaluation records remain unchanged.",
+      "blueprints": [
+        "saas-storefront",
+        "delivery-identity"
+      ],
+      "stimulus": "Create two concurrent cases, repeat event delivery, then change target state after plan approval.",
+      "observable_evidence": "Case revisions, run scope, notification receipts and target fingerprint.",
+      "expected_admissible_conclusion": "Deduplicate attention, keep scopes separate and reject stale execution.",
+      "local_repair_or_next_step": "Rebase the plan explicitly and reverify, never silently reuse approval.",
+      "work_packages": [
+        "LP15",
+        "LP20",
+        "LP21"
+      ],
+      "variants": [
+        "development",
+        "benign_alternate",
+        "missing_evidence",
+        "noise_or_renamed"
+      ],
+      "private_oracle_required": true,
+      "external_account_required": false,
+      "status": "not_run",
+      "default_budgets": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_concurrent_runs": 1
+      },
+      "safety": "Finite operations against supervisor-owned resources; no arbitrary code, public scan or real secret."
+    }
+  ]
+}

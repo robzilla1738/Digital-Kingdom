@@ -34,6 +34,7 @@ import { accessPaths, type AuthSnapshot } from "./access/aws-policy.ts";
 import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
 import { verifyIdToken, type OidcConfig } from "./oidc.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
+import { runtimePolicy } from "./phase-policy.ts";
 
 export interface AppConfig {
   store: Store;
@@ -730,6 +731,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     budgets: { search_limit_max: 100, search_window_days_max: 31, recipe_queries_max: 12, case_changes_page: 50 },
     delivery: { incremental: "poll /cases/changes with next_since every poll_after_seconds", push: "not supported" },
     transports: ["stdio MCP (local)"], remote_mcp: "not offered",
+    runtime_policy: runtimePolicy({ planner: cfg.planner, assistant: cfg.assistant, githubToken: cfg.githubToken ?? process.env.DK_GITHUB_TOKEN, db: store.db }),
   }));
   app.get("/api/projects/:p/cases", { preHandler: authed() }, async (req) => ({ cases: cases.list(store.require(req.principal!, P(req), "viewer").id) }));
   app.post("/api/projects/:p/cases", { preHandler: authed("analyst") }, async (req) => {

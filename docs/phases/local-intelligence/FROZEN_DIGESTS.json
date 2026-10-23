@@ -1,0 +1,67 @@
+{
+ "schema": "dk.local_phase.frozen_digests.v1",
+ "recorded_at_head": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+ "method": "sha256 over sorted '<path>\\0<sha256(bytes)>' lines of git-tracked files",
+ "trees": [
+  {
+   "path": "artifacts/completion",
+   "files": 45,
+   "sha256": "fa9bd06dbc17d4608edf44511fb5032dcbbfcf0fcce57f4dfb57e00bb10c961f"
+  },
+  {
+   "path": "artifacts/eval-v2",
+   "files": 1,
+   "sha256": "dd3dae627f39d4cbf4a5e878446368050089901f9f22d2f94b0c3301c9939037"
+  },
+  {
+   "path": "artifacts/redesign",
+   "files": 301,
+   "sha256": "4ae0e4d17c3a24a74a1a14f8fa54307c0fdd39bc9330aa09381aa6e88e97377c"
+  },
+  {
+   "path": "eval/runs",
+   "files": 101,
+   "sha256": "d6271e03ea09061375e96541cb64653f4e660f17468f01efb95f437b5474eb4f"
+  },
+  {
+   "path": "eval/grading",
+   "files": 16,
+   "sha256": "0589caeb62640b884fc963586cfb3bb8a5ff9d4c4d2c31fc8cec755408a42c42"
+  },
+  {
+   "path": "eval/review",
+   "files": 5,
+   "sha256": "adab0e31be2b842dc3ea822de7a1e9a8187ad1a36f20b09768955c03c8c8787e"
+  },
+  {
+   "path": "eval/scenarios",
+   "files": 16,
+   "sha256": "e3d4e4a6eb0115162ecc48a015e5a94e5d6a12ba9472a8c38141acd9e5a2f118"
+  },
+  {
+   "path": "docs/roadmap",
+   "files": 35,
+   "sha256": "530b26fe1b72abce1a05492aca2d6130315c20f67389812e2245a62e33fcbd2f"
+  },
+  {
+   "path": "docs/quality",
+   "files": 1,
+   "sha256": "9f31922409790b48505c3acc7226cbe4477b9676a522795121546543931fce64"
+  },
+  {
+   "path": "docs/AGENT_EVAL_RESULTS.md",
+   "files": 1,
+   "sha256": "ebc65d8c5c2c5b5573e909dcb25aecc9d5f7a144c25d54ff3949a5e7588087d0"
+  },
+  {
+   "path": "docs/PILOT_RESULTS.md",
+   "files": 1,
+   "sha256": "396b60175bcc01e5123d31e83a499e9aa34501c860dec8c35b2f6d991e4c07c9"
+  },
+  {
+   "path": "docs/phases/local-intelligence/package",
+   "files": 41,
+   "sha256": "46e873463d1c65a1838c32d2d8eef41184adda83ca15859497af91ebf9ee514b"
+  }
+ ]
+}

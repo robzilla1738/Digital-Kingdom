@@ -1,0 +1,25 @@
+{
+  "schema": "dk.local.conclusion.proposed.v1",
+  "case_id": "case-example",
+  "run_id": "run-example",
+  "contract_revision": 1,
+  "claims": [
+    {
+      "id": "claim-1",
+      "type": "unresolved",
+      "text": "The effect during the observer outage is not assessable from these records.",
+      "evidence_refs": [],
+      "coverage_refs": [
+        "coverage-gap-example"
+      ],
+      "obligation_ids": [
+        "effect-coverage"
+      ],
+      "uncertainty": "A recording gap is not proof that no operation occurred."
+    }
+  ],
+  "status": "unresolved",
+  "semantic_review": "not_reviewed",
+  "scope_note": "Illustrative proposal; no real investigation was performed.",
+  "requested_next_step": "retrieve_more"
+}

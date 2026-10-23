@@ -1,0 +1,30 @@
+{
+  "schema": "dk.local.repair_plan.proposed.v1",
+  "plan_id": "repair-example",
+  "run_id": "run-example",
+  "case_id": "case-example",
+  "baseline_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "candidate_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "actions": [
+    {
+      "id": "action-1",
+      "target_resource_id": "gateway",
+      "type": "set_gateway_policy",
+      "parameters": {
+        "policy_ref": "policy-candidate"
+      },
+      "expected_target_revision": "revision-1"
+    }
+  ],
+  "verification_test_ids": [
+    "test-prohibited"
+  ],
+  "positive_control_ids": [
+    "test-permitted"
+  ],
+  "residual_unknowns": [
+    "Other tool servers are outside this example scope."
+  ],
+  "authority": "plan_only",
+  "expires_at": "2026-10-23T10:30:00Z"
+}
