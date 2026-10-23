@@ -124,7 +124,7 @@
    "title": "Recover baseline and phase boundaries",
    "depends_on": [],
    "status": "implemented_locally_verified",
-   "commit": null,
+   "commit": "9c0aec5",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP00.md",
    "local_checks": {
@@ -139,10 +139,34 @@
    "depends_on": [
     "LP00"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP01.md",
+   "before": {
+    "commit": "9c0aec5 (evaluator source identical to 9fec7ed)",
+    "failed": 12,
+    "of": 16,
+    "failing_tests": [
+     "LP01-A1 conditional denies in every restrictive layer > permission boundary conditional deny -> conditional (was feasible)",
+     "LP01-A1 conditional denies in every restrictive layer > session policy conditional deny -> conditional (was feasible)",
+     "LP01-A1 conditional denies in every restrictive layer > service control policy conditional deny -> conditional (was feasible)",
+     "LP01-A1 conditional denies in every restrictive layer > a conditional deny on a role-assumption hop makes the path conditional",
+     "LP01-A2 precedence: definite denies block, missing inputs never become feasible > missing controlling inputs are unresolved, including an unstated resource policy",
+     "LP01-A3 unsupported constructs and case-sensitive resource identifiers > Resource matching is case-sensitive; action matching is not",
+     "LP01-A3 unsupported constructs and case-sensitive resource identifiers > NotPrincipal, policy variables and unknown statement keys are unsupported and never produce feasible",
+     "LP01-A3 unsupported constructs and case-sensitive resource identifiers > an unsupported allow cannot be dropped into a confident implicit-deny block",
+     "LP01-A3 unsupported constructs and case-sensitive resource identifiers > every decision names the evaluator version and its declared limits",
+     "LP01-A4 one authoritative decision across API, change review, aftermath and MCP > paths API, change review and aftermath expose the same decision and evidence",
+     "LP01-A4 one authoritative decision across API, change review, aftermath and MCP > credential aftermath reports the same decision for a surviving descendant key",
+     "LP01-A4 one authoritative decision across API, change review, aftermath and MCP > MCP dk_access_paths returns the API decision unchanged"
+    ]
+   },
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "91 files passed, 1 skipped; 642 passed, 1 skipped",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)"
+   }
   },
   {
    "id": "LP02",
@@ -563,23 +587,32 @@
   },
   "LP01-A1": {
    "package": "LP01",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp01-permissions.test.ts > LP01-A1 (5 tests; boundary/session/SCP/hop failed before the fix)"
+   ]
   },
   "LP01-A2": {
    "package": "LP01",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp01-permissions.test.ts > LP01-A2 (3 tests)"
+   ]
   },
   "LP01-A3": {
    "package": "LP01",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp01-permissions.test.ts > LP01-A3 (5 tests)"
+   ]
   },
   "LP01-A4": {
    "package": "LP01",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp01-permissions.test.ts > LP01-A4 (API, change review, aftermath via CloudTrail ingestion, MCP)",
+    "apps/server/test/phase-lp00-baseline.test.ts > LP00-A2 (frozen records unchanged)"
+   ]
   },
   "LP02-A1": {
    "package": "LP02",
@@ -1244,6 +1277,16 @@
    "id": "D-LP00-3",
    "date": "2026-10-23",
    "decision": "eval/src/v2/run.ts BudgetLedger(5) is historical; no phase model run may use it. Any LP24+ run needs a new ledger capped by the phase budget ($3.00 total)."
+  },
+  {
+   "id": "D-LP01-1",
+   "date": "2026-10-23",
+   "decision": "Evaluator decisions carry evaluator=dk.aws_policy_eval.v2; access_paths schema id unchanged because the change is additive fields plus corrected classification, recorded here and in the receipt."
+  },
+  {
+   "id": "D-LP01-2",
+   "date": "2026-10-23",
+   "decision": "An omitted resource policy key is now unresolved (null = none). An omitted permission boundary keeps v1 meaning 'none'; exporters must send 'unknown' when unreadable (declared limit)."
   }
  ],
  "model_spend_usd": {
