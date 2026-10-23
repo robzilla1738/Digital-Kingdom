@@ -45,13 +45,14 @@ export const ACTION_LABEL: Record<string, string> = {
   tool_invocation: "Tool call", side_effect_observed: "Effect observed", runtime_alert: "Runtime alert",
 };
 
-export const RELATIONSHIP_LAYER: Record<string, "runtime" | "identity" | "deployment" | "tools"> = {
-  calls: "runtime", reads_from: "runtime", writes_to: "runtime", belongs_to: "runtime", protected_by: "runtime",
+export const RELATIONSHIP_LAYER: Record<string, "runtime" | "identity" | "data" | "deployment" | "tools"> = {
+  calls: "runtime", reads_from: "data", writes_to: "data", belongs_to: "runtime", protected_by: "runtime",
   runs_as: "identity", may_assume: "identity", deploys: "deployment", invokes_tool: "tools",
 };
 export const LAYER_STYLE = {
   runtime: { label: "Runtime calls", color: "#91A4BA" },
   identity: { label: "Identity & permissions", color: "#A6B6FF" },
+  data: { label: "Data access", color: "#D3B37A" },
   deployment: { label: "Deployment", color: "#89C6AE" },
   tools: { label: "Agent tools", color: "#92B9FF" },
 } as const;

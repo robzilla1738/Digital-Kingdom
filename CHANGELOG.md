@@ -2,6 +2,12 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R06.3: Richer castle and security layers
+
+- Shared layer semantics (`apps/web/src/lib/layers.ts`) used by both the 3D castle and the 2D map: permissions drawn as dot-dash grants (never as observed use), observed activity solid, hypothetical movement neutral grey dashes labelled "not recorded".
+- New Data access layer (`reads_from`/`writes_to`) and a Focus control (all / recorded evidence / proposed change) that filters edges without moving the camera; the selected relationship always stays visible.
+- Evidence pane shows each relationship's meaning and a service Interior (routes, deployer, instances, permissions, tool capabilities) as plain list data, so list and reduced-motion views carry the same semantics.
+
 ### Roadmap R11.4: Support tiers, matrix and maintenance commitments
 
 support-matrix/SUPPORT_MATRIX.json (tiers, every integration with level, permissions, limits, tests, troubleshooting, uninstall; compatibility policy; no required model service; no telemetry) with a CI test that fails when a connector or integration card lacks an entry, cites a missing test, or claims lab/live verification; support-matrix/README.md, MAINTAINERS.md, SECURITY.md supported-versions and disclosure policy, docs/RELEASE_NOTES_TEMPLATE.md citing candidate evidence and open gates, README support section; a golden-path test runs source events -> finding -> case -> deterministic assistance -> containment plan -> approval -> verification -> closure with no model.

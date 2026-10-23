@@ -1,4 +1,5 @@
 import { Component, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { pathVisible, relationshipMeaning, relationshipStyle } from "../lib/layers.ts";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, Line, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
@@ -272,9 +273,7 @@ function Paths({ scene, visibleIds, onChoice }: { scene: CompiledScene; visibleI
   const { ui, dispatch, vm } = useApp(), { camera, gl, size } = useThree(), focus = selectionAssets(ui.selection, vm), down = useRef<ScreenPoint | null>(null);
   const visible = scene.paths.filter(p => {
     if (!visibleIds.has(p.source_asset_id) || !visibleIds.has(p.target_asset_id)) return false;
-    if (p.evidence_level === "hypothetical" && !ui.showHypothetical) return false;
-    const layer = RELATIONSHIP_LAYER[p.kind] ?? "runtime", chosen = (ui.selection?.kind === "path" || ui.selection?.kind === "relationship") && ui.selection.id === p.relationship_id;
-    return chosen || (ui.layers[layer] && (focus.has(p.source_asset_id) || focus.has(p.target_asset_id)));
+    return pathVisible(p, { layers: ui.layers, showHypothetical: ui.showHypothetical, focusMode: ui.focusMode, focusAssets: focus, selectedId: (ui.selection?.kind === "path" || ui.selection?.kind === "relationship") ? ui.selection.id : null });
   }).map(p => ({ p, points: p.points.map(v => new THREE.Vector3(v.x, v.y, v.z)), curved: new THREE.CatmullRomCurve3(p.points.map(v => new THREE.Vector3(v.x, v.y, v.z))).getPoints(40) }));
   const choose = (e: { clientX: number; clientY: number; delta: number; stopPropagation: () => void }) => {
     e.stopPropagation(); const pointer = { x: e.clientX, y: e.clientY };
@@ -286,14 +285,14 @@ function Paths({ scene, visibleIds, onChoice }: { scene: CompiledScene; visibleI
   };
   return <group name="evidence-relationship-overlays">{visible.map(({ p, points, curved }) => {
     const layer = RELATIONSHIP_LAYER[p.kind] ?? "runtime", chosen = (ui.selection?.kind === "path" || ui.selection?.kind === "relationship") && ui.selection.id === p.relationship_id;
-    const declared = p.evidence_level === "declared", hypothetical = p.evidence_level === "hypothetical", inferred = p.evidence_level === "inferred";
+    const inferred = p.evidence_level === "inferred", st = relationshipStyle(p.kind, p.evidence_level, LAYER_STYLE[layer].color);
     const end = curved[curved.length - 1]!, before = curved[curved.length - 3]!, direction = end.clone().sub(before).normalize(), side = new THREE.Vector3(-direction.z, 0, direction.x).multiplyScalar(0.2), tail = end.clone().addScaledVector(direction, -0.45);
-    return <group key={p.relationship_id}><Line points={curved} color={chosen ? ACCENT : LAYER_STYLE[layer].color} lineWidth={chosen ? 2.5 : 1.5} dashed={declared || hypothetical || inferred} dashSize={hypothetical ? 0.06 : inferred ? 0.35 : 0.48} gapSize={hypothetical ? 0.25 : inferred ? 0.17 : 0.28} raycast={() => null} />
+    return <group key={p.relationship_id}><Line points={curved} color={chosen ? ACCENT : st.color} lineWidth={chosen ? 2.5 : 1.5} dashed={st.dashed} dashSize={st.dashSize} gapSize={st.gapSize} raycast={() => null} />
       <Line name={`relationship-hit:${p.relationship_id}`} userData={{ relationship_id: p.relationship_id }} points={curved} lineWidth={12} transparent opacity={0} depthWrite={false}
         onPointerDown={e => { down.current = { x: e.clientX, y: e.clientY }; }} onClick={choose} />
       {inferred && <Line points={curved} color={LAYER_STYLE[layer].color} lineWidth={1.4} dashed dashSize={0.035} gapSize={0.48} dashOffset={0.37} raycast={() => null} />}
-      <Line points={[tail.clone().add(side), end, tail.clone().sub(side)]} color={chosen ? ACCENT : LAYER_STYLE[layer].color} lineWidth={1.5} raycast={() => null} />
-      {chosen && <Html position={points[1]!.toArray()} center><span style={{ background: "#121C29", color: "#EEF3FA", padding: 6, fontSize: 12 }}>{p.evidence_level} · {p.kind.replaceAll("_", " ")}</span></Html>}
+      <Line points={[tail.clone().add(side), end, tail.clone().sub(side)]} color={chosen ? ACCENT : st.color} lineWidth={1.5} raycast={() => null} />
+      {chosen && <Html position={points[1]!.toArray()} center><span style={{ background: "#121C29", color: "#EEF3FA", padding: 6, fontSize: 12 }}>{relationshipMeaning(p.kind, p.evidence_level).label}</span></Html>}
     </group>;
   })}</group>;
 }

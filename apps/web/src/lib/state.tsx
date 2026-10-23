@@ -3,6 +3,7 @@ import type { CoverageRecord, Finding, SecurityEvent } from '@dk/contracts';
 import { stateAt, type ReplayBasis } from '@dk/detections';
 import type { Dataset } from './data.ts';
 import type { Layer } from './vocab.ts';
+import type { FocusMode } from './layers.ts';
 import { currentCoveragePresentation, distinctSummary, type AssetStatus } from './presentation.ts';
 import { parseNavigation, serializeNavigation, type NavigationState, type Selection, type View, type Workspace } from './navigation.ts';
 export { worstOutcome, highestSeverity, ASSET_COVERAGE_LABEL, sortFindings } from './presentation.ts';
@@ -10,7 +11,7 @@ export type { AssetStatus, Selection, View, Workspace };
 
 export interface UiState extends NavigationState {
   hover: string | null; playing: boolean; speed: number; roofs: boolean;
-  layers: Record<Layer, boolean>; showHypothetical: boolean; reducedMotion: boolean; reduceAutomaticAnnouncements: boolean;
+  layers: Record<Layer, boolean>; showHypothetical: boolean; focusMode: FocusMode; reducedMotion: boolean; reduceAutomaticAnnouncements: boolean;
   query: string; tab: 'findings' | 'assets' | 'coverage'; webglFailed: string | null; announce: string;
   sidebar: boolean; inspector: boolean; focusRevision: number; focusHandledRevision: number; quality: 'low' | 'medium' | 'high'; shortcuts: boolean;
   resolvedEvent: { id: string; assetIds: string[] } | null; eventAssetFilter: string | null; inspectorSection: string; updateRevision: number;
@@ -20,7 +21,7 @@ export type Action =
  | {type:'view';view:View} | {type:'workspace';workspace:Workspace} | {type:'investigateTab';tab:UiState['investigateTab']}
  | {type:'select';selection:Selection;announce?:string} | {type:'hover';id:string|null}
  | {type:'playhead';at:string|null} | {type:'playing';playing:boolean} | {type:'speed';speed:number} | {type:'basis';basis:ReplayBasis}
- | {type:'roofs';roofs:boolean} | {type:'layer';layer:Layer;on:boolean} | {type:'hypothetical';on:boolean}
+ | {type:'roofs';roofs:boolean} | {type:'layer';layer:Layer;on:boolean} | {type:'hypothetical';on:boolean} | {type:'focusMode';mode:FocusMode}
  | {type:'reduceAutomaticAnnouncements';on:boolean} | {type:'reducedMotion';on:boolean} | {type:'query';query:string} | {type:'tab';tab:UiState['tab']}
  | {type:'webglFailed';reason:string} | {type:'retryWebgl'} | {type:'panel';panel:'sidebar'|'inspector';open:boolean}
  | {type:'focus'} | {type:'focusHandled';revision:number} | {type:'quality';quality:UiState['quality']} | {type:'shortcuts';on:boolean}
@@ -40,6 +41,7 @@ export function reducer(s:UiState,a:Action):UiState {
  case 'speed': return {...s,speed:a.speed};
  case 'basis': return navigate(s,{basis:a.basis});
  case 'roofs': return {...s,roofs:a.roofs};
+ case 'focusMode': return {...s,focusMode:a.mode};
  case 'layer': return {...s,layers:{...s.layers,[a.layer]:a.on}};
  case 'hypothetical': return {...s,showHypothetical:a.on};
  case 'reduceAutomaticAnnouncements': return {...s,reduceAutomaticAnnouncements:a.on,announce:a.on?'Automatic status announcements reduced. Direct action feedback remains enabled.':'Automatic status announcements enabled.'};
@@ -78,7 +80,7 @@ export function AppStateProvider({data:incoming,children}:{data:Dataset;children
  const [ui,dispatch]=useReducer(reducer,undefined,()=>{
   const nav=parseNavigation(location.hash);
   if(!location.hash&&narrow)nav.view='graph';
-  return {...nav,hover:null,playing:false,speed:30,roofs:true,layers:{runtime:true,identity:false,deployment:false,tools:true},showHypothetical:false,
+  return {...nav,hover:null,playing:false,speed:30,roofs:true,layers:{runtime:true,identity:false,data:true,deployment:false,tools:true},showHypothetical:false,focusMode:'none',
    reducedMotion:reduced,reduceAutomaticAnnouncements:false,query:'',tab:'findings',webglFailed:null,announce:'',sidebar:true,inspector:!!nav.selection,
    focusRevision:0,focusHandledRevision:0,quality:narrow?'low':'medium',shortcuts:false,resolvedEvent:null,eventAssetFilter:null,inspectorSection:'summary',updateRevision:0,historyMode:'replace',navigationRevision:0} satisfies UiState;
  });

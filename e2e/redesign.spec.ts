@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { readFileSync, existsSync } from 'node:fs';
 import { createRedesignHarness, loginRedesign, captureRedesign, rendererDetails, writeRedesignEvidence, REDESIGN_ROOT, type RedesignHarness } from './redesign-harness.ts';
 import { processDeliveries } from '../packages/detections/src/index.ts';
+import { relationshipMeaning } from '../apps/web/src/lib/layers.ts';
 
 let h: RedesignHarness;
 const reports: any[] = [];
@@ -442,7 +443,7 @@ test('CASTLE-10: rendered relationship patterns and labels distinguish evidence 
   await page.getByRole('checkbox',{name:'Hypothetical relationships',exact:true}).check();await page.getByText('Layers & display',{exact:true}).click();
   const patterns:Record<string,number[]>={observed:[],declared:[8,5],inferred:[10,4,2,4],hypothetical:[2,6]};const samples:any[]=[];
   for(const [level,expected] of Object.entries(patterns)){
-    const canonical=graph.relationships.find((r:any)=>r.evidence_level===level);await page.locator(`.sidebar [data-asset-id="${canonical.source_id}"]`).click();const edge=page.locator(`[data-edge-id="${canonical.id}"]`);await expect(edge).toBeVisible();await expect(edge).toHaveAttribute('aria-label',`${level} ${canonical.kind.replaceAll('_',' ')} relationship`);await expect(edge.locator('title')).toHaveText(`${canonical.kind.replaceAll('_',' ')} (${level})`);
+    const canonical=graph.relationships.find((r:any)=>r.evidence_level===level&&(level==='hypothetical'||!['runs_as','may_assume','invokes_tool'].includes(r.kind)));await page.locator(`.sidebar [data-asset-id="${canonical.source_id}"]`).click();const edge=page.locator(`[data-edge-id="${canonical.id}"]`);await expect(edge).toBeVisible();const meaning=relationshipMeaning(canonical.kind,level);await expect(edge).toHaveAttribute('aria-label',`${meaning.label} relationship`);await expect(edge.locator('title')).toHaveText(`${meaning.label}: ${meaning.note}`);
     const dash=await edge.locator('path.edge').evaluate(element=>({attribute:element.getAttribute('stroke-dasharray'),computed:getComputedStyle(element).strokeDasharray}));const actual=dash.computed==='none'?[]:Array.from(dash.computed.matchAll(/[0-9.]+/g),match=>Number(match[0]));expect(actual).toEqual(expected);samples.push({id:canonical.id,selectedAsset:canonical.source_id,level,...dash});
   }
   await page.getByRole('button',{name:'Map key',exact:true}).click();for(const label of ['Observed','Declared','Inferred (dash-dot in map)','Hypothetical · off by default'])await expect(page.locator('.legend-body').getByText(label,{exact:true})).toBeVisible();

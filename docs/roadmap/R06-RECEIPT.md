@@ -28,3 +28,10 @@ Acceptance (`apps/server/test/surfaces-r06.test.ts`, 4 tests):
 - Resolving surfaces leaves stored events and findings unchanged.
 
 Limits: the castle renderer does not yet draw the new families or overlays (R06.3); support levels are maintained by hand in the registry.
+
+## R06.3 richer castle and security layers
+
+- Implementation: `apps/web/src/lib/layers.ts`, Shell focus control, Data layer, EvidencePane Interior + relationship meaning, Castle3D/Graph2D on shared helpers.
+- Tests: `apps/web/src/lib/layers.test.ts` (permission vs observed vs hypothetical styling, focus modes, selection retention, data-layer toggle, service interior). Redesign e2e edge-pattern check updated to the new meaning labels.
+- Local: typecheck clean; 606 passed, 1 skipped; build passed.
+- Not claimed: human visual/device review of the new styling (R06.4 gate `human_and_physical_device`).

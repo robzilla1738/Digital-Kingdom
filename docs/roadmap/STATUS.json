@@ -361,12 +361,12 @@
   {
    "id": "R06.3",
    "title": "Add meaningful security layers and interior views",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R06-RECEIPT.md#r063-richer-castle-and-security-layers",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Shared layer semantics, focus modes, data layer, service interiors; human visual review remains R06.4."
   },
   {
    "id": "R06.4",

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type WheelEvent } from "react";
+import { pathVisible, relationshipMeaning, relationshipStyle } from "../lib/layers.ts";
 import type { AssetKind } from "@dk/contracts";
 import { useApp } from "../lib/state.tsx";
 import { KIND_LABEL, LAYER_STYLE, OUTCOME_STYLE, RELATIONSHIP_LAYER } from "../lib/vocab.ts";
@@ -6,7 +7,7 @@ import { Icon } from "../lib/icons.tsx";
 import { EdgeChooser, type EdgeChoice } from "../castle/EdgeChooser.tsx";
 import { overlappingEdges, pointerWasDrag, type ScreenPoint } from "../castle/edgePicking.ts";
 import { ASSET_COVERAGE_LABEL } from "../lib/presentation.ts";
-import { presentationGroups, presentationMembers, selectionDistrictKey, presentationTopologyKey, groupMembershipKey, presentationScene, groupSummary, selectionAssets, relationshipPattern, SEVERITY_COLOR } from "../castle/scenePresentation.ts";
+import { presentationGroups, presentationMembers, selectionDistrictKey, presentationTopologyKey, groupMembershipKey, presentationScene, groupSummary, selectionAssets, SEVERITY_COLOR } from "../castle/scenePresentation.ts";
 
 const MONO: Record<AssetKind, string> = {
   edge: "GW", auth: "ID", service: "SV", worker: "WK", database: "DB", storage: "ST", agent: "AI", tool_server: "MCP", pipeline: "CI", third_party: "3P",
@@ -226,11 +227,7 @@ export function Graph2D() {
   const edges = useMemo(() => {
     const vis = scene.paths.filter((p) => {
       if (!layout.pos.has(p.source_asset_id) || !layout.pos.has(p.target_asset_id)) return false;
-      const layer = RELATIONSHIP_LAYER[p.kind] ?? "runtime";
-      const touches = focusIds.has(p.source_asset_id) || focusIds.has(p.target_asset_id);
-      const isSel = (sel?.kind === "path" || sel?.kind === "relationship") && sel.id === p.relationship_id;
-      if (p.evidence_level === "hypothetical" && !ui.showHypothetical) return false;
-      return isSel || (ui.layers[layer] && touches);
+      return pathVisible(p, { layers: ui.layers, showHypothetical: ui.showHypothetical, focusMode: ui.focusMode, focusAssets: focusIds, selectedId: (sel?.kind === "path" || sel?.kind === "relationship") ? sel.id : null });
     });
     const sideOf = (a: Rect, b: Rect): [Side, Side] => {
       const ax = a.x + a.w / 2, ay = a.y + a.h / 2, bx = b.x + b.w / 2, by = b.y + b.h / 2;
@@ -274,7 +271,7 @@ export function Graph2D() {
       }; });
       return { p, path, samples };
     });
-  }, [scene.paths, layout.pos, focusIds, sel, ui.layers, ui.showHypothetical]);
+  }, [scene.paths, layout.pos, focusIds, sel, ui.layers, ui.showHypothetical, ui.focusMode]);
 
   const chooseEdgeAt = (e: { clientX: number; clientY: number; stopPropagation: () => void }) => {
     e.stopPropagation(); const pointer = { x: e.clientX, y: e.clientY };
@@ -328,13 +325,13 @@ export function Graph2D() {
             const touches = focusIds.has(p.source_asset_id) || focusIds.has(p.target_asset_id);
             const isSel = (sel?.kind === "path" || sel?.kind === "relationship") && sel.id === p.relationship_id;
             const emph = touches || isSel;
-            const pattern = relationshipPattern(p.evidence_level);
+            const st = relationshipStyle(p.kind, p.evidence_level, LAYER_STYLE[layer].color), pattern = st.dash2d || undefined, meaning = relationshipMeaning(p.kind, p.evidence_level);
             const onClick = () => dispatch({ type: "select", selection: { kind: "path", id: p.relationship_id } });
             return (
-              <g key={p.relationship_id} data-edge data-edge-id={p.relationship_id} onPointerDown={e => { edgeDown.current = { x: e.clientX, y: e.clientY }; }} onClick={chooseEdgeAt} tabIndex={0} role="button" aria-label={`${p.evidence_level} ${p.kind.replaceAll("_", " ")} relationship`} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}>
-                <path d={path} className="edge" stroke={LAYER_STYLE[layer].color} strokeWidth={isSel ? 2.4 : emph ? 1.8 : 1.25}
+              <g key={p.relationship_id} data-edge data-edge-id={p.relationship_id} onPointerDown={e => { edgeDown.current = { x: e.clientX, y: e.clientY }; }} onClick={chooseEdgeAt} tabIndex={0} role="button" aria-label={`${meaning.label} relationship`} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}>
+                <path d={path} className="edge" stroke={st.color} strokeWidth={isSel ? 2.4 : emph ? 1.8 : 1.25}
                   strokeOpacity={emph ? 0.95 : hasFocus ? 0.14 : 0.5} strokeDasharray={pattern} markerEnd={`url(#dk-arrow-${layer})`} />
-                <path d={path} className="edge-hit" vectorEffect="non-scaling-stroke" style={{ strokeWidth: 12 }}><title>{`${p.kind.replace(/_/g, " ")} (${p.evidence_level})`}</title></path>
+                <path d={path} className="edge-hit" vectorEffect="non-scaling-stroke" style={{ strokeWidth: 12 }}><title>{`${meaning.label}: ${meaning.note}`}</title></path>
               </g>
             );
           })}
