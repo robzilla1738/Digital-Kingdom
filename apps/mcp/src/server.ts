@@ -54,7 +54,7 @@ export interface CreateServerOptions {
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
-export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_list_recipes", "dk_run_recipe", "dk_world_hierarchy", "dk_capabilities", "dk_case_changes", "dk_containment_options"] as const;
+export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_list_recipes", "dk_run_recipe", "dk_world_hierarchy", "dk_capabilities", "dk_case_changes", "dk_access_paths", "dk_containment_options"] as const;
 
 /** The exact tool set used by Real-Agent Evaluation v1 (before event search). Kept so v1 runs stay reproducible. */
 export const INVESTIGATION_TOOLS_V1 = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
@@ -271,6 +271,12 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     description: "Incremental case delivery: cases whose version changed after `since` (from the previous call's next_since), oldest first. Poll again after poll_after_seconds. Changes made while you were disconnected are returned on the next call.",
     inputSchema: { since: z.string().max(400).optional(), project }, annotations: RO,
   }, async ({ since, project: p }) => out(await client.req("GET", client.p(`/cases/changes${since ? `?since=${encodeURIComponent(since)}` : ""}`, p))));
+
+  server.registerTool("dk_access_paths", {
+    title: "Configured access paths (AWS S3 and role assumption)",
+    description: "Whether a principal's CONFIGURED permissions allow an action on a resource, directly or via role assumption: feasible, conditional, blocked or unresolved, with policy statement evidence. This is never evidence that access happened; use dk_search_events for that.",
+    inputSchema: { from: z.string().max(300), action: z.string().regex(/^[a-z0-9-]+:[A-Za-z*]+$/), resource: z.string().max(400), project }, annotations: RO,
+  }, async ({ from, action, resource, project: p }) => out(await client.req("GET", client.p(`/access/paths?from=${encodeURIComponent(from)}&action=${encodeURIComponent(action)}&resource=${encodeURIComponent(resource)}`, p))));
 
   server.registerTool("dk_containment_options", {
     title: "Permitted containment steps",

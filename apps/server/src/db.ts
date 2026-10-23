@@ -1,4 +1,4 @@
-import { BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION, IDENTITY_MIGRATION, AWS_SCOPE_MIGRATION } from "./schema-r01.ts";
+import { BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION, IDENTITY_MIGRATION, AWS_SCOPE_MIGRATION, ACCESS_SNAPSHOT_MIGRATION } from "./schema-r01.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -87,6 +87,8 @@ export const MIGRATIONS: string[] = [
   IDENTITY_MIGRATION,
   // R02.4: AWS identity/audit pack scope.
   AWS_SCOPE_MIGRATION,
+  // R04.3: authorization snapshots.
+  ACCESS_SNAPSHOT_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

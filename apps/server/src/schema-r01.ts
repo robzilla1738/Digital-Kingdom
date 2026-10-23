@@ -30,3 +30,6 @@ export const IDENTITY_MIGRATION = `ALTER TABLE api_tokens ADD COLUMN expires_at 
 
 /** R02.4 AWS pack scope: one account, regions, configured data events and the data-event source. */
 export const AWS_SCOPE_MIGRATION = `CREATE TABLE aws_scopes (project_id TEXT NOT NULL, source_id TEXT NOT NULL, account_id TEXT NOT NULL, regions TEXT NOT NULL, data_event_names TEXT NOT NULL, data_source_id TEXT, verification TEXT NOT NULL DEFAULT 'fixture', updated_at TEXT NOT NULL, PRIMARY KEY (project_id, source_id));`;
+
+/** R04.3 authorization snapshots for the scoped policy evaluator. */
+export const ACCESS_SNAPSHOT_MIGRATION = `CREATE TABLE access_snapshots (project_id TEXT NOT NULL, snapshot_id TEXT NOT NULL, taken_at TEXT NOT NULL, body TEXT NOT NULL, digest TEXT NOT NULL, stored_at TEXT NOT NULL, stored_by TEXT NOT NULL, PRIMARY KEY (project_id, snapshot_id));`;

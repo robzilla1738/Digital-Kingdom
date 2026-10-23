@@ -8,7 +8,8 @@ import { ImportValidationError, importCompose, importManifest } from "@dk/graph-
 import { planScene, type ModelCall } from "@dk/scene-compiler";
 import { HttpError, Store, type Principal } from "./store.ts";
 import { eventDetail, parseSearchQuery, searchEvents } from "./investigate.ts";
-import { checkShape, atLeast, type Role } from "./security.ts";
+import { checkShape, atLeast, sha256, type Role } from "./security.ts";
+import { canonicalJson } from "@dk/contracts";
 import { exportCase, verifyCase } from "./export.ts";
 import { falcoToIngest } from "./adapters/falco.ts";
 import { otlpToIngest, gunzipCapped } from "./adapters/otlp.ts";
@@ -19,6 +20,7 @@ import { Cases } from "./cases.ts";
 import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
+import { accessPaths, type AuthSnapshot } from "./access/aws-policy.ts";
 import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
 import { verifyIdToken, type OidcConfig } from "./oidc.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
@@ -700,6 +702,26 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
       .run(proj.id, src.id, b.account_id, JSON.stringify(regions), JSON.stringify(dataEvents), dataSource, store.now().toISOString());
     store.audit(who(req), "aws.scope", proj.id, src.id, { account_id: b.account_id, regions, data_events: dataEvents });
     return { source_id: src.id, account_id: b.account_id, regions, data_event_names: dataEvents, data_source_id: dataSource, verification: "fixture", note: "A real-account check has not been recorded for this scope." };
+  });
+  // R04.3 scoped effective-access evaluation over a stored authorization snapshot.
+  app.post("/api/projects/:p/access/snapshot", { preHandler: authed("admin"), bodyLimit: 2_097_152 }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "admin");
+    const snap = req.body as AuthSnapshot;
+    if (!snap || typeof snap.snapshot_id !== "string" || !/^[A-Za-z0-9_.:-]{1,80}$/.test(snap.snapshot_id) || typeof snap.taken_at !== "string" || !Array.isArray(snap.principals) || !Array.isArray(snap.resources)) throw new HttpError(400, "snapshot needs snapshot_id, taken_at, principals[] and resources[]");
+    const body = canonicalJson(snap);
+    store.db.prepare("INSERT INTO access_snapshots (project_id, snapshot_id, taken_at, body, digest, stored_at, stored_by) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (project_id, snapshot_id) DO NOTHING").run(proj.id, snap.snapshot_id, snap.taken_at, body, sha256(body), store.now().toISOString(), who(req));
+    store.audit(who(req), "access.snapshot", proj.id, snap.snapshot_id, { principals: snap.principals.length, resources: snap.resources.length });
+    return { snapshot_id: snap.snapshot_id, digest: sha256(body) };
+  });
+  const latestSnapshot = (projectId: string): AuthSnapshot | null => { const r = store.db.prepare("SELECT body FROM access_snapshots WHERE project_id = ? ORDER BY taken_at DESC, stored_at DESC LIMIT 1").get(projectId) as { body: string } | undefined; return r ? JSON.parse(r.body) : null; };
+  app.get("/api/projects/:p/access/paths", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const q = req.query as { from?: string; action?: string; resource?: string; max_hops?: string };
+    if (!q.from || !q.action || !q.resource || q.from.length > 300 || q.resource.length > 400 || !/^[a-z0-9-]+:[A-Za-z*]+$/.test(q.action)) throw new HttpError(400, "from, action (service:Action) and resource are required");
+    const snap = latestSnapshot(proj.id);
+    if (!snap) return { schema: "dk.access_paths.v1", snapshot: null, paths: [], result: "unresolved", reasons: ["no authorization snapshot has been stored"] };
+    const paths = accessPaths(snap, q.from, q.action, q.resource, Math.min(3, Math.max(0, Number(q.max_hops ?? 2) || 0)));
+    return { schema: "dk.access_paths.v1", snapshot: { id: snap.snapshot_id, taken_at: snap.taken_at }, result: paths[0]?.decision.result ?? "unresolved", paths: paths.slice(0, 20), note: "Configured permission only. Use event search or coverage history for what actually happened." };
   });
   app.post("/ingest/aws/cloudtrail", { preHandler: sourceAuth, bodyLimit: 4_194_304 }, async (req, reply) => {
     const src = (req as SrcReq).source;

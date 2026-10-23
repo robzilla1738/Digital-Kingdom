@@ -236,12 +236,12 @@
   {
    "id": "R04.3",
    "title": "Compute conditional effective-access paths",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R04-RECEIPT.md#r043-compute-conditional-effective-access-paths",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "access-r04.test.ts 5/5. One provider (AWS), S3 + sts:AssumeRole only."
   },
   {
    "id": "R04.4",

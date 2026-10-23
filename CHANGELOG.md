@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R04.3: scoped effective-access paths
+
+- AWS IAM evaluator for S3 actions and `sts:AssumeRole` (`apps/server/src/access/aws-policy.ts`): explicit denies, identity and resource policies, permission boundaries, session policies, SCPs and cross-account both-sides rules, returning feasible, conditional (condition keys listed), blocked or unresolved (any missing input) with statement evidence, including paths through role assumption. `POST /access/snapshot`, `GET /access/paths`, MCP `dk_access_paths`. Always labelled configured permission, never observed access.
+
 ### Roadmap R02.4: AWS CloudTrail identity and audit pack (fixture conformance)
 
 - `dk.aws.cloudtrail` connector, `cloud_audit` and `cloud_data_audit` source kinds, `POST /api/projects/:p/aws/scope` (one account, regions, configured data events) and `POST /ingest/aws/cloudtrail` for CloudTrail export files. Key ids link creation, grants and later use; cross-account records are refused; without configured data events, reads stay unknown. Verified only against sanitized fixture records (`fixtures/aws/`); no real AWS account has been checked.
