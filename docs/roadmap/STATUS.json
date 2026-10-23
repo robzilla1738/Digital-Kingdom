@@ -151,12 +151,13 @@
   {
    "id": "R02.4",
    "title": "Deliver the first real cloud identity/audit pack",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "authorized_provider_access",
-   "receipt": null,
+   "receipt": "docs/roadmap/R02-RECEIPT.md#r024-first-cloud-identity-and-audit-pack",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "aws-r02.test.ts 5/5 against sanitized fixtures. Real-account check (external gate) NOT done.",
+   "external_gate_open": true
   },
   {
    "id": "R03.1",

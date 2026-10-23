@@ -19,6 +19,7 @@ import { Cases } from "./cases.ts";
 import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
+import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
 import { verifyIdToken, type OidcConfig } from "./oidc.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 
@@ -679,6 +680,44 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.post("/ingest/collection-report", { preHandler: sourceAuth, bodyLimit: 16_384 }, async (req) => {
     const src = (req as SrcReq).source;
     return store.recordCollectionReport(src.projectId, src.sourceId, ((req.body && typeof req.body === "object") ? req.body : {}) as Record<string, unknown>);
+  });
+  // R02.4 AWS CloudTrail pack (fixture-conformant). Scope is server-side: account, regions, configured data events.
+  app.post("/api/projects/:p/aws/scope", { preHandler: authed("admin") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "admin");
+    const b = (req.body ?? {}) as { source_id?: unknown; account_id?: unknown; regions?: unknown; data_event_names?: unknown; data_source_id?: unknown };
+    const src = store.listSources(proj.id).find((x) => x.id === b.source_id);
+    if (!src || src.kind !== "cloud_audit") throw new HttpError(422, "source_id must be a registered cloud_audit source");
+    if (typeof b.account_id !== "string" || !/^\d{12}$/.test(b.account_id)) throw new HttpError(400, "account_id must be 12 digits");
+    const regions = Array.isArray(b.regions) ? b.regions.filter((r): r is string => typeof r === "string" && /^[a-z]{2}(-gov)?-[a-z]+-\d$/.test(r)).slice(0, 30) : [];
+    const dataEvents = Array.isArray(b.data_event_names) ? b.data_event_names.filter((r): r is string => typeof r === "string" && /^[a-z0-9-]+:[A-Za-z]+$/.test(r)).slice(0, 50) : [];
+    let dataSource: string | null = null;
+    if (dataEvents.length) {
+      const ds = store.listSources(proj.id).find((x) => x.id === b.data_source_id);
+      if (!ds || ds.kind !== "cloud_data_audit") throw new HttpError(422, "configured data events need data_source_id of a cloud_data_audit source");
+      dataSource = ds.id;
+    }
+    store.db.prepare("INSERT INTO aws_scopes (project_id, source_id, account_id, regions, data_event_names, data_source_id, verification, updated_at) VALUES (?, ?, ?, ?, ?, ?, 'fixture', ?) ON CONFLICT (project_id, source_id) DO UPDATE SET account_id = excluded.account_id, regions = excluded.regions, data_event_names = excluded.data_event_names, data_source_id = excluded.data_source_id, updated_at = excluded.updated_at")
+      .run(proj.id, src.id, b.account_id, JSON.stringify(regions), JSON.stringify(dataEvents), dataSource, store.now().toISOString());
+    store.audit(who(req), "aws.scope", proj.id, src.id, { account_id: b.account_id, regions, data_events: dataEvents });
+    return { source_id: src.id, account_id: b.account_id, regions, data_event_names: dataEvents, data_source_id: dataSource, verification: "fixture", note: "A real-account check has not been recorded for this scope." };
+  });
+  app.post("/ingest/aws/cloudtrail", { preHandler: sourceAuth, bodyLimit: 4_194_304 }, async (req, reply) => {
+    const src = (req as SrcReq).source;
+    const row = store.db.prepare("SELECT * FROM aws_scopes WHERE project_id = ? AND source_id = ?").get(src.projectId, src.sourceId) as Record<string, string> | undefined;
+    if (!row) throw new HttpError(409, "no AWS scope is configured for this source");
+    const scope = { account_id: row.account_id!, regions: JSON.parse(row.regions!) as string[], data_event_names: JSON.parse(row.data_event_names!) as string[] };
+    const b = (req.body ?? {}) as { Records?: unknown; export_ref?: unknown };
+    if (!Array.isArray(b.Records) || b.Records.length > 1000) throw new HttpError(400, "body must be a CloudTrail export: {\"Records\": [...]} with at most 1000 records");
+    const graph = store.getGraph(src.projectId);
+    const assetFor = (arn: string | undefined, svc: string) => graph?.assets.find((a) => arn ? a.provider_ref?.id === arn || (a.aliases ?? []).includes(arn) : a.provider_ref?.id === `aws:${svc}` || (a.aliases ?? []).includes(`aws:${svc}`))?.id;
+    const exportRef = typeof b.export_ref === "string" ? b.export_ref.replace(/[^A-Za-z0-9_./:@-]/g, "").slice(0, 200) : undefined;
+    const mapped = (b.Records as CloudTrailRecord[]).map((r) => mapCloudTrail(r, scope, assetFor, exportRef));
+    const results = mapped.map((m) => {
+      if (!m.ok) { store.reject(src.projectId, src.sourceId, "receive", m.reason, m.detail); return { status: "rejected" as const, reason: m.reason, detail: m.detail }; }
+      const target = m.capability === "data" ? row.data_source_id! : src.sourceId;
+      return store.admit(src.projectId, target) ? store.receive(src.projectId, target, m.event) : { status: "rejected" as const, reason: "throttled", detail: "source ingest budget exceeded" };
+    });
+    return { ...respond(reply, results), summary: summarizeExport(mapped, scope), verification: "fixture" };
   });
   app.post("/ingest/falco", { preHandler: sourceAuth, bodyLimit: 262_144 }, async (req, reply) => {
     const body = req.body as Record<string, unknown>;

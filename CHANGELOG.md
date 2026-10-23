@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R02.4: AWS CloudTrail identity and audit pack (fixture conformance)
+
+- `dk.aws.cloudtrail` connector, `cloud_audit` and `cloud_data_audit` source kinds, `POST /api/projects/:p/aws/scope` (one account, regions, configured data events) and `POST /ingest/aws/cloudtrail` for CloudTrail export files. Key ids link creation, grants and later use; cross-account records are refused; without configured data events, reads stay unknown. Verified only against sanitized fixture records (`fixtures/aws/`); no real AWS account has been checked.
+
 ### Roadmap R10.2: ingestion resilience and recovery
 
 - Per-source admission budgets (`429 Retry-After`, counted as `rejected:throttled`), bounded backlog backpressure (`503 Retry-After`), disk-full answered as a retryable 503 with nothing written, AES-256-GCM encrypted backups (`pnpm backup`) and verified restores (`pnpm restore`: integrity, foreign keys, finding references, checkpoint bounds, counts), and `pnpm soak`. Measurements and RPO/RTO assumptions in `docs/OPERATIONS_RECOVERY.md`.

@@ -64,3 +64,15 @@ CI: run 39901028491 on 41f301c (check, collector conformance with otelcol 0.112.
 redesign suites) verifies R02.2, R02.3, R03.2, R05.2, R06.1, R10.1 (local scope) and R11.1. Earlier batch-3 runs
 had one-off `pilot:redesign` failures (b059865, 8ea6492) that did not reproduce on later commits with the same
 code, and one real failure (v1 digest included untracked server logs) fixed in 67f455f.
+
+## R02.4 first cloud identity and audit pack
+
+Delivered: `apps/server/src/adapters/aws.ts` (`mapCloudTrail`, `summarizeExport`), connector manifest, source kinds, migration 13 (`aws_scopes`), scope and ingest routes, `fixtures/aws/cloudtrail-sanitized.json` (synthetic records in the real log format, documentation account 111122223333).
+
+Acceptance (`apps/server/test/aws-r02.test.ts`, 5 tests, fixture only):
+- CreateAccessKey (grant change) and the later AssumeRole by the created key share `session_ref aws-key:<id>`; both carry `raw_source_ref` to the export object and CloudTrail eventID.
+- Without configured data events, s3:GetObject is refused as not configured and historical coverage for the bucket's reads is fully unknown, never a no-read conclusion. With them, the read lands on the bucket via the separate data source.
+- A record for another account is refused as outside the authorization boundary and stored nowhere except as a counted rejection.
+- The scope reports `verification: fixture`; connector capabilities are `analyzed`, never `live_verified`.
+
+External gate still open: an authorized real-account check (`authorized_provider_access`). Resource metadata is declared in the inventory, not discovered from IAM APIs.

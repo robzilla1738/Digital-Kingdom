@@ -1,0 +1,19 @@
+{
+  "_note": "Sanitized, synthetic CloudTrail records in the real log-file format. Account 111122223333 and all ids are documentation placeholders; no real account produced these.",
+  "Records": [
+    { "eventVersion": "1.09", "eventID": "fx-0001", "eventTime": "2026-10-20T14:00:00Z", "eventSource": "iam.amazonaws.com", "eventName": "CreateAccessKey", "awsRegion": "us-east-1", "recipientAccountId": "111122223333", "managementEvent": true, "eventCategory": "Management", "sourceIPAddress": "198.51.100.20",
+      "userIdentity": { "type": "IAMUser", "arn": "arn:aws:iam::111122223333:user/ops-admin", "accountId": "111122223333", "accessKeyId": "AKIAFIXTUREADMIN0001" },
+      "requestParameters": { "userName": "build-bot" }, "responseElements": { "accessKey": { "accessKeyId": "AKIAFIXTUREBUILD0002", "userName": "build-bot", "status": "Active" } } },
+    { "eventVersion": "1.09", "eventID": "fx-0002", "eventTime": "2026-10-20T14:01:00Z", "eventSource": "iam.amazonaws.com", "eventName": "AttachUserPolicy", "awsRegion": "us-east-1", "recipientAccountId": "111122223333", "managementEvent": true, "eventCategory": "Management",
+      "userIdentity": { "type": "IAMUser", "arn": "arn:aws:iam::111122223333:user/ops-admin", "accountId": "111122223333", "accessKeyId": "AKIAFIXTUREADMIN0001" },
+      "requestParameters": { "userName": "build-bot", "policyArn": "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess" }, "responseElements": null },
+    { "eventVersion": "1.09", "eventID": "fx-0003", "eventTime": "2026-10-20T15:30:00Z", "eventSource": "sts.amazonaws.com", "eventName": "AssumeRole", "awsRegion": "us-east-1", "recipientAccountId": "111122223333", "managementEvent": true, "eventCategory": "Management", "sourceIPAddress": "203.0.113.77",
+      "userIdentity": { "type": "IAMUser", "arn": "arn:aws:iam::111122223333:user/build-bot", "accountId": "111122223333", "accessKeyId": "AKIAFIXTUREBUILD0002" },
+      "requestParameters": { "roleArn": "arn:aws:iam::111122223333:role/exporter" }, "responseElements": { "credentials": { "accessKeyId": "ASIAFIXTURESESSION03" } } },
+    { "eventVersion": "1.09", "eventID": "fx-0004", "eventTime": "2026-10-20T15:31:00Z", "eventSource": "s3.amazonaws.com", "eventName": "GetObject", "awsRegion": "us-east-2", "recipientAccountId": "111122223333", "managementEvent": false, "eventCategory": "Data", "readOnly": true,
+      "userIdentity": { "type": "AssumedRole", "arn": "arn:aws:sts::111122223333:assumed-role/exporter/build", "accountId": "111122223333", "accessKeyId": "ASIAFIXTURESESSION03" },
+      "requestParameters": { "bucketName": "acme-exports", "key": "customers.csv" }, "resources": [{ "ARN": "arn:aws:s3:::acme-exports", "accountId": "111122223333", "type": "AWS::S3::Bucket" }] },
+    { "eventVersion": "1.09", "eventID": "fx-0005", "eventTime": "2026-10-20T15:32:00Z", "eventSource": "iam.amazonaws.com", "eventName": "CreateAccessKey", "awsRegion": "us-east-1", "recipientAccountId": "999988887777", "managementEvent": true,
+      "userIdentity": { "type": "IAMUser", "arn": "arn:aws:iam::999988887777:user/someone", "accountId": "999988887777" }, "responseElements": { "accessKey": { "accessKeyId": "AKIAOTHERACCOUNT0005" } } }
+  ]
+}

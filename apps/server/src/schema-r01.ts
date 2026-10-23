@@ -27,3 +27,6 @@ export const IDENTITY_MIGRATION = `ALTER TABLE api_tokens ADD COLUMN expires_at 
    ALTER TABLE api_tokens ADD COLUMN oidc_issuer TEXT;
    ALTER TABLE api_tokens ADD COLUMN oidc_subject TEXT;
    CREATE TABLE oidc_subjects (issuer TEXT NOT NULL, subject TEXT NOT NULL, name TEXT NOT NULL, role TEXT NOT NULL, project_ids TEXT NOT NULL, created_at TEXT NOT NULL, created_by TEXT NOT NULL, revoked INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (issuer, subject));`;
+
+/** R02.4 AWS pack scope: one account, regions, configured data events and the data-event source. */
+export const AWS_SCOPE_MIGRATION = `CREATE TABLE aws_scopes (project_id TEXT NOT NULL, source_id TEXT NOT NULL, account_id TEXT NOT NULL, regions TEXT NOT NULL, data_event_names TEXT NOT NULL, data_source_id TEXT, verification TEXT NOT NULL DEFAULT 'fixture', updated_at TEXT NOT NULL, PRIMARY KEY (project_id, source_id));`;

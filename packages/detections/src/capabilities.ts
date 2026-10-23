@@ -19,6 +19,9 @@ export const DEFAULT_ACTIONS_BY_KIND: Record<string, EventAction[]> = {
   effect_observer: ["side_effect_observed", "data_access", ...HEALTH],
   falco: ["runtime_alert", ...HEALTH],
   otel: ["request_received", ...HEALTH],
+  // R02.4: cloud audit management events vs configured data events are separate capabilities.
+  cloud_audit: ["authentication", "authorization_change", ...HEALTH],
+  cloud_data_audit: ["data_access", ...HEALTH],
   generic: EVENT_ACTIONS.filter((a) => a !== "side_effect_observed" && a !== "decoy_used"),
 };
 export const SOURCE_KINDS = Object.keys(DEFAULT_ACTIONS_BY_KIND);

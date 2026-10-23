@@ -64,6 +64,26 @@ export const CONNECTORS: ConnectorManifest[] = [
     limits: ["Sampled traces are context, not a complete security ledger.", "Protobuf encoding is not supported."],
   },
   {
+    id: "dk.aws.cloudtrail", name: "AWS CloudTrail identity and audit (one account)", manifest_version: 1, connector_version: "0.1.0",
+    protocol: { name: "cloudtrail-records", versions: ["eventVersion 1.08-1.11"], encodings: ["application/json ({\"Records\": [...]})"] }, provider_api_version: "CloudTrail log file format",
+    source_kinds: ["cloud_audit", "cloud_data_audit"],
+    read_scopes: [
+      { scope: "source-key:ingest", why: "The exporter or collector authenticates as the management-event source.", required: true },
+      { scope: "aws:cloudtrail:LookupEvents|s3:GetObject (trail bucket)", why: "Read-only collection in the customer account; never granted to Digital Kingdom itself by this pack.", required: false },
+      { scope: "aws:iam:Get*/List* (read-only)", why: "Resource and identity metadata for asset mapping (declared in the inventory today).", required: false },
+    ],
+    authority: "collect_only",
+    pagination: { mode: "push", max_page: 1000, resume: "Event ids derive from CloudTrail eventID, so re-sent export files are idempotent." },
+    rate_limits: { requests_per_minute: null, on_throttle: "Per-source admission budget applies; refused windows should be reported as collection reports." },
+    cost: { model: "customer-paid", note: "Data events are billed by AWS per event; enabling them is the customer's choice." },
+    data_handling: { collected: ["eventID", "eventTime", "eventSource/eventName", "region", "principal ARN", "access key id", "resource ARN", "error code", "source IP"], minimized_before_storage: ["requestParameters and responseElements (only key ids and bucket names kept)"], never_collected: ["secret access keys", "session tokens", "object contents"] },
+    capabilities: [
+      { capability: "management events: sign-in, role assumption, key and policy changes", actions: ["authentication", "authorization_change"], level: "analyzed", evidence: "apps/server/test/aws-r02.test.ts (sanitized fixture records); NOT live-verified against a real account" },
+      { capability: "configured data events (e.g. s3:GetObject)", actions: ["data_access"], level: "analyzed", evidence: "fixture only; absent unless the trail logs data events and a cloud_data_audit source is registered" },
+    ],
+    limits: ["Fixture conformance only until an authorized real-account check is recorded.", "One account per scope; cross-account records are refused.", "Without data events, reads are unknown, not absent."],
+  },
+  {
     id: "dk.falco", name: "Falco runtime alerts (http_output)", manifest_version: 1, connector_version: "1.0.0",
     protocol: { name: "falco-http-output", versions: ["0.36+ JSON"], encodings: ["application/json"] }, provider_api_version: null,
     source_kinds: ["falco"],
