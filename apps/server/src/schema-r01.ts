@@ -37,4 +37,6 @@ export const ACCESS_SNAPSHOT_MIGRATION = `CREATE TABLE access_snapshots (project
 /** R08.1 subjects on tokens and per-subject containment approvals bound to the plan digest. */
 export const APPROVALS_MIGRATION = `ALTER TABLE api_tokens ADD COLUMN subject TEXT;
    ALTER TABLE containment_requests ADD COLUMN requested_subject TEXT;
+   ALTER TABLE containment_requests ADD COLUMN plan TEXT;
+   ALTER TABLE containment_requests ADD COLUMN plan_created_at TEXT;
    CREATE TABLE containment_approvals (request_id TEXT NOT NULL, project_id TEXT NOT NULL, subject TEXT NOT NULL, token_id TEXT NOT NULL, plan_digest TEXT NOT NULL, approved_at TEXT NOT NULL, PRIMARY KEY (request_id, subject));`;

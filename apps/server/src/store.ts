@@ -11,6 +11,7 @@ import { Facts } from "./facts.ts";
 import { checkInstallScopes, COLLECTION_STATUSES, CONNECTORS } from "./adapters/connectors.ts";
 import { atLeast, newToken, sha256, type Role } from "./security.ts";
 import { CONTAINMENT_CATALOG, type ContainmentAction } from "./containment.ts";
+import { buildPlan, precheck, type ResponsePlan } from "./response-plan.ts";
 
 export interface Principal {
   kind: "token" | "anonymous-demo" | "source";
@@ -886,6 +887,28 @@ export class Store {
     return this.getContainment(projectId, id)!;
   }
 
+  /** R08.2: attach an exact plan to a pending request. Its digest becomes part of what approvals bind. */
+  setContainmentPlan(projectId: string, id: string, body: Record<string, unknown>, actor: string) {
+    const c = this.getContainment(projectId, id);
+    if (!c) throw new HttpError(404, "containment request not found");
+    if (c.status !== "pending") throw new HttpError(409, "plans can only change while the request is pending");
+    const action = this.containmentCatalog(projectId).find((a) => a.id === c.action_id);
+    if (!action) throw new HttpError(422, "the action is no longer permitted");
+    const graph = this.getGraph(projectId)!;
+    const plan = buildPlan({ action, graph, targets: body.targets, parameters: body.parameters, artifact_digest: body.artifact_digest, evidence_bundle_id: body.evidence_bundle_id, ttl_seconds: body.ttl_seconds, policy_revision: this.containmentPolicyDigest(projectId, action.id),
+      effectObservers: (ids) => this.listSources(projectId).filter((s) => s.kind === "effect_observer" && !s.disabled && s.asset_ids.some((a) => ids.includes(a))).map((s) => s.id) });
+    this.db.prepare("UPDATE containment_requests SET plan = ?, plan_created_at = ? WHERE id = ?").run(JSON.stringify(plan), this.iso(), id);
+    this.audit(actor, "containment.plan", projectId, id, { plan_digest: plan.digest });
+    return { ...this.getContainment(projectId, id)!, plan };
+  }
+
+  containmentPrecheck(projectId: string, id: string) {
+    const c = this.getContainment(projectId, id);
+    if (!c) throw new HttpError(404, "containment request not found");
+    if (!c.plan) return { ok: false, problems: ["no exact plan is attached"], verified_success_possible: false, executor: "none: Digital Kingdom does not execute response actions" };
+    return precheck(JSON.parse(String(c.plan)) as ResponsePlan, { graph: this.getGraph(projectId)!, policy_revision: this.containmentPolicyDigest(projectId, String(c.action_id)), now: this.now(), created_at: String(c.plan_created_at) });
+  }
+
   approvalsRequired(projectId: string): number { const n = Number(this.mustProject(projectId).meta.approvals_required ?? 1); return n >= 1 && n <= 3 ? n : 1; }
 
   /** R08.1: only a human installation admin may change approval policy; the change invalidates pending approvals. */
@@ -897,7 +920,8 @@ export class Store {
   }
 
   private containmentPlanDigest(projectId: string, c: Record<string, unknown>) {
-    return digest({ policy: this.containmentPolicyDigest(projectId, String(c.action_id)), finding: c.finding_id, revision: Number(c.finding_revision), approvals_required: this.approvalsRequired(projectId) });
+    const plan = c.plan ? (JSON.parse(String(c.plan)) as { digest: string }).digest : null;
+    return digest({ policy: this.containmentPolicyDigest(projectId, String(c.action_id)), finding: c.finding_id, revision: Number(c.finding_revision), approvals_required: this.approvalsRequired(projectId), ...(plan ? { plan } : {}) });
   }
 
   /** Approvals that still count: same plan digest and a token that is neither revoked nor expired. */
@@ -919,6 +943,7 @@ export class Store {
     if (this.containmentPolicyDigest(projectId, String(c.action_id)) !== c.policy_digest) return "the containment policy changed since the proposal was made";
     const f = this.getFinding(projectId, String(c.finding_id));
     if (!f || f.finding.revision !== Number(c.finding_revision)) return `the finding changed since the proposal (revision ${c.finding_revision} -> ${f?.finding.revision ?? "missing"})`;
+    if (c.plan) { const pc = precheck(JSON.parse(String(c.plan)) as ResponsePlan, { graph: this.getGraph(projectId)!, policy_revision: this.containmentPolicyDigest(projectId, String(c.action_id)), now: this.now(), created_at: String(c.plan_created_at) }); if (!pc.ok) return `the plan no longer matches: ${pc.problems.join("; ")}`; }
     return null;
   }
 

@@ -394,12 +394,12 @@
   {
    "id": "R08.2",
    "title": "Define exact response plans and revalidation",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R08-RECEIPT.md#r082-exact-response-plans-and-revalidation",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "plans-r08.test.ts 4/4. No executor (R08.3 gated)."
   },
   {
    "id": "R08.3",

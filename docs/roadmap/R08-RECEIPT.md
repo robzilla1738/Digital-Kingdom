@@ -11,3 +11,13 @@ Acceptance (`apps/server/test/approvals-r08.test.ts`, 4 tests):
 - Revoking an approver's token drops their approval; changing the policy makes the request stale and no earlier approval counts.
 
 Break-glass: the only emergency path is filesystem-level `pnpm admin:recover` (R10.1), which grants no approval and is audited. No executor exists (R08.3 is gated).
+
+## R08.2 exact response plans and revalidation
+
+Delivered: `apps/server/src/response-plan.ts` (`buildPlan`, `precheck`, `targetFingerprint`), plan columns on containment requests, plan and precheck routes, plan digest folded into the approval plan digest and staleness.
+
+Acceptance (`apps/server/test/plans-r08.test.ts`, 4 tests):
+- Changing a parameter yields a new plan digest and the earlier approval no longer counts.
+- A target that becomes a different provider resource fails precheck and approval (409).
+- `secrets.rotate_credentials` is irreversible, with no rollback and explicit compensation.
+- Without an independent effect observer on the targets, `verified_success_possible` is false; an extra `command` parameter or shell metacharacters are refused; precheck states there is no executor.

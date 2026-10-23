@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R08.2: exact response plans and revalidation
+
+- `POST /containment/:id/plan` attaches an exact plan (typed parameters per action, targets with provider ids, optional artifact digest, state fingerprint, evidence bundle, policy revision, TTL, downstream blast radius, reversibility with rollback or compensation, effect-observer coverage). The plan digest is part of what approvals bind; `GET /containment/:id/precheck` and approval both refuse drifted targets, changed policy or an expired TTL. Untyped actions and parameters with shell metacharacters are refused; there is still no executor.
+
 ### Roadmap R08.1: response authorization bound to subjects and policy
 
 - Approvals are counted per authenticated subject (SSO issuer and subject, or a person an installation admin binds to a human token with `subject`), not per token. `POST /approval-policy` (human installation admin only) sets 1 to 3 required approvals; each approval binds the plan digest (action, permitted set, approval policy, finding revision) and stops counting if its token is revoked or expires. The requester's subject can never approve. Audit entries name the subject. Containment remains proposal-only.

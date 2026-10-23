@@ -532,6 +532,11 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (d !== "approved" && d !== "rejected") throw new HttpError(400, "decision must be approved or rejected");
     return store.decideContainment(proj.id, (req.params as { id: string }).id, d, who(req), req.principal!.id, req.principal!.principalType, req.principal!.subject ?? `token:${req.principal!.id}`);
   });
+  app.post("/api/projects/:p/containment/:id/plan", { preHandler: authed("analyst") }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "analyst");
+    return store.setContainmentPlan(proj.id, (req.params as { id: string }).id, (req.body ?? {}) as Record<string, unknown>, who(req));
+  });
+  app.get("/api/projects/:p/containment/:id/precheck", { preHandler: authed() }, async (req) => store.containmentPrecheck(store.require(req.principal!, P(req), "viewer").id, (req.params as { id: string }).id));
   app.post("/api/projects/:p/approval-policy", { preHandler: authed("admin") }, async (req) => {
     const p = req.principal!;
     if (p.kind !== "token" || p.principalType !== "human" || p.projects !== "*") throw new HttpError(403, "only a human installation admin may change approval policy");
