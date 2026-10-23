@@ -34,3 +34,16 @@ Acceptance (`examples/reference-app/agent-boundary.test.ts`, 4 tests, real MCP c
 
 Unobserved paths: direct network access, other MCP servers or plugins, and tool arguments (never recorded).
 The chosen boundary is MCP; other runtimes are not claimed as supported.
+
+## R05.3 extend MCP with bounded cases and subscriptions
+
+Delivered: `dk_capabilities`, `dk_case_changes`, case resource template, per-server output budget, `/api/capabilities`, `/cases/changes`.
+
+Acceptance (`apps/mcp/test/mcp-r05.test.ts`, 5 tests):
+- Stdio is the only transport; no remote mode is offered, so there is nothing to disagree on scope (stated in capabilities).
+- A viewer calling the non-read-only containment tool is refused by the server role check; annotations are hints only.
+- No tool input names a URL, endpoint, token or header; the client only calls its configured base URL with its own token.
+- Closing the MCP client does not stop ingestion; case changes made meanwhile are returned on the next poll in order.
+- Results above the budget are withheld with `truncated: true` and the budget, not partially returned.
+
+Limitations: no push subscriptions (polling every 30 s); no remote MCP.

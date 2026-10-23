@@ -76,6 +76,16 @@ export class Cases {
     return r;
   }
 
+  /** R05.3 incremental delivery: cases changed strictly after (updated_at, id), oldest first. */
+  changes(projectId: string, since: { at: string; id: string } | null, limit = 50) {
+    const rows = (since
+      ? this.db.prepare("SELECT * FROM cases WHERE project_id = ? AND (updated_at > ? OR (updated_at = ? AND id > ?)) ORDER BY updated_at, id LIMIT ?").all(projectId, since.at, since.at, since.id, limit + 1)
+      : this.db.prepare("SELECT * FROM cases WHERE project_id = ? ORDER BY updated_at, id LIMIT ?").all(projectId, limit + 1)) as unknown as CaseRow[];
+    const page = rows.slice(0, limit);
+    const last = page.at(-1);
+    return { changes: page.map((r) => ({ id: r.id, title: r.title, status: r.status, version: r.version, updated_at: r.updated_at })), more: rows.length > limit, next_since: last ? Buffer.from(JSON.stringify({ at: last.updated_at, id: last.id })).toString("base64url") : (since ? Buffer.from(JSON.stringify(since)).toString("base64url") : null) };
+  }
+
   get(projectId: string, id: string) {
     const r = this.row(projectId, id);
     const items = (this.db.prepare("SELECT * FROM case_items WHERE case_id = ? ORDER BY seq").all(id) as { seq: number; item_id: string; kind: string; ref: string; body: string; added_by: string; added_at: string; removed_at: string | null; removed_by: string | null; removal_reason: string | null }[])

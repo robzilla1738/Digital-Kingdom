@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R05.3: MCP cases, capabilities and incremental delivery
+
+- MCP `dk_capabilities` (contract and recipe versions, budgets, delivery model), `dk_case_changes` (cursor-based incremental case delivery; changes made while a client is disconnected arrive on the next poll), and `digital-kingdom://cases/{id}` resources. Oversized tool results are withheld with an explicit budget error (`maxOutputBytes`, `DK_MCP_MAX_OUTPUT_BYTES`), never cut. Server: `GET /api/capabilities`, `GET /cases/changes`. Remote MCP transport is deliberately not offered.
+
 ### Roadmap R05.2: one agent boundary, end to end
 
 - Reference MCP tool gateway (`examples/reference-app/src/agent/boundary.ts`) that reports every call's intent, policy decision (`policy_enforcer`) and execution (`tool_wrapper`), plus a separate controlled receiver whose observer reports deliveries with its own key as `independent_observer`. Unobserved paths and permission assumptions are documented in code and receipt.

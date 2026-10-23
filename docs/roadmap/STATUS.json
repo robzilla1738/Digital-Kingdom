@@ -279,12 +279,12 @@
   {
    "id": "R05.3",
    "title": "Extend MCP with bounded cases and subscriptions",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R05-RECEIPT.md#r053-extend-mcp-with-bounded-cases-and-subscriptions",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "mcp-r05.test.ts 5/5. Polling only; no remote transport."
   },
   {
    "id": "R05.4",

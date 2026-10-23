@@ -1,4 +1,5 @@
 import { BlockList, isIP } from "node:net";
+import { RULESET_VERSION } from "@dk/detections";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
@@ -584,6 +585,21 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   const cases = new Cases(store);
   const body = (req: FastifyRequest) => ((req.body && typeof req.body === "object" && !Array.isArray(req.body)) ? req.body : {}) as Record<string, unknown>;
   const CP = (req: FastifyRequest) => (req.params as { id: string }).id;
+  app.get("/api/projects/:p/cases/changes", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const raw = (req.query as { since?: string }).since;
+    let since: { at: string; id: string } | null = null;
+    if (raw) { try { const v = JSON.parse(Buffer.from(String(raw), "base64url").toString("utf8")); if (typeof v.at !== "string" || typeof v.id !== "string") throw new Error(); since = v; } catch { throw new HttpError(400, "invalid since cursor"); } }
+    return { ...cases.changes(proj.id, since), poll_after_seconds: 30 };
+  });
+  app.get("/api/capabilities", { preHandler: authed() }, async () => ({
+    schema: "dk.capabilities.v1", api_version: "v1", ruleset: RULESET_VERSION,
+    contracts: { recipe_run: "dk.recipe_run.v1", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2" },
+    recipes: RECIPES.map((r) => `${r.id}@${r.version}`),
+    budgets: { search_limit_max: 100, search_window_days_max: 31, recipe_queries_max: 12, case_changes_page: 50 },
+    delivery: { incremental: "poll /cases/changes with next_since every poll_after_seconds", push: "not supported" },
+    transports: ["stdio MCP (local)"], remote_mcp: "not offered",
+  }));
   app.get("/api/projects/:p/cases", { preHandler: authed() }, async (req) => ({ cases: cases.list(store.require(req.principal!, P(req), "viewer").id) }));
   app.post("/api/projects/:p/cases", { preHandler: authed("analyst") }, async (req) => cases.create(store.require(req.principal!, P(req), "analyst").id, body(req), who(req)));
   app.get("/api/projects/:p/cases/:id", { preHandler: authed() }, async (req) => cases.get(store.require(req.principal!, P(req), "viewer").id, CP(req)));
