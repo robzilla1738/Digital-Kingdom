@@ -20,6 +20,8 @@ export interface Principal {
   projects: "*" | string[];
   /** Whether the token belongs to a person or to an automated caller (agent, CI). */
   principalType: "human" | "service";
+  /** R08.1: the authenticated subject (SSO issuer#subject, an admin-bound person label, or the token itself). */
+  subject?: string;
 }
 
 export interface ProjectRow { id: string; name: string; dataset_kind: DatasetKind; created_at: string; meta: Record<string, unknown> }
@@ -703,10 +705,10 @@ export class Store {
 
   // ---------------- tokens / sessions / audit ----------------
 
-  createToken(name: string, role: Role, projects: "*" | string[] = "*", raw?: string, principalType: "human" | "service" = "human", opts: { expiresAt?: string; oidc?: { issuer: string; subject: string } } = {}): { id: string; token: string; expires_at: string | null } {
+  createToken(name: string, role: Role, projects: "*" | string[] = "*", raw?: string, principalType: "human" | "service" = "human", opts: { expiresAt?: string; oidc?: { issuer: string; subject: string }; subject?: string } = {}): { id: string; token: string; expires_at: string | null } {
     const token = raw ?? newToken(principalType === "service" ? "dks_svc" : "dku");
     const id = "tok_" + sha256(token).slice(0, 12);
-    this.db.prepare("INSERT OR IGNORE INTO api_tokens (id, name, role, token_hash, project_ids, created_at, principal_type, expires_at, oidc_issuer, oidc_subject) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run(id, name.slice(0, 80), role, sha256(token), projects === "*" ? "*" : JSON.stringify(projects), this.iso(), principalType, opts.expiresAt ?? null, opts.oidc?.issuer ?? null, opts.oidc?.subject ?? null);
+    this.db.prepare("INSERT OR IGNORE INTO api_tokens (id, name, role, token_hash, project_ids, created_at, principal_type, expires_at, oidc_issuer, oidc_subject, subject) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)").run(id, name.slice(0, 80), role, sha256(token), projects === "*" ? "*" : JSON.stringify(projects), this.iso(), principalType, opts.expiresAt ?? null, opts.oidc?.issuer ?? null, opts.oidc?.subject ?? null, opts.subject ?? null);
     return { id, token, expires_at: opts.expiresAt ?? null };
   }
 
@@ -720,7 +722,7 @@ export class Store {
       if (!r) throw new HttpError(404, "unknown or revoked token");
       if (r.oidc_subject) throw new HttpError(409, "SSO sessions are not rotated; sign in again");
       const projects = r.project_ids === "*" ? "*" as const : J(r.project_ids, [] as string[]);
-      const next = this.createToken(`${r.name}`.slice(0, 80), r.role as Role, projects, undefined, (r.principal_type as "human" | "service") ?? "human", { ...(expiresAt ?? r.expires_at ? { expiresAt: expiresAt ?? r.expires_at! } : {}) });
+      const next = this.createToken(`${r.name}`.slice(0, 80), r.role as Role, projects, undefined, (r.principal_type as "human" | "service") ?? "human", { ...(expiresAt ?? r.expires_at ? { expiresAt: expiresAt ?? r.expires_at! } : {}), ...(r.subject ? { subject: r.subject } : {}) });
       this.db.prepare("UPDATE api_tokens SET revoked = 1, rotated_to = ? WHERE id = ?").run(next.id, id);
       this.db.prepare("DELETE FROM sessions WHERE token_id = ?").run(id);
       this.audit(actor, "token.rotate", null, id, { successor: next.id });
@@ -783,7 +785,7 @@ export class Store {
     if (!raw) return undefined;
     const r = this.db.prepare("SELECT * FROM api_tokens WHERE token_hash = ? AND revoked = 0 AND (expires_at IS NULL OR expires_at > ?)").get(sha256(raw), this.iso()) as Record<string, string> | undefined;
     if (!r) return undefined;
-    return { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]), principalType: (r.principal_type as "human" | "service") ?? "human" };
+    return { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]), principalType: (r.principal_type as "human" | "service") ?? "human", subject: r.oidc_issuer && r.oidc_subject ? `oidc:${r.oidc_issuer}#${r.oidc_subject}` : r.subject ? `person:${r.subject}` : `token:${r.id}` };
   }
 
   createSession(tokenId: string, ttlHours = 12): string {
@@ -795,7 +797,7 @@ export class Store {
   authenticateSession(sid: string | undefined): Principal | undefined {
     if (!sid) return undefined;
     const r = this.db.prepare("SELECT t.* FROM sessions s JOIN api_tokens t ON t.id = s.token_id WHERE s.id_hash = ? AND s.expires_at > ? AND t.revoked = 0 AND (t.expires_at IS NULL OR t.expires_at > ?)").get(sha256(sid), this.iso(), this.iso()) as Record<string, string> | undefined;
-    return r ? { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]), principalType: (r.principal_type as "human" | "service") ?? "human" } : undefined;
+    return r ? { kind: "token", id: r.id!, name: r.name!, role: r.role as Role, projects: r.project_ids === "*" ? "*" : J(r.project_ids, [] as string[]), principalType: (r.principal_type as "human" | "service") ?? "human", subject: r.oidc_issuer && r.oidc_subject ? `oidc:${r.oidc_issuer}#${r.oidc_subject}` : r.subject ? `person:${r.subject}` : `token:${r.id}` } : undefined;
   }
 
   deleteSession(sid: string): string | null {
@@ -822,7 +824,7 @@ export class Store {
     return CONTAINMENT_CATALOG.filter((a) => !allowed || allowed.includes(a.id));
   }
 
-  requestContainment(projectId: string, findingId: string, actionId: string, rationale: string, actor: string, requesterType: "human" | "service" = "human") {
+  requestContainment(projectId: string, findingId: string, actionId: string, rationale: string, actor: string, requesterType: "human" | "service" = "human", requesterSubject?: string) {
     const f = this.getFinding(projectId, findingId);
     if (!f) throw new HttpError(404, "finding not found");
     const action = this.containmentCatalog(projectId).find((a) => a.id === actionId);
@@ -835,7 +837,8 @@ export class Store {
     tx(this.db, () => {
       this.db.prepare("INSERT INTO containment_requests (id, project_id, finding_id, action_id, requested_by, rationale, status, created_at, requested_by_type, finding_revision, policy_digest, expires_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?)")
         .run(id, projectId, findingId, actionId, actor, rationale.slice(0, 2000), this.iso(), requesterType, f.finding.revision, this.containmentPolicyDigest(projectId, actionId), expires);
-      this.audit(actor, "containment.requested", projectId, id, { findingId, actionId });
+      if (requesterSubject) this.db.prepare("UPDATE containment_requests SET requested_subject = ? WHERE id = ?").run(requesterSubject, id);
+      this.audit(actor, "containment.requested", projectId, id, { findingId, actionId, subject: requesterSubject ?? null });
       this.emit(projectId, "containment", { id, status: "pending" });
     });
     return this.getContainment(projectId, id)!;
@@ -846,29 +849,67 @@ export class Store {
    * distinct people (one person could hold two tokens); bind tokens to an identity provider before any
    * executor is ever introduced. Service tokens (agents, CI) can request but never decide.
    */
-  decideContainment(projectId: string, id: string, decision: "approved" | "rejected", actor: string, principalId: string, principalType: "human" | "service" = "human") {
+  /**
+   * Record a decision (R08.1). Approvals are counted per authenticated SUBJECT, not per token: two tokens bound
+   * to the same person, or the same SSO identity, count once. The requester's subject can never approve. Each
+   * approval binds the exact plan digest (action, permitted set, approval policy, finding revision) and stops
+   * counting when its token is revoked or the plan changes. Service tokens (agents, CI) can request, never decide.
+   */
+  decideContainment(projectId: string, id: string, decision: "approved" | "rejected", actor: string, principalId: string, principalType: "human" | "service" = "human", subject = `token:${principalId}`) {
     const c = this.getContainment(projectId, id);
     if (!c) throw new HttpError(404, "containment request not found");
     if (c.status !== "pending") throw new HttpError(409, "already decided");
     if (principalType !== "human") throw new HttpError(403, "service tokens cannot decide containment requests");
-    if (c.requested_by === actor || c.requested_by === principalId || String(c.requested_by).endsWith(`(${principalId})`)) throw new HttpError(403, "the requesting token cannot decide its own containment request");
-    if (decision === "approved") {
-      // R01.4: an approval binds the exact policy and finding revision that were reviewed. Rejection stays possible.
-      const stale = this.containmentStaleness(projectId, c);
-      if (stale) throw new HttpError(409, `cannot approve: ${stale}`, ["reject this proposal or request it again so the current policy and evidence are reviewed"], { renewal_required: true });
+    if (c.requested_by === actor || c.requested_by === principalId || String(c.requested_by).endsWith(`(${principalId})`) || (c.requested_subject && c.requested_subject === subject)) throw new HttpError(403, "the requesting subject cannot decide its own containment request");
+    if (decision === "rejected") {
+      tx(this.db, () => {
+        this.db.prepare("UPDATE containment_requests SET status = 'rejected', decided_by = ?, decided_at = ? WHERE id = ?").run(actor, this.iso(), id);
+        this.audit(actor, "containment.rejected", projectId, id, { subject });
+        this.emit(projectId, "containment", { id, status: "rejected" });
+      });
+      return this.getContainment(projectId, id)!;
     }
+    const stale = this.containmentStaleness(projectId, c);
+    if (stale) throw new HttpError(409, `cannot approve: ${stale}`, ["reject this proposal or request it again so the current policy and evidence are reviewed"], { renewal_required: true });
+    const plan = this.containmentPlanDigest(projectId, c);
+    if (this.validApprovals(projectId, id, plan).some((a) => a.subject === subject)) throw new HttpError(409, "this subject has already approved; a different person must approve");
     tx(this.db, () => {
-      this.db.prepare("UPDATE containment_requests SET status = ?, decided_by = ?, decided_at = ? WHERE id = ?").run(decision, actor, this.iso(), id);
-      this.audit(actor, `containment.${decision}`, projectId, id, {});
-      this.emit(projectId, "containment", { id, status: decision });
+      this.db.prepare("INSERT INTO containment_approvals (request_id, project_id, subject, token_id, plan_digest, approved_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (request_id, subject) DO UPDATE SET token_id = excluded.token_id, plan_digest = excluded.plan_digest, approved_at = excluded.approved_at").run(id, projectId, subject, principalId, plan, this.iso());
+      const have = this.validApprovals(projectId, id, plan).length, need = this.approvalsRequired(projectId);
+      this.audit(actor, "containment.approval", projectId, id, { subject, have, need, plan_digest: plan });
+      if (have >= need) {
+        this.db.prepare("UPDATE containment_requests SET status = 'approved', decided_by = ?, decided_at = ? WHERE id = ?").run(actor, this.iso(), id);
+        this.audit(actor, "containment.approved", projectId, id, { subjects: this.validApprovals(projectId, id, plan).map((a) => a.subject) });
+        this.emit(projectId, "containment", { id, status: "approved" });
+      }
     });
     return this.getContainment(projectId, id)!;
+  }
+
+  approvalsRequired(projectId: string): number { const n = Number(this.mustProject(projectId).meta.approvals_required ?? 1); return n >= 1 && n <= 3 ? n : 1; }
+
+  /** R08.1: only a human installation admin may change approval policy; the change invalidates pending approvals. */
+  setApprovalPolicy(projectId: string, approvalsRequired: number, actor: string) {
+    if (!Number.isInteger(approvalsRequired) || approvalsRequired < 1 || approvalsRequired > 3) throw new HttpError(400, "approvals_required must be 1, 2 or 3");
+    const p = this.mustProject(projectId);
+    this.db.prepare("UPDATE projects SET meta = ? WHERE id = ?").run(JSON.stringify({ ...p.meta, approvals_required: approvalsRequired }), projectId);
+    this.audit(actor, "approval_policy.set", projectId, null, { approvals_required: approvalsRequired });
+  }
+
+  private containmentPlanDigest(projectId: string, c: Record<string, unknown>) {
+    return digest({ policy: this.containmentPolicyDigest(projectId, String(c.action_id)), finding: c.finding_id, revision: Number(c.finding_revision), approvals_required: this.approvalsRequired(projectId) });
+  }
+
+  /** Approvals that still count: same plan digest and a token that is neither revoked nor expired. */
+  validApprovals(projectId: string, requestId: string, plan?: string) {
+    const rows = this.db.prepare("SELECT a.subject, a.token_id, a.plan_digest, a.approved_at FROM containment_approvals a JOIN api_tokens t ON t.id = a.token_id WHERE a.project_id = ? AND a.request_id = ? AND t.revoked = 0 AND (t.expires_at IS NULL OR t.expires_at > ?)").all(projectId, requestId, this.iso()) as { subject: string; token_id: string; plan_digest: string; approved_at: string }[];
+    return plan ? rows.filter((r) => r.plan_digest === plan) : rows;
   }
 
   /** Digest of what a reviewer approves against: the catalog entry and the project's permitted action set. */
   containmentPolicyDigest(projectId: string, actionId: string): string {
     const proj = this.mustProject(projectId);
-    return digest({ action: this.containmentCatalog(projectId).find((a) => a.id === actionId) ?? null, permitted: proj.meta.containment_action_ids ?? null });
+    return digest({ action: this.containmentCatalog(projectId).find((a) => a.id === actionId) ?? null, permitted: proj.meta.containment_action_ids ?? null, ...(proj.meta.approvals_required !== undefined ? { approvals_required: proj.meta.approvals_required } : {}) });
   }
 
   /** Why a pending request can no longer be approved as reviewed, or null. */
@@ -891,9 +932,10 @@ export class Store {
   }
 
   private annotateContainment(projectId: string, r: Record<string, string>): Record<string, string> {
-    if (r.status !== "pending") return r;
+    const approvals = this.validApprovals(projectId, r.id!, r.status === "pending" ? this.containmentPlanDigest(projectId, r) : undefined).map((a) => ({ subject: a.subject, at: a.approved_at }));
+    if (r.status !== "pending") return { ...r, approvals } as unknown as Record<string, string>;
     const why = this.containmentStaleness(projectId, r);
-    return { ...r, approvable: why === null, renewal_reason: why } as unknown as Record<string, string>;
+    return { ...r, approvable: why === null, renewal_reason: why, approvals, approvals_required: this.approvalsRequired(projectId) } as unknown as Record<string, string>;
   }
 
   mustProject(id: string): ProjectRow {

@@ -384,12 +384,12 @@
   {
    "id": "R08.1",
    "title": "Bind response authorization to real subjects and policy",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R08-RECEIPT.md#r081-bind-response-authorization-to-real-subjects-and-policy",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "approvals-r08.test.ts 4/4. Person subjects are admin-asserted unless SSO."
   },
   {
    "id": "R08.2",

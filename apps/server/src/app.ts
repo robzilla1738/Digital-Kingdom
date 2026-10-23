@@ -125,7 +125,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   for (const t of cfg.trustedProxies ?? []) { const [addr, bits] = t.split("/"); const fam = isIP(addr ?? "") === 6 ? "ipv6" : "ipv4"; if (!isIP(addr ?? "")) continue; if (bits) trusted.addSubnet(addr!, Number(bits), fam); else trusted.addAddress(addr!, fam); }
   const fromTrustedProxy = (req: FastifyRequest) => { const a = (req.socket.remoteAddress ?? "").replace(/^::ffff:/, ""); return !!a && isIP(a) > 0 && trusted.check(a, isIP(a) === 6 ? "ipv6" : "ipv4"); };
   const secure = (req: FastifyRequest) => !!cfg.secureCookies || (fromTrustedProxy(req) && String(req.headers["x-forwarded-proto"] ?? "").split(",")[0]!.trim() === "https");
-  const who = (req: FastifyRequest) => req.principal!.kind === "anonymous-demo" ? "anonymous" : `${req.principal!.name} (${req.principal!.id})`;
+  const who = (req: FastifyRequest) => req.principal!.kind === "anonymous-demo" ? "anonymous" : `${req.principal!.name} (${req.principal!.id})${req.principal!.subject && !req.principal!.subject.startsWith("token:") ? ` [${req.principal!.subject}]` : ""}`;
   const P = (req: FastifyRequest) => (req.params as { p: string }).p;
 
   // ---- health ----
@@ -208,7 +208,10 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (days !== undefined && (typeof days !== "number" || !Number.isInteger(days) || days < 1 || days > 365)) throw new HttpError(400, "expires_in_days must be an integer from 1 to 365");
     const effDays = days ?? (type === "service" ? 90 : undefined);
     const expiresAt = effDays ? new Date(store.now().getTime() + effDays * 86_400_000).toISOString() : undefined;
-    const t = store.createToken(b.name, b.role, scope, undefined, type, expiresAt ? { expiresAt } : {});
+    const subj = (b as { subject?: unknown }).subject;
+    if (subj !== undefined && (typeof subj !== "string" || !/^[A-Za-z0-9_.@-]{1,120}$/.test(subj))) throw new HttpError(400, "subject must be a person identifier (letters, digits, . _ @ -)");
+    if (subj !== undefined && (type !== "human" || issuer.projects !== "*")) throw new HttpError(403, "only an installation admin may bind a human token to a person");
+    const t = store.createToken(b.name, b.role, scope, undefined, type, { ...(expiresAt ? { expiresAt } : {}), ...(typeof subj === "string" ? { subject: subj } : {}) });
     store.audit(who(req), "token.create", scope === "*" ? null : scope.length === 1 ? scope[0]! : null, t.id, { role: b.role, principal_type: type, projects: scope, expires_at: t.expires_at });
     return { id: t.id, token: t.token, role: b.role, principal_type: type, projects: scope, expires_at: t.expires_at, note: "Shown once; only its hash is stored." };
   });
@@ -521,13 +524,20 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.post("/api/projects/:p/containment", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
     const b = req.body as { finding_id: string; action_id: string; rationale?: string };
-    return store.requestContainment(proj.id, String(b.finding_id), String(b.action_id), String(b.rationale ?? ""), who(req), req.principal!.principalType);
+    return store.requestContainment(proj.id, String(b.finding_id), String(b.action_id), String(b.rationale ?? ""), who(req), req.principal!.principalType, req.principal!.subject);
   });
   app.post("/api/projects/:p/containment/:id/decision", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");
     const d = (req.body as { decision?: string }).decision;
     if (d !== "approved" && d !== "rejected") throw new HttpError(400, "decision must be approved or rejected");
-    return store.decideContainment(proj.id, (req.params as { id: string }).id, d, who(req), req.principal!.id, req.principal!.principalType);
+    return store.decideContainment(proj.id, (req.params as { id: string }).id, d, who(req), req.principal!.id, req.principal!.principalType, req.principal!.subject ?? `token:${req.principal!.id}`);
+  });
+  app.post("/api/projects/:p/approval-policy", { preHandler: authed("admin") }, async (req) => {
+    const p = req.principal!;
+    if (p.kind !== "token" || p.principalType !== "human" || p.projects !== "*") throw new HttpError(403, "only a human installation admin may change approval policy");
+    const proj = store.require(p, P(req), "admin");
+    store.setApprovalPolicy(proj.id, Number((req.body as { approvals_required?: unknown } | undefined)?.approvals_required), who(req));
+    return { approvals_required: store.approvalsRequired(proj.id), note: "Pending approvals made under the old policy no longer count." };
   });
 
   // ---- agent context (shared with the MCP server) ----

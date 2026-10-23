@@ -33,3 +33,8 @@ export const AWS_SCOPE_MIGRATION = `CREATE TABLE aws_scopes (project_id TEXT NOT
 
 /** R04.3 authorization snapshots for the scoped policy evaluator. */
 export const ACCESS_SNAPSHOT_MIGRATION = `CREATE TABLE access_snapshots (project_id TEXT NOT NULL, snapshot_id TEXT NOT NULL, taken_at TEXT NOT NULL, body TEXT NOT NULL, digest TEXT NOT NULL, stored_at TEXT NOT NULL, stored_by TEXT NOT NULL, PRIMARY KEY (project_id, snapshot_id));`;
+
+/** R08.1 subjects on tokens and per-subject containment approvals bound to the plan digest. */
+export const APPROVALS_MIGRATION = `ALTER TABLE api_tokens ADD COLUMN subject TEXT;
+   ALTER TABLE containment_requests ADD COLUMN requested_subject TEXT;
+   CREATE TABLE containment_approvals (request_id TEXT NOT NULL, project_id TEXT NOT NULL, subject TEXT NOT NULL, token_id TEXT NOT NULL, plan_digest TEXT NOT NULL, approved_at TEXT NOT NULL, PRIMARY KEY (request_id, subject));`;

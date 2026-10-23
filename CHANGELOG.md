@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R08.1: response authorization bound to subjects and policy
+
+- Approvals are counted per authenticated subject (SSO issuer and subject, or a person an installation admin binds to a human token with `subject`), not per token. `POST /approval-policy` (human installation admin only) sets 1 to 3 required approvals; each approval binds the plan digest (action, permitted set, approval policy, finding revision) and stops counting if its token is revoked or expires. The requester's subject can never approve. Audit entries name the subject. Containment remains proposal-only.
+
 ### Roadmap R07.1: control inventory and verification records
 
 - Controls (`apps/server/src/controls.ts`, migration 15): declared, configured, tested, failed, stale and unknown states derived only from verification records bound to the control's config digest, with expiry, observer availability and recorded conditions. A pass with an unavailable observer is stored as inconclusive; a config or policy change makes earlier tests stale. `/controls` routes and a Coverage → Controls tab.
