@@ -493,12 +493,12 @@
   {
    "id": "R11.1",
    "title": "Complete the offline v2 evaluation runner",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R11-RECEIPT.md#r111-offline-v2-evaluation-runner",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "v2-harness.test.ts 10/10. No provider call made."
   },
   {
    "id": "R11.2",

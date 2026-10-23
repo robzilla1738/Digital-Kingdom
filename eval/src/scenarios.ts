@@ -289,3 +289,8 @@ export function renderCase(scenarioId: string, variant: "a" | "b"): { spec: Case
     key: { case_id: caseId, scenario_id: scenarioId, version: SCENARIO_VERSION, split: v.split, ...built.key },
   };
 }
+
+/** Building blocks re-exported for the v2 generator (eval/src/v2). Exporting them does not change v1 output. */
+export const V1_TEMPLATES: Readonly<Record<string, Template>> = T;
+export { mkR, manifest as v1Manifest, src as v1Source, at as v1At, POOL as V1_POOL, NO_FORBID as V1_NO_FORBID };
+export type { Built as V1Built, R as V1Rng };

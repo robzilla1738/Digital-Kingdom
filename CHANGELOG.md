@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R11.1: offline evaluation v2 harness
+
+- `eval/src/v2/harness.ts` implements the v2 plan without any provider call: condition profiles (C2 is guarded against being labelled raw-only), an access-equivalence preflight that traverses every search page with the agent's real viewer credential and invalidates (never scores) cases with unequal or unreachable evidence, seeded generation of 12 families (8 v1 plus unlinked follow-on, shared address, mixed coverage, instruction contamination) as dev plus two held-out variants, eight length-matched clean/injected pairs (two per injection style), a preregistered counterbalanced order, three-denominator scoring, and budget reservation that stops before 80% of an approved cap. Real providers are refused without a separately approved budget. A test pins the digest of the v1 scenarios, grading keys and runs.
+
 ### Roadmap R02.2: one-command local application pack
 
 - `pnpm quickstart` starts an isolated live project on 127.0.0.1 with its own database: declared inventory, four least-privilege sources (application SDK, database audit fixture, agent tool wrapper, independent effect observer), the instrumented reference app and a recorded agent run, and prints the guided steps (authorize, preview, import, validate, first event). `pnpm quickstart --reset` deletes `.dk-local/`. The Node SDK gains `dataAccess`, `toolStep` (with agent context), `sensorDown`/`sensorUp`.

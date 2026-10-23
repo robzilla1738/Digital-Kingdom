@@ -8,6 +8,8 @@
 
 Preserve this plan's committed hash in every run manifest. Any later amendment must record its date, reason, whether results had been inspected, and the affected analyses. Do not silently change objectives, thresholds, exclusions, model, prompts or budgets after starting.
 
+2026-10-22 (roadmap R11.1): the offline harness is implemented in `eval/src/v2/harness.ts` (conditions, access-equivalence preflight, seeded generation of 12 families x dev + 2 held-out, eight clean/injected pairs, preregistered counterbalanced ordering, three-denominator scoring, budget reservation). It has made no provider call; paid runs still need a separately approved budget (R11.2).
+
 ## 1. Questions and limits
 
 1. Can event search discover relevant stored activity not referenced by a finding?
