@@ -54,6 +54,7 @@ test('COV-06: fault-injected missing assessments remain unknown, never zero gaps
     await expectCounts(page, { sourceCount: data.sources.length, assetCount: data.graph.assets.length });
     await expect(coverage(page).locator('tr[data-state="not_assessed"]')).toHaveCount(data.sources.length);
     await expect(coverage(page).locator('tr[data-state="healthy"]')).toHaveCount(0);
+    await coverage(page).locator('.context-note > summary').click();
     await expect(coverage(page).getByText('A missing assessment remains unknown.', { exact: false })).toBeVisible();
     await page.getByRole('tab', { name: 'Assets with gaps', exact: true }).click();
     await expect(coverage(page).locator('tr[data-asset-id]')).toHaveCount(data.graph.assets.length);
@@ -68,7 +69,8 @@ test('COV-06: failed refresh retains confirmed nonzero gaps and visibly marks th
   const data = await snapshot(), counts = expectedCounts(data); const { context, page } = await loginRedesign(browser, harness);
   try {
     await openCoverage(page); await expectCounts(page, counts); await expect(page.getByTestId('connection-pill')).toHaveAttribute('data-state', 'live');
-    const basis = await coverage(page).locator('.scope-note').first().innerText(); let failures = 0;
+    await coverage(page).locator('.context-note > summary').click();
+    const basis = await coverage(page).locator('.scope-note').first().innerText(); expect(basis).toContain('Current coverage as of'); let failures = 0;
     await page.route(`**/api/projects/${project}/snapshot`, async route => { failures++; await route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'Explicit synthetic snapshot refresh outage' }) }); });
     // A genuine server-confirmed update prompts the normal SSE refresh path. The snapshot response alone fails.
     expect((await harness.api('POST', `/api/projects/${project}/findings/${encodeURIComponent(data.findings[0]!.id)}/disposition`, { note: 'Synthetic refresh trigger for coverage failure acceptance' })).status).toBe(200);
@@ -76,7 +78,7 @@ test('COV-06: failed refresh retains confirmed nonzero gaps and visibly marks th
     await expect(page.getByTestId('connection-banner')).toBeVisible(); await expect(page.getByTestId('connection-banner')).toContainText('Could not refresh the snapshot'); await expect(page.getByTestId('connection-banner')).toContainText('Showing data as of');
     await expectCounts(page, counts); expect(counts.assetCount).toBeGreaterThan(0);
     await expect(coverage(page).locator('.scope-note').first()).toHaveText(basis);
-    await expect(page.locator('.topbar .coverage-shortcut')).not.toHaveText('0 assets with visibility gaps');
+    await expect(page.locator('.topbar .coverage-shortcut')).not.toHaveAccessibleName('0 assets with visibility gaps');
     await expect(coverage(page).locator('tr[data-state="offline"], tr[data-state="stale"], tr[data-state="unavailable"]')).not.toHaveCount(0);
     await captureRedesign(page, 'COV06-failed-snapshot-retains-known-gaps');
   } finally { await context.close(); }
