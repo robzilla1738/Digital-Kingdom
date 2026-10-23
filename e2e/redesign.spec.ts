@@ -315,7 +315,13 @@ test('explicit camera focus and context loss preserve stable selection and graph
   await offline(page,'?fixture=F01');await rendered(page);
   await page.getByRole('tab',{name:/^Assets 13$/}).click();
   await page.locator('.sidebar [data-asset-id]').first().click();
-  await page.waitForTimeout(500);const initial=await page.locator('canvas').getAttribute('data-camera-pose');
+  // Inspector mounting changes the viewport. Compare camera history only after
+  // the renderer has published a frame for the actual resized drawing surface.
+  await expect.poll(() => page.locator('canvas').evaluate(canvas => {
+    const [width, height] = (canvas.dataset.cameraViewport ?? '').split('x').map(Number), bounds = canvas.getBoundingClientRect();
+    return Math.abs(width - bounds.width) < 1 && Math.abs(height - bounds.height) < 1;
+  })).toBe(true);
+  const initial=await page.locator('canvas').getAttribute('data-camera-pose');
   await page.getByRole('button',{name:'Focus asset',exact:true}).click();
   await expect.poll(()=>page.locator('canvas').getAttribute('data-camera-pose')).not.toBe(initial);
   await page.waitForTimeout(600);const focused=await page.locator('canvas').getAttribute('data-camera-pose');

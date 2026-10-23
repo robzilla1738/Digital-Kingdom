@@ -6,6 +6,8 @@ Scope: complete the authorized repository work and polish the application. The o
 
 The owner subsequently authorized publishing the existing GitHub Pages synthetic demo. The release follow-up found and corrected two gaps: Inter's copyright and full OFL-1.1 license now ship with the web build, with a package-scoped reviewed exception in the dependency inventory; deferred evidence-close focus restoration now respects a later user focus action. A browser regression reproduced search losing focus before the fix and passed afterward. Fresh GitHub CI and the Pages deployment provide the publication checks; the historical local counts below remain unchanged.
 
+The first fresh full CI UI run recorded 84 passed, two failed and one skipped. Its failures exposed a focused district endpoint label losing priority after inspecting another endpoint, and a camera-history check sampling before the renderer observed the inspector resize. Explicitly focused labels now retain priority, and the camera check waits for a rendered frame at the actual viewport size before capturing its baseline. Both focused district cases and the camera/context-loss case passed locally after these corrections; this failed CI run remains part of the record (`39980687681`).
+
 ## Changes
 
 - Refined every workspace around a shared charcoal/glass visual system, locally bundled Inter Variable and Lucide controls. Pills, fields, tables, navigation, menus, inspector sections and mobile layouts now share consistent spacing and styling. Semantic outcome shapes remain distinct from decorative navigation icons.
