@@ -60,3 +60,14 @@ Acceptance (`apps/server/test/deception-r03.test.ts`, 4 tests):
 - Generated values are AKIA-shaped but never stored; a real active key or private-key text is refused; retired decoys take no new placements.
 
 Limit: the Canarytokens adapter is format-conformant to its documented webhook fields; not checked against a live Canarytokens account.
+
+## R03.5 notification outbox
+
+- Candidate: roadmap/batch4 (commit follows this receipt).
+- Changed: apps/server/src/notify.ts (new), db.ts (NOTIFY_MIGRATION), app.ts (routes, case hooks, notifier decoration), main.ts (DK_PUBLIC_URL, DK_NOTIFY_INTERVAL_MS delivery/escalation loop), apps/web Integrations Notifications tab, test/notify-r03.test.ts, hardening teardown.
+- Commands: pnpm -s typecheck (clean); npx vitest run apps/server/test/notify-r03.test.ts (2 passed); npx vitest run (568 passed, 1 skipped, 78 files).
+- Acceptance: (1) restart on the same file database neither resends delivered rows nor sends an acknowledged one; (2) 503/connection failures appear in /notifications/status failures with attempts and last_error, permanent failures become failed; (3) a destination authorized for another project receives nothing, and payloads exclude case titles (test plants a secret-looking title); (4) status note states delivery counts are not investigation outcomes.
+- Supported scope: generic signed HTTPS webhook. No Slack/PagerDuty/email adapters. Tested with an injected receiver only.
+- Blocked: real delivery to an authorized destination (gate authorized_notification_destination stays open).
+- Migration/rollback: adds notify_destinations, notify_outbox (+ index notify_outbox_due), notify_receipts; rollback drops them, no existing table is altered.
+- Next: an operator registers an authorized destination, runs POST /api/notifications/destinations/:id/test, and records the receipt.

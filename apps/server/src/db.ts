@@ -1,6 +1,7 @@
 import { CONTROLS_MIGRATION } from "./controls.ts";
 import { DECEPTION_MIGRATION } from "./deception.ts";
 import { CHANGE_MIGRATION } from "./change-review.ts";
+import { NOTIFY_MIGRATION } from "./notify.ts";
 import { BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION, IDENTITY_MIGRATION, AWS_SCOPE_MIGRATION, ACCESS_SNAPSHOT_MIGRATION, APPROVALS_MIGRATION } from "./schema-r01.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
@@ -100,6 +101,8 @@ export const MIGRATIONS: string[] = [
   DECEPTION_MIGRATION,
   // R04.4: security change reviews.
   CHANGE_MIGRATION,
+  // R03.5: notification outbox, destinations and delivery receipts.
+  NOTIFY_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

@@ -23,6 +23,7 @@ import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
 import { Controls } from "./controls.ts";
 import { ChangeReviews, type ChangePlanInput } from "./change-review.ts";
+import { Notifier, type FetchLike as NotifyFetch } from "./notify.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
 import { assess as assessVulns } from "./vuln.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
@@ -51,10 +52,17 @@ export interface AppConfig {
   trustedProxies?: string[];
   /** R10.2: unprocessed journal records above which ingestion answers 503 Retry-After. Default 200000. */
   maxBacklog?: number;
+  /** R03.5: fetch used for notification delivery (tests inject a receiver). Defaults to global fetch. */
+  notifyFetch?: NotifyFetch;
+  /** R03.5: public console URL used for authenticated deep links in notifications. */
+  publicUrl?: string | null;
+  /** R03.5: permit http://127.0.0.1 destinations (local receivers and tests only). */
+  notifyAllowLoopback?: boolean;
 }
 
 declare module "fastify" {
   interface FastifyRequest { principal?: Principal; viaCookie?: boolean }
+  interface FastifyInstance { notifier: Notifier }
 }
 
 const COOKIE = "dk_session";
@@ -695,6 +703,8 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
 
   // ---- durable cases (R03.1) ----
   const cases = new Cases(store);
+  const notifier = new Notifier(store.db, () => store.now(), cfg.notifyFetch ?? ((u, i) => fetch(u, i)), cfg.publicUrl ?? null, cfg.notifyAllowLoopback ?? false);
+  app.decorate("notifier", notifier);
   const body = (req: FastifyRequest) => ((req.body && typeof req.body === "object" && !Array.isArray(req.body)) ? req.body : {}) as Record<string, unknown>;
   const CP = (req: FastifyRequest) => (req.params as { id: string }).id;
   app.get("/api/projects/:p/cases/changes", { preHandler: authed() }, async (req) => {
@@ -713,9 +723,27 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     transports: ["stdio MCP (local)"], remote_mcp: "not offered",
   }));
   app.get("/api/projects/:p/cases", { preHandler: authed() }, async (req) => ({ cases: cases.list(store.require(req.principal!, P(req), "viewer").id) }));
-  app.post("/api/projects/:p/cases", { preHandler: authed("analyst") }, async (req) => cases.create(store.require(req.principal!, P(req), "analyst").id, body(req), who(req)));
+  app.post("/api/projects/:p/cases", { preHandler: authed("analyst") }, async (req) => {
+    const c = cases.create(store.require(req.principal!, P(req), "analyst").id, body(req), who(req));
+    notifier.enqueue({ projectId: c.project_id, kind: "case_assigned", severity: "medium", dedupKey: `case:${c.id}:owner:${c.owner}`, owner: c.owner, caseId: c.id });
+    return c;
+  });
   app.get("/api/projects/:p/cases/:id", { preHandler: authed() }, async (req) => cases.get(store.require(req.principal!, P(req), "viewer").id, CP(req)));
-  app.post("/api/projects/:p/cases/:id", { preHandler: authed("analyst") }, async (req) => cases.update(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
+  app.post("/api/projects/:p/cases/:id", { preHandler: authed("analyst") }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "analyst").id;
+    const before = cases.get(pid, CP(req)).owner;
+    const c = cases.update(pid, CP(req), body(req), who(req));
+    if (c.owner !== before) notifier.enqueue({ projectId: pid, kind: "case_assigned", severity: "medium", dedupKey: `case:${c.id}:owner:${c.owner}`, owner: c.owner, caseId: c.id });
+    return c;
+  });
+
+  // ---- notification outbox (R03.5) ----
+  app.get("/api/notifications/destinations", { preHandler: authed("admin") }, async () => ({ destinations: notifier.listDestinations() }));
+  app.post("/api/notifications/destinations", { preHandler: authed("admin") }, async (req) => notifier.addDestination(body(req), who(req)));
+  app.post("/api/notifications/destinations/:id/disable", { preHandler: authed("admin") }, async (req) => notifier.disableDestination(CP(req)));
+  app.post("/api/notifications/destinations/:id/test", { preHandler: authed("admin") }, async (req) => { const r = notifier.test(CP(req)); await notifier.deliver(); return r; });
+  app.get("/api/projects/:p/notifications/status", { preHandler: authed() }, async (req) => notifier.status(store.require(req.principal!, P(req), "viewer").id));
+  app.post("/api/projects/:p/notifications/:id/ack", { preHandler: authed("analyst") }, async (req) => notifier.acknowledge(store.require(req.principal!, P(req), "analyst").id, CP(req), who(req)));
   app.post("/api/projects/:p/cases/:id/items", { preHandler: authed("analyst") }, async (req) => cases.addItem(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
   app.post("/api/projects/:p/cases/:id/items/:item/question", { preHandler: authed("analyst") }, async (req) => cases.setQuestion(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req)));
   app.post("/api/projects/:p/cases/:id/items/:item/remove", { preHandler: authed("analyst") }, async (req) => cases.removeItem(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req)));

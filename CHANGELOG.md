@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R03.5: Durable notification outbox
+
+Durable notification outbox (apps/server/src/notify.ts, migration 22): admin-configured https destinations authorized per project (and optionally per owner), minimal payloads (kind, severity, ids, authenticated deep link; no titles or evidence), HMAC-SHA256 signatures, (destination, dedup_key) deduplication, stable x-dk-delivery-id for at-least-once delivery, exponential retry, failed state, UTC quiet windows (critical bypasses), one-time escalation that never widens project scope, acknowledgement that stops retries and escalation and survives restart, delivery receipts, a status API and an Integrations → Notifications tab. Case assignment and owner change enqueue. Real destination delivery is not validated (gate authorized_notification_destination).
+
 ### Roadmap R07.3: 16 controlled scenario manifests
 
 - `scenarios/dk-t/DK-T01.json` … `DK-T16.json` (`dk.scenario.v1`): expected observations, disallowed claims, missing-evidence variant, benign alternative and the tests that demonstrate each. `pnpm scenarios` (also in CI) runs them and writes a receipt; a failing scenario fails the command. Twelve run locally, DK-T13 partially (model behaviour gated), DK-T06 is not implemented, and DK-T10/DK-T11 stay unavailable until the laboratory executor exists.

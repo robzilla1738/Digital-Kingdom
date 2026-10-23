@@ -141,6 +141,8 @@ export function App() {
       recipes: (signal) => { check(); return api.get(`/api/recipes`, signal); },
       runRecipe: async (recipeId, findingId, attach) => { check(); return api.send("POST", `${prefix}/recipes/${encodeURIComponent(recipeId)}/run`, { finding_id: findingId, ...(attach ? { case_id: attach.caseId, expected_version: attach.expectedVersion } : {}) }); },
       connectors: (signal) => { check(); return api.get(`/api/connectors`, signal); },
+      notifications: (signal) => { check(); return api.get(`${prefix}/notifications/status`, signal); },
+      acknowledgeNotification: async (id) => { check(); return api.send("POST", `${prefix}/notifications/${encodeURIComponent(id)}/ack`); },
       listCases: (signal) => { check(); return api.get(`${prefix}/cases`, signal); },
       getCase: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}`, signal); },
       createCase: async (body) => { check(); return api.send("POST", `${prefix}/cases`, body); },

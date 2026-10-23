@@ -34,6 +34,15 @@ export interface ServerActions {
   /** R07.1 controls. */
   controls(signal?: AbortSignal): Promise<{ controls: { id: string; name: string; kind: string; asset_ids: string[]; state: string; state_reason: string }[] }>;
   control(id: string): Promise<any>;
+  /** R03.5 notification outbox status and acknowledgement. */
+  notifications(signal?: AbortSignal): Promise<NotificationStatus>;
+  acknowledgeNotification(id: string): Promise<{ acknowledged: number }>;
+}
+export interface NotificationStatus {
+  counts: { pending: number; delivered: number; failed: number; acknowledged: number };
+  failures: { id: string; destination_id: string; kind: string; state: string; attempts: number; last_error: string | null; next_attempt_at: string | null }[];
+  recent: { id: string; kind: string; severity: string; destination_id: string; state: string; attempts: number; case_id: string | null; created_at: string; delivered_at: string | null; acknowledged_at: string | null }[];
+  note: string;
 }
 export interface GithubPreview { preview_id: string; base_graph_revision: string | null; repository: string; additions: string[]; removals: string[]; changes: string[]; collisions: string[]; partial: { resource: string; reason: string }[] }
 export interface RecipeRun {

@@ -218,12 +218,12 @@
   {
    "id": "R03.5",
    "title": "Add reliable external attention delivery",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "authorized_notification_destination",
-   "receipt": null,
+   "receipt": "docs/roadmap/R03-RECEIPT.md#r035-notification-outbox",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Local fixture-receiver validation only; external gate authorized_notification_destination open."
   },
   {
    "id": "R04.1",

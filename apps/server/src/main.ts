@@ -32,7 +32,7 @@ if (env.DK_SEED_DEMO !== "false") {
   if (r.created) console.log(`  Seeded synthetic demo project "demo-castle" (${r.deliveries} deliveries).`);
 }
 
-const app = await buildApp({ store, secret, demoMode, planner: plannerFromEnv(), secureCookies: env.DK_SECURE_COOKIES === "true", logger: env.DK_LOG === "true", oidc: oidcFromEnv(env), trustedProxies: (env.DK_TRUSTED_PROXIES ?? "").split(",").map((x) => x.trim()).filter(Boolean) });
+const app = await buildApp({ store, secret, demoMode, planner: plannerFromEnv(), secureCookies: env.DK_SECURE_COOKIES === "true", logger: env.DK_LOG === "true", oidc: oidcFromEnv(env), publicUrl: env.DK_PUBLIC_URL ?? null, trustedProxies: (env.DK_TRUSTED_PROXIES ?? "").split(",").map((x) => x.trim()).filter(Boolean) });
 
 // background worker: drain the journal, re-check coverage staleness, prune outbox.
 // DK_WORKER_PAUSED=true runs ingest-only: events are acknowledged and journaled but not processed
@@ -47,6 +47,13 @@ setInterval(() => {
 setInterval(() => {
   try { for (const p of store.listProjects({ kind: "token", id: "system", name: "system", role: "admin", projects: "*", principalType: "service" })) if (p.dataset_kind === "live") store.evaluateProject(p.id); store.pruneOutbox(); } catch (e) { console.error("coverage sweep failed:", e); }
 }, Number(env.DK_COVERAGE_SWEEP_MS ?? 30_000)).unref();
+
+// R03.5: notification delivery and escalation (outbox rows survive restarts; delivery is at-least-once).
+let delivering = false;
+setInterval(() => {
+  if (delivering) return; delivering = true;
+  void app.notifier.deliver().then(() => app.notifier.escalate()).catch((e) => console.error("notification delivery failed (will retry):", e)).finally(() => { delivering = false; });
+}, Number(env.DK_NOTIFY_INTERVAL_MS ?? 15_000)).unref();
 
 const port = Number(env.PORT ?? 8787);
 const host = env.HOST ?? "127.0.0.1";
