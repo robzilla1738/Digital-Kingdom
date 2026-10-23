@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useApp } from "../../lib/state.tsx";
-import { ActionsCtx, type CaseDetail, type CaseSummary } from "../../inspector/actions.tsx";
+import { ActionsCtx, type CaseDetail, type CaseSummary, type RecipeRun } from "../../inspector/actions.tsx";
 import { ApiError } from "../../lib/data.ts";
 import { fmtDateTime } from "../../lib/vocab.ts";
 
@@ -50,7 +50,8 @@ export function CasesWorkspace() {
       </div>
       {detail && <CaseView c={detail} canEdit={canEdit} busy={busy} findings={vm.latestData.findings.map((f) => ({ id: f.id, title: f.title }))}
         act={(label, path, body) => act(label, () => actions.caseAction(detail.id, path, { ...body, expected_version: detail.version }))}
-        onExport={() => act("Export", () => actions.exportDurableCase(detail.id))} />}
+        onExport={() => act("Export", () => actions.exportDurableCase(detail.id))}
+        recipeSlot={canEdit && detail.status !== "closed" && detail.linked_findings.length ? <RecipeRunner c={detail} kinds={Object.fromEntries(vm.latestData.findings.map((f) => [f.id, f.kind]))} onDone={(next) => { setDetail(next); }} /> : null} />}
     </div>
   </section>;
 }
@@ -67,7 +68,7 @@ function NewCase({ busy, assets, onCreate }: { busy: boolean; assets: { id: stri
   </form>;
 }
 
-function CaseView({ c, canEdit, busy, findings, act, onExport }: { c: CaseDetail; canEdit: boolean; busy: boolean; findings: { id: string; title: string }[]; act: (label: string, path: string, body: Record<string, unknown>) => void; onExport: () => void }) {
+function CaseView({ c, canEdit, busy, findings, act, onExport, recipeSlot }: { c: CaseDetail; canEdit: boolean; busy: boolean; findings: { id: string; title: string }[]; act: (label: string, path: string, body: Record<string, unknown>) => void; onExport: () => void; recipeSlot?: React.ReactNode }) {
   const [text, setText] = useState(""), [kind, setKind] = useState("note"), [ref, setRef] = useState(""), [statement, setStatement] = useState("");
   const live = c.items.filter((i) => !i.removed);
   const questions = live.filter((i) => i.kind === "question" || i.kind === "hypothesis");
@@ -84,6 +85,7 @@ function CaseView({ c, canEdit, busy, findings, act, onExport }: { c: CaseDetail
       {canEdit && !closed && q.status === "open" && <QuestionAnswer onAnswer={(status, answer) => act("Answer", `/items/${q.item_id}/question`, { status, answer })} busy={busy} hypothesis={q.kind === "hypothesis"} />}</li>)}</ul>}
     <h3>Linked findings</h3>
     {!c.linked_findings.length ? <p className="small faint">None.</p> : <ul className="mini-list">{c.linked_findings.map((f) => <li key={f.finding_id}>{findings.find((x) => x.id === f.finding_id)?.title ?? f.finding_id} <small>linked at revision {f.linked_revision} (now {f.current_revision ?? "missing"}, detector state {f.current_lifecycle}) · bundle {f.bundle_id}</small></li>)}</ul>}
+    {recipeSlot}
     <h3>Timeline</h3>
     <ul className="mini-list">{live.filter((i) => i.kind === "event" || i.kind === "note").map((i) => <li key={i.item_id}><small>{fmtDateTime(i.added_at)} · {i.kind}</small> {i.kind === "event" ? <>event {i.ref}{i.produced_finding === false ? " (no finding)" : ""}{i.why ? `: ${i.why}` : ""}</> : i.text}</li>)}</ul>
     {canEdit && !closed && <form onSubmit={(e) => { e.preventDefault(); act("Add", "/items", kind === "finding" || kind === "event" ? { kind, ref, ...(kind === "event" && text ? { why: text } : {}) } : { kind, text }); setText(""); setRef(""); }}>
@@ -106,4 +108,23 @@ function CaseView({ c, canEdit, busy, findings, act, onExport }: { c: CaseDetail
 function QuestionAnswer({ onAnswer, busy, hypothesis }: { onAnswer: (status: string, answer: string) => void; busy: boolean; hypothesis: boolean }) {
   const [answer, setAnswer] = useState(""), [status, setStatus] = useState(hypothesis ? "supported" : "answered");
   return <span className="inline-form"><select aria-label="Answer status" value={status} onChange={(e) => setStatus(e.target.value)}>{(hypothesis ? ["supported", "refuted", "accepted_unresolved"] : ["answered", "accepted_unresolved"]).map((s) => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}</select><input aria-label="Answer" value={answer} maxLength={2000} onChange={(e) => setAnswer(e.target.value)} /><button className="btn" disabled={busy || !answer.trim()} onClick={() => onAnswer(status, answer)}>Record</button></span>;
+}
+
+/** R03.2: run a versioned recipe on a linked finding and attach its hypotheses to the case. */
+function RecipeRunner({ c, kinds, onDone }: { c: CaseDetail; kinds: Record<string, string>; onDone: (c: CaseDetail) => void }) {
+  const actions = useContext(ActionsCtx)!;
+  const [recipes, setRecipes] = useState<{ id: string; version: number; title: string; applies_to: string[] }[]>([]);
+  const [finding, setFinding] = useState(c.linked_findings[0]?.finding_id ?? ""), [result, setResult] = useState<RecipeRun | null>(null), [error, setError] = useState(""), [busy, setBusy] = useState(false);
+  useEffect(() => { const ctl = new AbortController(); actions.recipes(ctl.signal).then((r) => setRecipes(r.recipes), () => undefined); return () => ctl.abort(); }, [actions]);
+  const applicable = recipes.filter((r) => r.applies_to.includes(kinds[finding] ?? ""));
+  return <div className="recipe-runner" data-testid="recipe-runner">
+    <h3>Weigh explanations</h3>
+    <div className="filter-bar"><label className="field">Finding<select aria-label="Recipe finding" value={finding} onChange={(e) => { setFinding(e.target.value); setResult(null); }}>{c.linked_findings.map((f) => <option key={f.finding_id} value={f.finding_id}>{f.finding_id}</option>)}</select></label>
+      {applicable.map((r) => <button key={r.id} className="btn" disabled={busy} onClick={async () => { setBusy(true); setError(""); try { const run = await actions.runRecipe(r.id, finding, { caseId: c.id, expectedVersion: c.version }); setResult(run); onDone(await actions.getCase(c.id)); } catch (e) { setError((e as Error).message); } finally { setBusy(false); } }}>Run {r.title}</button>)}
+      {!applicable.length && <span className="small faint">No recipe applies to this finding kind.</span>}</div>
+    {error && <p className="scope-note warning" role="alert">{error}</p>}
+    {result && <div aria-live="polite"><p className={result.conclusion_allowed ? "small" : "scope-note warning"}>{result.conclusion_allowed ? "No stop condition triggered." : `Do not conclude: ${result.stop_conditions.filter((s) => s.triggered).map((s) => s.reason).join(" ")}`}</p>
+      <ul className="mini-list">{result.hypotheses.map((h) => <li key={h.id}><strong>{h.status}</strong> {h.statement} <small>Needs {h.needs}. {h.supporting_event_ids.length} supporting, {h.counter_event_ids.length} counter.</small></li>)}</ul>
+      <p className="small faint">{result.unlinked_follow_on_event_ids.length} follow-on event(s) no finding references · {result.budget.used}/{result.budget.max_queries} queries.</p></div>}
+  </div>;
 }

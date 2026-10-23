@@ -14,6 +14,7 @@ import { assessChange, securityContext, summarize } from "./context.ts";
 import { coverageHistory, parseCoverageQuestion } from "./coverage-history.ts";
 import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } from "./bundles.ts";
 import { Cases } from "./cases.ts";
+import { RECIPES, runRecipe } from "./recipes.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 
 export interface AppConfig {
@@ -476,6 +477,24 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   // ---- connector manifests (R02.1) ----
   app.get("/api/connectors", { preHandler: authed() }, async () => ({ connectors: CONNECTORS, capability_levels: CAPABILITY_LEVELS,
     note: "Levels: declared < discovered < instrumented < analyzed < lab_verified < live_verified. Connectors collect only; response authority is never granted to a connector." }));
+
+  // ---- investigation recipes (R03.2) ----
+  app.get("/api/recipes", { preHandler: authed() }, async () => ({ recipes: RECIPES.map(({ id, version, title, applies_to, alternates }) => ({ id, version, title, applies_to, alternates })) }));
+  app.post("/api/projects/:p/recipes/:rid/run", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const b = (req.body ?? {}) as { finding_id?: unknown; max_queries?: unknown; case_id?: unknown; expected_version?: unknown };
+    if (typeof b.finding_id !== "string") throw new HttpError(400, "finding_id is required");
+    const result = runRecipe(store, proj.id, (req.params as { rid: string }).rid, b.finding_id, cfg.secret, typeof b.max_queries === "number" ? b.max_queries : 6);
+    if (typeof b.case_id !== "string") return result;
+    // Attaching to a case is an explicit analyst write: open hypotheses become case hypotheses.
+    store.require(req.principal!, proj.id, "analyst");
+    let version = typeof b.expected_version === "number" ? b.expected_version : -1;
+    let c: ReturnType<Cases["get"]> | undefined;
+    for (const h of result.hypotheses) { c = cases.addItem(proj.id, b.case_id, { kind: "hypothesis", text: `[${result.recipe.id}@${result.recipe.version}] ${h.statement} Needs: ${h.needs}`.slice(0, 1000), expected_version: version }, who(req)); version = c.version; }
+    const stops = result.stop_conditions.filter((s) => s.triggered).map((s) => s.reason);
+    c = cases.addItem(proj.id, b.case_id, { kind: "note", text: `Recipe ${result.recipe.id}@${result.recipe.version} on ${b.finding_id}: ${result.conclusion_allowed ? "no stop condition triggered" : `conclusion blocked: ${stops.join(" ")}`} ${result.unlinked_follow_on_event_ids.length} unlinked follow-on event(s).`.slice(0, 4000), expected_version: version }, who(req));
+    return { ...result, case: { id: c.id, version: c.version } };
+  });
 
   // ---- durable cases (R03.1) ----
   const cases = new Cases(store);

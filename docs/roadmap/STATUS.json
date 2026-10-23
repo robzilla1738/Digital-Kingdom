@@ -163,12 +163,12 @@
   {
    "id": "R03.2",
    "title": "Add hypotheses and deterministic investigation recipes",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R03-RECEIPT.md#r032-hypotheses-and-deterministic-investigation-recipes",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "recipes-r03.test.ts 5/5. Four recipes; bounded by query count."
   },
   {
    "id": "R03.3",

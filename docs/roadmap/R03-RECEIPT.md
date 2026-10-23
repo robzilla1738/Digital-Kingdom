@@ -18,3 +18,19 @@ administrator; closed cases are read-only until reopened.
 
 Limitations: no real-time co-editing or comments thread; owner is a principal label, not an identity-provider
 subject (R08.1/R10.1); case export embeds event bodies already redacted at ingestion, which is not anonymity.
+
+## R03.2 hypotheses and deterministic investigation recipes
+
+Delivered: `apps/server/src/recipes.ts` (schema `dk.recipe_run.v1`), recipe routes, MCP tools, case-view runner.
+
+Acceptance (`apps/server/test/recipes-r03.test.ts`, 5 tests):
+- Shared-IP attribution bait remains separate: another account's request from the same address is a follow-on
+  event of the locator query and never supports the account-takeover hypothesis.
+- A benign maintenance case is resolved through case hypotheses and closure; the assertion count and the finding's
+  evidence are unchanged.
+- With the database audit source dark, the data-access stop condition triggers and `conclusion_allowed` is false.
+- The account's later database read, which no finding references, is returned as an unlinked follow-on event and
+  supports the hypothesis.
+
+Limitations: four recipes cover seven of nine finding kinds' common questions; recipe budgets count queries and
+coverage checks (max 12), not rows; recipes never decide intent or authorization.

@@ -48,7 +48,7 @@ export interface CreateServerOptions {
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
-export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_containment_options"] as const;
+export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_list_recipes", "dk_run_recipe", "dk_containment_options"] as const;
 
 /** The exact tool set used by Real-Agent Evaluation v1 (before event search). Kept so v1 runs stay reproducible. */
 export const INVESTIGATION_TOOLS_V1 = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
@@ -234,6 +234,18 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     description: "A case's scope, questions and answers, linked findings (each with its pinned bundle and current detector state), independent events, notes, closure criteria and full change history. A case's status never follows its findings.",
     inputSchema: { case_id: z.string().max(100), project }, annotations: RO,
   }, async ({ case_id, project: p }) => out(await client.req("GET", client.p(`/cases/${encodeURIComponent(case_id)}`, p))));
+
+  server.registerTool("dk_list_recipes", {
+    title: "Investigation recipes",
+    description: "Versioned, deterministic recipes: which finding kinds each applies to and the alternate explanations it weighs.",
+    inputSchema: {}, annotations: RO,
+  }, async () => out(await client.req("GET", "/api/recipes")));
+
+  server.registerTool("dk_run_recipe", {
+    title: "Weigh explanations for a finding",
+    description: "Run a recipe on a finding: competing hypotheses with supporting and counter event ids, bounded follow-on queries (including events no finding references), coverage checks, and stop conditions. If conclusion_allowed is false, do not conclude; say which observer was missing. Read-only.",
+    inputSchema: { recipe_id: z.string().max(80), finding_id: z.string().max(200), max_queries: z.number().int().min(1).max(12).optional(), project }, annotations: RO,
+  }, async ({ recipe_id, finding_id, max_queries, project: p }) => out(await client.req("POST", client.p(`/recipes/${encodeURIComponent(recipe_id)}/run`, p), { finding_id, ...(max_queries ? { max_queries } : {}) })));
 
   server.registerTool("dk_containment_options", {
     title: "Permitted containment steps",

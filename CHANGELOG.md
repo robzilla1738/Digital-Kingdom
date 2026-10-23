@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R03.2: investigation recipes
+
+- Four versioned, deterministic recipes (`auth-burst-then-success@1`, `blocked-request-scope@1`, `agent-effect-attribution@1`, `change-or-maintenance@1`) return competing hypotheses with supporting and counter event ids, alternate explanations, bounded follow-on queries that include events no finding references, coverage checks, and stop conditions that block a conclusion when the needed observer was not live. A shared client IP is always kept as an unresolved locator, never attribution. `GET /api/recipes`, `POST /api/projects/:p/recipes/:id/run` (optionally attaching hypotheses to a case); MCP `dk_list_recipes`, `dk_run_recipe`; the case view can run a recipe on a linked finding.
+
 ### Roadmap R02.1: connector manifests
 
 - Every ingestion path (event API, OTLP/HTTP JSON, Falco) has a manifest: protocol and exact versions, read scopes and why, pagination and resume, rate limits, cost, data handling, limits, and a verification level per capability (declared to live-verified; nothing is claimed live-verified). `GET /api/connectors`; Integrations gains a Connectors tab.

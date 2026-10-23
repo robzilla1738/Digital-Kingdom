@@ -25,6 +25,16 @@ export interface ServerActions {
   exportDurableCase(id: string): Promise<void>;
   /** R02.1 connector manifests. */
   connectors(signal?: AbortSignal): Promise<ConnectorCatalogResult>;
+  /** R03.2 recipes; with caseId the hypotheses are attached to the case. */
+  recipes(signal?: AbortSignal): Promise<{ recipes: { id: string; version: number; title: string; applies_to: string[] }[] }>;
+  runRecipe(recipeId: string, findingId: string, attach?: { caseId: string; expectedVersion: number }): Promise<RecipeRun>;
+}
+export interface RecipeRun {
+  recipe: { id: string; version: number; title: string };
+  hypotheses: { id: string; statement: string; status: string; needs: string; supporting_event_ids: string[]; counter_event_ids: string[]; notes: string[] }[];
+  stop_conditions: { condition: string; triggered: boolean; reason: string }[];
+  conclusion_allowed: boolean; unlinked_follow_on_event_ids: string[]; notes: string[];
+  budget: { max_queries: number; used: number };
 }
 export interface ConnectorCatalogResult {
   note: string; capability_levels: string[];
