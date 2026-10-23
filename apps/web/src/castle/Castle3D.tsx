@@ -166,14 +166,18 @@ function Rig({ scene, command, groups }: { scene: CompiledScene; command: Comman
     return { pos: target.clone().addScaledVector(dir, CAM_DIST), target, zoom };
   };
   const current = (): Pose => ({ pos: camera.position.clone(), target: ctl.current!.target.clone(), zoom: (camera as THREE.OrthographicCamera).zoom });
-  const apply = (p: Pose) => { camera.position.copy(p.pos); ctl.current!.target.copy(p.target); (camera as THREE.OrthographicCamera).zoom = p.zoom; camera.updateProjectionMatrix(); ctl.current!.update(); invalidate(); };
+  const publishPose = () => {
+    gl.domElement.dataset.cameraPose = JSON.stringify({ position: camera.position.toArray().map(v => +v.toFixed(3)), target: ctl.current!.target.toArray().map(v => +v.toFixed(3)), zoom: +(camera as THREE.OrthographicCamera).zoom.toFixed(3) });
+    gl.domElement.dataset.cameraViewport = `${size.width}x${size.height}`;
+  };
+  const apply = (p: Pose) => { camera.position.copy(p.pos); ctl.current!.target.copy(p.target); (camera as THREE.OrthographicCamera).zoom = p.zoom; camera.updateProjectionMatrix(); ctl.current!.update(); publishPose(); invalidate(); };
   const go = (to: Pose, remember = true) => {
     if (!ctl.current) return;
     if (remember) { history.current.push(current()); if (history.current.length > 12) history.current.shift(); }
     manual.current = true;
     if (ui.reducedMotion) apply(to); else { tween.current = { t: 0, from: current(), to }; gl.domElement.dataset.cameraActive = "true"; invalidate(); }
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!ctl.current) return;
     if (!initialized.current) { const saved = cameraPoses.get(key); apply(saved ?? fit()); manual.current = !!saved; initialized.current = true; }
     else if (!manual.current) apply(fit());
@@ -201,8 +205,7 @@ function Rig({ scene, command, groups }: { scene: CompiledScene; command: Comman
     if (t) { t.t = Math.min(1, t.t + Math.min(dt, 0.05) / 0.38); const k = 1 - (1 - t.t) ** 3;
       apply({ pos: t.from.pos.clone().lerp(t.to.pos, k), target: t.from.target.clone().lerp(t.to.target, k), zoom: THREE.MathUtils.lerp(t.from.zoom, t.to.zoom, k) }); if (t.t === 1) { tween.current = null; gl.domElement.dataset.cameraActive = "false"; if (t.focusRevision) dispatch({ type: "focusHandled", revision: t.focusRevision }); }
     }
-    gl.domElement.dataset.cameraPose = JSON.stringify({ position: camera.position.toArray().map(v => +v.toFixed(3)), target: ctl.current.target.toArray().map(v => +v.toFixed(3)), zoom: +(camera as THREE.OrthographicCamera).zoom.toFixed(3) });
-    gl.domElement.dataset.cameraViewport = `${size.width}x${size.height}`;
+    publishPose();
   });
   return <OrbitControls ref={ctl} makeDefault enableDamping={false} rotateSpeed={0.6} zoomSpeed={0.8} minPolarAngle={THREE.MathUtils.degToRad(25)} maxPolarAngle={THREE.MathUtils.degToRad(65)} minZoom={1} maxZoom={140}
     onStart={() => { gl.domElement.dataset.cameraActive = "true"; if (tween.current?.focusRevision) dispatch({ type: "focusHandled", revision: tween.current.focusRevision }); tween.current = null; manual.current = true; }} onEnd={() => { gl.domElement.dataset.cameraActive = "false"; }} onChange={() => { const c = ctl.current; if (!c) return;

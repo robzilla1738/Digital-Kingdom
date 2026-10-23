@@ -8,6 +8,8 @@ The owner subsequently authorized publishing the existing GitHub Pages synthetic
 
 The first fresh full CI UI run recorded 84 passed, two failed and one skipped. Its failures exposed a focused district endpoint label losing priority after inspecting another endpoint, and a camera-history check sampling before the renderer observed the inspector resize. Explicitly focused labels now retain priority, and the camera check waits for a rendered frame at the actual viewport size before capturing its baseline. Both focused district cases and the camera/context-loss case passed locally after these corrections; this failed CI run remains part of the record (`39980687681`).
 
+A later CI run (`39984844536`) narrowed the remaining failure to camera-pose diagnostics lagging an applied resize. Camera sizing now runs before paint and publishes its applied pose immediately as well as during frames. The evidence-close focus guard also excludes hidden controls, preserving normal narrow-screen return focus while respecting a subsequent visible search focus.
+
 ## Changes
 
 - Refined every workspace around a shared charcoal/glass visual system, locally bundled Inter Variable and Lucide controls. Pills, fields, tables, navigation, menus, inspector sections and mobile layouts now share consistent spacing and styling. Semantic outcome shapes remain distinct from decorative navigation icons.

@@ -316,7 +316,7 @@ test('explicit camera focus and context loss preserve stable selection and graph
   await page.getByRole('tab',{name:/^Assets 13$/}).click();
   await page.locator('.sidebar [data-asset-id]').first().click();
   // Inspector mounting changes the viewport. Compare camera history only after
-  // the renderer has published a frame for the actual resized drawing surface.
+  // the renderer has applied the actual resized drawing surface.
   await expect.poll(() => page.locator('canvas').evaluate(canvas => {
     const [width, height] = (canvas.dataset.cameraViewport ?? '').split('x').map(Number), bounds = canvas.getBoundingClientRect();
     return Math.abs(width - bounds.width) < 1 && Math.abs(height - bounds.height) < 1;
