@@ -2,6 +2,22 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R09.4: SaaS, endpoint and correspondence sample-data pack
+
+packages/graph-core/src/packs/saas.ts: shared and service accounts never establish a human, provider plan/scope limits listed with every answer, delegated grant changes kept separate from data access, coverage effects of feed install/removal over time, and developer-device agent state with unmanaged devices called unobserved.
+
+### Roadmap R09.3: Data, RAG, secrets and backup sample-data pack
+
+packages/graph-core/src/packs/data.ts: database reads answer unknown over audit gaps (never zero), per-document tenant and ACL enforcement with a synthetic cross-tenant probe, memory mutation lineage, recovery state from restore tests (configured backups plus a failed restore stay failed), secret rotation ages from metadata, and an inventory check that refuses raw rows, bodies and secret values.
+
+### Roadmap R09.2: Workload, queue and runtime sample-data pack
+
+packages/graph-core/src/packs/workload.ts: instance lifetimes keyed by pod uid or node+pid+start time (reused pids never join), queue producer/consumer adjacency versus observed lineage via shared message ids, node sensor coverage gaps, stable logical workload slots under scaling, and Falco-style alert semantics that state what is not established.
+
+### Roadmap R09.1: Edge, DNS, API and webhook sample-data pack
+
+packages/graph-core/src/packs/edge.ts: certificate/DNS hostnames are leads until a DNS TXT challenge proves ownership; alternate-origin validation is planned only for unexpired authorized origins and never sent from here; OpenAPI 3.0/3.1 routes keyed by environment/service/method/path with undeclared auth flagged; frontend dependency and webhook signature/replay/idempotency assessments carry blind spots.
+
 ### Roadmap R10.5: Release identity, dependency inventory and declarative extensions
 
 Local parts of release and extension security: packages/extension-sdk defines dk.extension.v1 (declarative connector/rule/module packs only, per-kind permission ceilings, forbidden network/fs/exec/response/approval/secret permissions, no executable files, sha256-pinned files, revocation by id, version or digest) and checkPack, which requires positive, benign, missing-evidence and failure fixtures; an example pack ships with tests. scripts/release-manifest.ts records and re-verifies commit, clean tree, lockfile digest and every built file digest (CI step + uploaded artifact). scripts/dependency-inventory.ts generates docs/THIRD_PARTY_NOTICES.md with a license allow-list enforced in CI. docs/RELEASE.md (process, no telemetry, no required model service, disconnected install, upgrade, removal), docs/EXTENSIONS.md, and a branch ruleset PROPOSED for owner approval (not applied).

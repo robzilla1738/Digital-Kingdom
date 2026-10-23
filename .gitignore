@@ -19,3 +19,4 @@ eval/runs/*/server-logs
 *.sqlite-shm
 .dk-local/
 artifacts/scenarios/
+artifacts/release/

@@ -481,42 +481,42 @@
   {
    "id": "R09.1",
    "title": "Add edge, DNS, browser, API and webhook packs",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "authorized_provider_access",
-   "receipt": null,
+   "receipt": "docs/roadmap/R09-RECEIPT.md#r091-edge-dns-api-and-webhook-pack",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access."
   },
   {
    "id": "R09.2",
    "title": "Add workload, serverless, queue and runtime packs",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "authorized_provider_access",
-   "receipt": null,
+   "receipt": "docs/roadmap/R09-RECEIPT.md#r092-workload-queue-and-runtime-pack",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access."
   },
   {
    "id": "R09.3",
    "title": "Add data, RAG, secrets and backup packs",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "authorized_provider_access",
-   "receipt": null,
+   "receipt": "docs/roadmap/R09-RECEIPT.md#r093-data-rag-secrets-and-backup-pack",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access."
   },
   {
    "id": "R09.4",
    "title": "Add SaaS, endpoint and correspondence packs",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "authorized_provider_access",
-   "receipt": null,
+   "receipt": "docs/roadmap/R09-RECEIPT.md#r094-saas-endpoint-and-correspondence-pack",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access."
   },
   {
    "id": "R10.1",
