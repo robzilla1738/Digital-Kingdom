@@ -22,6 +22,7 @@ import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
 import { Controls } from "./controls.ts";
+import { Deception, fromCanarytokens } from "./deception.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
 import { accessPaths, type AuthSnapshot } from "./access/aws-policy.ts";
 import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
@@ -605,6 +606,37 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const r = controls.recordTest(proj.id, (req.params as { id: string }).id, (req.body ?? {}) as Record<string, unknown>, who(req));
     store.audit(who(req), "control.test", proj.id, (req.params as { id: string }).id, { outcome: r.recorded_outcome });
     return r;
+  });
+
+  // ---- deception (R03.4) ----
+  const deception = new Deception(store.db, () => store.now());
+  const realKeys = (projectId: string) => new Set((latestSnapshot(projectId)?.principals ?? []).flatMap((p) => (p.access_keys ?? []).filter((k) => k.status === "Active").map((k) => k.id)));
+  app.post("/api/projects/:p/decoys", { preHandler: authed("admin") }, async (req) => { const proj = store.require(req.principal!, P(req), "admin"); const r = deception.register(proj.id, (req.body ?? {}) as Record<string, unknown>, who(req), realKeys(proj.id)); store.audit(who(req), "decoy.register", proj.id, r.id, { kind: r.kind }); return r; });
+  app.post("/api/projects/:p/decoys/:id/placements", { preHandler: authed("admin") }, async (req) => { const proj = store.require(req.principal!, P(req), "admin"); const r = deception.place(proj.id, (req.params as { id: string }).id, (req.body ?? {}) as Record<string, unknown>, who(req)); store.audit(who(req), "decoy.place", proj.id, r.decoy_id, { location: r.location }); return r; });
+  app.post("/api/projects/:p/decoys/:id/retire", { preHandler: authed("admin") }, async (req) => { const proj = store.require(req.principal!, P(req), "admin"); return deception.retire(proj.id, (req.params as { id: string }).id, String((req.body as { reason?: unknown } | undefined)?.reason ?? "retired"), who(req)); });
+  app.post("/api/projects/:p/decoy-test-windows", { preHandler: authed("admin") }, async (req) => deception.testWindow(store.require(req.principal!, P(req), "admin").id, (req.body ?? {}) as Record<string, unknown>, who(req)));
+  app.get("/api/projects/:p/decoys/:id", { preHandler: authed() }, async (req) => deception.report(store.require(req.principal!, P(req), "viewer").id, (req.params as { id: string }).id));
+  const decoyEvent = (a: NonNullable<ReturnType<Deception["activate"]>>) => {
+    const src = store.listSources(a.projectId).find((s) => s.kind === "honeytoken" && !s.disabled);
+    const placement = a.placementId ? store.db.prepare("SELECT asset_id FROM decoy_placements WHERE id = ?").get(a.placementId) as { asset_id: string | null } | undefined : undefined;
+    const asset = placement?.asset_id ?? src?.asset_ids[0];
+    if (src && asset && src.asset_ids.includes(asset)) store.receive(a.projectId, src.id, { source_event_id: a.id, occurred_at: store.now().toISOString(), asset_ids: [asset], action: "decoy_used", outcome: "attempted", rule_ref: `decoy:${a.decoyId}`, attributes: { trigger: a.trigger, ...(a.placementId ? { placement_id: a.placementId } : {}), ...(a.authorized_test_window ? { authorized_test_window: a.authorized_test_window } : {}) } });
+  };
+  // Local controlled receiver: unauthenticated by design (decoy URLs are hit by whoever holds them). Same answer for any id.
+  app.route({ method: ["GET", "POST", "HEAD"], url: "/ingest/decoy/:placement", handler: async (req, reply) => {
+    const id = String((req.params as { placement: string }).placement);
+    if (/^plc_[A-Za-z0-9_-]{16}$/.test(id)) {
+      const ua = String(req.headers["user-agent"] ?? "");
+      const a = deception.activate({ placementId: id, trigger: (req.query as { t?: string }).t === "doc" ? "document_fetch" : "request", via: "local-receiver", locator: req.ip, userAgent: ua, proxied: !!req.headers["x-forwarded-for"] || !!req.headers.via });
+      if (a) decoyEvent(a);
+    }
+    return reply.status(204).send();
+  } });
+  app.post("/ingest/canarytokens", { preHandler: sourceAuth, bodyLimit: 65_536 }, async (req) => {
+    const src = (req as SrcReq).source;
+    const a = deception.activate(fromCanarytokens((req.body ?? {}) as Record<string, unknown>));
+    if (a && a.projectId === src.projectId) { decoyEvent(a); return { recorded: true, activation_id: a.id }; }
+    return { recorded: false };
   });
 
   // ---- investigation recipes (R03.2) ----

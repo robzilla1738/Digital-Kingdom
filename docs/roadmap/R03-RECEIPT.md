@@ -48,3 +48,15 @@ Acceptance (`apps/server/test/aftermath-r03.test.ts`, 4 tests, synthetic CloudTr
 Found while building: the redaction layer masks AWS access key ids in event attributes (they match secret-scanner patterns). Key lineage now uses keyed fingerprints in attributes; ids are shown only when the query or the snapshot supplies them.
 
 Limits: one provider (AWS), recorded events only, no live recheck of credentials (snapshot-based).
+
+## R03.4 integrate registered deception assets safely
+
+Delivered: `Deception` (register, place, retire, testWindow, activate, report), `fromCanarytokens`, routes, optional `decoy_used` event through a project honeytoken source.
+
+Acceptance (`apps/server/test/deception-r03.test.ts`, 4 tests):
+- A hit on the fork's placement reports the path original -> fork, the locator with `identity: false`, and what is not established (person, original compromise). Unknown ids get the same 204 and record nothing.
+- A Canarytokens DNS alert records 8.8.8.8 as `dns_resolver`; a forwarded request records the peer as `proxy`.
+- Inside a registered test window, a trufflehog verifier hit (scanner_validation) and a document fetch are retained and annotated.
+- Generated values are AKIA-shaped but never stored; a real active key or private-key text is refused; retired decoys take no new placements.
+
+Limit: the Canarytokens adapter is format-conformant to its documented webhook fields; not checked against a live Canarytokens account.

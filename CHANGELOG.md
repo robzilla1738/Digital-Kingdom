@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R03.4: registered deception assets
+
+- Decoy registry (`apps/server/src/deception.ts`, migration 19): inert generated values shown once and stored as fingerprints, unique per-placement ids with propagation lineage, retirement, authorized test windows, a local controlled receiver (`/ingest/decoy/:placement`, same answer for any id) and a Canarytokens webhook adapter. Triggers are request, document fetch, credential use, DNS lookup or scanner validation; resolver and proxy addresses are recorded as non-identity locators. A value matching a real active key in the latest snapshot, or containing private-key material, is refused.
+
 ### Roadmap R07.2: isolated defense-lab runner
 
 - `examples/reference-app/src/lab/runner.ts`: authorized tests against owned sandbox targets only (approved lab environment, allowlisted loopback or `*.lab.internal` host, never production), typed HTTP probes with no shell, request and time budgets, abort with cleanup receipts, an independent effect observer and a required positive control. 5xx, timeouts or an unavailable observer make the run inconclusive, never a pass. `toControlTest` turns a receipt into a control verification record.
