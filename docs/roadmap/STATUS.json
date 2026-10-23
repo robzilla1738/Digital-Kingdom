@@ -123,22 +123,30 @@
   {
    "id": "R02.2",
    "title": "Deliver a one-command local application pack",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R02-RECEIPT.md#r022-one-command-local-application-pack",
    "head": null,
    "ci_run": null,
-   "notes": "pack.test.ts 4/4; collector.test.ts passes locally with real otelcol 0.112.0 (arm64), CI step added (amd64)."
+   "notes": "pack.test.ts 4/4; collector.test.ts passes locally with real otelcol 0.112.0 (arm64), CI step added (amd64).",
+   "ci": {
+    "run": 39901028491,
+    "head": "41f301c"
+   }
   },
   {
    "id": "R02.3",
    "title": "Add repository and deployment discovery",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R02-RECEIPT.md#r023-repository-and-deployment-discovery",
    "head": null,
    "ci_run": null,
-   "notes": "github-r02.test.ts 4/4; live read-only check against this public repo. GitHub only."
+   "notes": "github-r02.test.ts 4/4; live read-only check against this public repo. GitHub only.",
+   "ci": {
+    "run": 39901028491,
+    "head": "41f301c"
+   }
   },
   {
    "id": "R02.4",
@@ -163,12 +171,16 @@
   {
    "id": "R03.2",
    "title": "Add hypotheses and deterministic investigation recipes",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R03-RECEIPT.md#r032-hypotheses-and-deterministic-investigation-recipes",
    "head": null,
    "ci_run": null,
-   "notes": "recipes-r03.test.ts 5/5. Four recipes; bounded by query count."
+   "notes": "recipes-r03.test.ts 5/5. Four recipes; bounded by query count.",
+   "ci": {
+    "run": 39901028491,
+    "head": "41f301c"
+   }
   },
   {
    "id": "R03.3",
@@ -253,12 +265,16 @@
   {
    "id": "R05.2",
    "title": "Instrument one real agent workflow and independent observer",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R05-RECEIPT.md#r052-instrument-one-real-agent-workflow-and-independent-observer",
    "head": null,
    "ci_run": null,
-   "notes": "agent-boundary.test.ts 4/4. MCP gateway is the one supported boundary."
+   "notes": "agent-boundary.test.ts 4/4. MCP gateway is the one supported boundary.",
+   "ci": {
+    "run": 39901028491,
+    "head": "41f301c"
+   }
   },
   {
    "id": "R05.3",
@@ -283,12 +299,16 @@
   {
    "id": "R06.1",
    "title": "Add a semantic world hierarchy without remapping history",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R06-RECEIPT.md#r061-semantic-world-hierarchy-without-remapping-history",
    "head": null,
    "ci_run": null,
-   "notes": "hierarchy-r06.test.ts 4/4. Web hierarchy list / semantic zoom UI not built (API+MCP list provided)."
+   "notes": "hierarchy-r06.test.ts 4/4. Web hierarchy list / semantic zoom UI not built (API+MCP list provided).",
+   "ci": {
+    "run": 39901028491,
+    "head": "41f301c"
+   }
   },
   {
    "id": "R06.2",
@@ -443,13 +463,17 @@
   {
    "id": "R10.1",
    "title": "Strengthen deployment identity and secret handling",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "identity_provider_for_live_verification",
    "receipt": "docs/roadmap/R10-RECEIPT.md#r101-deployment-identity-and-secret-handling",
    "head": null,
    "ci_run": null,
    "notes": "identity-r10.test.ts 7/7 with a locally generated signing key. Live IdP verification (external gate) NOT done; field-level ACL not implemented.",
-   "external_gate_open": true
+   "external_gate_open": true,
+   "ci": {
+    "run": 39901028491,
+    "head": "41f301c"
+   }
   },
   {
    "id": "R10.2",
@@ -494,12 +518,16 @@
   {
    "id": "R11.1",
    "title": "Complete the offline v2 evaluation runner",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R11-RECEIPT.md#r111-offline-v2-evaluation-runner",
    "head": null,
    "ci_run": null,
-   "notes": "v2-harness.test.ts 10/10. No provider call made."
+   "notes": "v2-harness.test.ts 10/10. No provider call made.",
+   "ci": {
+    "run": 39901028491,
+    "head": "41f301c"
+   }
   },
   {
    "id": "R11.2",

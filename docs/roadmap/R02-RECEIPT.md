@@ -59,3 +59,8 @@ otelcol 0.112.0 linux/arm64 and runs in CI on linux/amd64):
 
 Limitations: the pack runs in one Node process (not containers); `.dk-local/` holds a pack-only admin token in
 the database; the guided steps are printed by the CLI, while the web Setup checklist remains the in-app guide.
+
+CI: run 39901028491 on 41f301c (check, collector conformance with otelcol 0.112.0 linux/amd64, browser pilot and
+redesign suites) verifies R02.2, R02.3, R03.2, R05.2, R06.1, R10.1 (local scope) and R11.1. Earlier batch-3 runs
+had one-off `pilot:redesign` failures (b059865, 8ea6492) that did not reproduce on later commits with the same
+code, and one real failure (v1 digest included untracked server logs) fixed in 67f455f.
