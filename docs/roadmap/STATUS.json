@@ -218,12 +218,12 @@
   {
    "id": "R03.5",
    "title": "Add reliable external attention delivery",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "authorized_notification_destination",
    "receipt": "docs/roadmap/R03-RECEIPT.md#r035-notification-outbox",
    "head": null,
    "ci_run": null,
-   "notes": "Local fixture-receiver validation only; external gate authorized_notification_destination open."
+   "notes": "Local fixture-receiver validation only; external gate authorized_notification_destination open. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R04.1",
@@ -323,12 +323,12 @@
   {
    "id": "R05.4",
    "title": "Add optional bounded investigation assistance",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "model_provider_and_budget_approval",
    "receipt": "docs/roadmap/R05-RECEIPT.md#r054-bounded-case-assistance",
    "head": null,
    "ci_run": null,
-   "notes": "Offline/stub validation only; real model and matched evaluation await model_provider_and_budget_approval."
+   "notes": "Offline/stub validation only; real model and matched evaluation await model_provider_and_budget_approval. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R06.1",
@@ -361,22 +361,22 @@
   {
    "id": "R06.3",
    "title": "Add meaningful security layers and interior views",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R06-RECEIPT.md#r063-richer-castle-and-security-layers",
    "head": null,
    "ci_run": null,
-   "notes": "Shared layer semantics, focus modes, data layer, service interiors; human visual review remains R06.4."
+   "notes": "Shared layer semantics, focus modes, data layer, service interiors; human visual review remains R06.4. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R06.4",
    "title": "Polish composition with measured usability and performance",
-   "status": "proposed_not_started",
+   "status": "blocked_external",
    "external_gate": "human_and_physical_device",
    "receipt": null,
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Cannot be completed honestly without external gate: human_and_physical_device. No work is claimed."
   },
   {
    "id": "R07.1",
@@ -423,12 +423,12 @@
   {
    "id": "R07.4",
    "title": "Convert resolved cases into sanitized regression proposals",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R07-RECEIPT.md#r074-regression-proposals",
    "head": null,
    "ci_run": null,
-   "notes": "Local; no external gate."
+   "notes": "Local; no external gate. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R08.1",
@@ -461,62 +461,62 @@
   {
    "id": "R08.3",
    "title": "Build a separate laboratory-only executor first",
-   "status": "proposed_not_started",
+   "status": "blocked_external",
    "external_gate": "explicit_lab_execution_authorization",
    "receipt": null,
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Cannot be completed honestly without external gate: explicit_lab_execution_authorization. No work is claimed."
   },
   {
    "id": "R08.4",
    "title": "Verify containment and service recovery independently",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R08-RECEIPT.md#r084-containment-verification",
    "head": null,
    "ci_run": null,
-   "notes": "Local; verifies operator-reported changes. Executor R08.3 remains gated."
+   "notes": "Local; verifies operator-reported changes. Executor R08.3 remains gated. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R09.1",
    "title": "Add edge, DNS, browser, API and webhook packs",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "authorized_provider_access",
    "receipt": "docs/roadmap/R09-RECEIPT.md#r091-edge-dns-api-and-webhook-pack",
    "head": null,
    "ci_run": null,
-   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access."
+   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R09.2",
    "title": "Add workload, serverless, queue and runtime packs",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "authorized_provider_access",
    "receipt": "docs/roadmap/R09-RECEIPT.md#r092-workload-queue-and-runtime-pack",
    "head": null,
    "ci_run": null,
-   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access."
+   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R09.3",
    "title": "Add data, RAG, secrets and backup packs",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "authorized_provider_access",
    "receipt": "docs/roadmap/R09-RECEIPT.md#r093-data-rag-secrets-and-backup-pack",
    "head": null,
    "ci_run": null,
-   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access."
+   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R09.4",
    "title": "Add SaaS, endpoint and correspondence packs",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "authorized_provider_access",
    "receipt": "docs/roadmap/R09-RECEIPT.md#r094-saas-endpoint-and-correspondence-pack",
    "head": null,
    "ci_run": null,
-   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access."
+   "notes": "Fixture-validated logic only; live feeds await authorized_provider_access. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R10.1",
@@ -550,32 +550,32 @@
   {
    "id": "R10.3",
    "title": "Add team-scale storage only after workload proof",
-   "status": "proposed_not_started",
+   "status": "blocked_external",
    "external_gate": "measured_capacity_need",
    "receipt": null,
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Cannot be completed honestly without external gate: measured_capacity_need. No work is claimed."
   },
   {
    "id": "R10.4",
    "title": "Add safe multi-environment federation",
-   "status": "proposed_not_started",
+   "status": "blocked_external",
    "external_gate": "multi_environment_authorization",
    "receipt": null,
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Cannot be completed honestly without external gate: multi_environment_authorization. No work is claimed."
   },
   {
    "id": "R10.5",
    "title": "Secure releases and the extension ecosystem",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "owner_release_settings",
    "receipt": "docs/roadmap/R10-RECEIPT.md#r105-release-identity-and-extension-contracts",
    "head": null,
    "ci_run": null,
-   "notes": "Local parts done; signing/attestation/rulesets await owner_release_settings."
+   "notes": "Local parts done; signing/attestation/rulesets await owner_release_settings. CI run 39954609827 green on b48199a (local/fixture scope only)."
   },
   {
    "id": "R11.1",
@@ -594,32 +594,32 @@
   {
    "id": "R11.2",
    "title": "Run approved model evaluation with independent review",
-   "status": "proposed_not_started",
+   "status": "blocked_external",
    "external_gate": "provider_budget_and_human_review",
    "receipt": null,
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Cannot be completed honestly without external gate: provider_budget_and_human_review. No work is claimed."
   },
   {
    "id": "R11.3",
    "title": "Validate outside-user utility and interface advantage",
-   "status": "proposed_not_started",
+   "status": "blocked_external",
    "external_gate": "external_participants",
    "receipt": null,
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "Cannot be completed honestly without external gate: external_participants. No work is claimed."
   },
   {
    "id": "R11.4",
    "title": "Ship supported product tiers and maintenance commitments",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R11-RECEIPT.md#r114-support-tiers-and-maintenance-commitments",
    "head": null,
    "ci_run": null,
-   "notes": "Local; tier evidence above local reference stays bounded by open gates (R11.3 outside testers)."
+   "notes": "Local; tier evidence above local reference stays bounded by open gates (R11.3 outside testers). CI run 39954609827 green on b48199a (local/fixture scope only)."
   }
  ]
 }
