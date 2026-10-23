@@ -1,3 +1,5 @@
+import { compare, valid } from "semver";
+
 /**
  * Contextual vulnerability applicability (roadmap R04.2).
  *
@@ -11,7 +13,7 @@
  */
 export interface Component { purl: string; version?: string }
 export interface Sbom { artifact_digest: string; components: Component[]; generated_at: string; tool: string }
-export interface OsvRange { type: "SEMVER" | "ECOSYSTEM"; events: ({ introduced: string } | { fixed: string } | { last_affected: string })[] }
+export interface OsvRange { type: "SEMVER" | "ECOSYSTEM" | "GIT"; events: ({ introduced: string } | { fixed: string } | { last_affected: string } | { limit: string })[] }
 export interface OsvRecord { id: string; aliases?: string[]; summary?: string; modified: string; affected: { package: { ecosystem: string; name: string; purl?: string }; ranges?: OsvRange[]; versions?: string[] }[] }
 export interface FeedSnapshot { osv: OsvRecord[]; osv_fetched_at: string; kev?: { cve: string; date_added: string }[]; kev_fetched_at?: string; epss?: Record<string, number>; epss_date?: string }
 export interface Vex { vulnerability: string; product_digest: string; status: "not_affected" | "affected" | "fixed" | "under_investigation"; justification?: string; author: string; signed: boolean; reviewed_by?: string }
@@ -30,32 +32,36 @@ const STALE_MS = 7 * 86_400_000;
 const nameOf = (purl: string) => { const m = /^pkg:([a-z]+)\/(.+?)(@([^?#]+))?([?#].*)?$/.exec(purl); return m ? { type: m[1]!, name: decodeURIComponent(m[2]!), version: m[4] ? decodeURIComponent(m[4]) : undefined, qualifiers: m[5] ?? "" } : null; };
 const ECO: Record<string, string> = { npm: "npm", pypi: "PyPI", golang: "Go", maven: "Maven", deb: "Debian", rpm: "Red Hat", gem: "RubyGems", cargo: "crates.io" };
 
-function cmp(a: string, b: string): number {
-  const pa = a.replace(/^v/, "").split(/[.+-]/), pb = b.replace(/^v/, "").split(/[.+-]/);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-    const x = pa[i] ?? "0", y = pb[i] ?? "0";
-    const nx = Number(x), ny = Number(y);
-    if (!Number.isNaN(nx) && !Number.isNaN(ny)) { if (nx !== ny) return nx < ny ? -1 : 1; }
-    else if (x !== y) return x < y ? -1 : 1;
-  }
-  return 0;
-}
-/** null = cannot decide (missing version or unsupported range semantics). */
-function inRange(version: string | undefined, a: OsvRecord["affected"][number]): boolean | null {
+/** Unsupported ecosystem ordering stays unknown; it must never imply a fixed runtime. */
+function inRange(version: string | undefined, affected: OsvRecord["affected"][number]): boolean | null {
   if (!version) return null;
-  if (a.versions?.includes(version)) return true;
-  for (const r of a.ranges ?? []) {
-    if (r.type !== "SEMVER" && r.type !== "ECOSYSTEM") continue;
-    let affected = false, decided = false;
-    for (const e of r.events) {
-      if ("introduced" in e) { if (e.introduced === "0" || cmp(version, e.introduced) >= 0) { affected = true; decided = true; } }
-      else if ("fixed" in e) { if (affected && cmp(version, e.fixed) >= 0) affected = false; }
-      else if ("last_affected" in e) { if (affected && cmp(version, e.last_affected) > 0) affected = false; }
+  if (affected.versions?.includes(version)) return true;
+  let unknown = false, comparable = false;
+  for (const range of affected.ranges ?? []) {
+    if (range.type !== "SEMVER" || !valid(version) || range.events.some(event => {
+      const entries = Object.entries(event);
+      return entries.length !== 1 || !["introduced", "fixed", "last_affected"].includes(entries[0]![0]) || (!(entries[0]![0] === "introduced" && entries[0]![1] === "0") && !valid(entries[0]![1]));
+    })) { unknown = true; continue; }
+    if (!range.events.some(event => "introduced" in event)) { unknown = true; continue; }
+    comparable = true;
+    const events = [...range.events].sort((a, b) => {
+      const av = Object.values(a)[0]!, bv = Object.values(b)[0]!;
+      return av === "0" ? (bv === "0" ? 0 : -1) : bv === "0" ? 1 : compare(av, bv);
+    });
+    let hit = false;
+    for (const event of events) {
+      if ("introduced" in event && (event.introduced === "0" || compare(version, event.introduced) >= 0)) hit = true;
+      else if ("fixed" in event && compare(version, event.fixed) >= 0) hit = false;
+      else if ("last_affected" in event && compare(version, event.last_affected) > 0) hit = false;
     }
-    if (decided && affected) return true;
+    if (hit) return true;
   }
-  return (a.ranges?.length || a.versions?.length) ? false : null;
+  return unknown ? null : comparable || affected.versions?.length ? false : null;
 }
+const componentKey = (component: Component) => {
+  const parsed = nameOf(component.purl);
+  return parsed ? `${parsed.type}:${parsed.name}` : component.purl;
+};
 
 export function assess(input: { deployed: Deployed[]; sboms: Sbom[]; sourceSbom?: Sbom; feed: FeedSnapshot; vex?: Vex[]; now: Date }): { findings: Finding[]; feed: { osv_age_days: number; stale: boolean; kev_present: boolean }; limits: string[] } {
   const out: Finding[] = [];
@@ -64,20 +70,21 @@ export function assess(input: { deployed: Deployed[]; sboms: Sbom[]; sourceSbom?
   const kev = new Set((input.feed.kev ?? []).map((k) => k.cve));
   for (const d of input.deployed) {
     const runtime = d.running_digest === "unknown" ? undefined : input.sboms.find((s) => s.artifact_digest === d.running_digest);
-    const comps = new Map<string, { comp: Component; where: "runtime" | "source" }>();
-    for (const c of input.sourceSbom?.components ?? []) comps.set(nameOf(c.purl)?.name ?? c.purl, { comp: c, where: "source" });
-    for (const c of runtime?.components ?? []) comps.set(nameOf(c.purl)?.name ?? c.purl, { comp: c, where: "runtime" });
-    for (const { comp, where } of comps.values()) {
+    const runtimeKeys = new Set((runtime?.components ?? []).map(componentKey));
+    const comps = [
+      ...(runtime?.components ?? []).map(comp => ({ comp, where: "runtime" as const })),
+      ...(input.sourceSbom?.components ?? []).filter(comp => !runtimeKeys.has(componentKey(comp))).map(comp => ({ comp, where: "source" as const })),
+    ];
+    for (const { comp, where } of comps) {
       const p = nameOf(comp.purl); if (!p) continue;
       const version = comp.version ?? p.version;
       for (const v of input.feed.osv) for (const a of v.affected) {
         if (a.package.ecosystem !== ECO[p.type] || a.package.name !== p.name) continue;
         const hit = inRange(version, a);
-        const runtimeComp = runtime?.components.find((c) => nameOf(c.purl)?.name === p.name);
+        const runtimeComp = where === "runtime" ? comp : undefined;
         const runtimeVer = runtimeComp ? (runtimeComp.version ?? nameOf(runtimeComp.purl)?.version) : undefined;
         const runtimeHit = runtimeComp ? inRange(runtimeVer, a) : false;
-        const srcComp = input.sourceSbom?.components.find((c) => nameOf(c.purl)?.name === p.name);
-        const sourceHit = srcComp ? inRange(srcComp.version ?? nameOf(srcComp.purl)?.version, a) : false;
+        const sourceHit = (input.sourceSbom?.components ?? []).some(c => componentKey(c) === componentKey(comp) && inRange(c.version ?? nameOf(c.purl)?.version, a) === true);
         if (hit === false && runtimeHit === false && sourceHit !== true) continue;
         const q: string[] = [];
         const assumptions: string[] = [`SBOM ${runtime ? `${runtime.tool} for ${runtime.artifact_digest.slice(0, 19)}` : "for the running digest is missing"}`, `OSV snapshot ${input.feed.osv_fetched_at}`];
@@ -87,7 +94,7 @@ export function assess(input: { deployed: Deployed[]; sboms: Sbom[]; sourceSbom?
         if (d.running_digest === "unknown" || !runtime) { app = "unknown"; q.push(d.running_digest === "unknown" ? "the running digest is unknown" : "no SBOM for the running digest"); }
         else if (!runtimeComp) { app = where === "source" ? "source_only" : "unknown"; q.push("present in the source dependency list but not in the running artifact"); }
         else if (runtimeHit === null) { app = "unknown"; q.push("installed version is missing or not comparable"); }
-        else if (runtimeHit === false) app = "fixed_in_runtime";
+        else if (runtimeHit === false) app = runtimeVer && valid(runtimeVer) && a.ranges?.some(range => range.type === "SEMVER" && range.events.some(event => "fixed" in event && valid(event.fixed) && compare(runtimeVer, event.fixed) >= 0)) ? "fixed_in_runtime" : "not_affected";
         else app = "affected_in_runtime";
         if ((p.type === "deb" || p.type === "rpm") && app === "affected_in_runtime") { app = "unknown"; q.push("distribution packages may carry backported fixes without a version change; check the distribution advisory"); }
         if (trusted?.status === "not_affected" && app === "affected_in_runtime") { app = "not_affected"; q.push(`VEX not_affected by ${trusted.author}, reviewed by ${trusted.reviewed_by}: ${trusted.justification ?? "no justification"}`); }
@@ -108,5 +115,5 @@ export function assess(input: { deployed: Deployed[]; sboms: Sbom[]; sourceSbom?
     }
   }
   const rank = { high: 0, medium: 1, low: 2, informational: 3 };
-  return { findings: out.sort((a, b) => rank[a.priority] - rank[b.priority]), feed: { osv_age_days: Math.round(osvAge / 86_400_000), stale, kev_present: !!input.feed.kev }, limits: ["Reachability of the vulnerable code is not analyzed.", "Observed exploitation is not assessed here; search events for that.", "Feeds are cached snapshots supplied to Digital Kingdom; it does not fetch them."] };
+  return { findings: out.sort((a, b) => rank[a.priority] - rank[b.priority]), feed: { osv_age_days: Math.round(osvAge / 86_400_000), stale, kev_present: !!input.feed.kev }, limits: ["Only SEMVER ranges and explicitly listed versions are comparable; other range semantics remain unknown.", "Reachability of the vulnerable code is not analyzed.", "Observed exploitation is not assessed here; search events for that.", "Feeds are cached snapshots supplied to Digital Kingdom; it does not fetch them."] };
 }

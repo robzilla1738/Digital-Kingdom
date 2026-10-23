@@ -1,0 +1,95 @@
+{
+  "fetched_at": "2026-10-23T14:16:41.985Z",
+  "source": "https://api.osv.dev/v1/query",
+  "query": {
+    "package": {
+      "name": "lodash",
+      "ecosystem": "npm"
+    },
+    "version": "4.17.20"
+  },
+  "response_sha256": "837088368a64f351e8067cee4a34028d0c0f9c2b2b44372d84736dffa9ccdf2f",
+  "advisory": "GHSA-29mw-wpgm-hmr9",
+  "advisory_modified": "2025-09-29T21:12:31.102523Z",
+  "vulnerable": {
+    "findings": [
+      {
+        "vulnerability": "GHSA-29mw-wpgm-hmr9",
+        "aliases": [
+          "CVE-2020-28500"
+        ],
+        "component": "lodash",
+        "installed_version": "4.17.20",
+        "asset_id": "synthetic-app",
+        "running_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "applicability": "affected_in_runtime",
+        "qualifications": [],
+        "exploitation_context": {
+          "kev": false,
+          "epss": null,
+          "note": "KEV and EPSS describe exploitation elsewhere; they do not mean this installation is compromised."
+        },
+        "observed_exploitation": "not_assessed",
+        "remediation": "unverified",
+        "priority": "low",
+        "explanation": "lodash@4.17.20 on synthetic-app (internal exposure) running sha256:111111111111: affected in runtime",
+        "assumptions": [
+          "SBOM synthetic live-feed smoke test for sha256:111111111111",
+          "OSV snapshot 2026-10-23T14:16:41.985Z"
+        ]
+      }
+    ],
+    "feed": {
+      "osv_age_days": 0,
+      "stale": false,
+      "kev_present": false
+    },
+    "limits": [
+      "Only SEMVER ranges and explicitly listed versions are comparable; other range semantics remain unknown.",
+      "Reachability of the vulnerable code is not analyzed.",
+      "Observed exploitation is not assessed here; search events for that.",
+      "Feeds are cached snapshots supplied to Digital Kingdom; it does not fetch them."
+    ]
+  },
+  "fixed": {
+    "findings": [
+      {
+        "vulnerability": "GHSA-29mw-wpgm-hmr9",
+        "aliases": [
+          "CVE-2020-28500"
+        ],
+        "component": "lodash",
+        "installed_version": "4.17.21",
+        "asset_id": "synthetic-app",
+        "running_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "applicability": "fixed_in_runtime",
+        "qualifications": [],
+        "exploitation_context": {
+          "kev": false,
+          "epss": null,
+          "note": "KEV and EPSS describe exploitation elsewhere; they do not mean this installation is compromised."
+        },
+        "observed_exploitation": "not_assessed",
+        "remediation": "verified_in_runtime",
+        "priority": "informational",
+        "explanation": "lodash@4.17.21 on synthetic-app (internal exposure) running sha256:111111111111: fixed in runtime",
+        "assumptions": [
+          "SBOM synthetic live-feed smoke test for sha256:111111111111",
+          "OSV snapshot 2026-10-23T14:16:41.985Z"
+        ]
+      }
+    ],
+    "feed": {
+      "osv_age_days": 0,
+      "stale": false,
+      "kev_present": false
+    },
+    "limits": [
+      "Only SEMVER ranges and explicitly listed versions are comparable; other range semantics remain unknown.",
+      "Reachability of the vulnerable code is not analyzed.",
+      "Observed exploitation is not assessed here; search events for that.",
+      "Feeds are cached snapshots supplied to Digital Kingdom; it does not fetch them."
+    ]
+  },
+  "limits": "Public OSV snapshot with synthetic SBOM and runtime digest. No real deployment, KEV/EPSS ingestion, or exploit reachability validated."
+}

@@ -14,13 +14,15 @@
     "@dk/graph-core": "workspace:*",
     "@dk/scene-compiler": "workspace:*",
     "@fastify/static": "~8.2.0",
-    "fastify": "~5.4.0"
+    "fastify": "~5.4.0",
+    "semver": "7.8.5"
   },
   "devDependencies": {
     "@opentelemetry/api": "^1.10.0",
     "@opentelemetry/core": "^2.12.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.300.0",
     "@opentelemetry/resources": "^2.12.0",
-    "@opentelemetry/sdk-trace-base": "^2.12.0"
+    "@opentelemetry/sdk-trace-base": "^2.12.0",
+    "@types/semver": "7.7.1"
   }
 }
