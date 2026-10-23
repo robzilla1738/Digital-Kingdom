@@ -253,12 +253,12 @@
   {
    "id": "R05.2",
    "title": "Instrument one real agent workflow and independent observer",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R05-RECEIPT.md#r052-instrument-one-real-agent-workflow-and-independent-observer",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "agent-boundary.test.ts 4/4. MCP gateway is the one supported boundary."
   },
   {
    "id": "R05.3",

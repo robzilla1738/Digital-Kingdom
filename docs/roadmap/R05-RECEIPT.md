@@ -17,3 +17,20 @@ pre-change detections source and the new contracts (`/workspace/work/r00/prefix-
 Limitations: no separate `packages/agent-observability` package was created; the SDK passes `agent` through its
 event type. Hidden reasoning is never collected, so "why the model chose a tool" is out of scope by design. The
 UI shows agent fields only through the raw event detail.
+
+## R05.2 instrument one real agent workflow and independent observer
+
+Delivered: `examples/reference-app/src/agent/boundary.ts` (`createGateway`, `startControlledSink`,
+`UNOBSERVED_PATHS`, `PERMISSION_ASSUMPTIONS`) running on the R02.2 local pack.
+
+Acceptance (`examples/reference-app/agent-boundary.test.ts`, 4 tests, real MCP client/server, real HTTP receiver):
+- Prohibited egress: the gateway denies a non-allowlisted destination; the receiver gets nothing; Digital Kingdom
+  records a policy-enforcer denial finding.
+- Permitted work completes; its effect is corroborated by the independent observer.
+- A direct request to the receiver around the gateway yields a high-severity effect finding stating that the
+  wrapper did not report it, with no principal attributed.
+- The agent's service viewer token cannot disable the observer source (403), and the gateway exposes no tool
+  that touches monitoring.
+
+Unobserved paths: direct network access, other MCP servers or plugins, and tool arguments (never recorded).
+The chosen boundary is MCP; other runtimes are not claimed as supported.

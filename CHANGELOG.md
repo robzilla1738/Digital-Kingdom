@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R05.2: one agent boundary, end to end
+
+- Reference MCP tool gateway (`examples/reference-app/src/agent/boundary.ts`) that reports every call's intent, policy decision (`policy_enforcer`) and execution (`tool_wrapper`), plus a separate controlled receiver whose observer reports deliveries with its own key as `independent_observer`. Unobserved paths and permission assumptions are documented in code and receipt.
+
 ### Roadmap R10.1: deployment identity
 
 - OIDC sign-in with pinned JWKS (RS256/ES256), explicit subject-to-role mappings (no mapping, no access), and immediate session revocation on unmapping. Token expiry (service default 90 days) and rotation; audited logout; trusted-proxy policy checked against the socket peer (Fastify's own protocol getter trusts any sender); anonymous demo off by default once live data exists; `pnpm admin:recover` for filesystem-only, audited, 24-hour human admin recovery.
