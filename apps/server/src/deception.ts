@@ -11,10 +11,7 @@ import { HttpError } from "./store.ts";
  * Activations during a registered authorized test window are kept and annotated, never deleted. A decoy value that
  * matches a real active credential in the latest authorization snapshot is refused.
  */
-export const DECEPTION_MIGRATION = `CREATE TABLE decoys (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, kind TEXT NOT NULL, label TEXT NOT NULL, value_fingerprint TEXT NOT NULL, created_at TEXT NOT NULL, created_by TEXT NOT NULL, retired_at TEXT, retired_reason TEXT);
-   CREATE TABLE decoy_placements (id TEXT PRIMARY KEY, decoy_id TEXT NOT NULL REFERENCES decoys(id), project_id TEXT NOT NULL, location TEXT NOT NULL, asset_id TEXT, parent_placement_id TEXT, placed_at TEXT NOT NULL, placed_by TEXT NOT NULL, removed_at TEXT);
-   CREATE TABLE decoy_test_windows (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, decoy_id TEXT, starts_at TEXT NOT NULL, ends_at TEXT NOT NULL, purpose TEXT NOT NULL, created_by TEXT NOT NULL);
-   CREATE TABLE decoy_activations (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, placement_id TEXT, decoy_id TEXT, trigger TEXT NOT NULL, observed_at TEXT NOT NULL, received_at TEXT NOT NULL, via TEXT NOT NULL, network_locator TEXT, locator_kind TEXT, user_agent TEXT, authorized_test_window TEXT, raw_ref TEXT);`;
+export { DECEPTION_MIGRATION } from "./schema-r01.ts";
 
 const KINDS = ["aws_access_key", "url", "document", "dns_name"] as const;
 type Kind = (typeof KINDS)[number];
@@ -107,7 +104,7 @@ export class Deception {
 /** Canarytokens webhook (one existing provider). Its fields: memo, manage_url, src_ip, time, channel, additional_data. */
 export function fromCanarytokens(body: Record<string, unknown>) {
   const memo = String(body.memo ?? "");
-  const placement = /\bplc_[A-Za-z0-9_-]{16}\b/.exec(memo)?.[0];
+  const placement = /(?<![A-Za-z0-9_-])plc_[A-Za-z0-9_-]{16}(?![A-Za-z0-9_-])/.exec(memo)?.[0];
   const channel = String(body.channel ?? "").toUpperCase();
   const ad = (body.additional_data ?? {}) as Record<string, unknown>;
   const trigger = channel === "DNS" ? "dns_lookup" : /AWS/.test(channel) ? "credential_use" : /PDF|DOC|WORD|EXCEL/.test(channel) || String(ad.src_data ?? "").includes("document") ? "document_fetch" : "request";

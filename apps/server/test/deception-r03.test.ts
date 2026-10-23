@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { fromCanarytokens } from "../src/deception.ts";
 import { setup } from "./helpers.ts";
 
 /** R03.4 deception registry, placements and triggers. */
@@ -13,6 +14,13 @@ async function env() {
 }
 
 describe("R03.4 deception", () => {
+  it("accepts every base64url placement suffix without accepting a truncated longer ID", () => {
+    for (const suffix of ["-", "_", "A", "0"]) {
+      const placement = `plc_${"a".repeat(15)}${suffix}`;
+      expect(fromCanarytokens({ memo: `decoy ${placement}`, channel: "DNS" }).placementId).toBe(placement);
+      expect(fromCanarytokens({ memo: `decoy ${placement}extra`, channel: "DNS" }).placementId).toBeUndefined();
+    }
+  });
   it("a trigger maps to its registered placement path, not to the original compromise or a person", async () => {
     const t = await env();
     const r = await t.ctx.app.inject({ url: `/ingest/decoy/${t.fork.placement_id}`, headers: { "user-agent": "curl/8" }, remoteAddress: "198.51.100.7" });
