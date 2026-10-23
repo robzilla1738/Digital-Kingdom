@@ -24,3 +24,15 @@ Acceptance (`apps/server/test/lineage-r04.test.ts`, 4 tests, ECDSA P-256 DSSE en
 - Verified provenance without an observed runtime digest leaves `running_matches_commit` unknown.
 
 Limits: pinned-key DSSE only (no Fulcio/Rekor keyless verification); registry and runtime digests are supplied by the caller or a connector, not fetched here.
+
+## R04.2 contextual vulnerability applicability
+
+Delivered: `assess` (OSV range evaluation, VEX provenance rules, KEV/EPSS context, priority with explanation), route.
+
+Acceptance (`apps/server/test/vuln-r04.test.ts`, 4 tests, synthetic OSV-format records):
+- A package only in the source dependency list is `source_only`/informational; the same advisory on a package in the running artifact is `affected_in_runtime`.
+- A Debian package is `unknown` because of possible backports; a component without a version is `unknown`; a 51-day-old feed is flagged stale.
+- With the fixed version running, the KEV-listed advisory is `fixed_in_runtime` with verified remediation, and the context note says KEV does not mean this installation is compromised.
+- Explanations cite asset, digest prefix, exposure and authority; assumptions cite the SBOM tool and feed time; unsigned or unreviewed VEX is ignored, reviewed signed VEX downgrades.
+
+External gate still open: live feed access (`external_feed_access`). Reachability analysis is not done.

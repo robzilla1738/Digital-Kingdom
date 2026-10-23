@@ -23,6 +23,7 @@ import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
 import { Controls } from "./controls.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
+import { assess as assessVulns } from "./vuln.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
 import { accessPaths, type AuthSnapshot } from "./access/aws-policy.ts";
 import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
@@ -831,6 +832,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const b = (req.body ?? {}) as { input?: LineageInput; policy?: ProvenancePolicy };
     if (!b.input || !b.policy || typeof b.input.commit !== "string" || !b.input.registry || !Array.isArray(b.policy.signers)) throw new HttpError(400, "input (repository, commit, registry) and policy (signers, builders, repositories) are required");
     return evaluateLineage(b.input, b.policy);
+  });
+  // R04.2: contextual vulnerability applicability over supplied SBOMs and a cached feed snapshot (pure).
+  app.post("/api/projects/:p/vulnerabilities/assess", { preHandler: authed(), bodyLimit: 4_194_304 }, async (req) => {
+    store.require(req.principal!, P(req), "viewer");
+    const b = (req.body ?? {}) as Parameters<typeof assessVulns>[0];
+    if (!Array.isArray(b.deployed) || !Array.isArray(b.sboms) || !b.feed || !Array.isArray(b.feed.osv)) throw new HttpError(400, "deployed[], sboms[] and feed.osv[] are required");
+    return assessVulns({ ...b, now: store.now() });
   });
   app.post("/ingest/aws/cloudtrail", { preHandler: sourceAuth, bodyLimit: 4_194_304 }, async (req, reply) => {
     const src = (req as SrcReq).source;

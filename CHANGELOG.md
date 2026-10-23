@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R04.2: contextual vulnerability applicability
+
+- `apps/server/src/vuln.ts` and `POST /vulnerabilities/assess`: OSV-format matching against SBOMs keyed by the running artifact digest, keeping applicability (in runtime, source only, fixed in runtime, not affected by reviewed signed VEX, unknown), KEV/EPSS global context, observed exploitation (not assessed here) and verified remediation separate. Distribution packages, missing versions and feeds older than seven days are qualified; each priority line cites the asset, digest, exposure and assumptions. Feeds are supplied as cached snapshots; Digital Kingdom does not fetch them.
+
 ### Roadmap R06.2: capability-aware surface mappings
 
 - `packages/contracts/src/surfaces.ts` (`dk-surfaces-1`): all 28 surfaces with presentation, family (the ten modules plus dns_registry, dispatch_house, key_registry, supply_depot, archive and outpost, drawn only when data supports them), element category and an explicit support level with evidence. `GET /api/surfaces` and `GET /api/projects/:p/surfaces` resolve each asset to a surface; watchtower overlays come only from sources covering the asset and shields only from controls with a current passing test; boundaries and decorations are labelled as such.
