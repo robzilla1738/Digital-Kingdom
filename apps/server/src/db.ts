@@ -1,4 +1,4 @@
-import { BUNDLES_MIGRATION, FACTS_MIGRATION } from "./schema-r01.ts";
+import { BUNDLES_MIGRATION, CASES_MIGRATION, FACTS_MIGRATION } from "./schema-r01.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -79,6 +79,8 @@ export const MIGRATIONS: string[] = [
    CREATE INDEX events_route ON events (project_id, json_extract(body, '$.route'), occurred_at, id);
    CREATE INDEX events_rule ON events (project_id, json_extract(body, '$.rule_ref'), occurred_at, id);
    CREATE INDEX events_trace ON events (project_id, json_extract(body, '$.trace_id'), occurred_at, id);`,
+  // R03.1: durable cases with append-only items (see cases.ts).
+  CASES_MIGRATION,
 ];
 
 export function openDb(path: string): DB {
@@ -95,7 +97,15 @@ export function openDb(path: string): DB {
   return db;
 }
 
+const depth = new WeakMap<DB, number>();
+/** One IMMEDIATE transaction; a nested call joins the outer transaction instead of failing on BEGIN. */
 export function tx<T>(db: DB, fn: () => T): T {
+  const d = depth.get(db) ?? 0;
+  if (d > 0) { depth.set(db, d + 1); try { return fn(); } finally { depth.set(db, d); } }
+  depth.set(db, 1);
+  try { return txOuter(db, fn); } finally { depth.set(db, 0); }
+}
+function txOuter<T>(db: DB, fn: () => T): T {
   db.exec("BEGIN IMMEDIATE");
   try { const r = fn(); db.exec("COMMIT"); return r; }
   catch (e) { try { db.exec("ROLLBACK"); } catch { /* already rolled back */ } throw e; }

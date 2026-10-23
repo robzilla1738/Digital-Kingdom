@@ -17,6 +17,20 @@ export interface ServerActions {
   coverageHistory(q: { asset: string; action: string; outcome?: string; after: string; before: string }, signal?: AbortSignal): Promise<CoverageHistoryResult>;
   /** R01.3 immutable evidence bundle for a finding revision. */
   createBundle(findingId: string, revision?: number): Promise<BundleMeta>;
+  /** R03.1 durable cases. `path` is relative to the case (e.g. "/items"); empty for the case itself. */
+  listCases(signal?: AbortSignal): Promise<{ cases: CaseSummary[] }>;
+  getCase(id: string, signal?: AbortSignal): Promise<CaseDetail>;
+  createCase(body: Record<string, unknown>): Promise<CaseDetail>;
+  caseAction(id: string, path: string, body: Record<string, unknown>): Promise<CaseDetail>;
+  exportDurableCase(id: string): Promise<void>;
+}
+export interface CaseSummary { id: string; title: string; owner: string; status: string; version: number; updated_at: string; open_questions: number }
+export interface CaseItem { item_id: string; kind: string; ref: string; text?: string; status?: string; answer?: string | null; why?: string | null; produced_finding?: boolean; revision?: number; bundle_id?: string; bundle_digest?: string; added_by: string; added_at: string; removed?: { at: string; by: string; reason: string } }
+export interface CaseDetail {
+  id: string; title: string; owner: string; status: string; version: number; closure_criteria: string; closure: { statement: string; by: string; at: string } | null;
+  scope: { question: string; asset_ids: string[]; after?: string; before?: string };
+  items: CaseItem[]; linked_findings: { finding_id: string; linked_revision: number; current_revision: number | null; current_lifecycle: string; bundle_id: string }[];
+  history: { version: number; actor: string; reason: string | null; at: string }[];
 }
 export interface CoverageHistoryResult {
   known_at: string;

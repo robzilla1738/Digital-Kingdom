@@ -630,6 +630,9 @@ export class Store {
 
   // ---------------- outbox / SSE ----------------
 
+  /** Run `fn` in one SQLite transaction (nested calls join the outer one). */
+  transaction<T>(fn: () => T): T { return tx(this.db, fn); }
+
   emit(projectId: string, type: string, payload: unknown) {
     this.db.prepare("INSERT INTO outbox (project_id, type, payload, created_at) VALUES (?, ?, ?, ?)").run(projectId, type, JSON.stringify(payload), this.iso());
   }

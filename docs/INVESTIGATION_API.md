@@ -113,3 +113,19 @@ budgets (`count_cap` 100,000, `page_byte_budget` 1,000,000, `cursor_ttl_seconds`
 `cursor_expires_at`. A count at the cap sets `matching_capped` and the result is never complete. Records removed
 after the first page set `removed_since_first_page`. Requests run synchronously; they are bounded by these
 budgets and by a per-principal limit of 30 searches per 10 seconds, not cancelled mid-query.
+
+## 5. Cases (roadmap R03.1)
+
+| Endpoint | Role | Purpose |
+| --- | --- | --- |
+| `GET /cases`, `GET /cases/:id` | viewer | List; full case with items, linked findings (pinned bundle + current detector state) and history |
+| `POST /cases` | analyst | `title`, `scope {question, asset_ids, after?, before?}`, `closure_criteria`, optional `owner` (defaults to the caller) |
+| `POST /cases/:id` | analyst | Change title, scope, owner or closure criteria (`expected_version`, optional `reason`) |
+| `POST /cases/:id/items` | analyst | `kind` finding (`ref`, optional `revision`; pins a bundle), event (`ref`, optional `why`), question, hypothesis or note (`text`) |
+| `POST /cases/:id/items/:item/question` | analyst | `status` answered, accepted_unresolved, open (or supported/refuted for hypotheses) with `answer` |
+| `POST /cases/:id/items/:item/remove` | analyst | Tombstone an item with a `reason` |
+| `POST /cases/:id/status` | analyst (closing: owner or admin) | open, resolved or closed; resolved/closed need every question settled and a `statement` |
+| `POST /cases/:id/export` | analyst | Signed export; for ids not starting with `case_` this is the older finding-scoped export |
+
+Every mutation requires `expected_version` (428 if missing, 409 with `changes_since` if stale). A closed case
+must be reopened before it changes.

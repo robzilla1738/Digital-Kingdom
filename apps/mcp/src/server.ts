@@ -48,7 +48,7 @@ export interface CreateServerOptions {
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
-export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_containment_options"] as const;
+export const INVESTIGATION_TOOLS = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_search_events", "dk_get_event", "dk_coverage", "dk_coverage_history", "dk_facts", "dk_create_bundle", "dk_get_bundle_events", "dk_list_cases", "dk_get_case", "dk_containment_options"] as const;
 
 /** The exact tool set used by Real-Agent Evaluation v1 (before event search). Kept so v1 runs stay reproducible. */
 export const INVESTIGATION_TOOLS_V1 = ["dk_overview", "dk_security_context", "dk_assess_change", "dk_list_findings", "dk_get_finding", "dk_coverage", "dk_containment_options"] as const;
@@ -222,6 +222,18 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     const q = new URLSearchParams(); if (offset !== undefined) q.set("offset", String(offset)); if (limit !== undefined) q.set("limit", String(limit));
     return out(await client.req("GET", client.p(`/bundles/${encodeURIComponent(bundle_id)}/events?${q}`, p)));
   });
+
+  server.registerTool("dk_list_cases", {
+    title: "List investigation cases",
+    description: "Durable analyst cases (separate from detector findings): id, title, owner, status, version and open question count.",
+    inputSchema: { project }, annotations: RO,
+  }, async ({ project: p }) => out(await client.req("GET", client.p("/cases", p))));
+
+  server.registerTool("dk_get_case", {
+    title: "Read one case",
+    description: "A case's scope, questions and answers, linked findings (each with its pinned bundle and current detector state), independent events, notes, closure criteria and full change history. A case's status never follows its findings.",
+    inputSchema: { case_id: z.string().max(100), project }, annotations: RO,
+  }, async ({ case_id, project: p }) => out(await client.req("GET", client.p(`/cases/${encodeURIComponent(case_id)}`, p))));
 
   server.registerTool("dk_containment_options", {
     title: "Permitted containment steps",

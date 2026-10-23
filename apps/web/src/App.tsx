@@ -134,6 +134,15 @@ export function App() {
       findingDetail: (id, signal) => { check(); return api.get<FindingDetailResult>(`${prefix}/findings/${encodeURIComponent(id)}`, signal); },
       eventDetail: (id, signal) => { check(); return api.get(`${prefix}/events/${encodeURIComponent(id)}`, signal); },
       coverageHistory: (q, signal) => { check(); return api.get(`${prefix}/coverage/history?${new URLSearchParams(q as Record<string, string>)}`, signal); },
+      listCases: (signal) => { check(); return api.get(`${prefix}/cases`, signal); },
+      getCase: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}`, signal); },
+      createCase: async (body) => { check(); return api.send("POST", `${prefix}/cases`, body); },
+      caseAction: async (id, path, body) => { check(); return api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}${path}`, body); },
+      exportDurableCase: async (id) => {
+        check(); const bundle = await api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}/export`); check();
+        const url = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" }));
+        const a = document.createElement("a"); a.href = url; a.download = `digital-kingdom-${id}.json`; a.click(); URL.revokeObjectURL(url);
+      },
       createBundle: async (findingId, revision) => { check(); return api.send("POST", `${prefix}/findings/${encodeURIComponent(findingId)}/bundles`, revision ? { revision } : {}); },
       searchEvents: (input, signal) => { check(); return api.get(`${prefix}/events/search?${eventSearchParams(input)}`, signal); },
     };

@@ -13,6 +13,7 @@ import { otlpToIngest, gunzipCapped } from "./adapters/otlp.ts";
 import { assessChange, securityContext, summarize } from "./context.ts";
 import { coverageHistory, parseCoverageQuestion } from "./coverage-history.ts";
 import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } from "./bundles.ts";
+import { Cases } from "./cases.ts";
 
 export interface AppConfig {
   store: Store;
@@ -464,8 +465,23 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   // ---- export ----
   app.post("/api/projects/:p/cases/:id/export", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
-    return exportCase(store, proj.id, (req.params as { id: string }).id, who(req), cfg.secret);
+    const id = (req.params as { id: string }).id;
+    // Durable cases (R03.1) have case_ ids; any other id is the finding-scoped export kept for compatibility.
+    return id.startsWith("case_") ? cases.export(proj.id, id, who(req), cfg.secret) : exportCase(store, proj.id, id, who(req), cfg.secret);
   });
+
+  // ---- durable cases (R03.1) ----
+  const cases = new Cases(store);
+  const body = (req: FastifyRequest) => ((req.body && typeof req.body === "object" && !Array.isArray(req.body)) ? req.body : {}) as Record<string, unknown>;
+  const CP = (req: FastifyRequest) => (req.params as { id: string }).id;
+  app.get("/api/projects/:p/cases", { preHandler: authed() }, async (req) => ({ cases: cases.list(store.require(req.principal!, P(req), "viewer").id) }));
+  app.post("/api/projects/:p/cases", { preHandler: authed("analyst") }, async (req) => cases.create(store.require(req.principal!, P(req), "analyst").id, body(req), who(req)));
+  app.get("/api/projects/:p/cases/:id", { preHandler: authed() }, async (req) => cases.get(store.require(req.principal!, P(req), "viewer").id, CP(req)));
+  app.post("/api/projects/:p/cases/:id", { preHandler: authed("analyst") }, async (req) => cases.update(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
+  app.post("/api/projects/:p/cases/:id/items", { preHandler: authed("analyst") }, async (req) => cases.addItem(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
+  app.post("/api/projects/:p/cases/:id/items/:item/question", { preHandler: authed("analyst") }, async (req) => cases.setQuestion(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req)));
+  app.post("/api/projects/:p/cases/:id/items/:item/remove", { preHandler: authed("analyst") }, async (req) => cases.removeItem(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req)));
+  app.post("/api/projects/:p/cases/:id/status", { preHandler: authed("analyst") }, async (req) => cases.setStatus(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req), req.principal!.role));
   app.post("/api/verify-export", { preHandler: authed("viewer") }, async (req) => verifyCase(req.body, cfg.secret));
   // Installation admins see the whole audit log; project admins only their projects' entries.
   app.get("/api/audit", { preHandler: authed("admin") }, async (req) => {

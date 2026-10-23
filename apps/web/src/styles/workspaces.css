@@ -275,3 +275,12 @@
 .castle-wrap .stage-tools button, .graph-wrap .stage-tools button { white-space:nowrap; }
 .graph-wrap .stage-tools .vr-h { width:1px; height:20px; margin:0 3px; }
 .graph-wrap #graph-view-controls:not([hidden]) { display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; gap:2px; }
+
+/* R03.1 cases */
+.cases-layout { display: grid; grid-template-columns: minmax(220px, 320px) 1fr; gap: 16px; align-items: start; }
+@media (max-width: 860px) { .cases-layout { grid-template-columns: 1fr; } }
+.case-new { display: grid; gap: 8px; margin-top: 12px; }
+.inline-form { display: inline-flex; gap: 6px; flex-wrap: wrap; margin-left: 6px; }
+.link-btn { background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-align: left; font: inherit; }
+.link-btn:hover, .link-btn:focus-visible { text-decoration: underline; }
+.link-btn.active { font-weight: 600; text-decoration: underline; }

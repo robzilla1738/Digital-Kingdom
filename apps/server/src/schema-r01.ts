@@ -8,3 +8,9 @@ export const FACTS_MIGRATION = `CREATE TABLE entities (entity_ref TEXT PRIMARY K
 
 /** R01.3 immutable investigation bundles. */
 export const BUNDLES_MIGRATION = `CREATE TABLE bundles (id TEXT NOT NULL, project_id TEXT NOT NULL, digest TEXT NOT NULL, finding_id TEXT NOT NULL, finding_revision INTEGER NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL, created_by TEXT NOT NULL, expires_at TEXT, pinned INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (project_id, id));`;
+
+/** R03.1 durable cases. */
+export const CASES_MIGRATION = `CREATE TABLE cases (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, title TEXT NOT NULL, scope TEXT NOT NULL, owner TEXT NOT NULL, status TEXT NOT NULL CHECK (status IN ('open','resolved','closed')), closure_criteria TEXT NOT NULL, closure TEXT, version INTEGER NOT NULL, created_at TEXT NOT NULL, created_by TEXT NOT NULL, updated_at TEXT NOT NULL);
+   CREATE INDEX cases_project ON cases (project_id, updated_at);
+   CREATE TABLE case_items (seq INTEGER PRIMARY KEY AUTOINCREMENT, case_id TEXT NOT NULL, project_id TEXT NOT NULL, item_id TEXT NOT NULL UNIQUE, kind TEXT NOT NULL, ref TEXT NOT NULL, body TEXT NOT NULL, added_by TEXT NOT NULL, added_at TEXT NOT NULL, removed_at TEXT, removed_by TEXT, removal_reason TEXT);
+   CREATE INDEX case_items_case ON case_items (case_id, seq);`;

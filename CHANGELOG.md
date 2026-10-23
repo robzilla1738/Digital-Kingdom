@@ -2,6 +2,10 @@
 
 ## Unreleased (on `main`, after 0.3.2)
 
+### Roadmap R03.1: durable cases
+
+- Cases with their own identity, scope (question, assets, interval), owner, questions and hypotheses, closure criteria, and a timeline of linked findings, independent events and notes. Linking a finding pins an immutable bundle to the case. A closed finding never closes a case; closing requires every question answered or accepted unresolved, a closure statement, and the owner or an administrator. All edits are version-checked and recorded; removals are tombstones. Signed case export (`digital-kingdom-case/2`) lists unavailable records explicitly and verifies with `/api/verify-export`. Investigate workspace gains a Cases tab; MCP `dk_list_cases`, `dk_get_case`.
+
 ### Roadmap R01: evidence and history (branch `roadmap/r01-evidence`)
 
 - **Versioned facts (R01.1).** Bitemporal entities and assertions (`valid_from`/`recorded_at`, typed: declared, observed, inferred, hypothesis, test result) with provenance. Late discovery adds knowledge without rewriting what was known; a deleted and recreated resource is a new incarnation; conflicting sources stay a conflict until an attributed, precondition-checked reconciliation. Optional asset `provider_ref`. `GET /facts`, `/facts/conflicts`, `/facts/entities/:ref`, `POST /facts/assertions`, `/facts/reconciliations`; MCP `dk_facts`.

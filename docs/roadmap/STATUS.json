@@ -63,51 +63,51 @@
   {
    "id": "R01.1",
    "title": "Version domain assertions and entity lifetimes",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R01-RECEIPT.md#r011-versioned-domain-facts",
-   "head": null,
-   "ci_run": null,
+   "head": "1793f8a0f8a1996ef6d83fd0d4a0482c2b7167fd",
+   "ci_run": 39893332609,
    "notes": "facts-r01.test.ts 8/8. Bitemporal assertions, incarnations, conflicts, reconciliations, legacy backfill. UI rendering of facts not built (API/MCP only)."
   },
   {
    "id": "R01.2",
    "title": "Persist source capability and coverage history",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R01-RECEIPT.md#r012-historical-coverage",
-   "head": null,
-   "ci_run": null,
+   "head": "1793f8a0f8a1996ef6d83fd0d4a0482c2b7167fd",
+   "ci_run": 39893332609,
    "notes": "coverage-history-r01.test.ts 7/7. Bounded-window outage failed first (not_assessed -> offline). Config history before migration 5 is assumed and labelled."
   },
   {
    "id": "R01.3",
    "title": "Serve revision-pinned evidence bundles",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R01-RECEIPT.md#r013-evidence-bundles",
-   "head": null,
-   "ci_run": null,
+   "head": "1793f8a0f8a1996ef6d83fd0d4a0482c2b7167fd",
+   "ci_run": 39893332609,
    "notes": "bundles-r01.test.ts 5/5. Content-addressed bundles, 410 on expiry, missing/changed records reported, export names the bundle. UI evidence still loads via existing path."
   },
   {
    "id": "R01.4",
    "title": "Add optimistic concurrency and annotation history",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R01-RECEIPT.md#r014-concurrency",
-   "head": null,
-   "ci_run": null,
+   "head": "1793f8a0f8a1996ef6d83fd0d4a0482c2b7167fd",
+   "ci_run": 39893332609,
    "notes": "concurrency-r01.test.ts 11/11. Finding/source preconditions (breaking), as_of annotations, containment approvals bound to policy, finding revision and expiry."
   },
   {
    "id": "R01.5",
    "title": "Bound query work and prove snapshot semantics",
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "external_gate": "local",
    "receipt": "docs/roadmap/R01-RECEIPT.md#r015-bounded-queries",
-   "head": null,
-   "ci_run": null,
+   "head": "1793f8a0f8a1996ef6d83fd0d4a0482c2b7167fd",
+   "ci_run": 39893332609,
    "notes": "search-budgets-r01.test.ts 8/8; benchmark 10k/100k/1M on Neoverse-V2 (R01.5-BENCHMARK.md): worst search 1.8 s -> 175 ms. Not cancellable mid-query; ingestion under search load unmeasured."
   },
   {
@@ -153,12 +153,12 @@
   {
    "id": "R03.1",
    "title": "Persist cases separately from findings",
-   "status": "proposed_not_started",
+   "status": "implemented_locally_verified",
    "external_gate": "local",
-   "receipt": null,
+   "receipt": "docs/roadmap/R03-RECEIPT.md#r031-durable-cases",
    "head": null,
    "ci_run": null,
-   "notes": null
+   "notes": "cases-r03.test.ts 6/6; e2e/cases-redesign.spec.ts CASE-01 and COV-01 pass locally. Collaboration is role-gated, not real-time co-editing."
   },
   {
    "id": "R03.2",

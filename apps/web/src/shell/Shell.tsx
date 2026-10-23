@@ -14,6 +14,7 @@ import { SplitPane } from "../components/ui/SplitPane.tsx";
 import { Tabs, SegmentedControl } from "../components/ui/Tabs.tsx";
 import { FindingsWorkspace } from "../workspaces/investigate/FindingsWorkspace.tsx";
 import { EventWorkspace } from "../workspaces/investigate/EventWorkspace.tsx";
+import { CasesWorkspace } from "../workspaces/investigate/CasesWorkspace.tsx";
 import { CoverageWorkspace } from "../workspaces/coverage/CoverageWorkspace.tsx";
 import { IntegrationsWorkspace } from "../workspaces/integrations/IntegrationsWorkspace.tsx";
 const Castle3D = lazy(() => import("../castle/Castle3D.tsx").then((module) => ({ default: module.Castle3D })));
@@ -70,7 +71,7 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
           <details className="menu display-menu"><summary className="btn"><Icon name="layers" />Layers & display</summary><div className="menu-body"><div className="menu-title">Relationship layers</div>{(Object.keys(LAYER_STYLE) as Layer[]).map((layer) => <label className="check" key={layer}><input type="checkbox" checked={ui.layers[layer]} onChange={(e) => dispatch({ type: "layer", layer, on: e.target.checked })} />{LAYER_STYLE[layer].label}<span className="swatch" style={{ background: LAYER_STYLE[layer].color }} /></label>)}<label className="check"><input type="checkbox" checked={ui.showHypothetical} onChange={(e) => dispatch({ type: "hypothetical", on: e.target.checked })} />Hypothetical relationships</label><hr /><label className="check"><input type="checkbox" checked={ui.roofs} onChange={(e) => dispatch({ type: "roofs", roofs: e.target.checked })} />Show roofs</label><label className="check"><input type="checkbox" checked={ui.reducedMotion} onChange={(e) => dispatch({ type: "reducedMotion", on: e.target.checked })} />Reduce motion</label><label className="field" style={{ padding: 8 }}>Quality<select aria-label="Quality" value={ui.quality} onChange={(e) => dispatch({ type: "quality", quality: e.target.value as typeof ui.quality })}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label></div></details>
           {ui.selection && <button className="icon-btn" onClick={() => dispatch({ type: "panel", panel: "inspector", open: !ui.inspector })} aria-label={ui.inspector ? "Hide inspector" : "Show inspector"} aria-pressed={ui.inspector}><Icon name="panel-right" /></button>}
         </>}
-        {ui.workspace === "investigate" && <Tabs label="Investigation views" value={ui.investigateTab} onChange={(tab) => dispatch({ type: "investigateTab", tab })} options={[{ value: "findings", label: "Findings" }, { value: "events", label: "Events" }]} />}
+        {ui.workspace === "investigate" && <Tabs label="Investigation views" value={ui.investigateTab} onChange={(tab) => dispatch({ type: "investigateTab", tab })} options={[{ value: "findings", label: "Findings" }, { value: "events", label: "Events" }, { value: "cases", label: "Cases" }]} />}
         {ui.workspace === "coverage" && <span className="toolbar-scope">Source reporting ≠ browser connection ≠ security posture</span>}
       </div>
       {vm.data.project.dataset_kind === "synthetic" && <div className="workspace-data-banner">Synthetic demo · no production systems connected.<span className="wide-banner-detail"> All records and visual activity in this project are synthetic.</span></div>}
@@ -88,6 +89,7 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
         <div className="workspace-page-host">
           <div className="workspace-route" hidden={ui.workspace !== "investigate" || ui.investigateTab !== "findings"}><FindingsWorkspace expanded={expanded} returnRevision={resultsReturnRevision} onQueueChange={setFindingQueue} /></div>
           <div className="workspace-route" hidden={ui.workspace !== "investigate" || ui.investigateTab !== "events"}><EventWorkspace /></div>
+          {ui.workspace === "investigate" && ui.investigateTab === "cases" && <div className="workspace-route"><CasesWorkspace /></div>}
           <div className="workspace-route" hidden={ui.workspace !== "coverage"}><CoverageWorkspace /></div>
           <div className="workspace-route" hidden={ui.workspace !== "integrations"}><IntegrationsWorkspace /></div>
         </div>

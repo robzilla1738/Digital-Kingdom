@@ -2,7 +2,7 @@
 
 Branch `roadmap/r01-evidence`, stacked on `main` 8957dd6 (R00 merged with owner go-ahead on 2026-10-22).
 Status of each package is in `STATUS.json`. Local checks: typecheck, `npx vitest run` (450 tests / 51 files),
-`pnpm validate:fixtures`, `pnpm build`. CI run recorded in `STATUS.json` once it completes.
+`pnpm validate:fixtures`, `pnpm build`. CI run 39893332609 on exact head 1793f8a: `check` and `browser-pilot` (pilot + redesign suites) passed.
 
 ## R01.1 versioned domain facts
 
