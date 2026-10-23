@@ -131,11 +131,16 @@ Evidence: `apps/server/test/boundaries-r00.test.ts` (7 tests), `packages/contrac
 | `pnpm build` | exit 0 | `build.txt` |
 | Source inspector (static demo, Chromium/SwiftShader) | renders "Identity namespace: idp:castle-gate" for src-auth and "Private to this source…" for src-falco; no page errors | `docs/roadmap/img/r00-source-namespaces.png` |
 | Playwright pilot / redesign suites | not run locally (sandbox camera/lifetime tests fail on old main too); CI is authoritative | — |
-| CI on candidate head | see "CI" below | — |
+| CI on candidate head | run 39887267266: `check` and `browser-pilot` success | see "CI" below |
 
 ## CI
 
-Filled after push: see `docs/roadmap/STATUS.json` (`head`, `ci_run`) and the commit that records it.
+Candidate code head `0121375a18b441463b30f49339555ba5372b90c7` (branch `roadmap/r00-correctness`):
+CI run `39887267266` — job `check` (install, typecheck, `pnpm test`, validate:fixtures, build): success;
+job `browser-pilot` (Playwright `pnpm pilot` and `pnpm pilot:redesign` on ubuntu-24.04, Chromium): success.
+Checked through the GitHub Actions API on 2026-10-22 21:15 CDT. The commit that records this receipt changes
+documentation only. CI-verified is not manual acceptance, GPU verification or deployment: Pages still serves
+`14d205f` and nothing was merged.
 
 ## Next eligible work
 

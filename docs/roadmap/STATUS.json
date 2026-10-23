@@ -13,41 +13,41 @@
     {
       "id": "R00.1",
       "title": "Publish a current-main readiness receipt",
-      "status": "implemented_locally_verified",
+      "status": "ci_verified",
       "external_gate": "local",
       "receipt": "docs/roadmap/R00-RECEIPT.md#r001-current-main-receipt",
-      "head": null,
-      "ci_run": null,
+      "head": "0121375a18b441463b30f49339555ba5372b90c7",
+      "ci_run": 39887267266,
       "notes": "Receipt for 14d205f with exact-head CI/Pages ids and served build. Frozen redesign receipts untouched."
     },
     {
       "id": "R00.2",
       "title": "Enforce typed, namespaced event correlation",
-      "status": "implemented_locally_verified",
+      "status": "ci_verified",
       "external_gate": "local",
       "receipt": "docs/roadmap/R00-RECEIPT.md#r002-typed-namespaced-correlation",
-      "head": null,
-      "ci_run": null,
+      "head": "0121375a18b441463b30f49339555ba5372b90c7",
+      "ci_run": 39887267266,
       "notes": "8 of 16 new regressions failed on dk-rules-1.0.1 before the fix; all pass after. Expired-session lifetime is NOT modelled (no session lifetime data in events)."
     },
     {
       "id": "R00.3",
       "title": "Resolve routes without guessing one owner",
-      "status": "implemented_locally_verified",
+      "status": "ci_verified",
       "external_gate": "local",
       "receipt": "docs/roadmap/R00-RECEIPT.md#r003-route-resolution",
-      "head": null,
-      "ci_run": null,
+      "head": "0121375a18b441463b30f49339555ba5372b90c7",
+      "ci_run": 39887267266,
       "notes": "6 of 11 new regressions failed on the previous resolver. Real candidate-diff assessment remains R04.4."
     },
     {
       "id": "R00.4",
       "title": "Tighten contracts and adversarial data-boundary tests",
-      "status": "implemented_locally_verified",
+      "status": "ci_verified",
       "external_gate": "local",
       "receipt": "docs/roadmap/R00-RECEIPT.md#r004-contracts-and-data-boundaries",
-      "head": null,
-      "ci_run": null,
+      "head": "0121375a18b441463b30f49339555ba5372b90c7",
+      "ci_run": 39887267266,
       "notes": "Reproduced and fixed: token-shaped values echoed in rejection/quarantine details. Added token revocation API. Query cost budgets (beyond page/size/interval limits) remain R01.5."
     },
     {
@@ -56,7 +56,7 @@
       "status": "blocked_external",
       "external_gate": "human_and_physical_device",
       "receipt": "docs/roadmap/R00.5-MANUAL-REVIEW-PACKET.md",
-      "head": null,
+      "head": "0121375a18b441463b30f49339555ba5372b90c7",
       "ci_run": null,
       "notes": "Packet prepared; every human/device check is unrun. No automated result is relabelled approval."
     },
