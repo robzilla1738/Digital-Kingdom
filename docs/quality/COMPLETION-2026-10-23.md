@@ -2,6 +2,10 @@
 
 Scope: complete the authorized repository work and polish the application. The owner explicitly deferred AWS and notification services (including Slack). No cloud accounts, notification destinations, production systems, deployment settings, or release protection rules were changed.
 
+## Publication follow-up
+
+The owner subsequently authorized publishing the existing GitHub Pages synthetic demo. The release follow-up found and corrected two gaps: Inter's copyright and full OFL-1.1 license now ship with the web build, with a package-scoped reviewed exception in the dependency inventory; deferred evidence-close focus restoration now respects a later user focus action. A browser regression reproduced search losing focus before the fix and passed afterward. Fresh GitHub CI and the Pages deployment provide the publication checks; the historical local counts below remain unchanged.
+
 ## Changes
 
 - Refined every workspace around a shared charcoal/glass visual system, locally bundled Inter Variable and Lucide controls. Pills, fields, tables, navigation, menus, inspector sections and mobile layouts now share consistent spacing and styling. Semantic outcome shapes remain distinct from decorative navigation icons.
