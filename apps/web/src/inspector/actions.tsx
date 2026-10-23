@@ -17,6 +17,7 @@ export interface ServerActions {
   coverageHistory(q: { asset: string; action: string; outcome?: string; after: string; before: string }, signal?: AbortSignal): Promise<CoverageHistoryResult>;
   /** R01.3 immutable evidence bundle for a finding revision. */
   createBundle(findingId: string, revision?: number): Promise<BundleMeta>;
+  bundleEvidence(bundle: BundleMeta, signal?: AbortSignal): Promise<FindingEvidenceResult>;
   /** R03.1 durable cases. `path` is relative to the case (e.g. "/items"); empty for the case itself. */
   listCases(signal?: AbortSignal): Promise<{ cases: CaseSummary[] }>;
   getCase(id: string, signal?: AbortSignal): Promise<CaseDetail>;

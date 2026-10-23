@@ -10,7 +10,7 @@ import { buildApp } from '../apps/server/src/app.ts';
 import { seedDemo } from '../apps/server/src/seed.ts';
 
 export const REDESIGN_ROOT = resolve(import.meta.dirname, '..');
-export const REDESIGN_ARTIFACTS = join(REDESIGN_ROOT, 'artifacts/redesign/final');
+export const REDESIGN_ARTIFACTS = resolve(REDESIGN_ROOT, process.env.DK_RED_ARTIFACTS ?? 'artifacts/redesign/final');
 export async function captureRedesign(page: Page, name: string) {
   mkdirSync(join(REDESIGN_ARTIFACTS, 'screenshots'), { recursive: true });
   const bytes = await page.screenshot({ path: join(REDESIGN_ARTIFACTS, 'screenshots', `${name}.png`) });

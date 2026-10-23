@@ -346,3 +346,24 @@ test("TIME-04 live-mode snapshot windows extend only after Load updates or Retur
     await page.getByRole("button", { name: "Return live", exact: true }).click(); await expect.poll(async () => Number(await rail.getAttribute("max"))).toBe(Date.parse(latest.server_time)); await expect(pane(page).locator("tr[data-event-id]")).toHaveCount(3); await expect(page.getByTestId("timeline-mode")).toHaveAttribute("data-mode", "live"); await expect(pane(page)).toHaveAttribute("data-selection-id", "edge");
   } finally { await context.close(); }
 });
+
+test("pinning evidence reads immutable bundle pages and retries without substituting current records", async ({ browser }) => {
+  const { context, page } = await loginRedesign(browser, harness);
+  try {
+    await openFinding(page, findings[0]!.id);
+    let bundleReads = 0, fail = true;
+    await page.route("**/bundles/*/events?*", route => {
+      bundleReads++;
+      return fail ? route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "Synthetic pinned evidence outage" }) }) : route.continue();
+    });
+    await page.getByRole("button", { name: "Pin evidence bundle", exact: true }).click();
+    await expect(page.getByTestId("evidence-bundle")).toBeVisible();
+    await expect(page.getByTestId("evidence-incomplete")).toContainText("Pinned evidence unavailable");
+    await expect(page.getByTestId("evidence-count")).toContainText("0 of");
+    expect(bundleReads).toBe(1);
+    fail = false;
+    await page.getByRole("button", { name: "Retry evidence", exact: true }).click();
+    await expect(page.getByTestId("evidence-incomplete")).toHaveCount(0);
+    expect(bundleReads).toBe(2);
+  } finally { await context.close(); }
+});

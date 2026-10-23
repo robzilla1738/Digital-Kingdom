@@ -6,7 +6,7 @@ import { applyRedesignFixture } from "../../../fixtures/redesign/offline.ts";
 import { Shell } from "./shell/Shell.tsx";
 import { BrandMark } from "./panels/TopBar.tsx";
 import { eventSearchParams, type FindingDetailResult } from "./lib/investigation.ts";
-import { loadFindingEvidence } from "./lib/evidence-loader.ts";
+import { loadFindingEvidence, loadBundleEvidence } from "./lib/evidence-loader.ts";
 import { ConnectionCtx, deriveConnection, type Connection, type SyncState, type Transport } from "./lib/connection.ts";
 
 /** Set at build time for the public static demo: never contact a backend, always use bundled fixtures. */
@@ -152,6 +152,7 @@ export function App() {
         const url = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" }));
         const a = document.createElement("a"); a.href = url; a.download = `digital-kingdom-${id}.json`; a.click(); URL.revokeObjectURL(url);
       },
+      bundleEvidence: (bundle, signal) => { check(); return loadBundleEvidence(api, project, bundle, signal); },
       createBundle: async (findingId, revision) => { check(); return api.send("POST", `${prefix}/findings/${encodeURIComponent(findingId)}/bundles`, revision ? { revision } : {}); },
       searchEvents: (input, signal) => { check(); return api.get(`${prefix}/events/search?${eventSearchParams(input)}`, signal); },
     };

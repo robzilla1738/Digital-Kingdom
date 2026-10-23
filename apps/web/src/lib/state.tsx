@@ -21,6 +21,7 @@ export type Action =
  | {type:'view';view:View} | {type:'workspace';workspace:Workspace} | {type:'investigateTab';tab:UiState['investigateTab']}
  | {type:'select';selection:Selection;announce?:string} | {type:'hover';id:string|null}
  | {type:'playhead';at:string|null} | {type:'playing';playing:boolean} | {type:'speed';speed:number} | {type:'basis';basis:ReplayBasis}
+ | {type:'stepPlayhead';delta:number;start:number;end:number}
  | {type:'roofs';roofs:boolean} | {type:'layer';layer:Layer;on:boolean} | {type:'hypothetical';on:boolean} | {type:'focusMode';mode:FocusMode}
  | {type:'reduceAutomaticAnnouncements';on:boolean} | {type:'reducedMotion';on:boolean} | {type:'query';query:string} | {type:'tab';tab:UiState['tab']}
  | {type:'webglFailed';reason:string} | {type:'retryWebgl'} | {type:'panel';panel:'sidebar'|'inspector';open:boolean}
@@ -36,8 +37,13 @@ export function reducer(s:UiState,a:Action):UiState {
  case 'investigateTab': return navigate(s,{investigateTab:a.tab});
  case 'select': return navigate(s,{selection:a.selection,announce:a.announce ?? (a.selection ? `Selected ${a.selection.kind} ${a.selection.id}` : 'Selection cleared'),inspector:!!a.selection,resolvedEvent:a.selection?.kind==='event'&&a.selection.id===s.resolvedEvent?.id?s.resolvedEvent:null});
  case 'hover': return s.hover===a.id?s:{...s,hover:a.id};
- case 'playhead': return navigate(s,{playhead:a.at},'replace');
- case 'playing': return {...s,playing:a.playing};
+ case 'playhead': return s.playhead===a.at?s:navigate(s,{playhead:a.at},'replace');
+ case 'stepPlayhead': {
+  const current=s.playhead?Date.parse(s.playhead):a.end;
+  const playhead=new Date(Math.min(a.end,Math.max(a.start,current+a.delta))).toISOString();
+  return s.playhead===playhead&&!s.playing?s:navigate(s,{playhead,playing:false},'replace');
+ }
+ case 'playing': return s.playing===a.playing?s:{...s,playing:a.playing};
  case 'speed': return {...s,speed:a.speed};
  case 'basis': return navigate(s,{basis:a.basis});
  case 'roofs': return {...s,roofs:a.roofs};

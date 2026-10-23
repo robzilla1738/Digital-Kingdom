@@ -25,3 +25,21 @@ describe('bounded exact finding evidence loader',()=>{
   await expect(loadFindingEvidence(abort,'project',finding.id,controller.signal)).rejects.toMatchObject({name:'AbortError'});
  });
 });
+
+describe('immutable bundle evidence', () => {
+ it('withholds changed records and rejects pages from another bundle', async () => {
+  const { loadBundleEvidence } = await import('./evidence-loader.ts');
+  const bundle = { bundle_id: 'pinned', bundle_digest: 'digest', finding_revision: 1, reference_count: 1 };
+  const page = { ...bundle, events: [], evidence: {}, missing_events: [], changed_event_ids: ['changed'], missing_evidence_refs: [], page: { has_more: false, total_references: 1 } };
+  const api = { get: async () => page } as unknown as Api;
+  const result = await loadBundleEvidence(api, 'project', bundle);
+  expect(result.complete).toBe(false); expect(result.events).toEqual([]); expect(result.missingEvents).toEqual(['changed']);
+  const wrong = await loadBundleEvidence({ get: async () => ({ ...page, bundle_digest: 'other' }) } as unknown as Api, 'project', bundle);
+  expect(wrong.error).toMatch(/does not match/);
+ });
+ it('does not retain bundle data after access is revoked', async () => {
+  const { loadBundleEvidence } = await import('./evidence-loader.ts');
+  const api = { get: async () => { throw new ApiError(403, 'denied'); } } as unknown as Api;
+  await expect(loadBundleEvidence(api, 'project', { bundle_id: 'b', bundle_digest: 'd', finding_revision: 1, reference_count: 1 })).rejects.toMatchObject({ status: 403 });
+ });
+});

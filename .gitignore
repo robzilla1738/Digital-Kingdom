@@ -20,3 +20,10 @@ eval/runs/*/server-logs
 .dk-local/
 artifacts/scenarios/
 artifacts/release/
+
+# Local completion runs; curated receipts and reports are committed explicitly.
+/artifacts/completion/browser*/
+/artifacts/eval-v2/completion/budget.json
+/artifacts/eval-v2/completion/cases.json
+/artifacts/eval-v2/completion/dev-*/
+/artifacts/eval-v2/completion/full-*/

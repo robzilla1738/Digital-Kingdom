@@ -19,7 +19,8 @@ export function FindingsWorkspace({ expanded = false, returnRevision = 0, onQueu
     return (!query || `${f.id} ${f.title} ${f.claim} ${f.affected_asset_ids.map(assetName).join(" ")}`.toLowerCase().includes(query)) && (!filters.severity || f.severity === filters.severity) && (filters.lifecycle === "open-not-closed" ? f.lifecycle !== "closed" : !filters.lifecycle || f.lifecycle === filters.lifecycle) && (!filters.outcome || f.outcome_state === filters.outcome) && (!filters.evidence || f.evidence_level === filters.evidence) && (!filters.asset || f.affected_asset_ids.includes(filters.asset));
   })), [vm.findings, filters, vm.data.graph.assets]);
   useEffect(() => { if (filterChanged.current && ui.reduceAutomaticAnnouncements) dispatch({ type: "announce", message: `${findings.length} findings match the submitted filters.` }); filterChanged.current = false; }, [findings, ui.reduceAutomaticAnnouncements, dispatch]);
-  useEffect(() => { onQueueChange?.(findings.map(({ id, title }) => ({ id, title }))); }, [findings, onQueueChange]);
+  const queueKey = JSON.stringify(findings.map(({ id, title }) => ({ id, title })));
+  useEffect(() => { onQueueChange?.(JSON.parse(queueKey)); }, [queueKey, onQueueChange]);
   useLayoutEffect(() => {
     if (expanded) return;
     if (results.current) results.current.scrollTop = scroll.current.top;

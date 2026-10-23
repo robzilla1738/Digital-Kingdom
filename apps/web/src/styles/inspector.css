@@ -16,6 +16,7 @@
 .kv > span:last-child { color: var(--text); overflow-wrap: anywhere; }
 .kv code { color: var(--text); }
 .ev-section { display: grid; gap: var(--s2); }
+.ev-section > h3 { display: flex; align-items: baseline; gap: 8px; }
 .ev-section > h4 { display: flex; align-items: center; gap: 8px; font-size: var(--fs-11); font-weight: 600; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
 .ev-section > h4 .count { letter-spacing: 0; text-transform: none; }
 .callout { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 10px; align-items: start; background: var(--surface-2); border: 1px solid var(--border-2); border-radius: var(--r-md); padding: 10px 12px; font-size: var(--fs-12); line-height: 1.55; color: var(--text); }
@@ -96,7 +97,6 @@ ol.bullets li::marker { font-variant-numeric: tabular-nums; }
 .finding-evidence-comparison { container-type: inline-size; min-width: 0; }
 .finding-evidence-columns { display: grid; gap: var(--s5); align-items: start; min-width: 0; }
 .finding-evidence-columns > *, .finding-evidence-cards, .finding-evidence-card > * { min-width: 0; }
-.finding-evidence-columns > [role="tabpanel"] > .ev-section > h3 { display: flex; align-items: baseline; gap: 8px; }
 .finding-evidence-cards { display: grid; gap: 12px; }
 .evidence-card-pagination { display: grid; gap: 8px; font-size: var(--fs-13); color: var(--text-2); }
 .finding-evidence-card { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--border-2); border-left: 3px solid var(--accent); border-radius: var(--r-md); background: var(--surface-2); overflow-wrap: anywhere; }

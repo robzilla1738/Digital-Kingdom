@@ -86,6 +86,10 @@ async function installLifecycleProbe(context: import('@playwright/test').Browser
  });
 }
 
+// Retained tracing adds DOM/snapshot instrumentation to the very resources measured here.
+// Keep the real DOM/listener/heap limits unchanged and measure without that observer.
+test.describe('project-switch resource accounting', () => {
+ test.use({ trace: 'off' });
 test('six project switches retain one live stream and bounded global listeners requests and collected browser heap',async({browser})=>{
  const {context,page}=await loginRedesign(browser,h);
  try {
@@ -109,6 +113,7 @@ test('six project switches retain one live stream and bounded global listeners r
   expect(last.heap.usedSize-initial.heap.usedSize).toBeLessThan(2*1024*1024);
   writeRedesignEvidence('project-switch-resource-check.json',{recordedAt:new Date().toISOString(),conditions:'Both local synthetic projects warmed twice, then six measured switches with actual transient Castle mounts; 800 ms settling plus two GC passes 100 ms apart. Headless Chromium, SwiftShader, CDP DOM/listener and collected-heap counters plus scoped stream/fetch instrumentation. A bounded regression, not a zero-leak or physical-device performance proof.',browser:browser.version(),warmupSwitches:4,initial,samples,retainedHeapDeltaBytes:last.heap.usedSize-initial.heap.usedSize});
  }finally{await context.close();}
+});
 });
 
 
