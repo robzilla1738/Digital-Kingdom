@@ -1,0 +1,24 @@
+{
+  "name": "expanded-investigation-1440",
+  "file": "desktop-investigation.png",
+  "sha256": "39319eb144ab073aa79f54e8e8bec32455116bfc2d8004e9ffdcc9dfee8d4332",
+  "bytes": 109409,
+  "capturedAt": "2026-10-23T14:28:46.871Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim.",
+  "source_artifact": "browser-pinned/screenshots/expanded-investigation-1440.png",
+  "source_revision": "9fdb4f2"
+}

@@ -1,0 +1,7 @@
+{
+  "version": "0.112.0",
+  "platform": "darwin_arm64",
+  "archive": "otelcol_0.112.0_darwin_arm64.tar.gz",
+  "sha256": "027b4d082816fca7a31f902396516d672fb750b09431824fd6b70bd6eb4b2428",
+  "checksum_source": "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v0.112.0/opentelemetry-collector-releases_otelcol_checksums.txt"
+}

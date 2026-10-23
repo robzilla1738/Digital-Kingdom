@@ -1,0 +1,13 @@
+{
+  "file": "integrations.png",
+  "sha256": "932193c0edae55269b0c22cb3c7eb7978f2188a74d2cd494ec14f00cc19ea157",
+  "captured_at": "2026-10-23T15:15:30.551Z",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "browser": "141.0.7390.37",
+  "build": "dev",
+  "evidence": "Local synthetic fixture; Chromium SwiftShader. No physical-device or human approval.",
+  "reviewed_source_revision": "d4b7ead"
+}

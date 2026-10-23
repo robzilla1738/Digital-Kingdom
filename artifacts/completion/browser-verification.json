@@ -1,0 +1,562 @@
+{
+  "scope": "Combined full-suite and focused verification, not a clean single full-suite run or CI approval.",
+  "runs": [
+    {
+      "name": "browser-ui-final",
+      "source_revision": "d4b7ead",
+      "stats": {
+        "startTime": "2026-10-23T15:13:20.124Z",
+        "duration": 750706.535,
+        "expected": 81,
+        "skipped": 1,
+        "unexpected": 5,
+        "flaky": 0
+      },
+      "results_path": "artifacts/completion/browser-ui-final/results.json",
+      "sha256": "7cd6448c901b0f3aac0b1f7053b2706659b919982355682880ddb4ce70792509"
+    },
+    {
+      "name": "browser-ui-setup-final",
+      "source_revision": "07e33cccd85d717c29feb962f69c332b5c13cdce",
+      "stats": {
+        "startTime": "2026-10-23T15:29:27.555Z",
+        "duration": 100248.762,
+        "expected": 12,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "results_path": "artifacts/completion/browser-ui-setup-final/results.json",
+      "sha256": "8556882ed110816d54ff241f44ec572ba2679f9970bafae6291fc28c30e91d1b"
+    }
+  ],
+  "latest_unique_outcomes": {
+    "passed": 86,
+    "skipped": 1
+  },
+  "explanation": "The full run had five failures. Tests were updated to open newly collapsed explanations/setup controls, and guided inventory navigation was fixed to open and focus its disclosure. The focused 12-test run rechecked all five plus navigation, authorization and resource lifetime; all passed.",
+  "tests": [
+    {
+      "file": "announcements-redesign.spec.ts",
+      "title": "A11Y-21.4: local reduced automatic announcements keep sync visible and direct filter/selection feedback live",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "CASTLE-12: an actual pointer drag cancels active camera focus with no later snap-back",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "overlapping graph relationships open a keyboard chooser; cancel/drag do not select or move camera",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "overlapping 3D connections open the same real-ID chooser without moving camera",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "CASTLE-08: clicking a visible architectural roof resolves its canonical parent asset",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "CASTLE-11: an unlinked event highlights its asset without inventing or animating a causal trail",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "PERF-02: genuine background-tab visibility pauses rendering when supported by the browser",
+      "status": "skipped",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "camera-redesign.spec.ts",
+      "title": "PERF-05: sustained real slow active frames reduce quality without changing evidence or labels",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "cases-redesign.spec.ts",
+      "title": "CASE-01: create a case, link a finding, answer its question and close it; the finding stays independent",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "cases-redesign.spec.ts",
+      "title": "COV-01: the historical coverage question returns spans with reasons",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "cases-redesign.spec.ts",
+      "title": "CONN-01: connector manifests show supported versions and verification levels, collect-only",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "cases-redesign.spec.ts",
+      "title": "CTL-01: Coverage \u2192 Controls shows an honest empty state and never implies a tested control",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "cases-redesign.spec.ts",
+      "title": "failed case creation and item saves retain the analyst draft",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-cards-redesign.spec.ts",
+      "title": "EVIDENCE-CARDS-01 both evidence roles expose full context and raw expansion keeps the pinned finding and comparison",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-cards-redesign.spec.ts",
+      "title": "EVIDENCE-CARDS-02 long source and inert raw records wrap at 320px and text paging preserves the exact loaded derivative",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-cards-redesign.spec.ts",
+      "title": "EVIDENCE-CARDS-03 real 5000-record finding retains all exact evidence with bounded display paging and no paging refetch",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-cards-redesign.spec.ts",
+      "title": "EVENT-DISPLAY-01 bounded rows retain loaded pages selection and the opaque cursor across a later fetch failure",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "events require deliberate search; unlinked exact detail has independent coverage and safe copy preview",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "real opaque pagination stays pinned, retains rows after failure, and discards cursor on filter change",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "event interval validation rejects more than31days before network and source-local namespace stays explicit",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "later finding-evidence page failure retains earlier exact records and marks aggregate incomplete",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "slow finding A evidence cannot appear in selected finding B and replay does not refetch the pinned record",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "viewer sees evidence but no mutation/export controls; denial clears all displayed sensitive records",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "late real ingestion announces newer records without replacing pinned finding revision or event snapshot",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "review failure preserves draft; server-confirmed lifecycle updates; proposals never execute and export requires scope review",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "authoritative422 import paths are displayed after successful local preview; draft and graph remain unchanged",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "exact archived unlinked event resolves asset focus across Graph and Castle without inserting it into snapshot",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "stale403 from old project reload cannot clear the newly selected project",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "pinned finding spanning replay cutoff clearly labels later evidence without silently dropping it",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "old containment denial while next project snapshot is pending cannot clear the next authorization scope",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "export response arriving after confirmed role downgrade cannot download stale privileged content",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "SEM-01 canonical blocked request preserves exact source claim and limitations without downstream success",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "SEM-05 zero findings with no configured source remains explicitly unobserved rather than secure",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "SEM-06 shared IP across unrelated actors remains network context with no invented identity or causal map edge",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "COV-01 mixed source coverage agrees as Partial visibility in Castle Graph list and detail",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "TIME-04 live-mode snapshot windows extend only after Load updates or Return live, while pinned replay stays stable",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "evidence-redesign.spec.ts",
+      "title": "pinning evidence reads immutable bundle pages and retries without substituting current records",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "expanded-investigation-redesign.spec.ts",
+      "title": "Expanded investigation 1440px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "expanded-investigation-redesign.spec.ts",
+      "title": "Expanded investigation 390px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "expanded-investigation-redesign.spec.ts",
+      "title": "Expanded investigation 320px: primary detail preserves evidence and draft, filtered queue, scroll and return focus",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "expanded-investigation-redesign.spec.ts",
+      "title": "Expanded transitions: Kingdom keeps its finding instance; outside-filter and empty queues are honest; horizontal results scroll returns",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 graph 1440px: explicit finding focus retains every cross-district endpoint",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 graph 1440px: explicit path focus retains every cross-district endpoint",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 castle 1440px: explicit finding focus retains every cross-district endpoint",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 castle 1440px: explicit path focus retains every cross-district endpoint",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 graph 320px: explicit finding focus retains every cross-district endpoint",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "grouped-focus-redesign.spec.ts",
+      "title": "F13 graph 320px: explicit path focus retains every cross-district endpoint",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "latency-redesign.spec.ts",
+      "title": "PERF-06 local journal SSE snapshot and UI timings are separate; CASTLE-05 event-only update reuses mounted module geometry",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "module-recovery-redesign.spec.ts",
+      "title": "15.3: one invalid visual module becomes a named neutral block without changing canonical evidence",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "module-recovery-redesign.spec.ts",
+      "title": "15.3: a valid scene replacement clears the failed label for the same canonical asset",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "module-recovery-redesign.spec.ts",
+      "title": "15.3: real body GLSL compile failure recovers only its owned module family",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "module-recovery-redesign.spec.ts",
+      "title": "15.3: real roof GLSL compile failure recovers only its owned module family",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "module-recovery-redesign.spec.ts",
+      "title": "15.3: real depth GLSL compile failure recovers only its owned module family",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "module-recovery-redesign.spec.ts",
+      "title": "15.3: one failed shader family notifies every asset owner and a healthy replacement clears only its own marker",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "legacy project relationship view time basis survives reload and browser Back; local navigation search sends no query",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "logout clears records and a delayed prior-session export cannot download after same-project sign-in",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "a warmed deep link cannot restore evidence after project access is denied",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "six project switches retain one live stream and bounded global listeners requests and collected browser heap",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "navigation-redesign.spec.ts",
+      "title": "focused Castle and zoomed Graph each preserve their own camera on two-way return",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "presentation-redesign.spec.ts",
+      "title": "COV-05: canonical source counts and distinct affected asset counts agree across Coverage and header",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "presentation-redesign.spec.ts",
+      "title": "COV-06: fault-injected missing assessments remain unknown, never zero gaps or healthy",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "presentation-redesign.spec.ts",
+      "title": "COV-06: failed refresh retains confirmed nonzero gaps and visibly marks the snapshot stale",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "presentation-redesign.spec.ts",
+      "title": "TIME-03: earlier replay visibly labels later server notes and dispositions as current annotations",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V01\u2013V04: reference overview, stable selection across views, expanded contradiction",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V07\u2013V08: partial source administration stays separate from findings and map hatching",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V05\u2013V06: deliberate event search and unlinked successful operation are inspectable",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V11: replay uses explicit known-time basis and keeps source-coverage limitations",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V09\u2013V10: ten architectural modules and actual roof removal",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "stable ID history, hidden filters, and keyboard manual-activation semantics",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "F11/F14: untrusted text is inert and empty project is not a fabricated kingdom",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V14: responsive records, close controls, and no document overflow at 320\u20131366",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V15: axe DOM accessibility, reduced motion, forced colors, and visible keyboard focus",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V16: 50/200 logical assets, grouping, software renderer and bounded demand frames",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "V12: actual browser network interruption retains stale records and never claims live",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "explicit camera focus and context loss preserve stable selection and graph fallback",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "resource lifetime: bounded module cache and renderer counts after view and replay cycles",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "editing, modal and browser-modifier keys are not intercepted when shortcuts are enabled",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "controlled replay reaches its end and stays historical until Return to latest",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "A11Y-03: desktop and narrow inspectors remain nonmodal and keyboard Tab can exit and return",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "A11Y-05: reduced-motion preference makes focus immediate and leaves no continuous effect or camera frames",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "CASTLE-10: rendered relationship patterns and labels distinguish evidence without color; hypothetical stays off by default",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "redesign.spec.ts",
+      "title": "default F01 native draw calls include main and shadow passes within the 250-call budget",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "refinement-redesign.spec.ts",
+      "title": "refined findings keep secondary controls discoverable and preserve filters across detail modes",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "replay-redesign.spec.ts",
+      "title": "rapid keyboard replay scrubbing preserves the graph and latest navigation",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "replay-redesign.spec.ts",
+      "title": "rapid keyboard replay scrubbing preserves the castle and latest navigation",
+      "status": "passed",
+      "run": "browser-ui-final"
+    },
+    {
+      "file": "setup-redesign.spec.ts",
+      "title": "PROSE-15: empty inventory, configuration and receipt are separate real server steps",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    },
+    {
+      "file": "setup-redesign.spec.ts",
+      "title": "PROSE-13: cards show scoped configuration and keep absent assessments unknown",
+      "status": "passed",
+      "run": "browser-ui-setup-final"
+    }
+  ]
+}

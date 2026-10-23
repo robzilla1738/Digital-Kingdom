@@ -1,0 +1,13 @@
+{
+  "file": "mobile.png",
+  "sha256": "947a876ace126aee56815724ae7f5dc7d81388f5256162ebabffe2170a7cd987",
+  "captured_at": "2026-10-23T15:15:33.325Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "build": "dev",
+  "evidence": "Local synthetic fixture; Chromium SwiftShader. No physical-device or human approval.",
+  "reviewed_source_revision": "d4b7ead"
+}

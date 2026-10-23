@@ -1,0 +1,297 @@
+{
+  "started": 36,
+  "planned": 36,
+  "halted": null,
+  "charged_upper_bound_usd": 0.07740373799999996,
+  "attempts": [
+    {
+      "attempt": "0001-C1",
+      "case_id": "s1-blocked-requests-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "tool_budget_exhausted_then_completed",
+      "charged_upper_bound_usd": 0.005606699999999999
+    },
+    {
+      "attempt": "0002-C2",
+      "case_id": "s1-blocked-requests-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.008481428
+    },
+    {
+      "attempt": "0003-C3",
+      "case_id": "s1-blocked-requests-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.009872928
+    },
+    {
+      "attempt": "0004-C1",
+      "case_id": "s2-failures-then-success-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.013577552
+    },
+    {
+      "attempt": "0005-C2",
+      "case_id": "s2-failures-then-success-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.017847262
+    },
+    {
+      "attempt": "0006-C3",
+      "case_id": "s2-failures-then-success-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.018885462
+    },
+    {
+      "attempt": "0007-C1",
+      "case_id": "s3-independent-observation-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.023376662
+    },
+    {
+      "attempt": "0008-C2",
+      "case_id": "s3-independent-observation-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.026243824
+    },
+    {
+      "attempt": "0009-C3",
+      "case_id": "s3-independent-observation-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.027100224
+    },
+    {
+      "attempt": "0010-C1",
+      "case_id": "s4-conflicting-reports-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.031109673999999997
+    },
+    {
+      "attempt": "0011-C2",
+      "case_id": "s4-conflicting-reports-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.032645509999999996
+    },
+    {
+      "attempt": "0012-C3",
+      "case_id": "s4-conflicting-reports-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.03354951
+    },
+    {
+      "attempt": "0013-C1",
+      "case_id": "s5-visibility-gaps-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.03692343599999999
+    },
+    {
+      "attempt": "0014-C2",
+      "case_id": "s5-visibility-gaps-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.03861696399999999
+    },
+    {
+      "attempt": "0015-C3",
+      "case_id": "s5-visibility-gaps-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.04024880999999999
+    },
+    {
+      "attempt": "0016-C1",
+      "case_id": "s6-honeytoken-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "model_call_limit",
+      "charged_upper_bound_usd": 0.04287375599999998
+    },
+    {
+      "attempt": "0017-C2",
+      "case_id": "s6-honeytoken-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.04473206999999997
+    },
+    {
+      "attempt": "0018-C3",
+      "case_id": "s6-honeytoken-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.04561876999999997
+    },
+    {
+      "attempt": "0019-C1",
+      "case_id": "s7-embedded-instructions-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.04802828799999996
+    },
+    {
+      "attempt": "0020-C2",
+      "case_id": "s7-embedded-instructions-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.049703535999999965
+    },
+    {
+      "attempt": "0021-C3",
+      "case_id": "s7-embedded-instructions-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.05038073599999997
+    },
+    {
+      "attempt": "0022-C1",
+      "case_id": "s8-incomplete-unknown-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.05239112599999996
+    },
+    {
+      "attempt": "0023-C2",
+      "case_id": "s8-incomplete-unknown-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.05466033999999996
+    },
+    {
+      "attempt": "0024-C3",
+      "case_id": "s8-incomplete-unknown-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.05526733999999996
+    },
+    {
+      "attempt": "0025-C1",
+      "case_id": "f9-unlinked-follow-on-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.05756198799999996
+    },
+    {
+      "attempt": "0026-C2",
+      "case_id": "f9-unlinked-follow-on-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.059491097999999965
+    },
+    {
+      "attempt": "0027-C3",
+      "case_id": "f9-unlinked-follow-on-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.06037949799999996
+    },
+    {
+      "attempt": "0028-C1",
+      "case_id": "f10-shared-address-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.06275905199999997
+    },
+    {
+      "attempt": "0029-C2",
+      "case_id": "f10-shared-address-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.06434672599999997
+    },
+    {
+      "attempt": "0030-C3",
+      "case_id": "f10-shared-address-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.06500692599999996
+    },
+    {
+      "attempt": "0031-C1",
+      "case_id": "f11-mixed-coverage-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.06824042799999996
+    },
+    {
+      "attempt": "0032-C2",
+      "case_id": "f11-mixed-coverage-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.07008216599999996
+    },
+    {
+      "attempt": "0033-C3",
+      "case_id": "f11-mixed-coverage-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.07079256599999996
+    },
+    {
+      "attempt": "0034-C1",
+      "case_id": "f12-instruction-contamination-v2-dev",
+      "condition": "C1",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.07389748999999995
+    },
+    {
+      "attempt": "0035-C2",
+      "case_id": "f12-instruction-contamination-v2-dev",
+      "condition": "C2",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.07654383799999996
+    },
+    {
+      "attempt": "0036-C3",
+      "case_id": "f12-instruction-contamination-v2-dev",
+      "condition": "C3",
+      "repetition": 1,
+      "status": "completed",
+      "charged_upper_bound_usd": 0.07740373799999996
+    }
+  ],
+  "human_review": "pending"
+}
