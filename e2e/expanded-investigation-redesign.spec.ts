@@ -24,7 +24,7 @@ for (const width of [1440, 390, 320]) {
       page.on('request', request => { if (new URL(request.url()).pathname.endsWith(`/findings/${target.id}/evidence`)) evidenceRequests++; });
       await page.getByRole('button', { name: 'Investigate', exact: true }).click();
       const results = page.locator('.findings-workspace');
-      if (width < 768) await page.getByRole('button', { name: 'Filter findings', exact: true }).click();
+      await page.getByRole('button', { name: 'Filter findings', exact: true }).click();
       await results.getByLabel('Severity', { exact: true }).selectOption(target.severity);
       await results.getByLabel('Lifecycle', { exact: true }).selectOption('');
       await results.getByRole('searchbox').fill(' ');
@@ -138,6 +138,7 @@ test('Expanded transitions: Kingdom keeps its finding instance; outside-filter a
     await expect(pane).toHaveAttribute('data-selection-id', other.id);
     await pane.getByRole('button', { name: 'Return to results', exact: true }).click();
     await results.getByRole('searchbox').fill('');
+    await results.getByRole('button', { name: 'More detail', exact: true }).click();
     const table = results.locator('.table-scroll');
     const horizontalBefore = await table.evaluate(element => { element.scrollLeft = Math.min(80, element.scrollWidth - element.clientWidth); return { left: element.scrollLeft, max: element.scrollWidth - element.clientWidth }; });
     expect(horizontalBefore.max).toBeGreaterThan(0); expect(horizontalBefore.left).toBeGreaterThan(0);

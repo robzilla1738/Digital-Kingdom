@@ -5,7 +5,7 @@ import { Icon } from "../lib/icons.tsx";
 import { fmtTime } from "../lib/vocab.ts";
 
 export function BrandMark({ size = 18 }: { size?: number }) {
-  return <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden fill="currentColor"><path d="M3 21V9.5h3V7h2.5v2.5H10V5h4v4.5h1.5V7H18v2.5h3V21h-7.5v-4.25a1.5 1.5 0 0 0-3 0V21z" /></svg>;
+  return <Icon name="castle" size={size} />;
 }
 export function TopBar({ onSignIn, onSignOut, onProject, connection }: { onSignIn?: () => void; onSignOut?: () => void; onProject?: (id: string) => void; connection: Connection | null }) {
   const { ui, dispatch, vm } = useApp(); const d = vm.data;
@@ -28,7 +28,7 @@ export function TopBar({ onSignIn, onSignOut, onProject, connection }: { onSignI
       {searchOpen && query.trim() && <div className="search-results" aria-label="Navigation results"><p>{results.length ? "Loaded records · choose to inspect" : "No loaded asset or finding matches."}</p>{results.map((r) => <button key={`${r.kind}:${r.id}`} className="row" onClick={() => { dispatch({ type: "select", selection: { kind: r.kind, id: r.id }, announce: `Selected ${r.name}` }); dispatch({ type: "workspace", workspace: r.kind === "finding" ? "investigate" : "kingdom" }); if (r.kind === "finding") dispatch({ type: "investigateTab", tab: "findings" }); setSearchOpen(false); setQuery(""); }}><Icon name={r.kind === "asset" ? "cube" : "list"} /><span className="row-main"><span className="row-title">{r.name}</span><span className="row-meta">{r.kind} · {r.id}</span></span></button>)}</div>}
     </div>
     {connection && <span className={`pill header-connection conn-${connection.state}`} role="status" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "polite"} title={connection.since ? `Synchronized at ${fmtTime(connection.since)}. Browser synchronization is separate from source visibility.` : "Browser synchronization is separate from source visibility."} data-testid="connection-pill" data-state={connection.state}><span className="pip" aria-hidden />{connection.state === "live" ? "Connected" : CONNECTION_LABEL[connection.state]}</span>}
-    <button className="btn ghost coverage-shortcut" onClick={() => { dispatch({ type: "workspace", workspace: "coverage" }); dispatch({ type: "panel", panel: "inspector", open: false }); }}><Icon name="layers" />{vm.summary.assetsWithGaps} assets with visibility gaps</button>
+    <button aria-label={`${vm.summary.assetsWithGaps} assets with visibility gaps`} title="Review coverage gaps" className="btn ghost coverage-shortcut" onClick={() => { dispatch({ type: "workspace", workspace: "coverage" }); dispatch({ type: "panel", panel: "inspector", open: false }); }}><Icon name="layers" />{vm.summary.assetsWithGaps} gaps</button>
     {d.mode === "server" && <div className="header-auth">{d.role === "none" ? <button className="btn" onClick={onSignIn}>Sign in</button> : <button className="btn ghost" onClick={onSignOut} title={`${d.identity ?? d.role} · Sign out`}>Sign out</button>}</div>}
   </header>;
 }

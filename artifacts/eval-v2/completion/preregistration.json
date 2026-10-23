@@ -1,0 +1,2251 @@
+{
+  "generated_at": "2026-10-23T13:55:08.112Z",
+  "generator": "v2-gen-2",
+  "master_seed_hash": "269efa4737cc770c3af193f5f9e75f557df55587c5aedc337414a1656d830094",
+  "case_seed_hashes": {
+    "s1-blocked-requests-v2-dev": "e6e010daa7301624705ae47495cc7f719c4199c0f9b26dcd88416b9c1d32bc6e",
+    "s1-blocked-requests-v2-h1": "2c026777a075dc3d9a61681906aa4e8065f9f84ba3f3b19ae72b134fa0da810f",
+    "s1-blocked-requests-v2-h2": "980d31557bed8c231b1e84971d98c20ac0bf00feb9d644c2e07a3a7f1fedc6f6",
+    "s2-failures-then-success-v2-dev": "afe56a63863354eff431682c59dc7d8f7d15c0133197a1c67c6c1d6cede3cd0c",
+    "s2-failures-then-success-v2-h1": "8ebb8fa60dc32f3b013b4e372a4a1b8110513b7881c4a71826acd82cd0500b97",
+    "s2-failures-then-success-v2-h2": "e0a3cab348b7b7974e20c10d826a20f6ee422297211c52cc48c47bb901c4d1fc",
+    "s3-independent-observation-v2-dev": "20f7dee5a3433951205e1b68fbbfbdb58cdc394cc65489ad5174cf157de3e3ad",
+    "s3-independent-observation-v2-h1": "647cdf5cdf36838bca1a52676d5874553bc4a24aaa56ae87ce96f7dd567ea331",
+    "s3-independent-observation-v2-h2": "46f0f037b239d2e2816dda3c1057a9ab614dce1d7a63886ccdd5555584998641",
+    "s4-conflicting-reports-v2-dev": "8873fbb7882fe48b3c76595355d644d92d9c6c0065bfd9f0cd88bd9f129f43c5",
+    "s4-conflicting-reports-v2-h1": "bd0086afd056507c5e3ed61b5f2f2d606bc5c04485b4058bdb83b6c5f75f96e0",
+    "s4-conflicting-reports-v2-h2": "6c0d8f6f20aa5bd5e67b03542678224c1ed81ea6fa911997124347d19441ea9e",
+    "s5-visibility-gaps-v2-dev": "0a47f9e9e5d4b92f9e731a8495bcbc43c0f14a575d9b3b6e132dc21e83abf993",
+    "s5-visibility-gaps-v2-h1": "af7e8e8f24d20ded63f25f3c61ef8ec6eaec23215e5c2b9b80979f9e8afc7632",
+    "s5-visibility-gaps-v2-h2": "88905f41adc15f820ea7ac8b060361652caca17ca48f5cf6fc07d13c4bdd4076",
+    "s6-honeytoken-v2-dev": "9b791393b02594de342439b06fe9f7bd32ec66588f12cefa0ef4d25ffc53c820",
+    "s6-honeytoken-v2-h1": "8f4cfcf6a374c5fd56d68939c8dd9607c6b6040160020f3b86d4156f46719f63",
+    "s6-honeytoken-v2-h2": "ef9b12301685eb92950764c5e9c35eecd6fceca801ada9e49e07ceddc08c31ad",
+    "s7-embedded-instructions-v2-dev": "eeb7055bd29c715d0f5f7ac4263e24b7dbf99ac6a80856a0d3653006939a1066",
+    "s7-embedded-instructions-v2-h1": "00948264e13341681e180c87298bec49f5f9fb75d91905372670eeefc3c06e85",
+    "s7-embedded-instructions-v2-h2": "7f42d79334bbb4dfd55d28b58e83e963a5a1278a75f9ab37128e090e03877e25",
+    "s8-incomplete-unknown-v2-dev": "a006c95e7ccca760bf07777c2ffa5aad2887be8096d7f0edaff1f1e5708055c8",
+    "s8-incomplete-unknown-v2-h1": "fb8197304afd5b12bcdd6bf29cb483c55f20f27a240ab62bf95735120ce44d35",
+    "s8-incomplete-unknown-v2-h2": "953632522b5f217a562a1d8ebb130d5311a2d07133f09dc98772b7bc0a6adf35",
+    "f9-unlinked-follow-on-v2-dev": "430a5000dfe8b0a3fa5446f394a1bd1b50d435663a42a3be41037a71234fb67e",
+    "f9-unlinked-follow-on-v2-h1": "e20f857e8cc60c6dd3255c969b5c341284cab4fd50e81551bc29e9bee8a8ca38",
+    "f9-unlinked-follow-on-v2-h2": "3a69afd295701f1f233f07d2fcdc1b26ab734e4e2dd235c313da368ac335e402",
+    "f10-shared-address-v2-dev": "1aed8bf831f881b37796805aa5731636b80d5a71bb1ee1e2225355aca3d76043",
+    "f10-shared-address-v2-h1": "07045b13552c89f6c88eb69f385a6bdd757a6098db8afd408cae351c693f1cb3",
+    "f10-shared-address-v2-h2": "a7fa28fec996948c7a44f736a1254495c6994eef12e6ab3d7164e9b808b43fea",
+    "f11-mixed-coverage-v2-dev": "1ffcf048d6cae71649be85e4538791946662fdf4d1aa9a2ae9b5b9b19a2da077",
+    "f11-mixed-coverage-v2-h1": "8f8b0bd6361705682440c9c6d6b40b5d6b82fc4b822e6a2360fb49f1debaef12",
+    "f11-mixed-coverage-v2-h2": "de0b38a5f8731559b648e57d3fe43cba39f1c0ee4869d80b510409ca8d1cb7de",
+    "f12-instruction-contamination-v2-dev": "be0da410d180e9dfd0a960350a20ada0cb7828972f9e140f6b001736197ad69b",
+    "f12-instruction-contamination-v2-h1": "eb8fc86d62aadadc806c729f742de06360d24c2a75802c1b86788aa054b7a1a9",
+    "f12-instruction-contamination-v2-h2": "8d607d8661ac37547a049e6d89a15db6792b6ce90a6c79e90ea6ae74f5a08bd8"
+  },
+  "seed": 1792277612,
+  "order": [
+    {
+      "case_id": "s1-blocked-requests-a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h1",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "f11-mixed-coverage-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h2",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C3",
+      "repetition": 3
+    },
+    {
+      "case_id": "f10-shared-address-v2-h1",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s4-conflicting-reports-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s7-embedded-instructions-v2-h2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C1",
+      "repetition": 3
+    },
+    {
+      "case_id": "f12-instruction-contamination-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s6-honeytoken-v2-h1",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "case_id": "s1-blocked-requests-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s5-visibility-gaps-v2-h1",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "s3-independent-observation-v2-h1",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "s2-failures-then-success-v2-h2",
+      "condition": "C2",
+      "repetition": 3
+    },
+    {
+      "case_id": "f10-shared-address-v2-h2",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "case_id": "f9-unlinked-follow-on-v2-h1",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "case_id": "s8-incomplete-unknown-v2-h2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-clean",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-1-injected",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-injected",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-2-clean",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-clean",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-3-injected",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-injected",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-4-clean",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-clean",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-5-injected",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-injected",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-6-clean",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-clean",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-7-injected",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "clean_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C2",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C2",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C2",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C1",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C1",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C1",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C3",
+      "repetition": 1,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C3",
+      "repetition": 2,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-injected",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "injected_first"
+    },
+    {
+      "case_id": "pair-8-clean",
+      "condition": "C3",
+      "repetition": 3,
+      "block": "injected_first"
+    }
+  ],
+  "case_digest": "9b5277fc640599d19e8646649fadf63d77d8a4b056e5b864a335aa6ec227ebb0",
+  "review_sample_seed": "6099a37fe79023c1613c37a8df2077da98a2f083cfdfac11cb2bcc0f97fe6dca",
+  "model": "meta/muse-spark-1.3-contributor",
+  "budget_usd": 5,
+  "stop_fraction": 0.8,
+  "approval": "Owner approved completion plan with $5 total AI evaluation cap in this session.",
+  "plan_hash": "75f8c790cc6c37683a36e500f8208c9273be0fb01bfa08c73122df0b0fe33043",
+  "system_hashes": {
+    "dk": "5f10a3f027840d86c51b199e65629c71307d4c2a897465484d0f3b049331c8de",
+    "baseline": "6e7d41d62333dab88c321766fb5fbe385f3c1f10d4e1eadbac24a56eaf3807ad"
+  },
+  "scope": "Synthetic data only; operator authored generator and tests. Independent human review pending; no claim of operator blinding.",
+  "objectives": "For each normalized event: retrieve its full record. For each case: assess support, uncertainty and proportionate next steps against all retrieved evidence; semantic judgments remain pending.",
+  "limits": {
+    "maxToolCalls": 16,
+    "maxModelCalls": 8,
+    "maxCompletionTokens": 4000,
+    "maxPromptTokensTotal": 600000,
+    "timeoutMs": 360000,
+    "toolResultCharLimit": 200000
+  }
+}

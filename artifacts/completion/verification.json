@@ -1,0 +1,98 @@
+{
+  "scope": "Local verification; not CI or physical-device approval",
+  "node": "22.23.4",
+  "pnpm": "10.12.1",
+  "checks": [
+    {
+      "name": "repository-check",
+      "revision": "9fdb4f2f19937b189d2aff4150e0025e0eb3b2b9",
+      "command": "OTELCOL_BIN=/tmp/dk-collector-0.112.0/otelcol pnpm check",
+      "result": {
+        "typecheck": "passed",
+        "test_files": 90,
+        "tests_passed": 621,
+        "tests_skipped": 0,
+        "fixture_validation": "passed"
+      },
+      "local_log": "/tmp/dk-check-complete.log",
+      "log_sha256": "72588232b85c62fec983bed1e3785e5d9b8ac430a0687c39bd2e93ba5aee6e6a"
+    },
+    {
+      "name": "final-typecheck",
+      "revision": "bff550c",
+      "command": "pnpm typecheck",
+      "result": {
+        "status": "passed"
+      },
+      "local_log": "/tmp/dk-final-typecheck.log",
+      "log_sha256": "c0c39c13bd6d6364fc6513a3a09b9367a1f3cac5eaa7792cde8d8bbd1830fd4b"
+    },
+    {
+      "name": "production-build",
+      "revision": "bff550c",
+      "command": "pnpm build",
+      "result": {
+        "status": "passed"
+      },
+      "local_log": "/tmp/dk-production-build.log",
+      "log_sha256": "43b77370fba73c35eafd5c12de0152e31bd0b39abe124bf645499db4eecec36a"
+    },
+    {
+      "name": "stationary-renderer-regression",
+      "revision": "bff550c",
+      "command": "pnpm pilot:redesign --grep \"resource lifetime\"",
+      "result": {
+        "passed": 1,
+        "failed": 0
+      },
+      "local_log": "/tmp/dk-resource.log",
+      "log_sha256": "147a345f0ca3430e0a571e28548ff3b2920597b1cd4ec7a41e6da5f9c8ea9f7d"
+    },
+    {
+      "name": "responsive-layout-regression",
+      "revision": "a84754c",
+      "command": "playwright test --config=playwright.redesign.config.ts --grep \"V14: responsive\" --repeat-each=2",
+      "result": {
+        "passed": 2,
+        "failed": 0
+      },
+      "local_log": "/tmp/dk-layout.log",
+      "log_sha256": "037b5c9584824c26035253e826cf57415d8ef7775c7768a579bd934126b21af7"
+    },
+    {
+      "name": "refined-ui-repository-check",
+      "revision": "d4b7ead",
+      "command": "OTELCOL_BIN=/tmp/dk-collector-0.112.0/otelcol pnpm check",
+      "result": {
+        "typecheck": "passed",
+        "test_files": 90,
+        "tests_passed": 621,
+        "tests_skipped": 0,
+        "fixture_validation": "passed"
+      },
+      "local_log": "/tmp/dk-ui-check.log",
+      "log_sha256": "7efd261bf0accc20914299c69ff26cad061b097fccdba0b221a55c0e463dcb89"
+    },
+    {
+      "name": "refined-ui-independent-pilot",
+      "revision": "d4b7ead",
+      "command": "pnpm pilot",
+      "result": {
+        "passed": 11,
+        "failed": 0
+      },
+      "local_log": "/tmp/dk-ui-pilot.log",
+      "log_sha256": "319fe73f313190b599f52f1c9ca025ba83701be5877b9ab506a64439951bc933"
+    },
+    {
+      "name": "inventory-shortcut-typecheck",
+      "revision": "07e33cc",
+      "command": "pnpm typecheck",
+      "result": {
+        "status": "passed"
+      },
+      "log_sha256": "c0c39c13bd6d6364fc6513a3a09b9367a1f3cac5eaa7792cde8d8bbd1830fd4b"
+    }
+  ],
+  "browser_receipt": "artifacts/completion/browser-verification.json"
+}

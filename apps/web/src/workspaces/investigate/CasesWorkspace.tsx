@@ -1,3 +1,4 @@
+import { Icon } from "../../lib/icons.tsx";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useApp } from "../../lib/state.tsx";
 import { ActionsCtx, type CaseDetail, type CaseSummary, type RecipeRun } from "../../inspector/actions.tsx";
@@ -23,32 +24,37 @@ export function CasesWorkspace() {
       const l = await actions.listCases();
       if (id !== seq.current) return;
       setList(l.cases);
-      if (selected) setDetail(await actions.getCase(selected));
+      if (selected) { const next = await actions.getCase(selected); if (id === seq.current) setDetail(next); }
     } catch (e) { if (id === seq.current) setMessage((e as Error).message); }
   }, [actions, selected]);
-  useEffect(() => { void reload(); }, [reload]);
+  useEffect(() => { void reload(); return () => { ++seq.current; }; }, [reload]);
 
   if (!actions || vm.data.mode !== "server") return <section className="workspace-page" aria-label="Cases"><div className="empty"><h3>Cases need a server connection.</h3><p>The offline demo is read-only and keeps no cases.</p></div></section>;
 
   const act = async (label: string, fn: () => Promise<CaseDetail | void>) => {
     setBusy(true); setMessage("");
-    try { const r = await fn(); if (r) { setDetail(r); setSelected(r.id); } setMessage(`${label}: saved.`); const l = await actions.listCases(); setList(l.cases); }
+    try { const r = await fn(); if (r) { setDetail(r); setSelected(r.id); } setMessage(`${label}: saved.`);
+      try { const l = await actions.listCases(); setList(l.cases); }
+      catch { setMessage(`${label}: saved, but the case list could not refresh. Reopen Cases to refresh it.`); }
+      return true; }
     catch (e) {
-      if (e instanceof ApiError && e.status === 409 && e.current) { setMessage(`${label} not saved: the case changed (now version ${String(e.current.version)}). It has been reloaded; review and try again.`); if (selected) setDetail(await actions.getCase(selected)); }
+      if (e instanceof ApiError && e.status === 409 && e.current) { setMessage(`${label} not saved: the case changed (now version ${String(e.current.version)}). It has been reloaded; review and try again.`); if (selected) { try { setDetail(await actions.getCase(selected)); } catch { setMessage(`${label} not saved: the case changed and could not be reloaded. Your draft is retained; reopen Cases before retrying.`); } } }
       else setMessage(`${label} failed: ${(e as Error).message}`);
+      return false;
     } finally { setBusy(false); }
   };
 
   return <section className="workspace-page cases-workspace" aria-label="Cases workspace">
-    <div className="workspace-heading"><div><div className="eyebrow">DURABLE INVESTIGATIONS</div><h1>Keep the case.</h1><p className="workspace-lede">A case holds your question, the evidence you pinned and how it was closed. Detector findings closing never closes a case.</p></div></div>
+    <div className="workspace-heading"><div><h1>Cases</h1><p className="workspace-lede">Track investigations, questions, and pinned evidence.</p></div></div>
     {message && <p className="scope-note" role="status">{message}</p>}
     <div className="cases-layout">
       <div className="section-card" aria-label="Case list">
         <h2>Cases</h2>
-        {!list ? <p className="small faint">Loading…</p> : !list.length ? <p className="small faint">No cases yet.</p> : <ul className="mini-list">{list.map((c) => <li key={c.id}><button className={`link-btn${c.id === selected ? " active" : ""}`} onClick={() => { setSelected(c.id); void actions.getCase(c.id).then(setDetail, (e: Error) => setMessage(e.message)); }}>{c.title}</button> <small>{c.status} · v{c.version}{c.open_questions ? ` · ${c.open_questions} open question${c.open_questions > 1 ? "s" : ""}` : ""}</small></li>)}</ul>}
+        {!list ? <p className="small faint">Loading…</p> : !list.length ? <p className="small faint">No cases yet.</p> : <ul className="mini-list">{list.map((c) => <li key={c.id}><button className={`link-btn${c.id === selected ? " active" : ""}`} disabled={busy} onClick={() => { setDetail(null); setSelected(c.id); }}>{c.title}</button> <small>{c.status} · v{c.version}{c.open_questions ? ` · ${c.open_questions} open question${c.open_questions > 1 ? "s" : ""}` : ""}</small></li>)}</ul>}
         {canEdit && <NewCase busy={busy} assets={vm.data.graph.assets.map((a) => ({ id: a.id, name: a.name }))} onCreate={(body) => act("Create case", () => actions.createCase(body))} />}
       </div>
-      {detail && <CaseView c={detail} canEdit={canEdit} busy={busy} findings={vm.latestData.findings.map((f) => ({ id: f.id, title: f.title }))}
+      {!detail && !selected && <div className="section-card empty case-placeholder"><Icon name="list" size={28} /><h2>{list?.length ? "Choose a case" : "No investigations yet"}</h2><p>{canEdit ? "Open a case or create one to keep questions, evidence, and review notes together." : "Cases shared with this project will appear here."}</p></div>}
+      {detail && <CaseView key={detail.id} c={detail} canEdit={canEdit} busy={busy} findings={vm.latestData.findings.map((f) => ({ id: f.id, title: f.title }))}
         act={(label, path, body) => act(label, () => actions.caseAction(detail.id, path, { ...body, expected_version: detail.version }))}
         onExport={() => act("Export", () => actions.exportDurableCase(detail.id))}
         recipeSlot={canEdit && detail.status !== "closed" && detail.linked_findings.length ? <RecipeRunner c={detail} kinds={Object.fromEntries(vm.latestData.findings.map((f) => [f.id, f.kind]))} onDone={(next) => { setDetail(next); }} /> : null} />}
@@ -56,19 +62,18 @@ export function CasesWorkspace() {
   </section>;
 }
 
-function NewCase({ busy, assets, onCreate }: { busy: boolean; assets: { id: string; name: string }[]; onCreate: (b: Record<string, unknown>) => void }) {
+function NewCase({ busy, assets, onCreate }: { busy: boolean; assets: { id: string; name: string }[]; onCreate: (b: Record<string, unknown>) => Promise<boolean> }) {
   const [title, setTitle] = useState(""), [question, setQuestion] = useState(""), [criteria, setCriteria] = useState(""), [scope, setScope] = useState<string[]>([]);
-  return <form className="case-new" onSubmit={(e) => { e.preventDefault(); onCreate({ title, scope: { question, asset_ids: scope }, closure_criteria: criteria }); setTitle(""); setQuestion(""); setCriteria(""); setScope([]); }}>
-    <h3>New case</h3>
-    <label className="field">Title<input aria-label="Case title" value={title} maxLength={200} onChange={(e) => setTitle(e.target.value)} required /></label>
-    <label className="field">Question<input aria-label="Case question" value={question} maxLength={1000} onChange={(e) => setQuestion(e.target.value)} required /></label>
-    <label className="field">Closure criteria<input aria-label="Closure criteria" value={criteria} maxLength={2000} onChange={(e) => setCriteria(e.target.value)} required /></label>
-    <label className="field">Assets in scope<select aria-label="Assets in scope" multiple value={scope} onChange={(e) => setScope([...e.target.selectedOptions].map((o) => o.value))}>{assets.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
+  return <details className="case-create"><summary className="btn"><Icon name="plus" />New case</summary><form className="case-new" onSubmit={async (e) => { e.preventDefault(); const saved = await onCreate({ title, scope: { question, asset_ids: scope }, closure_criteria: criteria }); if (!saved) return; setTitle(""); setQuestion(""); setCriteria(""); setScope([]); }}>
+    <label className="field">Title<input disabled={busy} aria-label="Case title" value={title} maxLength={200} onChange={(e) => setTitle(e.target.value)} required /></label>
+    <label className="field">Question<input disabled={busy} aria-label="Case question" value={question} maxLength={1000} onChange={(e) => setQuestion(e.target.value)} required /></label>
+    <label className="field">Closure criteria<input disabled={busy} aria-label="Closure criteria" value={criteria} maxLength={2000} onChange={(e) => setCriteria(e.target.value)} required /></label>
+    <label className="field">Assets in scope<select disabled={busy} aria-label="Assets in scope" multiple value={scope} onChange={(e) => setScope([...e.target.selectedOptions].map((o) => o.value))}>{assets.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
     <button className="btn" disabled={busy}>Create case</button>
-  </form>;
+  </form></details>;
 }
 
-function CaseView({ c, canEdit, busy, findings, act, onExport, recipeSlot }: { c: CaseDetail; canEdit: boolean; busy: boolean; findings: { id: string; title: string }[]; act: (label: string, path: string, body: Record<string, unknown>) => void; onExport: () => void; recipeSlot?: React.ReactNode }) {
+function CaseView({ c, canEdit, busy, findings, act, onExport, recipeSlot }: { c: CaseDetail; canEdit: boolean; busy: boolean; findings: { id: string; title: string }[]; act: (label: string, path: string, body: Record<string, unknown>) => Promise<boolean>; onExport: () => void; recipeSlot?: React.ReactNode }) {
   const [text, setText] = useState(""), [kind, setKind] = useState("note"), [ref, setRef] = useState(""), [statement, setStatement] = useState("");
   const live = c.items.filter((i) => !i.removed);
   const questions = live.filter((i) => i.kind === "question" || i.kind === "hypothesis");
@@ -88,11 +93,11 @@ function CaseView({ c, canEdit, busy, findings, act, onExport, recipeSlot }: { c
     {recipeSlot}
     <h3>Timeline</h3>
     <ul className="mini-list">{live.filter((i) => i.kind === "event" || i.kind === "note").map((i) => <li key={i.item_id}><small>{fmtDateTime(i.added_at)} · {i.kind}</small> {i.kind === "event" ? <>event {i.ref}{i.produced_finding === false ? " (no finding)" : ""}{i.why ? `: ${i.why}` : ""}</> : i.text}</li>)}</ul>
-    {canEdit && !closed && <form onSubmit={(e) => { e.preventDefault(); act("Add", "/items", kind === "finding" || kind === "event" ? { kind, ref, ...(kind === "event" && text ? { why: text } : {}) } : { kind, text }); setText(""); setRef(""); }}>
-      <div className="filter-bar"><label className="field">Add<select aria-label="Case item kind" value={kind} onChange={(e) => setKind(e.target.value)}><option value="note">Note</option><option value="question">Question</option><option value="hypothesis">Hypothesis</option><option value="finding">Finding</option><option value="event">Event</option></select></label>
-        {kind === "finding" ? <label className="field">Finding<select aria-label="Finding to link" value={ref} onChange={(e) => setRef(e.target.value)} required><option value="">Choose…</option>{findings.map((f) => <option key={f.id} value={f.id}>{f.title}</option>)}</select></label>
-          : kind === "event" ? <label className="field">Event id<input aria-label="Event id" value={ref} maxLength={200} onChange={(e) => setRef(e.target.value)} required /></label> : null}
-        {kind !== "finding" && <label className="field">{kind === "event" ? "Why it matters" : "Text"}<input aria-label="Case item text" value={text} maxLength={4000} onChange={(e) => setText(e.target.value)} required={kind !== "event"} /></label>}
+    {canEdit && !closed && <form onSubmit={async (e) => { e.preventDefault(); const saved = await act("Add", "/items", kind === "finding" || kind === "event" ? { kind, ref, ...(kind === "event" && text ? { why: text } : {}) } : { kind, text }); if (saved) { setText(""); setRef(""); } }}>
+      <div className="filter-bar"><label className="field">Add<select disabled={busy} aria-label="Case item kind" value={kind} onChange={(e) => setKind(e.target.value)}><option value="note">Note</option><option value="question">Question</option><option value="hypothesis">Hypothesis</option><option value="finding">Finding</option><option value="event">Event</option></select></label>
+        {kind === "finding" ? <label className="field">Finding<select disabled={busy} aria-label="Finding to link" value={ref} onChange={(e) => setRef(e.target.value)} required><option value="">Choose…</option>{findings.map((f) => <option key={f.id} value={f.id}>{f.title}</option>)}</select></label>
+          : kind === "event" ? <label className="field">Event id<input disabled={busy} aria-label="Event id" value={ref} maxLength={200} onChange={(e) => setRef(e.target.value)} required /></label> : null}
+        {kind !== "finding" && <label className="field">{kind === "event" ? "Why it matters" : "Text"}<input disabled={busy} aria-label="Case item text" value={text} maxLength={4000} onChange={(e) => setText(e.target.value)} required={kind !== "event"} /></label>}
         <button className="btn" disabled={busy}>Add to case</button></div>
     </form>}
     {canEdit && <div className="btn-row">

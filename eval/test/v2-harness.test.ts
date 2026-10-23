@@ -100,6 +100,20 @@ describe("R11.1 generation, pairing and ordering", () => {
 });
 
 describe("R11.1 budget reservation (fake provider only)", () => {
+  it("rejects invalid costs and duplicate reservations without weakening the cap", () => {
+    for (const cap of [NaN, Infinity, -1]) expect(() => new BudgetLedger(cap)).toThrow();
+    const ledger = new BudgetLedger(1);
+    expect(ledger.reserve("first", 0.5)).toBe(true);
+    expect(() => ledger.reserve("first", 0.01)).toThrow(/duplicate/);
+    for (const cost of [NaN, Infinity, -1]) {
+      expect(() => ledger.reserve("invalid", cost)).toThrow();
+      expect(() => ledger.settle("first", cost)).toThrow();
+    }
+    expect(ledger.outstanding).toBe(0.5);
+    expect(ledger.reserve("second", 0.4)).toBe(false);
+    expect(() => ledger.settle("first", 0.6)).toThrow(/exceeded/);
+    expect(ledger.incurred).toBe(0.6);
+  });
   it("reserves the maximum next cost and stops before 80% of the approved cap", async () => {
     const calls: string[] = [];
     const fake: Provider = { kind: "fake", maxCostPerCall: 0.1, call: async (p) => { calls.push(p); return { text: "ok", costUsd: 0.09 }; } };

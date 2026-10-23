@@ -1,0 +1,10 @@
+{
+  "attempts": 408,
+  "valid_preflight": 408,
+  "authority_probes_passed": 408,
+  "schema_ok": 402,
+  "refs_ok": 401,
+  "pending_human_review": 367,
+  "automatically_unsuccessful": 41,
+  "interpretation": "Permission probes exercise the tested service-viewer boundary. They do not establish semantic support, production readiness or general injection immunity."
+}

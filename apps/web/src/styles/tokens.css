@@ -1,19 +1,19 @@
-/* Digital Kingdom 1.0. Local, opaque design tokens; no external assets. */
+/* Local typography and restrained dark-glass surfaces. */
 :root {
-  --canvas: #0B111B;
-  --surface: #121C29;
-  --surfaceRaised: #192637;
-  --surfaceHover: #223247;
-  --textPrimary: #EEF3FA;
-  --textSecondary: #B5C3D3;
-  --textMuted: #91A4BA;
-  --textDisabled: #66778C;
-  --divider: #2A394C;
-  --controlBorder: #70849B;
-  --accent: #A6B6FF;
-  --actionFill: #8EA6FF;
-  --actionText: #0C1422;
-  --focus: #B7C7FF;
+  --canvas: #0c0e12;
+  --surface: #13161c;
+  --surfaceRaised: #1b1e25;
+  --surfaceHover: #252932;
+  --textPrimary: #f0f1f5;
+  --textSecondary: #b8bdc9;
+  --textMuted: #9299a9;
+  --textDisabled: #686e7d;
+  --divider: #2a2e38;
+  --controlBorder: #555d6e;
+  --accent: #c3cbf5;
+  --actionFill: #d2d9f7;
+  --actionText: #161a26;
+  --focus: #d4dcff;
   --info: #92B9FF;
   --warning: #E8BE78;
   --high: #F19A85;
@@ -23,14 +23,16 @@
   --bg: var(--canvas); --surface-2: var(--surfaceRaised); --surface-3: var(--surfaceHover);
   --overlay: var(--surface); --text: var(--textPrimary); --text-2: var(--textSecondary); --text-3: var(--textMuted);
   --border: var(--divider); --border-1: var(--divider); --border-2: var(--divider); --border-3: var(--controlBorder);
-  --accent-hi: var(--focus); --accent-soft: #202d4a; --accent-line: var(--accent);
-  --danger: var(--critical); --danger-soft: #34252e; --warn: var(--warning); --warn-soft: #302b24;
+  --accent-hi: var(--focus); --accent-soft: #242b40; --accent-line: var(--accent);
+  --danger: var(--critical); --danger-soft: #34252e; --warn: var(--warning); --warn-soft: #29251e;
   --ok: var(--reporting); --ok-soft: #1d302e; --bg-2: var(--surface);
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s8:32px;
-  --r-xs:4px; --r-sm:6px; --r-md:10px; --r-lg:14px;
+  --r-xs:6px; --r-sm:10px; --r-md:14px; --r-lg:20px;
   --fs-11:.75rem; --fs-12:.75rem; --fs-13:.8125rem; --fs-14:.875rem; --fs-16:1rem; --fs-20:1.25rem;
   --top:64px; --side:280px; --pane:384px; --rail:72px; --tl:72px;
-  --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font: 'Inter Variable', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
-  --shadow-pop: 0 14px 36px #0006;
+  --shadow-pop: 0 20px 60px #0008, inset 0 1px 0 #ffffff0a;
+  --glass: linear-gradient(145deg, #20242dd9, #14171fef);
+  --glass-border: #ffffff12;
 }

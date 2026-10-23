@@ -19,6 +19,6 @@ export default defineConfig({
     // tracing is started manually AFTER sign-in so the typed token is never recorded
     trace: "off",
     screenshot: "off",
-    launchOptions: { args: ["--enable-unsafe-swiftshader", "--use-angle=swiftshader", "--ignore-gpu-blocklist"] },
+    launchOptions: { executablePath: process.env.DK_BROWSER_EXECUTABLE, args: ["--enable-unsafe-swiftshader", "--use-angle=swiftshader", "--ignore-gpu-blocklist"] },
   },
 });

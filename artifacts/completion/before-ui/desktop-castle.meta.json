@@ -1,0 +1,24 @@
+{
+  "name": "V01-kingdom-overview-1440",
+  "file": "desktop-castle.png",
+  "sha256": "dece226ec02fd98f1e7a3d54e1734a7bc6c18a48231c7387155e4f63b088e5a8",
+  "bytes": 303858,
+  "capturedAt": "2026-10-23T14:31:02.438Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F01"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim.",
+  "source_artifact": "browser-pinned/screenshots/V01-kingdom-overview-1440.png",
+  "source_revision": "9fdb4f2"
+}

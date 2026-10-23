@@ -56,6 +56,9 @@ importers:
       fastify:
         specifier: ~5.4.0
         version: 5.4.0
+      semver:
+        specifier: 7.8.5
+        version: 7.8.5
     devDependencies:
       '@opentelemetry/api':
         specifier: ^1.10.0
@@ -72,6 +75,9 @@ importers:
       '@opentelemetry/sdk-trace-base':
         specifier: ^2.12.0
         version: 2.12.0(@opentelemetry/api@1.10.0)
+      '@types/semver':
+        specifier: 7.7.1
+        version: 7.7.1
 
   apps/web:
     dependencies:
@@ -87,12 +93,18 @@ importers:
       '@dk/scene-compiler':
         specifier: workspace:*
         version: link:../../packages/scene-compiler
+      '@fontsource-variable/inter':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@react-three/drei':
         specifier: ~10.5.0
         version: 10.5.2(@react-three/fiber@9.2.0(@types/react@19.1.17)(react-dom@19.1.10(react@19.1.10))(react@19.1.10)(three@0.178.0))(@types/react@19.1.17)(@types/three@0.178.1)(react-dom@19.1.10(react@19.1.10))(react@19.1.10)(three@0.178.0)
       '@react-three/fiber':
         specifier: ~9.2.0
         version: 9.2.0(@types/react@19.1.17)(react-dom@19.1.10(react@19.1.10))(react@19.1.10)(three@0.178.0)
+      lucide-react:
+        specifier: ^1.61.0
+        version: 1.61.0(@types/react@19.1.17)(react@19.1.10)
       react:
         specifier: ~19.1.0
         version: 19.1.10
@@ -606,6 +618,9 @@ packages:
   '@fastify/static@8.2.0':
     resolution: {integrity: sha512-PejC/DtT7p1yo3p+W7LiUtLMsV8fEvxAK15sozHy9t8kwo5r0uLYmhV/inURmGz1SkHZFz/8CNtHLPyhKcx4SQ==}
 
+  '@fontsource-variable/inter@5.3.0':
+    resolution: {integrity: sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==}
+
   '@hono/node-server@2.1.5':
     resolution: {integrity: sha512-MgP/I06GdvsilDspMk/qmRzpk8LOUStP6jFAbSRi40W09DhoyUn+Mj7eyKICPqeYKybOjVFLVIAQzvu1bfIa7Q==}
     engines: {node: '>=20'}
@@ -958,6 +973,9 @@ packages:
 
   '@types/react@19.1.17':
     resolution: {integrity: sha512-Qec1E3mhALmaspIrhWt9jkQMNdw6bReVu64mjvhbhq2NFPftLPVr+l1SZgmw/66WwBNpDh7ao5AT6gF5v41PFA==}
+
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
   '@types/stats.js@0.17.4':
     resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
@@ -1468,6 +1486,15 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  lucide-react@1.61.0:
+    resolution: {integrity: sha512-v2SQPPPNjnr+BlhL9Spuzmo5yR+hLkftfuE4E3jaxdNPgSH0hJKPcLJBP7yAta87jQNPsSERS59PJjCJ/CorBA==}
+    peerDependencies:
+      '@types/react': '*'
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   maath@0.10.8:
     resolution: {integrity: sha512-tRvbDF0Pgqz+9XUa4jjfgAQ8/aPKmQdWXilFu2tMy4GWj4NOsx99HlULO4IeREfbO3a0sA145DZYyvXPkybm0g==}
@@ -2374,6 +2401,8 @@ snapshots:
       fastq: 1.20.3
       glob: 11.1.0
 
+  '@fontsource-variable/inter@5.3.0': {}
+
   '@hono/node-server@2.1.5(hono@4.13.13)':
     dependencies:
       hono: 4.13.13
@@ -2705,6 +2734,8 @@ snapshots:
   '@types/react@19.1.17':
     dependencies:
       csstype: 3.2.3
+
+  '@types/semver@7.7.1': {}
 
   '@types/stats.js@0.17.4': {}
 
@@ -3289,6 +3320,12 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lucide-react@1.61.0(@types/react@19.1.17)(react@19.1.10):
+    dependencies:
+      react: 19.1.10
+    optionalDependencies:
+      '@types/react': 19.1.17
 
   maath@0.10.8(@types/three@0.178.1)(three@0.178.0):
     dependencies:

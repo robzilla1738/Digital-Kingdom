@@ -15,8 +15,12 @@ test('PROSE-15: empty inventory, configuration and receipt are separate real ser
     const checklist = page.getByRole('region', { name: 'Project setup checklist' });
     await expect(checklist).toBeVisible(); await expect(checklist.locator('[data-complete="false"]')).toHaveCount(3);
     await expect(checklist).toContainText('No assets have been added to this project.');
+    await page.getByRole('button', { name: 'Integrations', exact: true }).click();
+    await page.getByRole('tab', { name: 'Display', exact: true }).click();
+    await page.getByRole('button', { name: 'Kingdom', exact: true }).click();
     await checklist.getByRole('button', { name: 'Open inventory setup', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Import declared inventory' })).toBeVisible();
+    await expect(page.locator('#inventory-setup > summary')).toBeFocused();
     await page.getByRole('button', { name: 'Kingdom', exact: true }).click();
     await expect(checklist.locator('[data-complete="false"]')).toHaveCount(3);
     await page.getByRole('tab', { name: /^Assets/ }).click();
@@ -45,6 +49,7 @@ test('PROSE-13: cards show scoped configuration and keep absent assessments unkn
   try {
     await page.route('**/api/projects/demo-castle/snapshot', async route => { const response = await route.fetch(), json = await response.json(); json.coverage = []; await route.fulfill({ response, json }); });
     await page.reload(); await page.getByRole('button', { name: 'Integrations', exact: true }).click();
+    await page.locator('.integration-card').filter({ has: page.getByRole('heading', { name: 'Node application SDK', exact: true }) }).locator('details > summary').click();
     const application = page.locator('[data-integration-status="application"]');
     await expect(application).toContainText('matching source records configured');
     await expect(application).toContainText('SDK installation is not observable');

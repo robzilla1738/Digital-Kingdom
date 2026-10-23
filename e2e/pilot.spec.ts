@@ -110,6 +110,7 @@ test("A. controlled activity in the reference app becomes an evidence-backed fin
   const claim = (await pane.locator(".claim").innerText()).trim();
   expect(claim).toBe(auth.claim);
   expect(claim).not.toMatch(OVERSTATEMENT);
+  await pane.locator(".section-disclosure > summary").filter({ hasText: "What this does not establish" }).click();
   for (const nc of auth.not_claimed) await expect(pane.getByText(nc, { exact: false })).toBeVisible();
   const browserSupport = await pane.locator('[data-evidence-role="supporting"]').evaluateAll((rs) => rs.map((r) => r.getAttribute("data-event-id")!));
   const browserCounter = await pane.locator('[data-evidence-role="counter"]').evaluateAll((rs) => rs.map((r) => r.getAttribute("data-event-id")!));

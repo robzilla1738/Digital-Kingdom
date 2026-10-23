@@ -20,7 +20,7 @@ import { cachedModuleGeometryCount, type DetailLevel } from "./geometry.ts";
 import type { ModuleFailureCode } from "./moduleRecovery.ts";
 import { watchRendererShaders } from "./shaderRecovery.ts";
 
-const BG = "#0B111B", ACCENT = "#A6B6FF", CAM_DIST = 110;
+const BG = "#0c0e12", ACCENT = "#c3cbf5", CAM_DIST = 110;
 type Command = { n: number; type: "in" | "out" | "fit" | "focus" | "back"; group?: string };
 type Pose = { pos: THREE.Vector3; target: THREE.Vector3; zoom: number };
 // Harmless camera-only context survives Castle/Graph toggles. Bounded; never contains evidence.
@@ -50,11 +50,13 @@ export function Castle3D() {
   useEffect(() => { setDistrict(districtPoses.get(scene.project_id) ?? null); return () => { districtPoses.set(scene.project_id, latestDistrict.current); if (districtPoses.size > 4) districtPoses.delete(districtPoses.keys().next().value!); }; }, [scene.project_id]);
   const grouped = scene.rooms.length > 50;
   const focus = useMemo(() => selectionAssets(ui.selection, vm), [ui.selection, vm.findings, vm.data, vm.latestData, vm.selectedEventAssets]);
+  // Inspecting one member must keep the other explicitly focused endpoints reachable.
+  const [focusedLabels, setFocusedLabels] = useState<ReadonlySet<string>>(focus);
   const membership = useMemo(() => presentationMembers(groups, district, focus), [groups, district, focus]);
   const districtRooms = membership.members;
   const visibleRooms = grouped ? membership.visible : scene.rooms;
   useEffect(() => { if (ui.focusRevision <= ui.focusHandledRevision) return;
-    if (grouped) { const key = selectionDistrictKey(groups, focus); if (key) setDistrict(key); }
+    if (grouped) { const key = selectionDistrictKey(groups, focus); if (key) { setDistrict(key); setFocusedLabels(focus); } }
   }, [ui.focusRevision, ui.focusHandledRevision, grouped, groups, focus]);
   const visibleIds = useMemo(() => new Set(visibleRooms.map(r => r.asset_id)), [visibleRooms]);
   return <div ref={wrap} className="castle-wrap" role="region" tabIndex={0} aria-label={`Architectural map of ${scene.rooms.length} assets. Select a building to inspect it; Focus moves the camera. Graph and lists show the same evidence.`}
@@ -72,10 +74,10 @@ export function Castle3D() {
         <Rig scene={scene} command={cmd} groups={groups} />
         <Lights scene={scene} quality={quality} />
         <SceneLifecycle quality={quality} onSlow={() => { if (quality !== "low") { setQuality(quality === "high" ? "medium" : "low"); setReduced(true); } }} />
-        <LabelLayer budget={district ? 20 : 12} reservedLeft={grouped ? 320 : 0}>
+        <LabelLayer budget={district ? 12 : 5} reservedLeft={grouped ? 320 : 0}>
           <Suspense fallback={null}>
             <Environment scene={scene} groups={groups} quality={quality} highContrast={scene.style_profile === "high-contrast-v1"} />
-            {visibleRooms.map(room => <Room key={room.asset_id} room={room} selected={focus.has(room.asset_id)} quality={quality} />)}
+            {visibleRooms.map(room => <Room key={room.asset_id} room={room} selected={focus.has(room.asset_id)} focused={grouped && !!district && focusedLabels.has(room.asset_id)} quality={quality} />)}
             {grouped && !district && groups.map(g => <District key={g.key} group={g} onFocus={() => { setDistrict(g.key); send("focus", g.key); }} />)}
             <Paths scene={scene} visibleIds={visibleIds} onChoice={setEdgeChoice} />
           </Suspense>
@@ -129,6 +131,9 @@ function SceneLifecycle({ quality, onSlow }: { quality: DetailLevel; onSlow: () 
   }, [gl, dispatch, invalidate, setFrameloop]);
   useFrame((_, dt) => {
     const c = gl.domElement; c.dataset.renderCount = String(++count.current); c.dataset.drawCalls = String(gl.info.render.calls); c.dataset.triangles = String(gl.info.render.triangles); c.dataset.quality = quality; c.dataset.moduleGeometryBuilds = String(cachedModuleGeometryCount()); c.dataset.gpuGeometries = String(gl.info.memory.geometries); c.dataset.gpuTextures = String(gl.info.memory.textures); c.dataset.gpuPrograms = String(gl.info.programs?.length ?? 0);
+    // These counters describe the previous render. A restored, stationary camera may
+    // need only one demand frame, so publish its completed render on one follow-up.
+    if (count.current === 1) invalidate();
     const sampled = sampleFrameBudget(budget.current, dt, c.dataset.cameraActive === "true");
     budget.current = sampled.state; if (sampled.reduce) onSlow();
   });
@@ -161,14 +166,18 @@ function Rig({ scene, command, groups }: { scene: CompiledScene; command: Comman
     return { pos: target.clone().addScaledVector(dir, CAM_DIST), target, zoom };
   };
   const current = (): Pose => ({ pos: camera.position.clone(), target: ctl.current!.target.clone(), zoom: (camera as THREE.OrthographicCamera).zoom });
-  const apply = (p: Pose) => { camera.position.copy(p.pos); ctl.current!.target.copy(p.target); (camera as THREE.OrthographicCamera).zoom = p.zoom; camera.updateProjectionMatrix(); ctl.current!.update(); invalidate(); };
+  const publishPose = () => {
+    gl.domElement.dataset.cameraPose = JSON.stringify({ position: camera.position.toArray().map(v => +v.toFixed(3)), target: ctl.current!.target.toArray().map(v => +v.toFixed(3)), zoom: +(camera as THREE.OrthographicCamera).zoom.toFixed(3) });
+    gl.domElement.dataset.cameraViewport = `${size.width}x${size.height}`;
+  };
+  const apply = (p: Pose) => { camera.position.copy(p.pos); ctl.current!.target.copy(p.target); (camera as THREE.OrthographicCamera).zoom = p.zoom; camera.updateProjectionMatrix(); ctl.current!.update(); publishPose(); invalidate(); };
   const go = (to: Pose, remember = true) => {
     if (!ctl.current) return;
     if (remember) { history.current.push(current()); if (history.current.length > 12) history.current.shift(); }
     manual.current = true;
     if (ui.reducedMotion) apply(to); else { tween.current = { t: 0, from: current(), to }; gl.domElement.dataset.cameraActive = "true"; invalidate(); }
   };
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!ctl.current) return;
     if (!initialized.current) { const saved = cameraPoses.get(key); apply(saved ?? fit()); manual.current = !!saved; initialized.current = true; }
     else if (!manual.current) apply(fit());
@@ -196,7 +205,7 @@ function Rig({ scene, command, groups }: { scene: CompiledScene; command: Comman
     if (t) { t.t = Math.min(1, t.t + Math.min(dt, 0.05) / 0.38); const k = 1 - (1 - t.t) ** 3;
       apply({ pos: t.from.pos.clone().lerp(t.to.pos, k), target: t.from.target.clone().lerp(t.to.target, k), zoom: THREE.MathUtils.lerp(t.from.zoom, t.to.zoom, k) }); if (t.t === 1) { tween.current = null; gl.domElement.dataset.cameraActive = "false"; if (t.focusRevision) dispatch({ type: "focusHandled", revision: t.focusRevision }); }
     }
-    gl.domElement.dataset.cameraPose = JSON.stringify({ position: camera.position.toArray().map(v => +v.toFixed(3)), target: ctl.current.target.toArray().map(v => +v.toFixed(3)), zoom: +(camera as THREE.OrthographicCamera).zoom.toFixed(3) });
+    publishPose();
   });
   return <OrbitControls ref={ctl} makeDefault enableDamping={false} rotateSpeed={0.6} zoomSpeed={0.8} minPolarAngle={THREE.MathUtils.degToRad(25)} maxPolarAngle={THREE.MathUtils.degToRad(65)} minZoom={1} maxZoom={140}
     onStart={() => { gl.domElement.dataset.cameraActive = "true"; if (tween.current?.focusRevision) dispatch({ type: "focusHandled", revision: tween.current.focusRevision }); tween.current = null; manual.current = true; }} onEnd={() => { gl.domElement.dataset.cameraActive = "false"; }} onChange={() => { const c = ctl.current; if (!c) return;
@@ -213,7 +222,7 @@ function Lights({ scene, quality }: { scene: CompiledScene; quality: DetailLevel
     <directionalLight position={[cx + 24, 16, cz - 30]} intensity={0.95} color="#9FC0EA" />
   </>;
 }
-function Room({ room, selected, quality }: { room: SceneRoom; selected: boolean; quality: DetailLevel }) {
+function Room({ room, selected, focused, quality }: { room: SceneRoom; selected: boolean; focused: boolean; quality: DetailLevel }) {
   const { ui, dispatch, vm } = useApp(), status = vm.assetStatus.get(room.asset_id), asset = vm.data.graph.assets.find(a => a.id === room.asset_id)!;
   const [moduleFault, setModuleFault] = useState<{ id: string; code: ModuleFailureCode } | null>(null);
   const moduleFailure = moduleFault?.id === room.module_id ? moduleFault.code : null;
@@ -228,7 +237,7 @@ function Room({ room, selected, quality }: { room: SceneRoom; selected: boolean;
   useEffect(() => { setLod(quality === "low" ? "low" : selected && quality === "high" ? "high" : "medium"); }, [quality, selected]);
   const hovered = ui.hover === room.asset_id, q = ui.query.trim().toLowerCase(), dim = !!q && !`${asset.name} ${asset.id} ${asset.owner ?? ""}`.toLowerCase().includes(q);
   const gap = status && status.coverage !== "reporting", severity = status?.severity;
-  const priority = selected ? FORCE + 200 : hovered ? FORCE + 100 : moduleFailure ? FORCE + 50 : dim ? -1000 : (severity ? SEVERITY_RANK[severity] * 45 : 0) + (gap ? 15 : 0);
+  const priority = selected ? FORCE + 200 : focused ? FORCE + 150 : hovered ? FORCE + 100 : moduleFailure ? FORCE + 50 : dim ? -1000 : (severity ? SEVERITY_RANK[severity] * 45 : 0) + (gap ? 15 : 0);
   const labelRef = useLabel(`room:${room.asset_id}`, [room.position.x, room.label_anchor.y, room.position.z], priority);
   const select = () => dispatch({ type: "select", selection: { kind: "asset", id: room.asset_id }, announce: `Selected ${asset.name}. ${status ? ASSET_COVERAGE_LABEL[status.coverage] : "Coverage not assessed"}.` });
   const w = room.footprint.w, d = room.footprint.d;

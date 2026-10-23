@@ -1,0 +1,13 @@
+{
+  "file": "castle.png",
+  "sha256": "c2c1d039bf29bf4bb7425415f0484205254b07207ea40c189c627204900527d6",
+  "captured_at": "2026-10-23T15:16:44.196Z",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "browser": "141.0.7390.37",
+  "build": "dev",
+  "evidence": "Local synthetic fixture; Chromium SwiftShader. No physical-device or human approval.",
+  "reviewed_source_revision": "d4b7ead"
+}

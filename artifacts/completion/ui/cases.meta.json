@@ -1,0 +1,13 @@
+{
+  "file": "cases.png",
+  "sha256": "40e507bf2e6ca2644b59ecc172240c9a082361db727bf36bab0007d31389e02c",
+  "captured_at": "2026-10-23T15:16:33.520Z",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "browser": "141.0.7390.37",
+  "build": "dev",
+  "evidence": "Local synthetic fixture; Chromium SwiftShader. No physical-device or human approval.",
+  "reviewed_source_revision": "d4b7ead"
+}

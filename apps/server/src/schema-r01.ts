@@ -40,3 +40,9 @@ export const APPROVALS_MIGRATION = `ALTER TABLE api_tokens ADD COLUMN subject TE
    ALTER TABLE containment_requests ADD COLUMN plan TEXT;
    ALTER TABLE containment_requests ADD COLUMN plan_created_at TEXT;
    CREATE TABLE containment_approvals (request_id TEXT NOT NULL, project_id TEXT NOT NULL, subject TEXT NOT NULL, token_id TEXT NOT NULL, plan_digest TEXT NOT NULL, approved_at TEXT NOT NULL, PRIMARY KEY (request_id, subject));`;
+
+// Keep migration text independent of runtime Store imports.
+export const DECEPTION_MIGRATION = `CREATE TABLE decoys (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, kind TEXT NOT NULL, label TEXT NOT NULL, value_fingerprint TEXT NOT NULL, created_at TEXT NOT NULL, created_by TEXT NOT NULL, retired_at TEXT, retired_reason TEXT);
+   CREATE TABLE decoy_placements (id TEXT PRIMARY KEY, decoy_id TEXT NOT NULL REFERENCES decoys(id), project_id TEXT NOT NULL, location TEXT NOT NULL, asset_id TEXT, parent_placement_id TEXT, placed_at TEXT NOT NULL, placed_by TEXT NOT NULL, removed_at TEXT);
+   CREATE TABLE decoy_test_windows (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, decoy_id TEXT, starts_at TEXT NOT NULL, ends_at TEXT NOT NULL, purpose TEXT NOT NULL, created_by TEXT NOT NULL);
+   CREATE TABLE decoy_activations (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, placement_id TEXT, decoy_id TEXT, trigger TEXT NOT NULL, observed_at TEXT NOT NULL, received_at TEXT NOT NULL, via TEXT NOT NULL, network_locator TEXT, locator_kind TEXT, user_agent TEXT, authorized_test_window TEXT, raw_ref TEXT);`;

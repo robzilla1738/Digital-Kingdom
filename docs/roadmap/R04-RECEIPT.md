@@ -48,3 +48,9 @@ Acceptance (`apps/server/test/change-r04.test.ts`, 4 tests):
 - Post-deploy with the reviewed digest matches; another digest is drift naming both.
 
 Limits: probes must be supplied for grant comparison (plus wildcard detection); ingress is computed from the declared graph.
+
+### Completion follow-up, 2026-10-23
+
+The version comparator now uses SemVer precedence (including prereleases and build metadata). Only `SEMVER` ranges and explicitly listed versions are comparable; unsupported ecosystem/Git/limit semantics return unknown instead of implying a fixed deployment. Runtime components retain their ecosystem identity and all installed versions, preventing a same-name package or a second fixed version from concealing an affected one. A nonmatching version is called fixed only when a declared fixed boundary was reached.
+
+Reference: [OSV range semantics](https://ossf.github.io/osv-schema/#affectedrangestype-field). A public OSV response was additionally checked using synthetic lodash SBOMs; the receipt records the advisory, fetch time and response hash. This verifies one live feed format, not a real deployment or broad feed coverage.

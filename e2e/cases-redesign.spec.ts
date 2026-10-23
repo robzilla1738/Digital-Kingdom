@@ -12,6 +12,7 @@ test("CASE-01: create a case, link a finding, answer its question and close it; 
     await page.getByRole("button", { name: "Investigate", exact: true }).click();
     await page.getByRole("tab", { name: "Cases", exact: true }).click();
     await expect(page.getByLabel("Cases workspace")).toContainText("No cases yet.");
+    await page.locator(".case-create > summary").click();
     await page.getByLabel("Case title").fill("Synthetic checkout review");
     await page.getByLabel("Case question").fill("Did anything reach the database?");
     await page.getByLabel("Closure criteria").fill("Every database read in scope is explained.");
@@ -79,5 +80,34 @@ test("CTL-01: Coverage → Controls shows an honest empty state and never implie
     const panel = page.getByRole("tabpanel", { name: "Controls" });
     await expect(panel).toContainText("No controls declared.");
     await expect(panel).toContainText("A drawn shield is never a tested control.");
+  } finally { await context.close(); }
+});
+
+test("failed case creation and item saves retain the analyst draft", async ({ browser }) => {
+  const { context, page } = await loginRedesign(browser, harness);
+  try {
+    await page.getByRole("button", { name: "Investigate", exact: true }).click();
+    await page.getByRole("tab", { name: "Cases", exact: true }).click();
+    let fail = true;
+    await page.route("**/api/projects/*/cases", route => route.request().method() === "POST" && fail
+      ? route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "Synthetic save outage" }) })
+      : route.continue());
+    await page.locator(".case-create > summary").click();
+    await page.getByLabel("Case title").fill("Retain this draft");
+    await page.getByLabel("Case question").fill("What happened?");
+    await page.getByLabel("Closure criteria").fill("Records reviewed");
+    await page.getByRole("button", { name: "Create case", exact: true }).click();
+    await expect(page.getByLabel("Cases workspace").getByRole("status")).toContainText("failed");
+    await expect(page.getByLabel("Case title")).toHaveValue("Retain this draft");
+    await expect(page.getByLabel("Case question")).toHaveValue("What happened?");
+    fail = false;
+    await page.getByRole("button", { name: "Create case", exact: true }).click();
+    await expect(page.getByTestId("case-detail")).toContainText("Retain this draft");
+    await expect(page.getByLabel("Case title")).toHaveValue("");
+    await page.route("**/cases/*/items", route => route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "Synthetic save outage" }) }));
+    await page.getByLabel("Case item text").fill("Do not lose this note");
+    await page.getByRole("button", { name: "Add to case", exact: true }).click();
+    await expect(page.getByLabel("Cases workspace").getByRole("status")).toContainText("Add failed");
+    await expect(page.getByLabel("Case item text")).toHaveValue("Do not lose this note");
   } finally { await context.close(); }
 });

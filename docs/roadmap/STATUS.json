@@ -373,10 +373,10 @@
    "title": "Polish composition with measured usability and performance",
    "status": "blocked_external",
    "external_gate": "human_and_physical_device",
-   "receipt": null,
-   "head": null,
+   "receipt": "docs/quality/COMPLETION-2026-10-23.md",
+   "head": "07e33cccd85d717c29feb962f69c332b5c13cdce",
    "ci_run": null,
-   "notes": "Cannot be completed honestly without external gate: human_and_physical_device. No work is claimed."
+   "notes": "Local interface refinement implemented: bundled Inter, Lucide controls, dark glass styling, compact default tables and native disclosures. Local browser and repository checks are recorded separately. Human usability sessions and physical-device performance measurements remain pending; no new CI or human approval claimed."
   },
   {
    "id": "R07.1",
@@ -596,10 +596,10 @@
    "title": "Run approved model evaluation with independent review",
    "status": "blocked_external",
    "external_gate": "provider_budget_and_human_review",
-   "receipt": null,
-   "head": null,
+   "receipt": "docs/quality/COMPLETION-2026-10-23.md",
+   "head": "9fdb4f2f19937b189d2aff4150e0025e0eb3b2b9",
    "ci_run": null,
-   "notes": "Cannot be completed honestly without external gate: provider_budget_and_human_review. No work is claimed."
+   "notes": "Approved Muse Spark v2 evaluation completed locally: 408 attempts, 41 automatically unsuccessful, 132 selected for independent review. Shared recorded charge $0.939669258 of $5. Provider/budget prerequisite satisfied; human semantic review remains pending. No CI or human approval claimed."
   },
   {
    "id": "R11.3",

@@ -2,11 +2,12 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Finding, SecurityEvent } from "@dk/contracts";
 import { useApp } from "../lib/state.tsx";
 import { ACTION_LABEL, EVENT_OUTCOME_COLOR, OUTCOME_STYLE, fmtDateTime } from "../lib/vocab.ts";
-import { StateIcon } from "../lib/icons.tsx";
+import { Icon, StateIcon } from "../lib/icons.tsx";
 import { safeReferenceUrl } from "../lib/investigation.ts";
 import type { Selection } from "../lib/navigation.ts";
 
-export function Section({ title, count, children, id }: { title: string; count?: number; children: ReactNode; id?: string }) {
+export function Section({ title, count, children, id, collapsible = false }: { title: string; count?: number; children: ReactNode; id?: string; collapsible?: boolean }) {
+  if (collapsible) return <details className="ev-section section-disclosure" id={id}><summary><h3>{title}{count !== undefined && <span className="count">{count}</span>}</h3><Icon name="chevron-down" size={14} /></summary><div className="section-disclosure-body">{children}</div></details>;
   return <section className="ev-section" id={id}><h3>{title}{count !== undefined && <span className="count">{count}</span>}</h3>{children}</section>;
 }
 export function KV({ k, v }: { k: string; v: ReactNode }) { return <div className="kv"><span>{k}</span><span>{v}</span></div>; }
@@ -38,7 +39,7 @@ export function PrivacyAction({ label, title, scope, text, confirmLabel = "Copy 
   const trigger = useRef<HTMLButtonElement>(null);
   const [busy, setBusy] = useState(false), [message, setMessage] = useState("");
   useEffect(() => { const el = dialog.current; return () => { if (el?.open) el.close(); }; }, []);
-  const close = () => { if (!busy) { dialog.current?.close(); trigger.current?.focus(); } };
+  const close = () => { dialog.current?.close(); trigger.current?.focus(); };
   const apply = async () => {
     setBusy(true); setMessage("");
     try { if (onConfirm) await onConfirm(); else if (text !== undefined) await navigator.clipboard.writeText(text); setMessage(onConfirm ? "Export requested successfully." : "Copied."); }
@@ -46,11 +47,11 @@ export function PrivacyAction({ label, title, scope, text, confirmLabel = "Copy 
     finally { setBusy(false); }
   };
   return <><button ref={trigger} className="btn sm" disabled={disabled} onClick={() => { setMessage(""); dialog.current?.showModal(); }}>{label}</button>
-    <dialog ref={dialog} className="privacy-dialog" aria-label={title} onCancel={(event) => { if (busy) event.preventDefault(); }} onClose={() => trigger.current?.focus()}>
+    <dialog ref={dialog} className="privacy-dialog" aria-label={title} onClose={() => trigger.current?.focus()}>
       <h2>{title}</h2><p>Review the scope before sharing. References can expose project and record metadata; links do not grant access.</p>
       <ul className="bullets">{scope.map((item, i) => <li key={i}>{item}</li>)}</ul>
       {text !== undefined && <label className="field">Text to copy<textarea aria-label="Text to copy" className="note" readOnly rows={7} value={text} /></label>}
-      <div className="btn-row"><button className="btn primary" disabled={busy} onClick={() => void apply()}>{busy ? "Working…" : confirmLabel}</button><button className="btn" disabled={busy} onClick={close}>Close preview</button></div>
+      <div className="btn-row"><button className="btn primary" disabled={busy} onClick={() => void apply()}>{busy ? "Working…" : confirmLabel}</button><button className="btn" onClick={close}>Close preview</button></div>
       <p role="status" className="status-msg">{message}</p>
     </dialog></>;
 }

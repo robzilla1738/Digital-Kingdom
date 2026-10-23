@@ -1,0 +1,13 @@
+{
+  "file": "kingdom.png",
+  "sha256": "bede06a6cb0859fba3823ef69b98edce3aaec359901099bc90e055625f4606b8",
+  "captured_at": "2026-10-23T15:15:32.351Z",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "browser": "141.0.7390.37",
+  "build": "dev",
+  "evidence": "Local synthetic fixture; Chromium SwiftShader. No physical-device or human approval.",
+  "reviewed_source_revision": "d4b7ead"
+}

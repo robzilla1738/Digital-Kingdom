@@ -1,0 +1,19 @@
+{
+  "command": "pnpm soak 10000",
+  "scope": "Local synthetic functional exercise; not a production throughput benchmark",
+  "measurements": {
+    "events_offered": 10000,
+    "accepted": 7000,
+    "throttled": 3000,
+    "ingest_ms": 2597,
+    "ingest_per_s": 2695,
+    "process_ms": 3705,
+    "process_per_s": 1889,
+    "db_bytes": 11984896,
+    "backup_bytes": 12923229,
+    "backup_ms": 177,
+    "restore_ms": 193,
+    "restore_ok": true
+  },
+  "log_sha256": "957074d4ad12b66a99ef7e0ea318dbf71789c2fe9a93a75da270930e3d622605"
+}

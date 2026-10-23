@@ -17,6 +17,20 @@ const runtime = (comps: Sbom["components"]): Sbom => ({ artifact_digest: RUN, co
 const source: Sbom = { artifact_digest: "source", generated_at: "2026-10-20T00:00:00Z", tool: "npm ls", components: [{ purl: "pkg:npm/left-parser@2.3.0" }, { purl: "pkg:npm/dev-only-tool@1.0.0" }] };
 
 describe("R04.2 vulnerability applicability", () => {
+  it("a prerelease of a fixed version is still affected and build metadata does not alter ordering", () => {
+    const result = assess({ deployed: [{ asset_id: "api", running_digest: RUN, exposure: "public" }], sboms: [runtime([{ purl: "pkg:npm/left-parser@2.4.1-rc.1" }, { purl: "pkg:npm/left-parser@2.4.1+build.7" }])], sourceSbom: source, feed: feed(), now: NOW });
+    expect(result.findings.filter(f => f.component === "left-parser").map(f => [f.installed_version, f.applicability])).toEqual([["2.4.1-rc.1", "affected_in_runtime"], ["2.4.1+build.7", "fixed_in_runtime"]]);
+  });
+  it("unknown range semantics cannot be called fixed or silently omitted", () => {
+    const snapshot = feed(); snapshot.osv[0]!.affected[0]!.ranges![0]!.type = "ECOSYSTEM";
+    const result = assess({ deployed: [{ asset_id: "api", running_digest: RUN, exposure: "public" }], sboms: [runtime([{ purl: "pkg:npm/left-parser@2.4.1" }])], sourceSbom: source, feed: snapshot, now: NOW });
+    expect(result.findings.find(f => f.component === "left-parser")).toMatchObject({ applicability: "unknown" });
+  });
+  it("same-name packages in different ecosystems never overwrite each other", () => {
+    const result = assess({ deployed: [{ asset_id: "api", running_digest: RUN, exposure: "public" }], sboms: [runtime([{ purl: "pkg:pypi/left-parser@9.0.0" }])], sourceSbom: source, feed: feed(), now: NOW });
+    expect(result.findings.find(f => f.component === "left-parser")).toMatchObject({ applicability: "source_only", installed_version: "2.3.0" });
+  });
+
   it("a dependency only in source is not reported as confirmed runtime exposure", () => {
     const r = assess({ deployed: [{ asset_id: "api", running_digest: RUN, exposure: "public" }], sboms: [runtime([{ purl: "pkg:npm/left-parser@2.3.0" }])], sourceSbom: source, feed: feed(), now: NOW });
     expect(r.findings.find((f) => f.component === "dev-only-tool")).toMatchObject({ applicability: "source_only", priority: "informational" });

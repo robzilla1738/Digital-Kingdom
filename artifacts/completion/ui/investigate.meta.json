@@ -1,0 +1,13 @@
+{
+  "file": "investigate.png",
+  "sha256": "b0d7c1685824ad0c228fd612f5cabd66bd7012833a6d1abfb57d2a8aa1f9dc5b",
+  "captured_at": "2026-10-23T15:15:27.951Z",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "browser": "141.0.7390.37",
+  "build": "dev",
+  "evidence": "Local synthetic fixture; Chromium SwiftShader. No physical-device or human approval.",
+  "reviewed_source_revision": "d4b7ead"
+}

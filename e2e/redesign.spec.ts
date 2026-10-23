@@ -238,6 +238,12 @@ test('V14: responsive records, close controls, and no document overflow at 320â€
     }
   }
   await page.setViewportSize({width:1280,height:768});await offline(page,'?fixture=F01');await rendered(page);await page.locator('.sidebar [data-finding-id]').first().click();await expect(page.locator('aside.evidence')).toBeVisible();
+  // R3F sizes the drawing surface through ResizeObserver after the inspector mounts.
+  // Wait for those real bounds without weakening the minimum width or overlap limit.
+  await expect.poll(async () => {
+    const canvas = await page.locator('canvas').boundingBox(), pane = await page.locator('aside.evidence').boundingBox();
+    return !!canvas && !!pane && canvas.width >= 560 && canvas.x + canvas.width <= pane.x + 1;
+  }).toBe(true);
   const canvasBox=await page.locator('canvas').boundingBox(),paneBox=await page.locator('aside.evidence').boundingBox();expect(canvasBox!.width).toBeGreaterThanOrEqual(560);expect(canvasBox!.x+canvasBox!.width).toBeLessThanOrEqual(paneBox!.x+1);await noDocumentOverflow(page);await captureRedesign(page,'V14-1280-kingdom-detail');writeRedesignEvidence('1280-panel-layout.json',{canvasBox,paneBox,viewport:{width:1280,height:768},noPanelOverlap:true,minimumCanvasWidthRequired:560});
   const selectedBeforeResize=await page.locator('aside.evidence').getAttribute('data-selection-id');const resize=page.getByRole('separator',{name:'Resize inspector'});await resize.focus();await resize.press('Home');await expect(resize).toHaveAttribute('aria-valuenow','360');const grip=await resize.boundingBox();await page.mouse.move(grip!.x+grip!.width/2,grip!.y+80);await page.mouse.down();await page.mouse.move(grip!.x+grip!.width/2-40,grip!.y+80,{steps:5});await page.mouse.up();await expect(resize).toHaveAttribute('aria-valuenow','400');await resize.press('End');await expect(resize).toHaveAttribute('aria-valuenow','520');await expect(page.locator('aside.evidence')).toHaveAttribute('data-selection-id',selectedBeforeResize!);await noDocumentOverflow(page);await captureRedesign(page,'V14-1280-resized-inspector');
   await page.setViewportSize({width: 1440, height: 900}); await offline(page, '?fixture=F01#workspace=coverage');
@@ -309,7 +315,13 @@ test('explicit camera focus and context loss preserve stable selection and graph
   await offline(page,'?fixture=F01');await rendered(page);
   await page.getByRole('tab',{name:/^Assets 13$/}).click();
   await page.locator('.sidebar [data-asset-id]').first().click();
-  await page.waitForTimeout(500);const initial=await page.locator('canvas').getAttribute('data-camera-pose');
+  // Inspector mounting changes the viewport. Compare camera history only after
+  // the renderer has applied the actual resized drawing surface.
+  await expect.poll(() => page.locator('canvas').evaluate(canvas => {
+    const [width, height] = (canvas.dataset.cameraViewport ?? '').split('x').map(Number), bounds = canvas.getBoundingClientRect();
+    return Math.abs(width - bounds.width) < 1 && Math.abs(height - bounds.height) < 1;
+  })).toBe(true);
+  const initial=await page.locator('canvas').getAttribute('data-camera-pose');
   await page.getByRole('button',{name:'Focus asset',exact:true}).click();
   await expect.poll(()=>page.locator('canvas').getAttribute('data-camera-pose')).not.toBe(initial);
   await page.waitForTimeout(600);const focused=await page.locator('canvas').getAttribute('data-camera-pose');

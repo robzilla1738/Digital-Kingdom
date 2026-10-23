@@ -1,6 +1,7 @@
 /** Scoped navigation and session-boundary regressions, isolated synthetic server only. */
 import { test, expect } from '@playwright/test';
 import { createRedesignHarness, loginRedesign, offlineRedesign, writeRedesignEvidence, type RedesignHarness } from './redesign-harness.ts';
+test.use({ trace: 'off' }); // This file measures retained DOM/listeners/heap without trace instrumentation.
 let h: RedesignHarness;
 test.beforeAll(async()=>{ h=await createRedesignHarness(); });
 test.afterAll(async()=>{ await h?.close(); });
@@ -86,6 +87,8 @@ async function installLifecycleProbe(context: import('@playwright/test').Browser
  });
 }
 
+// Retained tracing adds DOM/snapshot instrumentation to the very resources measured here.
+// Keep the real DOM/listener/heap limits unchanged and measure without that observer.
 test('six project switches retain one live stream and bounded global listeners requests and collected browser heap',async({browser})=>{
  const {context,page}=await loginRedesign(browser,h);
  try {
