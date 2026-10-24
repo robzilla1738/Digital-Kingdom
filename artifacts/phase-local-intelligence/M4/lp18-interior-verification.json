@@ -1,0 +1,25 @@
+{
+  "scope": "API-backed isolated synthetic server (demo-castle), Chromium headless SwiftShader.",
+  "cases": [
+    {
+      "case": "interior inspector",
+      "asset": "api",
+      "uiObjects": [
+        "data:relationship:rel-api-db",
+        "source:src-app",
+        "artifact:relationship:rel-ci-api",
+        "artifact:deployment:api"
+      ],
+      "apiObjects": [
+        "data:relationship:rel-api-db",
+        "source:src-app",
+        "artifact:relationship:rel-ci-api",
+        "artifact:deployment:api"
+      ],
+      "openedRecord": "rel-api-db",
+      "survives2D3D": true,
+      "narrow": true,
+      "result": "passed"
+    }
+  ]
+}

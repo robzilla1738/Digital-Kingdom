@@ -10,6 +10,7 @@ import { EventView } from "../inspector/EventView.tsx";
 import { FindingView } from "../inspector/FindingView.tsx";
 import { CopyReference, EventTable, FindingChip, KV, Section } from "../inspector/Shared.tsx";
 import { familyCapability } from "../castle/scenePresentation.ts";
+import { InteriorView } from "../inspector/InteriorView.tsx";
 export { ActionsCtx, type ServerActions } from "../inspector/actions.tsx";
 
 const KIND_TITLE = { asset: "Asset", finding: "Finding", path: "Relationship", relationship: "Relationship", event: "Event", source: "Source" } as const;
@@ -95,6 +96,7 @@ function AssetView({ id }: { id: string }) {
     <Section title="Visibility"><p className="scope-note" data-testid="asset-coverage-state">{visibility}. {status?.coverageNote ?? "Current coverage could not be assessed."}</p><p className="small faint">Current coverage as of {fmtDateTime(vm.coverageAsOf)}. Coverage during a replay interval has not been assessed.</p><ul className="mini-list">{sources.map((source) => { const c = coverage.find((item) => item.source_id === source.id); return <li key={source.id}><button className="link-row" onClick={() => dispatch({ type: "select", selection: { kind: "source", id: source.id } })}><span className="grow">{source.label}</span><span>{source.disabled ? "Administratively disabled" : c ? COVERAGE_STYLE[c.state].label : "Coverage not assessed"}</span></button></li>; })}</ul></Section>
     <Section title="Recent stored activity" count={activity.length}><p className="small faint">At most 12 loaded events from {fmtDateTime(vm.data.window.start)} to {fmtDateTime(vm.at)}. This is not the full stored event archive.</p><button className="btn sm" onClick={() => dispatch({ type: "eventAssetFilter", assetId: id })}>Search all stored events for this asset</button><EventTable events={activity} /></Section>
     {interior && <Section title="Interior"><div data-testid="service-interior"><p className="small faint">{interior.note}</p><div className="kvs"><KV k="Routes" v={interior.routes ? interior.routes.map((r) => `${r.method} ${r.path}`).join("; ") : "No routes declared"} /><KV k="Deployed by" v={interior.deployed_by.map((d) => `${d.name} (${d.evidence})`).join(", ") || "Not declared"} /><KV k="Instances" v={interior.instances ?? "Not declared"} /><KV k="Permissions" v={interior.permissions.map((p) => `${p.label} → ${p.target} (${p.evidence})`).join("; ") || "None declared"} /><KV k="Tool capabilities" v={interior.tools.map((t) => `${t.tool} (${t.evidence}; ${t.meaning})`).join("; ") || "None declared"} /></div></div></Section>}
+    <InteriorView assetId={id} />
     <Section title="Relationships" count={relationships.length}><ul className="mini-list">{relationships.map((r) => <li key={r.id}><button className="link-row" onClick={() => dispatch({ type: "select", selection: { kind: "path", id: r.id } })}><span className="grow">{name(r.source_id)} → {name(r.target_id)}<small className="faint">{relationshipMeaning(r.kind, r.evidence_level).label}</small></span><span>{r.evidence_level}</span></button></li>)}</ul></Section>
   </>;
 }

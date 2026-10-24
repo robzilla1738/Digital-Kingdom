@@ -661,9 +661,9 @@
    "local_checks": {
     "typecheck": "exit 0",
     "test": "phase-lp18-interior 3/3; apps/mcp 10 files 31/31",
-    "e2e": "not run yet"
+    "e2e": "e2e/interior-redesign.spec.ts 1/1 passed (Chromium headless, SwiftShader)"
    },
-   "progress_note": "Substage 1 committed (interior contract dk.asset_interior.v1 in @dk/scene-compiler, GET /assets/:asset/interior, MCP dk_asset_interior, server tests). Remaining: interior selection kind, inspector view, castle markers, A4 view persistence, browser tests + screenshots."
+   "progress_note": "Substage 1 (contract/API/MCP) and 2a (inspector Evidence interior view, e2e + screenshots) committed. Remaining 2b: castle interior markers (roofs off) linked to interior objects, interior selection kind, marker click e2e."
   },
   {
    "id": "LP19",
@@ -1389,14 +1389,16 @@
    "package": "LP18",
    "status": "in_progress",
    "evidence": [
-    "apps/server/test/phase-lp18-interior.test.ts > A1 (API/MCP; UI pending)"
+    "apps/server/test/phase-lp18-interior.test.ts > A1",
+    "e2e/interior-redesign.spec.ts (inspector opens exact record; castle markers pending)"
    ]
   },
   "LP18-A2": {
    "package": "LP18",
    "status": "in_progress",
    "evidence": [
-    "apps/server/test/phase-lp18-interior.test.ts > A2 (contract; rendering pending)"
+    "apps/server/test/phase-lp18-interior.test.ts > A2",
+    "e2e/interior-redesign.spec.ts (text status, transit only observed; castle rendering pending)"
    ]
   },
   "LP18-A3": {
@@ -1408,8 +1410,10 @@
   },
   "LP18-A4": {
    "package": "LP18",
-   "status": "not_run",
-   "evidence": []
+   "status": "in_progress",
+   "evidence": [
+    "e2e/interior-redesign.spec.ts (3D/2D switch + 420px narrow; castle markers pending)"
+   ]
   },
   "LP19-A1": {
    "package": "LP19",
