@@ -132,6 +132,21 @@ describe("LP25-A3: the answer key accepts uncertainty when decisive facts are un
     expect(g2.world_divergence).toEqual([expect.objectContaining({ op_id: dropped.op_id, field: "independent_effect", answered: "not_observed", world: "observed" })]);
   }, 60_000);
 
+  it("a fact no delivered record states (a principal's own tenant) is not demanded; a recorded denial reason still is", async () => {
+    // Found in the LP26 development smoke: the saas key demanded yes/no for allowed reads, inferring the principal's
+    // own tenant from baseline-policy semantics that no delivered record states.
+    const c = await start(doc("LW-01"));
+    const stored = await c.storedEvents();
+    const sessionsCarryTenant = stored.some((e) => e.action === "authentication" && JSON.stringify(e).includes("tenant-"));
+    expect(sessionsCarryTenant).toBe(false); // no sign-in or session record names the account's tenant
+    const k = keyOf(c);
+    for (const o of k.ops) {
+      const deniedWithRule = stored.some((e) => e.request_id === o.op_id && e.rule_ref === "tenant-isolation");
+      if (deniedWithRule) expect(o.admissible.boundary_violation).toEqual(["yes"]);
+      else expect(o.admissible.boundary_violation).toEqual([o.world.boundary_violation, "unknown"]);
+    }
+  }, 60_000);
+
   it("across generated held-out variants every stopped-observer operation admits unknown and nothing requires a fact no source delivered", async () => {
     for (const f of ["saas-storefront", "agent-workspace", "delivery-identity"] as const) for (const i of [0, 1]) {
       const d = generateHeldout(f, "lp25-a3", i);
