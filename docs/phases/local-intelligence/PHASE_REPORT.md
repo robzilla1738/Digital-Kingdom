@@ -21,12 +21,17 @@ pnpm install --frozen-lockfile
 pnpm loop:local          # integrated loop; writes artifacts/tmp/lp31/integrated-loop-receipt.json (exact-candidate receipt)
 ```
 
-One command runs, on the current checkout and on 127.0.0.1 only, with synthetic data and no model call:
-blueprint world (saas-storefront, scenario LW-01) → finite scenario → case + guided investigation contract →
-scripted bring-your-agent investigation over the real stdio **focused MCP** read profile → evidence + claim checks →
-LP14 repair candidates → lab lease → typed local repair (`set_gateway_policy` on `api`) → independent effect
-verification → regression capture + model-free replay → link to the case and the castle comparison's executed-local
-list → evidence-only capsule export and import on a fresh instance. The receipt names the git commit, whether the tree
+One command runs, on the current checkout and on 127.0.0.1 only, with synthetic data and no model call, **in one
+leased local world**: blueprint world (saas-storefront, scenario LW-01) on a supervisor with leased lab actions →
+finite scenario → case + guided investigation contract → scripted bring-your-agent investigation over the real stdio
+**focused MCP** read profile → evidence + claim checks → investigator token revoked → the launcher reports the run's
+declared enforcement-point configuration (`dk.local.config_snapshot.v1`) → **LP14 generates reviewable candidates**
+(2 valid: `restore-reviewed-policy` → `set_gateway_policy@api` `policy:baseline` / `policy:candidate`) → the rank-1
+**generated plan, unmodified**, is leased and executed as a typed local repair in the same run → independent effect
+verification → regression capture + model-free replay → link to the case and the **castle comparison built from that
+candidate's own LP13 change list** (the `api` room changed; executed-local list `success/verified/local_run_only`) →
+post-repair model check (`no_repair_needed`) → evidence-only capsule export and import on a fresh instance. The default
+investigation world (no lab option) stays plan-only, and every typed action still needs a lease scoped to the plan. The receipt names the git commit, whether the tree
 was dirty, the runtime, and a digest/outcome per stage. The same loop is the test
 `eval/test/li-lp31-integrated-loop.test.ts`. Other local entry points: `pnpm world`, `pnpm mission run <file>`,
 `pnpm scenarios`, the console **Integrations → Local world / Missions** tabs, and the focused MCP profile
@@ -79,11 +84,17 @@ redesign harness; the earlier `eval/` harness and budget reservation (LP24–LP2
 
 ## Limitations
 
-- The LP31 loop repairs in a **second disposable run** of the same blueprint and defect: the LW-01 investigation world is
-  started without leased lab actions. The LP14 generator reasons over the analysis model and **returned 0 candidates**
-  for this local world, so the executed typed action is the reviewed `set_gateway_policy` on `api` that the
-  investigation's boundary-violation claims point at — not a generator output. The castle comparison's model-only
-  change is a placeholder used to open the comparison; only its executed-local list carries the verified repair.
+- Closed in the final pass (were limitations of the first LP31 candidate): the loop no longer repairs in a second run,
+  the executed plan is the LP14 generator's own output, and the castle comparison is that candidate's change list.
+- LP14's local-world candidates are **model-only** over the run's declared configuration snapshot and the declared
+  graph. Their policy semantics (`dk.local.tenant_policy_model.v1`: a tenant API in isolated mode refuses another
+  tenant's records unless its policy is the deliberately weak lab variant; an agent tool gateway forwards to a
+  non-approved receiver only in that variant) are a model of the reviewed local templates, not evidence; only LP22
+  independent verification is executed evidence. Covered defects: the saas-storefront tenant API and the
+  agent-workspace tool gateway policy variants. Observer gaps in local worlds (the audit observer stopped) are not
+  reflected in the analysis state, so `restart-test-observer` is not generated for them.
+- The configuration snapshot is reported by the run's launcher (admin token, local-run projects only, run id must
+  match); Digital Kingdom does not independently attest it.
 - Timings and robustness bounds are environment-specific (software WebGL, 2 vCPU); not benchmarks.
 - Hash/HMAC checks on capsules are integrity/origin checks, not proof of truth, completeness or approval.
 - No manual screen-reader evaluation, physical-GPU run, outside user, or human semantic review.
@@ -103,6 +114,5 @@ and evidence paths (checked by `eval/test/li-lp31-ledger.test.ts`). Tallies are 
 
 ## Next work (precise)
 
-See `STATUS.json.next_action.precise_next_work`: owner review and the merge decision (EXT09); LP14 local-world gateway
-candidates; a single leased world for the loop; a preregistered fresh-document LP26 re-run if the owner approves spend;
-EXT05/EXT06 human and physical acceptance.
+See `STATUS.json.next_action.precise_next_work`: owner review and the merge decision (EXT09); EXT05/EXT06 human and physical acceptance;
+observer-gap candidates for local worlds.

@@ -573,7 +573,15 @@
     "LP03 provenance run_id",
     "R08.2 changed-digest-cannot-reuse-approval principle",
     "package repair-plan proposal + negative fixtures"
-   ]
+   ],
+   "final_pass_extension": {
+    "commits": [
+     "648c30d",
+     "9ca8ba1"
+    ],
+    "what": "Local-world candidates: dk.local.config_snapshot.v1 (launcher/admin, local-run projects, matching run id) becomes analysis 'policy' elements; probe kind tenant_access and reviewed template restore-reviewed-policy (set_gateway_policy policy:baseline|candidate, bound to the run revision); agent-workspace tool-gateway path defect covered too. Model-only (dk.local.tenant_policy_model.v1).",
+    "tests": "apps/server/test/phase-lp14-local-world-repairs.test.ts (4 tests, failing first)"
+   }
   },
   {
    "id": "LP15",
@@ -1127,7 +1135,7 @@
     "docs/phases/local-intelligence/PHASE_REPORT.md"
    ],
    "model_spend_usd": 0,
-   "progress_note": "Phase complete locally; CI on final head recorded. Next work is owner-gated (see next_action.precise_next_work).",
+   "progress_note": "Final excellence pass in progress: gaps (1)-(3) closed and pushed; optional fresh-document AI comparison and final verification next (see receipts/LP31.md 'Final excellence pass').",
    "local_checks": {
     "head": "dca446d",
     "typecheck": "exit 0",
@@ -1138,6 +1146,20 @@
     "release:manifest + release:verify": "release matches recorded build dca446d (18 files)",
     "key e2e": "comparison-redesign LP19, missions-redesign LP29, usability comparison-branch + mission-builder: 4 passed (SwiftShader)",
     "integrated loop": "pnpm loop:local LOOP OK; eval/test/li-lp31-integrated-loop.test.ts passed"
+   },
+   "final_pass": {
+    "commits": [
+     "648c30d",
+     "3d083b6",
+     "9ca8ba1",
+     "9436054"
+    ],
+    "closed": [
+     "LP14 returned 0 candidates for the local world -> 2 valid generated candidates; the loop executes the rank-1 generated plan unmodified",
+     "second disposable run -> one leased world (startLocalCase {lab:'leased'}; default plan-only, tested)",
+     "placeholder castle comparison -> the executed candidate's own LP13 change list (api room changed)"
+    ],
+    "loop_receipt_stages": "world_and_scenario complete; case_and_guided_contract completed; investigation_focused_mcp complete; evidence_and_claim_checks passed; repair_candidates 2 valid of 2; lease issued; typed_local_repair executed (set_gateway_policy@api policy:baseline, LP14 rank 1 unmodified); independent_verification success; regression_capture_and_replay replayed; case_link_and_castle_comparison linked (api:changed, success/verified/local_run_only); post_repair_model_check no_repair_needed; capsule_export_import imported; single_run true"
    }
   }
  ],
@@ -1563,7 +1585,8 @@
    "status": "passed_local",
    "evidence": [
     "apps/server/test/phase-lp14-repairs.test.ts > LP14-A1/A2 (3 tests)",
-    "e2e/repairs-redesign.spec.ts > LP14-A1/A2"
+    "e2e/repairs-redesign.spec.ts > LP14-A1/A2",
+    "apps/server/test/phase-lp14-local-world-repairs.test.ts (local-world candidates for LP04 policy-variant defects)"
    ]
   },
   "LP14-A2": {
@@ -2097,7 +2120,7 @@
    "package": "LP31",
    "status": "passed_local",
    "evidence": [
-    "eval/test/li-lp31-integrated-loop.test.ts > LP31-A1 (one run: LW-01 world + scenario, case + guided contract, scripted investigation over the real stdio focused MCP read profile, evidence/claim checks 15/15 + 0 cited-missing, LP14 candidates recorded (0 returned for this world), lease, typed set_gateway_policy repair, independent verification success, regression capture + model-free replay, case link + castle comparison executed-local, evidence-only capsule export/import on a fresh instance)",
+    "eval/test/li-lp31-integrated-loop.test.ts > LP31-A1 (ONE leased run: LW-01 world + scenario, case + guided contract, scripted investigation over the real stdio focused MCP read profile, evidence/claim checks 15/15 + 0 cited-missing, investigator revoked, declared configuration snapshot, LP14 generated 2 valid candidates, the rank-1 generated plan leased + executed unmodified (set_gateway_policy@api policy:baseline) in the same run, independent verification success, regression capture + model-free replay, case link + castle comparison of the executed candidate's own change list (api changed, executed-local verified), post-repair model check no_repair_needed, evidence-only capsule export/import on a fresh instance; plus: the default investigation world stays plan-only)",
     "docs/phases/local-intelligence/receipts/LP31.md"
    ]
   },
@@ -2515,10 +2538,9 @@
   },
   "precise_next_work": [
    "Owner review of PHASE_REPORT.md, then decide whether to merge phase/local-intelligence to main (EXT09; not done by agents).",
-   "Teach the LP14 repair-candidate generator to model local-world gateway policies so it returns the reviewed set_gateway_policy candidate for saas-storefront (it returned 0 candidates in the LP31 loop).",
-   "Run the integrated loop in a single leased world (start LW-01 with labActions: leased) to remove the second-run seam.",
    "Re-run the LP26 model comparison with preregistered fresh held-out documents and surviving records (v1 lost 28/54 model records) once the owner approves spend (remaining cap $1.274238).",
-   "EXT05/EXT06: human semantic review, manual screen-reader and physical-GPU acceptance."
+   "EXT05/EXT06: human semantic review, manual screen-reader and physical-GPU acceptance.",
+   "Local-world observer gaps (audit observer stopped) are not in the analysis state; restart-test-observer candidates for local worlds would need the observer health in the configuration snapshot."
   ]
  },
  "milestones": {
