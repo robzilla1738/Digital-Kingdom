@@ -49,7 +49,14 @@ STATUS.json intentionally not edited. No model/provider calls. Web UI only (apps
 ## CI
 - 40132161201 (8fc2e72): check failed in `examples/reference-app/e2e.test.ts` ("expected +0 to be 10" — SDK flush
   event count; server/SDK path not touched by this branch; 983 other tests passed); browser-pilot skipped as a result.
-- Final head: see "CI (final)" below.
+- 40133165321 (9080c20): check passed; browser-pilot failed in the ORIGINAL pilot `F. containment stays
+  proposal-only` (server snapshot of events changed between before/after: the known source-freshness timing window;
+  no UI involvement). Redesign suite did not run in that job.
+- **40133564904 (e13c60b, final head): success.** check passed (pnpm test incl. reference-app e2e); browser-pilot:
+  original pilot 11 passed; redesign suite 113 passed / 1 skipped, including the 3 new next-C tests, LP17 F15
+  (families-redesign:47) and LP30 case-workbench axe/keyboard/reduced-motion/390px.
+- Local full `pnpm test` (at 8fc2e72 code): 143 files, 984 passed / 1 skipped (reference-app e2e passes locally, so the
+  40132161201 failure is a timing flake).
 
 ## Limitations / remaining
 - Region spacing is constrained by framing only. The compiled scene keeps its deterministic environment stride
