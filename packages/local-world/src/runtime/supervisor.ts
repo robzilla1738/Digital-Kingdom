@@ -83,6 +83,8 @@ export interface SupervisorOptions {
   services: ServiceRegistry; root?: string; secret?: Buffer; maxConcurrentRuns?: number; maxRunDiskBytes?: number;
   /** LP20: local lab actions. Default `plan_only`: no lease can be issued and nothing is executed. */
   labActions?: "plan_only" | "leased";
+  /** li-next D: accept the BENCHMARK DISTRACTOR policy references (lease.ts BENCH_DISTRACTOR_POLICY_REF). Default false. */
+  benchmarkDistractorVariants?: boolean;
 }
 export interface StartOptions { reporters?: (sourceId: string) => Reporter | null; scenarioClock?: ScenarioClock; clonedFrom?: { run: Run; state: Record<string, unknown> } }
 
@@ -108,7 +110,7 @@ export class Supervisor {
   constructor(readonly opts: SupervisorOptions) {
     this.secret = opts.secret ?? randomBytes(32);
     this.labMode = opts.labActions ?? "plan_only";
-    this.leases = new LeaseRegistry({ secret: this.secret, labActions: () => this.labMode, run: (id) => this.runs.get(id), controllerTokenId: (t, r) => this.controllerTokenId(t, r) });
+    this.leases = new LeaseRegistry({ secret: this.secret, labActions: () => this.labMode, run: (id) => this.runs.get(id), controllerTokenId: (t, r) => this.controllerTokenId(t, r), distractorVariants: () => opts.benchmarkDistractorVariants === true });
     mkdirSync(opts.root ?? tmpdir(), { recursive: true });
     this.root = realpathSync(mkdtempSync(join(opts.root ?? tmpdir(), "dk-lab-")));
   }
@@ -547,6 +549,7 @@ export class Run {
       },
       reconfigure: (id, variant) => { this.services.get(id)!.reconfigure?.({ policy_variant: variant }); },
       restartObserver: (id) => { this.observers.get(id)!.restart("restarted by a leased repair"); },
+      distractorVariants: () => this.sup.opts.benchmarkDistractorVariants === true,
     };
   }
   private controllerId(token: string): string { return this.sup.authorize(token, { run_id: this.run_id, action: "repair_execute" }).id; }

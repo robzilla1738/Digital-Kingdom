@@ -46,6 +46,15 @@ export const REPAIR_REF_PATTERN: Record<RepairActionType, RegExp> = {
   select_test_artifact: /^[0-9a-f]{64}$/,
   restart_test_observer: /^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$/,
 };
+/**
+ * li-next D: BENCHMARK DISTRACTOR policy references (reviewed, synthetic, deliberately wrong repairs used only by the
+ * local repair-selection benchmark: `bench_overbroad` also breaks permitted tenant reads, `bench_residual` leaves
+ * cross-tenant access to tenant-a open). Accepted ONLY on a supervisor started with `benchmarkDistractorVariants: true`;
+ * every other supervisor refuses them exactly like any other unreviewed reference. No production template emits them.
+ */
+export const BENCH_DISTRACTOR_POLICY_REF = /^policy:bench_(overbroad|residual)$/;
+export const refAllowed = (type: RepairActionType, ref: string, distractors: boolean) =>
+  REPAIR_REF_PATTERN[type].test(ref) || (distractors && type === "set_gateway_policy" && BENCH_DISTRACTOR_POLICY_REF.test(ref));
 /** Provider identifiers that must never become a lab target, even when they fit the plain-id pattern. */
 const PROVIDER_ID = /^(arn|aws|gcp|gcloud|azure|projects|subscriptions|k8s|kubernetes)[:.]|:\d{12}(:|$)|^\d{12}$|^(i|sg|vpc|subnet|ami|vol|eni|igw|nat|rtb|acl|snap)-[0-9a-f]{8,17}$/i;
 export const grantRef = (subject: string, grant: string) => `grant-${sha256(`${subject}|${grant}`).slice(0, 12)}`;
@@ -67,6 +76,8 @@ export interface IssueLeaseRequest { run_id: string; plan: unknown; controller_t
 /** The host the registry needs from the supervisor (kept narrow so the registry cannot reach anything else). */
 export interface LeaseHost {
   secret: Buffer; labActions(): "plan_only" | "leased"; run(id: string): Run | undefined;
+  /** li-next D: whether benchmark distractor policy references are accepted (default false). */
+  distractorVariants?(): boolean;
   controllerTokenId(token: string, runId: string): string; // throws unless a valid repair_execute token of that run
 }
 
@@ -110,7 +121,7 @@ export class LeaseRegistry {
       if (!res) this.refuse("unregistered", `action ${a.id} targets ${a.target_resource_id.slice(0, 80)}, which is not a resource of ${run.run_id}`, null, runId, "operator");
       if (!REPAIR_TARGET_TEMPLATES[a.type].includes(res.template as WorldTemplate)) this.refuse("scope", `action ${a.id} (${a.type}) cannot target a ${res.template}; reviewed targets are ${REPAIR_TARGET_TEMPLATES[a.type].join(", ")}`, null, runId, "operator");
       const ref = a.parameters[REPAIR_ACTION_PARAMETER[a.type]]!;
-      if (!REPAIR_REF_PATTERN[a.type].test(ref) || (a.type === "restart_test_observer" && ref !== a.target_resource_id)) this.refuse("scope", `action ${a.id}: ${REPAIR_ACTION_PARAMETER[a.type]} ${ref.slice(0, 80)} is not a run-owned reference for ${a.type}`, null, runId, "operator");
+      if (!refAllowed(a.type, ref, this.host.distractorVariants?.() === true) || (a.type === "restart_test_observer" && ref !== a.target_resource_id)) this.refuse("scope", `action ${a.id}: ${REPAIR_ACTION_PARAMETER[a.type]} ${ref.slice(0, 80)} is not a run-owned reference for ${a.type}`, null, runId, "operator");
       const prev = firstRevision.get(a.target_resource_id);
       if (prev !== undefined && prev !== a.expected_target_revision) this.refuse("state", `actions on ${a.target_resource_id} must share one expected starting revision`, null, runId, "operator");
       firstRevision.set(a.target_resource_id, a.expected_target_revision);
