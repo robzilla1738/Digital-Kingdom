@@ -15,7 +15,7 @@ import { compileWorld, instantiateBlueprint } from "@dk/local-world";
  */
 const RUN = "run-nextb0001";
 const world = compileWorld(instantiateBlueprint("saas-storefront", { seed: "next-b" }));
-const provenance = { schema: "dk.local.run_provenance.v1", run_id: RUN, world_plan_id: world.plan.plan_id, catalog_version: world.catalog.version, execution_mode: "local_runtime", data_origin: "synthetic_local", scope: "local_run_only", external_validation: "not_performed", started_at: "Sat 2026-10-24 3:00 PM CDT (UTC-05:00)", label: "Local laboratory — synthetic people and data" };
+const provenance = { schema: "dk.local.run_provenance.v1", run_id: RUN, world_plan_id: world.plan.plan_id, catalog_version: world.catalog.version, execution_mode: "local_runtime", data_origin: "synthetic_local", scope: "local_run_only", external_validation: "not_performed", started_at: "2026-10-24T08:00:00.000Z", label: "Local laboratory — synthetic people and data" };
 const config = (apiVariant: string, apiRev = `api:policy-${apiVariant}-r2`) => ({ schema: "dk.local.config_snapshot.v1", run_id: RUN, resources: [
   { resource_id: "api", template: "api", policy_variant: apiVariant, tenant_mode: "isolated", revision: apiRev },
   { resource_id: "ingress", template: "gateway", policy_variant: "baseline", revision: "ingress:policy-baseline-r1" },
@@ -34,7 +34,8 @@ async function localProject() {
   const ctx = await setup();
   const { app, admin, analyst, h } = ctx;
   const P = "lw-observer";
-  expect((await app.inject({ method: "POST", url: "/api/projects", headers: h(admin), payload: { id: P, name: "Local world", dataset_kind: "live", local_run: provenance } })).statusCode).toBe(200);
+  const created = await app.inject({ method: "POST", url: "/api/projects", headers: h(admin), payload: { id: P, name: "Local world", dataset_kind: "live", local_run: provenance } });
+  expect(created.statusCode, created.body).toBe(200);
   expect((await app.inject({ method: "POST", url: `/api/projects/${P}/graph`, headers: h(admin), payload: { ...world.graph, project_id: P } })).statusCode).toBe(200);
   const kase = (await app.inject({ method: "POST", url: `/api/projects/${P}/cases`, headers: h(analyst), payload: { title: "Audit observer", scope: { question: "Is the tenant store independently observed?", asset_ids: ["tenant-db"] }, closure_criteria: "Observation restored and verified" } })).json();
   const api = (method: "GET" | "POST", url: string, payload?: unknown, token = admin) => app.inject({ method, url: `/api/projects/${P}${url}`, headers: h(token), ...(payload !== undefined ? { payload: payload as Record<string, unknown> } : {}) });
@@ -49,7 +50,8 @@ describe("next-B: observer capability state in the analysis model", () => {
   it("records supervisor observer reports append-only and exposes the latest as observer elements, with history", async () => {
     const t = await localProject();
     const before = await t.state();
-    expect((await t.api("POST", "/local-observers", observers("running"))).statusCode).toBe(200);
+    const first = await t.api("POST", "/local-observers", observers("running"));
+expect(first.statusCode, first.body).toBe(200);
     const r = await t.api("POST", "/local-observers", observers("stopped"));
     expect(r.statusCode, r.body).toBe(200);
     const st = await t.state();
