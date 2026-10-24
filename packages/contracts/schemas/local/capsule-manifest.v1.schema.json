@@ -64,7 +64,7 @@
         "properties": {
           "path": {
             "type": "string",
-            "pattern": "^(manifest\\.json|signature\\.json|(evidence|scene|regressions|verifications|sealed)/[A-Za-z0-9][A-Za-z0-9_.-]{0,120}\\.(json|dkseal))$"
+            "pattern": "^(manifest\\.json|signature\\.json|(evidence|scene|regressions|verifications|missions|sealed)/[A-Za-z0-9][A-Za-z0-9_.-]{0,120}\\.(json|dkseal))$"
           },
           "sha256": {
             "type": "string",
@@ -81,6 +81,7 @@
               "scene",
               "regression",
               "verification",
+              "mission",
               "sealed_oracle"
             ]
           }

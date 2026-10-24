@@ -12,6 +12,7 @@ import { Timeline } from "../panels/Timeline.tsx";
 import { Legend } from "../panels/Legend.tsx";
 import { Graph2D } from "../graph2d/Graph2D.tsx";
 import { worldViewLabel } from "../lib/world.ts";
+import { NarrowComparison } from "../castle/ComparisonPanel.tsx";
 import { SplitPane } from "../components/ui/SplitPane.tsx";
 import { Tabs, SegmentedControl } from "../components/ui/Tabs.tsx";
 import { FindingsWorkspace } from "../workspaces/investigate/FindingsWorkspace.tsx";
@@ -82,6 +83,7 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
       {vm.data.project.provenance?.local_run && <div className="workspace-data-banner" data-testid="local-lab-banner">{vm.data.project.provenance.label} · run {vm.data.project.provenance.run_id} · local scope only; not production evidence.</div>}
       {props.connection && props.connection.state !== "live" && <div className="workspace-data-banner" role="alert" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "assertive"} data-testid="connection-banner">{CONNECTION_BANNER[props.connection.state]} Showing data as of {props.connection.since ? fmtTime(props.connection.since) : "the last confirmed sync"}. This view is not live monitoring.</div>}
       {vm.pendingUpdates > 0 && <div className="workspace-data-banner"><div className="inline-actions"><span>A newer confirmed snapshot is available. Your current selection and records are pinned.</span><button className="btn sm" disabled={!vm.isLatest} onClick={() => dispatch({ type: "acceptUpdates" })}>Load updates</button></div></div>}
+      {narrow && ui.workspace === "kingdom" && <NarrowComparison />}
       <div className={`workspace-content${showInspector && ui.workspace !== "integrations" ? " has-inspector" : ""}${expanded ? " expanded-finding" : ""}`}>
       {ui.workspace === "kingdom" && <div className={`kingdom-body${showInspector ? " has-inspector" : ""}${contextCollapsed ? " context-collapsed" : ""}${!ui.sidebar && !narrow ? " no-context" : ""} ${mobileView === "list" ? "show-list" : "show-map"}`}>
         {(ui.sidebar || narrow) && <Sidebar />}

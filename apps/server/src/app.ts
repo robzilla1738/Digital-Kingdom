@@ -40,7 +40,7 @@ import { runtimePolicy } from "./phase-policy.ts";
 import { parseLocalRun, provenanceOf } from "./provenance.ts";
 import { deriveCapability, LOCAL_CONTRACTS, INVESTIGATION_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
 import { registerLocalWorld } from "./local-world.ts";
-import { registerMissions } from "./missions.ts";
+import { missionRecord, registerMissions } from "./missions.ts";
 import { registerInvestigationRoutes } from "./investigation/routes.ts";
 import { registerExplorationRoutes, grantElements } from "./exploration.ts";
 import { registerRepairRoutes } from "./repair.ts";
@@ -841,8 +841,13 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const exp = cases.export(pid, cid, who(req), cfg.secret);
     const scene = store.getScene(pid), graph = store.getGraph(pid);
     const docs = localRepairs.documents(pid, cid);
+    // Optional LP29 mission records (investigator view only: brief + truth commitment + runner-reported runs).
+    const reqBody = (req.body ?? {}) as { mission_ids?: unknown };
+    const missionIds = reqBody.mission_ids === undefined ? [] : Array.isArray(reqBody.mission_ids) && reqBody.mission_ids.length <= 20 && reqBody.mission_ids.every((x) => typeof x === "string") ? [...new Set(reqBody.mission_ids as string[])] : null;
+    if (!missionIds) throw new HttpError(400, "mission_ids must be an array of at most 20 mission ids");
+    const missions = missionIds.map((id) => { const m = missionRecord(store, id); if (!m) throw new HttpError(404, `unknown mission ${id}`); return m; });
     try {
-      const c = buildCapsule({ kind: "evidence_only", caseExport: exp as never, scene: scene && graph ? { digest: scene.digest, layout_version: (scene as { layout_version?: number }).layout_version ?? null, graph_revision: graph.graph_revision } : null, regressions: docs.regressions, verifications: docs.verifications, signingSecret: cfg.secret, now: store.now() });
+      const c = buildCapsule({ kind: "evidence_only", caseExport: exp as never, scene: scene && graph ? { digest: scene.digest, layout_version: (scene as { layout_version?: number }).layout_version ?? null, graph_revision: graph.graph_revision } : null, regressions: docs.regressions, verifications: docs.verifications, missions, signingSecret: cfg.secret, now: store.now() });
       store.audit(who(req), "case.capsule_export", pid, cid, { capsule_id: c.manifest.capsule_id, entries: (c.manifest.entries as unknown[]).length });
       return { manifest: c.manifest, signature: c.signature, archive_base64: c.archive.toString("base64"), media_type: "application/gzip", file_name: `${String(c.manifest.capsule_id)}.dkcapsule.tar.gz` };
     } catch (e) { if (e instanceof CapsuleRefusal) throw new HttpError(422, e.message, e.problems); throw e; }

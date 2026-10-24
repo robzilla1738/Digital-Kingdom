@@ -43,7 +43,25 @@ type View = { name: string; open: (page: Page) => Promise<void>; region: string 
 const views: View[] = [
   { name: 'castle-world', region: 'body', open: async (page) => { await page.evaluate(() => { location.hash = 'workspace=kingdom&view=castle'; }); const show = page.getByRole('button', { name: 'Show map', exact: true }); if (await show.isVisible()) await show.click(); await expect(page.locator('canvas')).toBeVisible(); await expect.poll(async () => Number(await page.locator('canvas').getAttribute('data-render-count'))).toBeGreaterThan(0); } },
   { name: 'interior-inspector', region: '[data-testid="evidence-interior"]', open: async (page) => { await page.evaluate(() => { location.hash = 'workspace=kingdom&view=castle&sel=asset:api'; }); await expect(page.getByTestId('evidence-interior')).toBeVisible(); await page.getByTestId('evidence-interior').evaluate((e) => e.scrollIntoView({ block: 'start' })); } },
-  { name: 'comparison-branch', region: '[data-testid="world-comparison"]', open: async (page) => { await page.goto(`${h.serverUrl}/?project=demo-castle&cmp=${cmpId}#workspace=kingdom&view=castle`); await expect(page.locator('.app')).toBeVisible({ timeout: 30_000 }); const show = page.getByRole('button', { name: 'Show map', exact: true }); if (await show.isVisible()) { report.findings.push('comparison-branch at 390px: the open comparison is only reachable after "Show map"; the list view gives no indication a comparison is open'); await show.click(); } await expect(page.getByTestId('world-comparison')).toBeVisible({ timeout: 30_000 }); } },
+  { name: 'comparison-branch', region: '[data-testid="world-comparison"]', open: async (page) => {
+    await page.goto(`${h.serverUrl}/?project=demo-castle&cmp=${cmpId}#workspace=kingdom&view=castle`); await expect(page.locator('.app')).toBeVisible({ timeout: 30_000 });
+    const panel = page.getByTestId('world-comparison');
+    if ((page.viewportSize()?.width ?? 1440) < 1024) {
+      // LP30 finding fix: at 390px the open comparison is in flow and visible in the list view, before "Show map".
+      await expect(page.getByRole('button', { name: 'Show map', exact: true })).toBeVisible();
+      await expect(panel).toBeVisible({ timeout: 30_000 }); await expect(panel).toHaveAttribute('data-variant', 'inline');
+      await expect(panel.locator('summary')).toContainText(/Comparison open · baseline vs repair · \d+ changes? · model only/);
+      await captureRedesign(page, 'lp30-comparison-branch-narrow-390-list-view', { timeout: 30_000 });
+      await page.getByRole('button', { name: 'Show map', exact: true }).click();
+      await expect(page.locator('canvas')).toBeVisible(); await expect(panel).toBeVisible();
+      const tools = page.getByRole('toolbar', { name: 'Castle view' }); await expect(tools).toBeVisible();
+      const [a, b] = [await panel.boundingBox(), await tools.boundingBox()];
+      const overlap = !!a && !!b && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+      report.narrow_comparison = { variant: 'inline', visible_in_list_view: true, panel_box: a, camera_toolbar_box: b, overlaps_camera_toolbar: overlap };
+      expect(overlap).toBe(false);
+      await panel.locator('summary').click(); await expect(panel.getByTestId('comparison-revisions')).toBeVisible();
+    } else { await expect(panel).toBeVisible({ timeout: 30_000 }); await expect(panel).toHaveAttribute('data-variant', 'overlay'); }
+  } },
   { name: 'case-workbench', region: '[aria-label="Cases workspace"]', open: async (page) => { await page.getByRole('button', { name: 'Investigate', exact: true }).click(); await page.getByRole('tab', { name: 'Cases', exact: true }).click(); await expect(page.getByLabel('Cases workspace')).toBeVisible(); if (caseTitle) { const b = page.getByLabel('Cases workspace').getByRole('button', { name: new RegExp(caseTitle) }).first(); if (await b.count()) await b.click(); } } },
   { name: 'mission-builder', region: '[data-testid="mission-desk"]', open: async (page) => { await page.getByRole('button', { name: 'Integrations', exact: true }).click(); await page.getByRole('tab', { name: 'Missions' }).click(); await page.getByLabel('Start from reviewed blueprint').selectOption('agent-workspace'); await page.getByRole('button', { name: 'Preview' }).click(); await expect(page.getByTestId('mission-preview')).toBeVisible(); } },
   { name: 'mission-failure-state', region: '[data-testid="mission-desk"]', open: async (page) => { await page.getByRole('button', { name: 'Integrations', exact: true }).click(); await page.getByRole('tab', { name: 'Missions' }).click(); await page.getByLabel('Start from reviewed blueprint').selectOption('delivery-identity'); const j = page.getByLabel('Mission draft JSON'); const d = JSON.parse(await j.inputValue()); d.scenario.steps[0].command = 'id'; await j.fill(JSON.stringify(d, null, 1)); await page.getByRole('button', { name: 'Preview' }).click(); await expect(page.getByTestId('mission-error')).toBeVisible(); await page.getByTestId('mission-error').evaluate((e) => e.scrollIntoView({ block: 'start' })); } },
@@ -83,7 +101,7 @@ for (const v of views) {
       }
     } finally { await context.close(); }
     report.views.push(row);
-    writeRedesignEvidence(`lp30-usability-${v.name}.json`, { scope: report.scope, renderer: report.renderer, findings: report.findings, ...row });
+    writeRedesignEvidence(`lp30-usability-${v.name}.json`, { scope: report.scope, renderer: report.renderer, findings: report.findings, ...(v.name === 'comparison-branch' ? { narrow_comparison: report.narrow_comparison } : {}), ...row });
     expect(row.axe_region.violations.filter((x: any) => ['serious', 'critical'].includes(x.impact)), JSON.stringify(row.axe_region.violations)).toEqual([]);
     expect(row.keyboard.focused).toBeGreaterThan(3);
     expect(row.keyboard.with_visible_indicator).toBe(row.keyboard.focused);

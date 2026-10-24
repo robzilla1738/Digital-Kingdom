@@ -29,7 +29,7 @@ export const CAPSULE_INTEGRITY = "SHA-256 entry digests and the optional HMAC si
 export const CAPSULE_LIMITS = { max_entries: 512, max_entry_bytes: 8 * 1024 * 1024, max_total_bytes: 64 * 1024 * 1024, max_compressed_bytes: 32 * 1024 * 1024, max_ratio: 200 } as const;
 export class CapsuleRefusal extends Error { constructor(readonly code: "archive" | "layout" | "integrity" | "content" | "schema" | "seal", message: string, readonly problems: string[] = []) { super(message); } }
 
-type Role = "evidence" | "scene" | "regression" | "verification" | "sealed_oracle";
+type Role = "evidence" | "scene" | "regression" | "verification" | "mission" | "sealed_oracle";
 interface Entry { path: string; data: Buffer }
 
 // ---------------------------------------------------------------- content scanning
@@ -58,7 +58,7 @@ export function capsuleContentProblems(path: string, b: Buffer): string[] {
 const leafStrings = (v: unknown, out: string[] = []): string[] => { if (typeof v === "string") out.push(v); else if (Array.isArray(v)) v.forEach((x) => leafStrings(x, out)); else if (v && typeof v === "object") Object.values(v).forEach((x) => leafStrings(x, out)); return out; };
 
 // ---------------------------------------------------------------- ustar
-const PATH_RE = /^(manifest\.json|signature\.json|(evidence|scene|regressions|verifications|sealed)\/[A-Za-z0-9][A-Za-z0-9_.-]{0,120}\.(json|dkseal))$/;
+const PATH_RE = /^(manifest\.json|signature\.json|(evidence|scene|regressions|verifications|missions|sealed)\/[A-Za-z0-9][A-Za-z0-9_.-]{0,120}\.(json|dkseal))$/;
 function header(path: string, size: number, mode = 0o644, type = "0", link = "") {
   const h = Buffer.alloc(512);
   h.write(path, 0, 100, "utf8");
@@ -165,10 +165,29 @@ export function evidenceRefs(x: CaseExport): string[] {
   return [...refs].sort();
 }
 
+// ---------------------------------------------------------------- missions
+/** Field names that carry builder truth (dk.local.mission_truth.v1 / builder previews); never in a mission record. A plain
+ * number under one of these names is a count the investigator brief already shows (e.g. budget.steps) and is allowed. */
+export const MISSION_TRUTH_FIELDS = ["seed", "scenario", "steps", "expect", "expectations", "labels", "operations", "builder_counts", "truth", "oracle"] as const;
+export function missionRecordProblems(m: unknown): string[] {
+  const out: string[] = [];
+  if (!m || typeof m !== "object" || Array.isArray(m)) return ["not an object"];
+  const r = m as Record<string, unknown>;
+  if (r.schema !== "dk.local.mission_record.v1") out.push("schema is not dk.local.mission_record.v1");
+  if (r.truth_stored_on_server !== false) out.push("truth_stored_on_server must be false");
+  if (typeof r.truth_commitment !== "string" || !/^[a-f0-9]{64}$/.test(r.truth_commitment)) out.push("truth_commitment must be a SHA-256 hex digest");
+  const walk = (v: unknown, path: string) => {
+    if (Array.isArray(v)) v.forEach((x, n) => walk(x, `${path}[${n}]`));
+    else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) { if ((MISSION_TRUTH_FIELDS as readonly string[]).includes(k) && typeof x !== "number") out.push(`${path}.${k}: builder-truth field`); walk(x, `${path}.${k}`); }
+  };
+  walk(m, "mission");
+  return out;
+}
+
 // ---------------------------------------------------------------- build
 export interface BuildCapsuleInput {
   kind: "evidence_only" | "training"; caseExport: CaseExport; scene?: { digest: string; layout_version?: number | string | null; graph_revision: string } | null;
-  regressions?: unknown[]; verifications?: unknown[]; oracle?: unknown; sealPassphrase?: string; signingSecret?: string; now?: Date;
+  regressions?: unknown[]; verifications?: unknown[]; missions?: unknown[]; oracle?: unknown; sealPassphrase?: string; signingSecret?: string; now?: Date;
 }
 export function buildCapsule(i: BuildCapsuleInput): { archive: Buffer; manifest: Record<string, unknown>; signature: string | null } {
   if (i.kind === "evidence_only" && i.oracle !== undefined) throw new CapsuleRefusal("content", "an evidence-only capsule never carries oracle or private-truth data; build a training capsule with a sealed attachment instead");
@@ -186,6 +205,13 @@ export function buildCapsule(i: BuildCapsuleInput): { archive: Buffer; manifest:
     entries.push({ path: `regressions/${c.value.regression_id}.json`, data: j(c.value), role: "regression" });
   }
   (i.verifications ?? []).forEach((v, n) => entries.push({ path: `verifications/verification-${n + 1}.json`, data: j(v), role: "verification" }));
+  // LP31 (LP30 follow-up): LP29 mission records as investigator-side evidence (brief, truth commitment, runner-reported
+  // runs). The server never holds builder truth; a record that carries any builder-truth field is refused outright.
+  (i.missions ?? []).forEach((m, n) => {
+    const problems = missionRecordProblems(m);
+    if (problems.length) throw new CapsuleRefusal("content", `mission record refused: ${problems.slice(0, 3).join("; ")}`, problems);
+    entries.push({ path: `missions/mission-${n + 1}.json`, data: j(m), role: "mission" });
+  });
   const problems = entries.flatMap((e) => capsuleContentProblems(e.path, e.data));
   if (i.kind === "training") {
     const markers = leafStrings(i.oracle).filter((s) => s.length >= 12);
@@ -225,7 +251,7 @@ const normalizeOrigin = (o: string | undefined) => (["synthetic_local", "synthet
 // ---------------------------------------------------------------- import
 export interface ImportedCapsule {
   namespace: string; manifest: Record<string, unknown>; kind: "evidence_only" | "training"; case_export: Omit<CaseExport, "signature">;
-  evidence_refs: string[]; absent_records: { item: string; ref: string; reason: string }[]; regressions: RepairRegression[]; verifications: unknown[];
+  evidence_refs: string[]; absent_records: { item: string; ref: string; reason: string }[]; regressions: RepairRegression[]; verifications: unknown[]; missions: unknown[];
   scene_revision: unknown; sealed: { present: boolean; opened: boolean; commitment_ok: boolean | null; oracle?: unknown };
   checks: { entry_digests: "ok"; manifest_schema: "ok"; case_sections: "ok"; evidence_refs_rederived: "ok"; signature: "valid" | "absent" | "not_checked" | "not_from_this_instance" };
   integrity: string;
@@ -267,6 +293,7 @@ export function importCapsule(gz: Buffer, o: { signingSecret?: string; requireSi
   if (canonicalJson(absent) !== canonicalJson(manifest.absent_records)) throw new CapsuleRefusal("integrity", "the manifest's absent-record list differs from the evidence");
   const regressions = listed.filter((l) => l.role === "regression").map((l) => { const c = checkRegression(JSON.parse(by.get(l.path)!.toString("utf8"))); if (!c.ok) throw new CapsuleRefusal("schema", `${l.path}: ${c.errors.slice(0, 3).join("; ")}`); return c.value; });
   const verifications = listed.filter((l) => l.role === "verification").map((l) => JSON.parse(by.get(l.path)!.toString("utf8")));
+  const missions = listed.filter((l) => l.role === "mission").map((l) => { const m = JSON.parse(by.get(l.path)!.toString("utf8")); const p = missionRecordProblems(m); if (p.length) throw new CapsuleRefusal("content", `${l.path}: ${p.slice(0, 3).join("; ")}`, p); return m; });
   const scene = by.get("scene/scene-revision.json"); 
   const sealedMeta = manifest.sealed as { ciphertext_sha256: string; plaintext_commitment: string } | null;
   const sealed: ImportedCapsule["sealed"] = { present: !!sealedMeta, opened: false, commitment_ok: null };
@@ -277,7 +304,7 @@ export function importCapsule(gz: Buffer, o: { signingSecret?: string; requireSi
     sealed.oracle = oracle;
   }
   return {
-    namespace: `capsule:${String(manifest.capsule_id).slice(4)}`, manifest, kind, case_export: ce, evidence_refs: refs, absent_records: absent, regressions, verifications,
+    namespace: `capsule:${String(manifest.capsule_id).slice(4)}`, manifest, kind, case_export: ce, evidence_refs: refs, absent_records: absent, regressions, verifications, missions,
     scene_revision: scene ? JSON.parse(scene.toString("utf8")) : null, sealed,
     checks: { entry_digests: "ok", manifest_schema: "ok", case_sections: "ok", evidence_refs_rederived: "ok", signature }, integrity: CAPSULE_INTEGRITY,
   };
