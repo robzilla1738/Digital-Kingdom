@@ -69,7 +69,13 @@
               "observatory",
               "tool_annex",
               "forge",
-              "portal"
+              "portal",
+              "dns_registry",
+              "dispatch_house",
+              "key_registry",
+              "supply_depot",
+              "archive",
+              "outpost"
             ]
           }
         },

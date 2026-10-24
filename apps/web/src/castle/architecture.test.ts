@@ -91,7 +91,7 @@ describe("architectural kit release geometry", () => {
     const roof = g.groups.roof!; const wall = g.groups.structure!;
     expect(roof.boundingBox!.max.y).toBeGreaterThan(wall.boundingBox!.max.y);
     expect(g.groups["interior-structure"]).toBeDefined();
-    expect(ids).toHaveLength(10);
+    expect(ids).toHaveLength(16); // kit 2.1.0: ten original modules + six LP17 families
   });
 });
 describe("scene presentation", () => {

@@ -1,4 +1,4 @@
-import { MODULE_CATALOG, type CompiledScene, type Graph, type SceneRoom, type Severity } from "@dk/contracts";
+import { MODULE_CATALOG, SURFACES, type CompiledScene, type Graph, type ModuleId, type ModuleSpec, type SceneRoom, type Severity, type SupportLevel } from "@dk/contracts";
 import type { AssetStatus, Selection, ViewModel } from "../lib/state.tsx";
 
 export const SEVERITY_COLOR: Record<Severity, string> = { critical: "#FF8F98", high: "#F19A85", medium: "#E8BE78", low: "#92B9FF", info: "#B2BBC8" };
@@ -73,7 +73,10 @@ export function relationshipPattern(evidence: string) {
 /** Presentation metadata migration for persisted v1 scenes. Never writes scene state or moves assets. */
 export function presentationScene(scene: CompiledScene): CompiledScene {
   const rooms = scene.rooms.map(r => {
-    const spec = MODULE_CATALOG[r.module_id], rotated = Math.abs(r.rotation_y) % 180 === 90;
+    const spec = MODULE_CATALOG[r.module_id] as ModuleSpec | undefined, rotated = Math.abs(r.rotation_y) % 180 === 90;
+    // LP17: a scene stored by a newer kit can name a module this build does not know. Keep the asset, its stored
+    // footprint and height (never re-place or drop it); the castle draws a labelled placeholder for it.
+    if (!spec) return { ...r, label_anchor: { x: r.position.x, y: r.height + 0.8, z: r.position.z } };
     return { ...r, footprint: rotated ? { w: spec.footprint.d, d: spec.footprint.w } : spec.footprint, height: spec.height, label_anchor: { x: r.position.x, y: spec.label_height, z: r.position.z } };
   });
   return { ...scene, rooms, bounds: rooms.length ? {
@@ -98,4 +101,29 @@ export function presentationTopologyKey(scene: CompiledScene): string {
 }
 export function groupMembershipKey(graph: Graph): string {
   return graph.assets.map(a => `${a.id.length}:${a.id}:${a.environment}`).sort().join("|");
+}
+
+/**
+ * LP17-A2: the click target for a placed module, in module space (before rotation). With roofs on it is the module's
+ * full footprint volume; with roofs off (interior scale) it shrinks to a low plinth under the floor line so interior
+ * objects stay clickable and nothing above the floor is intercepted. Never larger than the footprint.
+ */
+export function selectionProxy(spec: Pick<ModuleSpec, "footprint" | "height">, roofs: boolean): { w: number; d: number; h: number; y: number } {
+  if (roofs) return { w: spec.footprint.w, d: spec.footprint.d, h: spec.height, y: spec.height / 2 };
+  const h = 0.24;
+  return { w: spec.footprint.w, d: spec.footprint.d, h, y: h / 2 };
+}
+
+/** LP17-A4: the registry surface each new architectural family depicts (support level lives in SURFACES). */
+export const FAMILY_SURFACE: Record<"dns_registry" | "dispatch_house" | "key_registry" | "supply_depot" | "archive" | "outpost", string> = {
+  dns_registry: "DK-S-dns", dispatch_house: "DK-S-queue", key_registry: "DK-S-machine_identity",
+  supply_depot: "DK-S-registry", archive: "DK-S-storage", outpost: "DK-S-device",
+};
+/** Honest capability line for a family, separate from the drawing; null for the original ten modules. */
+export function familyCapability(id: string): { surface: string; support: SupportLevel; text: string } | null {
+  const sid = (FAMILY_SURFACE as Record<string, string>)[id];
+  if (!sid) return null;
+  const s = SURFACES.find((x) => x.id === sid)!, label = MODULE_CATALOG[id as ModuleId]?.label ?? id;
+  const dns = id === "dns_registry" ? " Declared names and route aliases only; no Internet discovery." : "";
+  return { surface: sid, support: s.support, text: `${label} depicts ${s.name}: support ${s.support.replace(/_/g, " ")} (${s.support_evidence}).${dns} Drawing this family does not mean this asset is discovered, monitored or protected.` };
 }

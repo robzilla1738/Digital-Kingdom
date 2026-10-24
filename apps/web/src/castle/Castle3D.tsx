@@ -15,7 +15,7 @@ import { useApp } from "../lib/state.tsx";
 import { ASSET_COVERAGE_LABEL } from "../lib/presentation.ts";
 import { LAYER_STYLE, OUTCOME_STYLE, RELATIONSHIP_LAYER, SEVERITY_RANK } from "../lib/vocab.ts";
 import { Icon, StateIcon } from "../lib/icons.tsx";
-import { groupSummary, presentationMembers, selectionDistrictKey, presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, presentationCollisions, selectionAssets, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
+import { groupSummary, presentationMembers, selectionDistrictKey, presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, presentationCollisions, selectionAssets, selectionProxy, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
 import { cachedModuleGeometryCount, type DetailLevel } from "./geometry.ts";
 import type { ModuleFailureCode } from "./moduleRecovery.ts";
 import { watchRendererShaders } from "./shaderRecovery.ts";
@@ -266,14 +266,16 @@ function Room({ room, selected, focused, quality }: { room: SceneRoom; selected:
   const labelRef = useLabel(`room:${room.asset_id}`, [room.position.x, room.label_anchor.y, room.position.z], priority);
   const select = () => dispatch({ type: "select", selection: { kind: "asset", id: room.asset_id }, announce: `Selected ${asset.name}. ${status ? ASSET_COVERAGE_LABEL[status.coverage] : "Coverage not assessed"}.` });
   const w = room.footprint.w, d = room.footprint.d;
+  // LP17-A2: full volume with roofs on; a low plinth under the floor with roofs off so interiors stay clickable.
+  const proxy = selectionProxy({ footprint: room.footprint, height: room.height }, ui.roofs);
   const moduleIdentity = useMemo(() => ({ assetId: asset.id, name: asset.name, width: room.rotation_y % 180 ? d : w, depth: room.rotation_y % 180 ? w : d, height: room.height,
     onFailure: (code: ModuleFailureCode) => setModuleFault({ id: room.module_id, code }) }), [asset.id, asset.name, w, d, room.rotation_y, room.height, room.module_id]);
   return <group name={`asset:${room.asset_id}`} position={[room.position.x, 0.08, room.position.z]} userData={{ asset_id: room.asset_id, node_id: room.node_id }}>
     <group rotation={[0, room.rotation_y * Math.PI / 180, 0]}><CastleModule id={room.module_id} roofs={ui.roofs} lod={lod}
       identity={moduleIdentity} /></group>
-    <mesh name="hit-proxy" position={[0, room.height / 2, 0]} userData={{ asset_id: room.asset_id }} onClick={e => { if (e.delta > 6) return; e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); select(); dispatch({ type: "focus" }); }}
+    <mesh name="hit-proxy" position={[0, proxy.y, 0]} userData={{ asset_id: room.asset_id, roofs_off_plinth: !ui.roofs || undefined }} onClick={e => { if (e.delta > 6) return; e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); select(); dispatch({ type: "focus" }); }}
       onPointerOver={e => { e.stopPropagation(); dispatch({ type: "hover", id: room.asset_id }); document.body.style.cursor = "pointer"; }} onPointerOut={() => { dispatch({ type: "hover", id: null }); document.body.style.cursor = ""; }}>
-      <boxGeometry args={[w, room.height, d]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+      <boxGeometry args={[proxy.w, proxy.h, proxy.d]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
     </mesh>
     {(selected || hovered) && <Line points={[[-w / 2 - 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, -d / 2 - 0.18]]} color={selected ? ACCENT : "#EEF3FA"} lineWidth={selected ? 2.6 : 1.5} raycast={() => null} />}
     {gap && <CoverageHatch w={w + 0.32} d={d + 0.32} warning={status.coverage === "gap" || status.coverage === "partial"} />}

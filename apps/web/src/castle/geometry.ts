@@ -14,7 +14,7 @@ export interface ModuleGeometry { groups: Partial<Record<ArchitectureGroup, THRE
 
 /** Original editable architectural construction. Each group is merged, with vertex colour variation,
  * so masonry courses, arch voussoirs, beams and roof seams are not independent draw calls. The cache
- * is bounded by the ten known IDs × three LODs and shared for the application lifetime. */
+ * is bounded by the sixteen known IDs × three LODs and shared for the application lifetime. */
 class Builder {
   parts: Record<ArchitectureGroup, THREE.BufferGeometry[]> = { structure: [], roof: [], "interior-structure": [], "detail-static": [] };
   private serial = 0;
@@ -51,7 +51,7 @@ class Builder {
     for (const x of [-opening / 2 - 0.075, opening / 2 + 0.075]) this.box([0.16, spring, 0.14], [p[0] + x, p[1] + spring / 2, p[2]], color, "detail-static");
   }
   /** Hollow masonry shell with actual recessed entrance and a neutral floor for roof-off inspection. */
-  hall(w: number, d: number, h: number, p: V3, door = 0.6) {
+  hall(w: number, d: number, h: number, p: V3, door = 0.6, leaf = true) {
     const t = 0.2;
     this.box([w, 0.18, d], [p[0], p[1] + 0.09, p[2]], BASE);
     this.box([w - 0.4, 0.07, d - 0.4], [p[0], p[1] + 0.21, p[2]], WOOD, "interior-structure");
@@ -60,7 +60,8 @@ class Builder {
     this.arch(w - 0.4, h - 0.18, t, door, Math.min(0.75, h * 0.42), [p[0], p[1] + 0.18, p[2] + d / 2 - t]);
     this.archTrim(door, Math.min(0.75, h * 0.42), [p[0], p[1] + 0.18, p[2] + d / 2 + 0.035]);
     // Interior door is set back a full wall thickness, leaving the architectural recess readable.
-    this.box([door * 0.92, Math.min(0.9, h * 0.6), 0.06], [p[0], p[1] + Math.min(0.9, h * 0.6) / 2 + 0.18, p[2] + d / 2 - 0.3], WOOD, "interior-structure");
+    // A hall whose entrance is guarded by a grille instead (archive) keeps the doorway open to the floor.
+    if (leaf) this.box([door * 0.92, Math.min(0.9, h * 0.6), 0.06], [p[0], p[1] + Math.min(0.9, h * 0.6) / 2 + 0.18, p[2] + d / 2 - 0.3], WOOD, "interior-structure");
     if (this.lod !== "low") {
       for (const y of [0.45, 0.92, 1.39].filter(y => y < h - 0.2)) {
         this.box([w + 0.025, 0.035, 0.035], [p[0], p[1] + y, p[2] - d / 2], BASE, "detail-static");
@@ -87,6 +88,11 @@ class Builder {
         for (let i = 0; i <= count; i++) this.box([0.025, 0.025, length], [p[0] - w / 2 + i * w / count, p[1] + rise / 2 + 0.025, p[2] + side * d / 4], SEAM, "roof", [side * angle, 0, 0]);
       }
     }
+  }
+  /** Front-facing pediment: a triangular prism whose gable faces +z (ridge runs front-to-back). */
+  pediment(w: number, rise: number, depth: number, p: V3, color = ROOF, group: ArchitectureGroup = "roof") {
+    const s = new THREE.Shape(); s.moveTo(-w / 2, 0); s.lineTo(w / 2, 0); s.lineTo(0, rise); s.closePath();
+    const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, steps: 1 }); g.translate(0, 0, -depth / 2); this.add(g, color, p, group);
   }
   /** Crenellated parapet on a rectangle's perimeter: merlons at medium/high, one band at low. */
   parapet(cx: number, cz: number, w: number, d: number, y: number, h = 0.24, t = 0.16, color = EDGE) {
@@ -183,6 +189,128 @@ function observatory(b: Builder) {
   }
 }
 
+
+// ---- LP17 families (kit 2.1.0). Same recipe, palette and units as the original ten; geometry is presentation only.
+/** DNS registry: compact registry hall, signboard court with two record boards, bell-clock turret. */
+function dnsRegistry(b: Builder) {
+  b.box([3.3, 0.12, 2.6], [0, 0.06, 0], BASE);
+  b.hall(2.3, 1.7, 1.7, [0.4, 0.12, -0.42], 0.56, false);
+  b.gable(2.48, 1.8, 0.66, [0.4, 1.84, -0.42]);
+  if (b.lod !== "low") for (const x of [-0.45, 1.25]) b.window(x, 1.25, 0.47, 0.17, 0.44);
+  // Square bell-clock turret with an open belfry and a slate spire.
+  b.box([0.62, 2.2, 0.62], [-1.28, 1.22, -0.86]);
+  b.box([0.7, 0.1, 0.7], [-1.28, 2.37, -0.86], EDGE);
+  for (const x of [-1.52, -1.04]) for (const z of [-1.1, -0.62]) b.box([0.08, 0.36, 0.08], [x, 2.6, z], STONE);
+  b.box([0.7, 0.08, 0.7], [-1.28, 2.82, -0.86], EDGE);
+  b.spire(0.47, 0.3, [-1.28, 2.86, -0.86]);
+  b.cylinder(0.18, 0.18, 0.05, [-1.28, 1.92, -0.53], EDGE, "detail-static", [Math.PI / 2, 0, 0], b.lod === "low" ? 8 : 16);
+  if (b.lod !== "low") { b.box([0.025, 0.12, 0.02], [-1.28, 1.96, -0.5], IRON, "detail-static"); b.box([0.09, 0.02, 0.02], [-1.25, 1.92, -0.5], IRON, "detail-static");
+    b.cylinder(0.1, 0.13, 0.16, [-1.28, 2.55, -0.86], BRONZE, "detail-static", [0, 0, 0], 8); }
+  // Signboard court: two record boards on posts at separate marker positions (names / records).
+  b.box([3.1, 0.06, 0.95], [0, 0.15, 0.78], EDGE);
+  for (const x of [-1.15, 1.15]) {
+    for (const dx of [-0.3, 0.3]) b.box([0.07, 0.95, 0.07], [x + dx, 0.6, 1.16], WOOD);
+    b.box([0.72, 0.4, 0.07], [x, 0.9, 1.2], WOOD);
+    if (b.lod !== "low") { b.box([0.6, 0.28, 0.02], [x, 0.9, 1.24], DARK, "detail-static"); for (const y of [0.84, 0.96]) b.box([0.48, 0.025, 0.012], [x, y, 1.255], EDGE, "detail-static"); }
+  }
+}
+/** Dispatch house: long low warehouse, two loading bays with docks, raised central sorting roof. */
+function dispatchHouse(b: Builder) {
+  const z0 = -0.1, h = 1.22;
+  b.box([4.3, 0.16, 2.2], [0, 0.08, z0], BASE);
+  b.box([3.9, 0.06, 1.8], [0, 0.19, z0], WOOD, "interior-structure");
+  for (const x of [-2.03, 2.03]) b.box([0.2, h, 2.0], [x, 0.16 + h / 2, z0]);
+  b.box([3.86, h, 0.2], [0, 0.16 + h / 2, z0 - 0.9]);
+  for (const x of [-0.98, 0.98]) { b.arch(1.96, h, 0.2, 1.0, 0.55, [x, 0.16, z0 + 0.8]); b.archTrim(1.0, 0.55, [x, 0.16, z0 + 1.035]); }
+  // Central sorting table inside (open aisle on both sides), visible with roofs off.
+  b.box([0.5, 0.42, 1.2], [0, 0.43, z0 - 0.05], BASE, "interior-structure");
+  if (b.lod !== "low") for (const x of [-1.45, 1.45]) b.box([0.55, 0.3, 0.9], [x, 0.37, z0 - 0.4], WOOD, "interior-structure");
+  // Loading docks in front of each bay, with a shared canopy.
+  for (const x of [-0.98, 0.98]) b.box([1.2, 0.3, 0.32], [x, 0.15, 1.05], BASE);
+  b.box([4.1, 0.06, 0.48], [0, 1.44, 0.97], ROOF, "roof", [0.14, 0, 0]);
+  if (b.lod !== "low") for (const x of [-2.0, 0, 2.0]) b.box([0.07, 1.25, 0.07], [x, 0.78, 1.18], WOOD);
+  // Raised clerestory sorting roof between two lower roofs.
+  b.box([1.25, 0.42, 2.0], [0, 1.59, z0], STONE, "roof");
+  if (b.lod !== "low") for (const x of [-0.36, 0, 0.36]) b.box([0.2, 0.2, 0.03], [x, 1.6, z0 + 1.01], DARK, "roof");
+  b.gable(1.4, 2.2, 0.42, [0, 1.81, z0]);
+  for (const x of [-1.33, 1.33]) b.gable(1.42, 2.2, 0.3, [x, h + 0.17, z0], "#56616B");
+}
+/** Key registry: fortified administrative hall, two front bastions, recessed key-room above, record shelves. */
+function keyRegistry(b: Builder) {
+  const z0 = -0.12;
+  b.box([3.0, 0.16, 2.4], [0, 0.08, z0 + 0.03], BASE);
+  b.hall(2.4, 2.1, 1.85, [0, 0.16, z0], 0.5, false);
+  for (const x of [-1.24, 1.24]) { b.box([0.5, 2.05, 0.5], [x, 1.18, 0.95], STONE); b.parapet(x, 0.95, 0.56, 0.56, 2.2, 0.2, 0.12); }
+  b.parapet(0, z0, 2.5, 2.2, 2.01, 0.22, 0.14);
+  b.box([2.2, 0.08, 1.9], [0, 2.05, z0], ROOF, "roof");
+  // Recessed key-room: a smaller chamber set back on the roof, its doorway inset a full wall thickness.
+  b.box([1.15, 0.6, 0.85], [0, 2.39, z0 - 0.45], STONE, "roof");
+  b.box([0.36, 0.38, 0.06], [0, 2.3, z0 - 0.0], DARK, "roof");
+  b.spire(0.62, 0.22, [0, 2.69, z0 - 0.45]);
+  // Record shelves along both side walls; the centre aisle stays open for the roof-off cutaway.
+  for (const x of [-0.85, 0.85]) {
+    b.box([0.34, 0.95, 1.5], [x, 0.71, z0 - 0.15], WOOD, "interior-structure");
+    if (b.lod !== "low") for (const y of [0.5, 0.78, 1.06]) b.box([0.38, 0.035, 1.54], [x, y, z0 - 0.15], EDGE, "interior-structure");
+  }
+  if (b.lod !== "low") for (const x of [-0.6, 0.6]) b.box([0.06, 0.42, 0.1], [x, 1.35, z0 + 1.07], DARK, "detail-static");
+}
+/** Supply depot: stepped storage tiers, a loading platform with artifact racks and a hoist inside the footprint. */
+function supplyDepot(b: Builder) {
+  b.box([3.8, 0.14, 2.9], [0, 0.07, 0], BASE);
+  b.hall(2.4, 2.0, 1.5, [-0.65, 0.14, -0.38], 0.86, false); // open loading bay
+  b.box([2.5, 0.1, 2.1], [-0.65, 1.69, -0.38], ROOF, "roof");
+  b.box([2.4, 0.72, 0.95], [-0.65, 2.1, -0.9], STONE, "roof"); b.box([2.5, 0.09, 1.05], [-0.65, 2.5, -0.9], ROOF, "roof");
+  b.box([1.0, 0.36, 0.7], [-1.2, 2.72, -0.98], STONE, "roof"); b.box([1.08, 0.08, 0.78], [-1.2, 2.94, -0.98], ROOF, "roof");
+  if (b.lod !== "low") for (const x of [-1.4, 0.1]) b.window(x, 2.12, -0.42, 0.24, 0.22);
+  // Interior shelving silhouette (neutral; not records or contents).
+  for (const x of [-1.45, 0.15]) b.box([0.32, 0.7, 1.4], [x, 0.55, -0.5], BASE, "interior-structure");
+  // Loading platform with timber deck and artifact racks.
+  b.box([1.15, 0.38, 2.6], [1.33, 0.19, 0.05], BASE); b.box([1.1, 0.05, 2.5], [1.33, 0.4, 0.05], WOOD);
+  for (const z of [0.55, 1.05]) { b.box([0.85, 0.06, 0.32], [1.3, 0.78, z], IRON); if (b.lod !== "low") { b.box([0.85, 0.06, 0.32], [1.3, 1.08, z], IRON); for (const x of [0.92, 1.68]) b.box([0.05, 0.75, 0.05], [x, 0.78, z], IRON, "detail-static"); } }
+  if (b.lod !== "low") for (const [x, z] of [[1.15, 0.55], [1.45, 1.05], [1.15, 1.05]] as [number, number][]) b.box([0.26, 0.24, 0.24], [x, 0.93, z], WOOD, "detail-static");
+  // Hoist: mast, jib and hook block, all inside the footprint.
+  b.box([0.13, 2.5, 0.13], [1.72, 1.66, -0.95], IRON);
+  b.box([1.15, 0.08, 0.09], [1.2, 2.88, -0.95], IRON);
+  b.box([0.18, 0.2, 0.09], [1.62, 2.72, -0.95], IRON);
+  if (b.lod !== "low") { b.box([0.02, 0.7, 0.02], [0.75, 2.5, -0.95], IRON, "detail-static"); b.box([0.12, 0.1, 0.1], [0.75, 2.12, -0.95], IRON, "detail-static"); }
+}
+/** Archive: broad stone archive, tall central hall with two lower wings, protected columned entrance with a grille. */
+function archive(b: Builder) {
+  b.box([4.1, 0.14, 2.7], [0, 0.07, -0.03], BASE);
+  b.hall(2.0, 2.1, 1.95, [0, 0.14, -0.2], 0.68, false);
+  b.gable(2.2, 2.3, 0.6, [0, 2.1, -0.2]);
+  for (const x of [-1.5, 1.5]) { b.hall(1.0, 1.8, 1.3, [x, 0.14, -0.25], 0.36); b.gable(1.1, 2.0, 0.42, [x, 1.45, -0.25]); }
+  // Interior stacks along the back wall, low, with an open floor in front.
+  b.box([1.5, 0.75, 0.36], [0, 0.6, -0.95], WOOD, "interior-structure");
+  if (b.lod !== "low") for (const y of [0.5, 0.82]) b.box([1.54, 0.035, 0.4], [0, y, -0.95], EDGE, "interior-structure");
+  // Protected entrance: stepped stylobate, four columns, entablature and pediment; an iron grille in the doorway.
+  b.box([2.1, 0.1, 0.72], [0, 0.19, 0.98], EDGE);
+  for (const x of [-0.74, -0.25, 0.25, 0.74]) b.cylinder(0.075, 0.09, 1.42, [x, 0.95, 1.08], STONE, "structure", [0, 0, 0], b.lod === "low" ? 6 : b.lod === "medium" ? 10 : 16);
+  b.box([1.85, 0.18, 0.52], [0, 1.75, 1.0], EDGE);
+  b.pediment(1.95, 0.34, 0.5, [0, 1.84, 1.0], ROOF);
+  if (b.lod !== "low") for (const x of [-0.27, -0.135, 0.135, 0.27]) b.box([0.03, 0.62, 0.03], [x, 0.5, 0.82], IRON, "detail-static"); // open centre bay
+  if (b.lod !== "low") for (const x of [-1.5, 1.5]) b.window(x, 0.9, 0.67, 0.15, 0.38);
+}
+/** Outpost: modest isolated tower pavilion on a raised platform with an open belvedere and a boundary railing. */
+function outpost(b: Builder) {
+  b.box([2.3, 0.3, 2.3], [0, 0.15, 0], BASE);
+  b.box([0.7, 0.15, 0.3], [0, 0.075, 1.03], EDGE);
+  b.hall(1.15, 1.15, 2.05, [-0.1, 0.3, -0.1], 0.38, false);
+  b.box([1.35, 0.1, 1.35], [-0.1, 2.4, -0.1], EDGE, "roof"); // belvedere deck lifts with the roof
+  for (const x of [-0.68, 0.48]) for (const z of [-0.68, 0.48]) b.box([0.09, 0.62, 0.09], [x, 2.76, z], STONE, "roof");
+  b.box([1.35, 0.08, 1.35], [-0.1, 3.1, -0.1], EDGE, "roof");
+  b.spire(0.98, 0.34, [-0.1, 3.14, -0.1]);
+  // Lean-to annex.
+  b.hall(0.5, 0.9, 0.95, [0.82, 0.3, 0.32], 0.26); b.gable(0.6, 1.0, 0.28, [0.82, 1.27, 0.32]);
+  // Boundary railing around the platform edge: the visible external limit of this registered endpoint.
+  if (b.lod !== "low") {
+    for (const z of [-1.08, 1.08]) b.box([2.15, 0.05, 0.05], [0, 0.62, z], IRON, "detail-static");
+    for (const x of [-1.08, 1.08]) b.box([0.05, 0.05, 2.15], [x, 0.62, 0], IRON, "detail-static");
+    for (const x of [-1.08, -0.36, 0.36, 1.08]) for (const z of [-1.08, 1.08]) b.box([0.05, 0.34, 0.05], [x, 0.47, z], IRON, "detail-static");
+    b.window(-0.1, 1.6, 0.48, 0.16, 0.42);
+  }
+}
+
 /** The three representative modules are deliberately authored first under this common recipe. */
 function build(id: ModuleId, lod: DetailLevel): ModuleGeometry {
   const b = new Builder(lod);
@@ -238,6 +366,12 @@ function build(id: ModuleId, lod: DetailLevel): ModuleGeometry {
       b.box([0.12, 1.95, 0.12], [-1.42, 0.975, 1.4], IRON); b.box([1.1, 0.12, 0.14], [-0.93, 1.94, 1.4], IRON);
       if (lod !== "low") b.box([0.035, 0.65, 0.035], [-0.42, 1.6, 1.4], IRON, "detail-static"); break;
     }
+    case "dns_registry": dnsRegistry(b); break;
+    case "dispatch_house": dispatchHouse(b); break;
+    case "key_registry": keyRegistry(b); break;
+    case "supply_depot": supplyDepot(b); break;
+    case "archive": archive(b); break;
+    case "outpost": outpost(b); break;
     case "portal": {
       b.box([3.0, 0.2, 1.8], [0, 0.1, 0], BASE); b.arch(2.65, 2.65, 0.45, 1.55, 1.27, [0, 0.2, -0.23]);
       b.archTrim(1.55, 1.27, [0, 0.2, 0.28], EDGE); b.gable(2.95, 1.0, 0.45, [0, 2.86, 0], BRONZE);
@@ -259,7 +393,7 @@ export const architectureMaterials = {
 export interface ModuleMaterials { body: THREE.MeshStandardMaterial; roof: THREE.MeshStandardMaterial; depth: THREE.MeshDepthMaterial; }
 const materialFamilies = new Map<ModuleId, ModuleMaterials>();
 const shaderMaterials = new Map<string, { id: ModuleId; material: THREE.Material }>();
-/** Ten reusable families, not per-asset clones. Separate program keys prevent one failed shader
+/** Sixteen reusable families, not per-asset clones. Separate program keys prevent one failed shader
  * from poisoning the cached program used by unrelated module families, including shadow draws. */
 export function moduleMaterials(id: ModuleId): ModuleMaterials {
   if (!Object.hasOwn(MODULE_CATALOG, id)) throw new Error("Unknown architectural material family");
