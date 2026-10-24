@@ -665,11 +665,11 @@
     "LP05",
     "LP14"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "18f06da",
-   "ci_run": "40060924990 success (check + browser-pilot) on phase/li-m5 18f06da",
+   "ci_run": "40062942807 success (check + browser-pilot, attempt 2) on phase/local-intelligence 3c8166d; attempt 1 check failed only in `pnpm scenarios` LW-01 (LP07 timing, D-M5-CI-2); branch runs: 40060924990 success on 18f06da",
    "receipt": "docs/phases/local-intelligence/receipts/LP20.md",
-   "branch": "phase/li-m5",
+   "branch": "phase/local-intelligence",
    "local_checks": {
     "typecheck": "exit 0",
     "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
@@ -690,11 +690,11 @@
     "LP20",
     "LP06"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "e18c095",
-   "ci_run": "40061416252 failure on e18c095 (LP21-A4 flake: base64url controller token id in lease.controller_id violated the plain-id pattern, D-M5-CI-1; fixed in b2b90b8); 40061825278 success (check + browser-pilot) on b2b90b8",
+   "ci_run": "40062942807 success (check + browser-pilot, attempt 2) on phase/local-intelligence 3c8166d; attempt 1 check failed only in `pnpm scenarios` LW-01 (LP07 timing, D-M5-CI-2); branch runs: 40061416252 failure on e18c095 (D-M5-CI-1)",
    "receipt": "docs/phases/local-intelligence/receipts/LP21.md",
-   "branch": "phase/li-m5",
+   "branch": "phase/local-intelligence",
    "local_checks": {
     "typecheck": "exit 0",
     "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
@@ -715,11 +715,11 @@
     "LP21",
     "LP07"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "b2b90b8",
-   "ci_run": "40061825278 success (check + browser-pilot) on phase/li-m5 b2b90b8",
+   "ci_run": "40062942807 success (check + browser-pilot, attempt 2) on phase/local-intelligence 3c8166d; attempt 1 check failed only in `pnpm scenarios` LW-01 (LP07 timing, D-M5-CI-2); branch runs: 40061825278 success (check + browser-pilot) on b2b90b8",
    "receipt": "docs/phases/local-intelligence/receipts/LP22.md",
-   "branch": "phase/li-m5",
+   "branch": "phase/local-intelligence",
    "local_checks": {
     "typecheck": "exit 0",
     "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
@@ -2167,6 +2167,11 @@
    "id": "D-LP26-5",
    "date": "2026-10-23",
    "decision": "Follow-up li-m6-e61d01f7 (preregistered before any attempt, after LP26.1): same dev and revealed (burned) held-out documents, C1/C2/C3 x 1 repetition, v1 limits and referee, no critique, shared M6 ledger. Result: dev e2e C1 2/3, C2 3/3, C3 3/3; held-out C1 5/6, C2 6/6, C3 4/6; 0 unsupported affirmatives. Remaining C3 failures are effect=unknown on the two delivery-identity documents with a real observer outage (whole-interval obligation truthfully unavailable). No superiority claim. Candidate follow-on: per-operation coverage questions in the contract."
+  },
+  {
+   "id": "D-M5-CI-2",
+   "date": "2026-10-23",
+   "decision": "CI run 40062942807 attempt 1 on 3c8166d: the full vitest step passed (117 files passed, 1 skipped; 826 passed, 1 skipped) but the following `pnpm scenarios` step reran examples/reference-app/lp07-scenarios.test.ts and reported LW-01 failed (timing-sensitive LP07 delayed-evidence/lag assertions under runner load, the sensitivity noted for M3). M5 touched no LP07, scenario or saas-storefront code. Failed jobs were rerun unchanged: attempt 2 success (check + browser-pilot); 3 local reruns of lp07 13/13. Not hardened here (outside M5 scope); recorded for the LP07 owner."
   }
  ],
  "model_spend_usd": {
@@ -2338,12 +2343,15 @@
     "LP21": "e18c095",
     "LP22": "b2b90b8"
    },
-   "note": "Engineering-verified locally for the executed tests only. Scripted/protocol checks; no model call, AI execution not exercised, $0 model spend for M5. Trusted host-process mode only; the executor is a library inside disposable supervisor-owned runs, the server has no executor. External effectiveness (EXT01) and human approval (EXT05) stay deferred.",
+   "note": "Engineering-verified locally and in CI for the executed tests only. Scripted/protocol checks; no model call, AI execution not exercised, $0 model spend for M5. Trusted host-process mode only; the executor is a library inside disposable supervisor-owned runs, the server has no executor. External effectiveness (EXT01) and human approval (EXT05) stay deferred.",
    "ci_runs": {
     "LP20": "40060924990 success on 18f06da",
     "LP21": "40061416252 failure on e18c095 (D-M5-CI-1)",
     "LP22": "40061825278 success (check + browser-pilot) on b2b90b8"
-   }
+   },
+   "head": "3c8166d",
+   "ci_run": 40062942807,
+   "ci_result": "success (check + browser-pilot) on attempt 2"
   },
   "M6": {
    "packages": [
