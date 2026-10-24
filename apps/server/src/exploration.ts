@@ -6,6 +6,7 @@ import { HttpError, type Store } from "./store.ts";
 import type { Role } from "./security.ts";
 import { accessPaths, evaluate, EVALUATOR_VERSION, type AuthSnapshot, type Decision, type PolicyDoc, type Statement } from "./access/aws-policy.ts";
 import { reviewChange, type Side } from "./change-review.ts";
+import { worldComparison } from "./world-comparison.ts";
 
 /**
  * LP13 bounded path and change exploration.
@@ -367,6 +368,13 @@ export function registerExplorationRoutes(app: FastifyInstance, d: { store: Stor
   app.post("/api/projects/:p/analysis/comparisons", { preHandler: d.authed("analyst"), bodyLimit: 1_048_576 }, async (req) => x.compare(d.store.require(req.principal!, P(req), "analyst").id, (req.body && typeof req.body === "object" ? req.body : {}) as Record<string, unknown>, d.who(req)));
   app.get("/api/projects/:p/analysis/comparisons/:id", { preHandler: d.authed() }, async (req) => x.get(d.store.require(req.principal!, P(req), "viewer").id, (req.params as { id: string }).id));
   app.get("/api/projects/:p/analysis/comparisons/:id/recheck", { preHandler: d.authed() }, async (req) => x.recheck(d.store.require(req.principal!, P(req), "viewer").id, (req.params as { id: string }).id));
+  // LP19: the comparison projected onto the canonical baseline world (read-only; nothing stored or recompiled).
+  app.get("/api/projects/:p/analysis/comparisons/:id/world", { preHandler: d.authed() }, async (req, reply) => {
+    const projectId = d.store.require(req.principal!, P(req), "viewer").id, id = (req.params as { id: string }).id;
+    const body = worldComparison(d.store, x, projectId, id);
+    if ((req.query as { download?: string }).download === "1") reply.header("content-disposition", `attachment; filename="world-comparison-${id}.json"`);
+    return body;
+  });
   app.get("/api/projects/:p/analysis/paths", { preHandler: d.authed() }, async (req) => x.explain(d.store.require(req.principal!, P(req), "viewer").id, req.query as Record<string, unknown>));
   return x;
 }
