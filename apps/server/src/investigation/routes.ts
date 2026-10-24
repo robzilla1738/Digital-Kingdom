@@ -4,6 +4,7 @@ import type { Role } from "../security.ts";
 import type { Cases } from "../cases.ts";
 import { InvestigationContracts } from "./contracts.ts";
 import { checkAgainstContract, draftUnresolvedConclusion } from "./conclusions.ts";
+import { InvestigationJobs, JOB_LIMITS, type JobsOptions } from "./jobs.ts";
 
 /**
  * Local Intelligence Phase M2 HTTP surface (LP08+). Every route rechecks project authorization through
@@ -14,6 +15,7 @@ export interface InvestigationDeps {
   store: Store; secret: string; cases: Cases;
   authed: (minRole?: Role) => (req: FastifyRequest) => Promise<void>;
   who: (req: FastifyRequest) => string;
+  jobs?: JobsOptions;
 }
 
 export function registerInvestigationRoutes(app: FastifyInstance, d: InvestigationDeps) {
@@ -53,7 +55,36 @@ export function registerInvestigationRoutes(app: FastifyInstance, d: Investigati
     return { draft, check: checkAgainstContract(view.contract, draft), note: "Deterministic draft from the contract alone; nothing is stored. It asserts no negative and no intent." };
   });
 
-  return { contracts, afterCaseChange: (projectId: string, caseId: string, actor: string) => {
+  // ---- LP09 bounded investigation plan jobs ----
+  const jobs = new InvestigationJobs(store, d.secret, contracts, d.jobs);
+  const J = (req: FastifyRequest) => (req.params as { jid: string }).jid;
+  const strict = (b: Record<string, unknown>, allowed: string[]) => { const bad = Object.keys(b).filter((k) => !allowed.includes(k)); if (bad.length) throw new HttpError(422, `unsupported field(s) ${bad.join(", ")}`, [`allowed: ${allowed.join(", ") || "(none)"}`]); return b; };
+  app.get(`${base}/plan`, { preHandler: authed() }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "viewer").id;
+    const view = contracts.view(pid, C(req));
+    const open = view.contract.obligations.filter((o) => o.status !== "satisfied" && o.status !== "inapplicable_with_reason");
+    const active = jobs.list(pid, C(req)).filter((j) => ["queued", "running", "budget_exhausted"].includes(String(j.status)));
+    return { schema: "dk.investigation_plan_preview.v1", contract_id: view.contract.id, contract_revision: view.contract.revision, stale: view.stale, readiness: view.contract.readiness,
+      steps: open.map((o) => ({ obligation_id: o.id, kind: o.kind, status: o.status, purpose: o.question, reason: o.reason })),
+      next_step: open[0] ? { obligation_id: open[0].id, purpose: open[0].question, how: active.length ? `advance job ${active[0]!.id} (analyst)` : "create a job for this contract (analyst), then advance it" } : null,
+      active_jobs: active.map((j) => j.id), limits: JOB_LIMITS, persisted: false, note: "Preview only: nothing was created or changed." };
+  });
+  app.post(`/api/projects/:p/cases/:id/jobs`, { preHandler: authed("analyst") }, async (req) => jobs.create(store.require(req.principal!, P(req), "analyst").id, C(req), body(req), req.principal!, who(req)));
+  app.get(`/api/projects/:p/cases/:id/jobs`, { preHandler: authed() }, async (req) => ({ jobs: jobs.list(store.require(req.principal!, P(req), "viewer").id, C(req)) }));
+  app.get(`/api/projects/:p/jobs/:jid`, { preHandler: authed() }, async (req) => jobs.get(store.require(req.principal!, P(req), "viewer").id, J(req)));
+  app.get(`/api/projects/:p/jobs/:jid/events`, { preHandler: authed() }, async (req) => ({ events: jobs.events(store.require(req.principal!, P(req), "viewer").id, J(req)) }));
+  app.get(`/api/projects/:p/jobs/:jid/deliveries`, { preHandler: authed() }, async (req) => {
+    const q = req.query as { step?: string; after?: string; limit?: string };
+    const after = q.after === undefined ? undefined : Number(q.after), limit = q.limit === undefined ? undefined : Number(q.limit);
+    if ((after !== undefined && !Number.isInteger(after)) || (limit !== undefined && !Number.isInteger(limit))) throw new HttpError(400, "after and limit must be integers");
+    return jobs.deliveries(store.require(req.principal!, P(req), "viewer").id, J(req), { step: q.step, after, limit });
+  });
+  app.post(`/api/projects/:p/jobs/:jid/advance`, { preHandler: authed("analyst") }, async (req) => { const b = strict(body(req), ["max_units"]); return jobs.advance(store.require(req.principal!, P(req), "analyst").id, J(req), b.max_units, req.principal!, who(req)); });
+  app.post(`/api/projects/:p/jobs/:jid/steps`, { preHandler: authed("analyst") }, async (req) => jobs.addSteps(store.require(req.principal!, P(req), "analyst").id, J(req), body(req), who(req)));
+  app.post(`/api/projects/:p/jobs/:jid/budget`, { preHandler: authed("analyst") }, async (req) => jobs.extendBudget(store.require(req.principal!, P(req), "analyst").id, J(req), strict(body(req), ["add_units"]), who(req)));
+  app.post(`/api/projects/:p/jobs/:jid/cancel`, { preHandler: authed("analyst") }, async (req) => jobs.cancel(store.require(req.principal!, P(req), "analyst").id, J(req), strict(body(req), ["reason"]).reason, who(req)));
+
+  return { contracts, jobs, afterCaseChange: (projectId: string, caseId: string, actor: string) => {
     if (store.db.prepare("SELECT 1 FROM investigation_contracts WHERE project_id = ? AND case_id = ?").get(projectId, caseId)) {
       try { contracts.refresh(projectId, caseId, actor, "case changed"); } catch (e) { if (!(e instanceof HttpError)) throw e; /* e.g. scope now unbounded: the view reports it */ }
     }

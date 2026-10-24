@@ -221,6 +221,10 @@ describe("LP08-A4 scope or evidence changes invalidate affected obligations with
     const ledger = (await app.inject({ method: "GET", url: `${w.base}/contract/ledger?obligation=activity:api`, headers: h(viewer) })).json().transitions;
     expect(ledger.map((t: { to_status: string }) => t.to_status)).toEqual(["not_started", "satisfied", "not_started"]);
     expect(ledger.at(-1).reason).toMatch(new RegExp(`previous decision kept at revision ${decidedRev}`));
+    // a result planned under the earlier revision (old interval) can no longer satisfy the re-scoped obligation
+    const late = w.contracts.applyResults(w.project, w.caseId, [retrieve(w, "api", decidedRev)], "test", "test");
+    expect(late.applied).toBe(0);
+    expect(late.refused[0]!.reason).toMatch(/scope for activity:api differs|obligation requires exactly/);
     expect(() => w.ctx.db.prepare("UPDATE investigation_contract_revisions SET body = '{}' WHERE revision = 1").run()).toThrow(/append-only/);
     expect(() => w.ctx.db.prepare("DELETE FROM investigation_transitions").run()).toThrow(/append-only/);
   });
