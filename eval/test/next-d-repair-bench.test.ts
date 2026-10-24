@@ -3,6 +3,7 @@
  * selectors only; the real-model adapter is disabled; the bench catches every positive control from observed effects.
  */
 import { describe, expect, it, vi } from "vitest";
+import "../../apps/server/src/app.ts"; // load the server in its normal module order before reading the template catalog
 import { REPAIR_TEMPLATES } from "../../apps/server/src/repair.ts";
 import { BENCH_DISTRACTOR_TEMPLATES, apiTenantDecision } from "../local/repair-bench/distractors.ts";
 import { ABSTAIN, createModelSelector, FAKE_MODEL_SELECTORS, ModelSelectorDisabled, parseModelChoice, rank1Selector, reasoningSelector, renderSelectorPrompt, type SelectorView, type VisibleOption } from "../local/repair-bench/selectors.ts";
