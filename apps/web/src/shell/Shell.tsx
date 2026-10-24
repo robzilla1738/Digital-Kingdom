@@ -57,7 +57,7 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
   const queryParams = new URLSearchParams(location.search);
   const moduleSheet = queryParams.get("moduleSheet");
   if (vm.data.project.dataset_kind === "synthetic" && queryParams.get("components") === "1") return <Suspense fallback={<div className="fullscreen-msg">Loading synthetic UI fixtures…</div>}><ComponentFixtures /></Suspense>;
-  if (vm.data.project.dataset_kind === "synthetic" && (moduleSheet === "all" || moduleSheet === "prototype" || moduleSheet === "near")) return <Suspense fallback={<div className="fullscreen-msg">Loading synthetic module comparison…</div>}><ModuleSheet prototype={moduleSheet === "prototype"} near={moduleSheet === "near"} /></Suspense>;
+  if (vm.data.project.dataset_kind === "synthetic" && (moduleSheet === "all" || moduleSheet === "prototype" || moduleSheet === "near" || moduleSheet === "families")) return <Suspense fallback={<div className="fullscreen-msg">Loading synthetic module comparison…</div>}><ModuleSheet prototype={moduleSheet === "prototype"} near={moduleSheet === "near"} families={moduleSheet === "families"} /></Suspense>;
   return <div className={`app ${ui.reducedMotion ? "reduce-motion" : ""}${ui.selection ? " has-selection" : ""}${showInspector && ui.workspace !== "integrations" ? " is-inspecting" : ""}`}>
     <a href="#main" className="skip" onClick={(event) => { event.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to workspace</a>
     <TopBar {...props} />

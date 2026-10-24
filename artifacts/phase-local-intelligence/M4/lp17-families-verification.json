@@ -1,0 +1,159 @@
+{
+  "scope": "Explicit offline synthetic fixtures (moduleSheet=families|all, fixture=F15) in Chromium headless with SwiftShader; no GPU or production claim.",
+  "cases": [
+    {
+      "case": "families contact sheet",
+      "modules": [
+        "dns_registry",
+        "dispatch_house",
+        "key_registry",
+        "supply_depot",
+        "archive",
+        "outpost"
+      ],
+      "roofsToggleChangesPixels": true,
+      "result": "passed"
+    },
+    {
+      "case": "16-module sheet",
+      "count": 16,
+      "result": "passed"
+    },
+    {
+      "case": "F15 roofs-off click-through",
+      "clicks": [
+        {
+          "scale": "environment",
+          "module": "dns_registry",
+          "asset": "families-names",
+          "point": {
+            "x": 449.18183845211297,
+            "y": 558.0282156492315
+          },
+          "support": "not_implemented"
+        },
+        {
+          "scale": "environment",
+          "module": "dispatch_house",
+          "asset": "families-queue",
+          "point": {
+            "x": 810.7840275457345,
+            "y": 366.02239490357545
+          },
+          "support": "not_implemented"
+        },
+        {
+          "scale": "environment",
+          "module": "key_registry",
+          "asset": "families-issuer",
+          "point": {
+            "x": 594.2371578592961,
+            "y": 647.3332485541878
+          },
+          "support": "analyzed"
+        },
+        {
+          "scale": "environment",
+          "module": "supply_depot",
+          "asset": "families-depot",
+          "point": {
+            "x": 481.5602579626447,
+            "y": 413.7049035439003
+          },
+          "support": "analyzed"
+        },
+        {
+          "scale": "environment",
+          "module": "archive",
+          "asset": "families-bucket",
+          "point": {
+            "x": 867.5110185281861,
+            "y": 414.34279663607845
+          },
+          "support": "instrumented"
+        },
+        {
+          "scale": "environment",
+          "module": "outpost",
+          "asset": "families-receiver",
+          "point": {
+            "x": 967.236550620625,
+            "y": 462.3442518224926
+          },
+          "support": "not_implemented"
+        },
+        {
+          "scale": "interior",
+          "module": "dns_registry",
+          "asset": "families-names",
+          "point": {
+            "x": 703.9999999999989,
+            "y": 613.0283070981109
+          },
+          "zoom": 81.986
+        },
+        {
+          "scale": "interior",
+          "module": "dispatch_house",
+          "asset": "families-queue",
+          "point": {
+            "x": 703.9999999999975,
+            "y": 587.5407568850718
+          },
+          "zoom": 87.956
+        },
+        {
+          "scale": "interior",
+          "module": "key_registry",
+          "asset": "families-issuer",
+          "point": {
+            "x": 703.9999999999975,
+            "y": 611.2636958321202
+          },
+          "zoom": 86.352
+        },
+        {
+          "scale": "interior",
+          "module": "supply_depot",
+          "asset": "families-depot",
+          "point": {
+            "x": 703.9999999999989,
+            "y": 603.1529244989408
+          },
+          "zoom": 79.643
+        },
+        {
+          "scale": "interior",
+          "module": "archive",
+          "asset": "families-bucket",
+          "point": {
+            "x": 703.9999999999965,
+            "y": 595.9900347611838
+          },
+          "zoom": 82.516
+        },
+        {
+          "scale": "interior",
+          "module": "outpost",
+          "asset": "families-receiver",
+          "point": {
+            "x": 703.9999999999975,
+            "y": 629.9908574039789
+          },
+          "zoom": 86.379
+        }
+      ],
+      "clearGround": {
+        "x": 410.04676911531067,
+        "y": 200.8157473104036,
+        "world": [
+          90.60000000000011,
+          0,
+          -8.025000000000004
+        ],
+        "selection": null
+      },
+      "result": "passed"
+    }
+  ]
+}

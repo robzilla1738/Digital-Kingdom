@@ -1,0 +1,22 @@
+{
+  "name": "V10c-roofs-off-elevated-floor-inspection",
+  "file": "V10c-roofs-off-elevated-floor-inspection.png",
+  "sha256": "e4b54f6c131145951d79fba55931764f114a5ca33e2367027d532b49ad031db5",
+  "bytes": 184441,
+  "capturedAt": "2026-10-24T05:32:43.470Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "moduleSheet": "near"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

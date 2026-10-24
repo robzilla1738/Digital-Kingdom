@@ -1,4 +1,6 @@
-import { emptyPresentation, type Dataset } from '../../apps/web/src/lib/data.ts';
+import type { Dataset } from '../../apps/web/src/lib/data.ts';
+// JSON-free module so Node (Playwright) can build fixtures without Vite JSON imports.
+import { emptyPresentation } from '../../apps/web/src/lib/emptyPresentation.ts';
 import type { Asset, AssetKind, Graph, SecurityEvent, ZoneId } from '../../packages/contracts/src/types.ts';
 import { compileScene, defaultProposal, recordProposal } from '../../packages/scene-compiler/src/index.ts';
 
