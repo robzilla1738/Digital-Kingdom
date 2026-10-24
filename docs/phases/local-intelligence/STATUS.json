@@ -528,10 +528,25 @@
     "LP01",
     "LP08"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP13.md",
+   "branch": "phase/li-m3",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "111 files passed, 1 skipped; 789 passed, 1 skipped (4 vitest shards)",
+    "build": "exit 0",
+    "e2e": "exploration-redesign 1 passed"
+   },
+   "reuses": [
+    "LP01 aws-policy evaluate/accessPaths (dk.aws_policy_eval.v2)",
+    "R04.4 reviewChange",
+    "access_snapshots",
+    "R00.3 declared routes",
+    "R01 source revisions",
+    "console relationship vocabulary"
+   ]
   },
   {
    "id": "LP14",
@@ -1156,23 +1171,33 @@
   },
   "LP13-A1": {
    "package": "LP13",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp13-exploration.test.ts > LP13-A1",
+    "apps/web/src/lib/pathInspector.test.ts",
+    "e2e/exploration-redesign.spec.ts > LP13-A1"
+   ]
   },
   "LP13-A2": {
    "package": "LP13",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp13-exploration.test.ts > LP13-A2 (21 baseline tables + scene digest unchanged)"
+   ]
   },
   "LP13-A3": {
    "package": "LP13",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp13-exploration.test.ts > LP13-A3"
+   ]
   },
   "LP13-A4": {
    "package": "LP13",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp13-exploration.test.ts > LP13-A4 (deterministic receipt digest, stale base 409, recheck)"
+   ]
   },
   "LP14-A1": {
    "package": "LP14",
@@ -1717,6 +1742,21 @@
    "id": "D-LP12-3",
    "date": "2026-10-23",
    "decision": "Unsaved case drafts live in memory only, scoped to project+case+field, and are cleared with all sensitive client state; never written to web storage."
+  },
+  {
+   "id": "D-LP13-1",
+   "date": "2026-10-23",
+   "decision": "Analysis state elements are identified by (kind, authority, id): grants by AWS account + name within the account, artifacts by registry + asset:name. Addressing an element under another authority is refused, never resolved by name."
+  },
+  {
+   "id": "D-LP13-2",
+   "date": "2026-10-23",
+   "decision": "Candidates live only in append-only analysis_comparisons (namespace branch:<proposal digest>); comparisons are model_only and their receipt digest excludes timestamps so equal inputs give equal receipts."
+  },
+  {
+   "id": "D-LP13-3",
+   "date": "2026-10-23",
+   "decision": "A path hop is observed (and may animate) only when the relationship's own evidence level is observed with evidence refs; configured or conditional permission is never observed use, enforced on the server and again in the console."
   },
   {
    "id": "D-M1-CI-2",

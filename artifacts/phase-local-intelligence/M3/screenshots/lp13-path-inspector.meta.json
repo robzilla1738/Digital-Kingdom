@@ -1,0 +1,22 @@
+{
+  "name": "lp13-path-inspector",
+  "file": "lp13-path-inspector.png",
+  "sha256": "5e42838892612301ade0fe88017588e0dda908170fbc91e02ac4ba4e62c86002",
+  "bytes": 293809,
+  "capturedAt": "2026-10-24T02:41:35.908Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

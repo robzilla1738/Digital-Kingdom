@@ -1,0 +1,7 @@
+{
+  "test": "LP13-A1",
+  "observed_hops_animated": true,
+  "declared_hops_animated": false,
+  "permission": "conditional",
+  "permission_hops_animated": false
+}

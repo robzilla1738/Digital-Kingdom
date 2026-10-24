@@ -314,3 +314,9 @@
   .workbench { padding:16px; }
 }
 @media (prefers-reduced-motion: reduce) { .workbench * { transition:none!important; animation:none!important; } }
+/* LP13 path inspector */
+.path-inspector .path-permission { grid-column:1/-1; }
+.path-inspector .path-permission summary { cursor:pointer; color:var(--text-2); font-size:.8125rem; }
+.path-inspector .hop-list li { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+.path-inspector .hop-list svg { color:var(--text-3); flex:none; }
+.path-inspector .hop-list li[data-animate="true"] svg { color:var(--reporting); }
