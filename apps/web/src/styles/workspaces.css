@@ -284,3 +284,33 @@
 .link-btn { background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-align: left; font: inherit; }
 .link-btn:hover, .link-btn:focus-visible { text-decoration: underline; }
 .link-btn.active { font-weight: 600; text-decoration: underline; }
+/* LP12 investigation workbench: quiet stone/slate lists, no motion; every critical line stays visible at any width. */
+.case-column { display:grid; gap:16px; min-width:0; }
+.workbench h3 { margin:20px 0 8px; font-size:.875rem; }
+.wb-head { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
+.wb-head h2 { margin:0; }
+.workbench ul.wb-critical { list-style:none; padding:0; margin:12px 0; display:flex; flex-wrap:wrap; gap:6px; }
+.workbench ul.wb-critical li { font-size:.75rem; color:var(--text-2); border:1px solid var(--divider); border-radius:999px; padding:3px 10px; background:var(--surface-2); }
+.wb-summary { display:grid; grid-template-columns:minmax(140px,220px) 1fr; gap:6px 16px; margin:0; font-size:.8125rem; }
+.wb-summary dt { color:var(--text-3); }
+.wb-summary dd { margin:0; color:var(--text-2); line-height:1.5; }
+.wb-next { padding-left:20px; display:grid; gap:10px; font-size:.8125rem; }
+.wb-next .btn { margin-top:6px; }
+.wb-records details > summary { cursor:pointer; list-style-position:outside; line-height:1.6; }
+.wb-records details > summary:focus-visible { outline:2px solid var(--focus); outline-offset:2px; border-radius:4px; }
+.wb-record-detail { display:grid; grid-template-columns:minmax(120px,200px) 1fr; gap:4px 12px; margin:8px 0; font-size:.75rem; }
+.wb-record-detail dt { color:var(--text-3); }
+.wb-record-detail dd { margin:0; overflow-wrap:anywhere; }
+.wb-role-counter { color:var(--high); border-color:#f19a8540; }
+.wb-ob-satisfied { color:var(--reporting); }
+.wb-ob-failed,.wb-ob-unavailable,.wb-ob-partial { color:var(--warning); }
+.wb-proposals { margin-top:20px; padding:16px; border:1px dashed var(--controlBorder); border-radius:10px; background:var(--bg); }
+.wb-proposals h3 { margin-top:0; }
+.wb-anchor { margin:8px 0; }
+.workbench code { overflow-wrap:anywhere; }
+@media (max-width: 767px) {
+  .wb-summary, .wb-record-detail { grid-template-columns:1fr; }
+  .wb-summary dt { margin-top:6px; }
+  .workbench { padding:16px; }
+}
+@media (prefers-reduced-motion: reduce) { .workbench * { transition:none!important; animation:none!important; } }

@@ -1,0 +1,66 @@
+[
+  {
+    "test": "LP12-A1",
+    "aborted": [
+      "/api/projects/demo-castle/cases/case_90266eb56bab1fe1 net::ERR_ABORTED",
+      "/api/projects/demo-castle/cases/case_90266eb56bab1fe1/workbench net::ERR_ABORTED"
+    ],
+    "late_responses_rendered": false,
+    "drafts": {
+      "A": "restored",
+      "B": "restored"
+    }
+  },
+  {
+    "test": "LP12-A2/A3",
+    "counter_records": 1,
+    "anchor": "event:ev-1hzyfmm12lg2qi",
+    "proposal": "v1 not accepted",
+    "question_status": "open"
+  },
+  {
+    "test": "LP12-A4",
+    "variant": "keyboard",
+    "critical": [
+      "Readiness: collecting",
+      "Counter records: 1",
+      "Supporting records: 1",
+      "Failed or partial queries: 4",
+      "Coverage gaps: 1",
+      "Absence claims assessable: 0 of 3",
+      "Open case questions: 1",
+      "Agent proposals: 1 (none accepted)"
+    ],
+    "counter": 1
+  },
+  {
+    "test": "LP12-A4",
+    "variant": "reduced-motion",
+    "critical": [
+      "Readiness: collecting",
+      "Counter records: 1",
+      "Supporting records: 1",
+      "Failed or partial queries: 4",
+      "Coverage gaps: 1",
+      "Absence claims assessable: 0 of 3",
+      "Open case questions: 1",
+      "Agent proposals: 1 (none accepted)"
+    ],
+    "counter": 1
+  },
+  {
+    "test": "LP12-A4",
+    "variant": "narrow-390",
+    "critical": [
+      "Readiness: collecting",
+      "Counter records: 1",
+      "Supporting records: 1",
+      "Failed or partial queries: 4",
+      "Coverage gaps: 1",
+      "Absence claims assessable: 0 of 3",
+      "Open case questions: 1",
+      "Agent proposals: 1 (none accepted)"
+    ],
+    "counter": 1
+  }
+]

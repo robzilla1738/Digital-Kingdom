@@ -1,0 +1,22 @@
+{
+  "name": "lp12-workbench-draft-scope",
+  "file": "lp12-workbench-draft-scope.png",
+  "sha256": "acdab0a5b64b3832005fd386d9dcbee16e7dbe96aec5f4c2295f00670f171ffd",
+  "bytes": 328178,
+  "capturedAt": "2026-10-24T02:30:27.681Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

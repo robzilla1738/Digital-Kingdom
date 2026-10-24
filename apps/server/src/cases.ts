@@ -180,8 +180,10 @@ export class Cases {
   }
 
   /** Answer, reopen or accept-as-unresolved a question or hypothesis. */
-  setQuestion(projectId: string, id: string, itemId: string, body: Record<string, unknown>, actor: string) {
+  setQuestion(projectId: string, id: string, itemId: string, body: Record<string, unknown>, actor: string, principalType: "human" | "service" = "human") {
     return this.store.transaction(() => {
+      // LP12: an agent (service principal) may propose, never settle. A question or hypothesis is resolved only by a person.
+      if (principalType === "service" && body.status !== "open") throw new HttpError(403, "agents cannot answer or settle a case question; store a conclusion proposal instead and let a person record the answer");
       const r = this.row(projectId, id);
       this.checkVersion(r, body.expected_version);
       if (r.status === "closed") throw new HttpError(409, "the case is closed; reopen it first");
@@ -199,11 +201,16 @@ export class Cases {
     });
   }
 
-  removeItem(projectId: string, id: string, itemId: string, body: Record<string, unknown>, actor: string) {
+  removeItem(projectId: string, id: string, itemId: string, body: Record<string, unknown>, actor: string, principalType: "human" | "service" = "human") {
     return this.store.transaction(() => {
       const r = this.row(projectId, id);
       this.checkVersion(r, body.expected_version);
       if (r.status === "closed") throw new HttpError(409, "the case is closed; reopen it first");
+      if (principalType === "service") {
+        // LP12: an agent may withdraw only what it added itself; it can never remove a person's note, question or link.
+        const owner = this.db.prepare("SELECT added_by FROM case_items WHERE case_id = ? AND item_id = ? AND removed_at IS NULL").get(id, itemId) as { added_by: string } | undefined;
+        if (owner && owner.added_by !== actor) throw new HttpError(403, "agents cannot remove an item someone else added");
+      }
       const reason = str(body.reason, "reason", 500)!;
       const res = this.db.prepare("UPDATE case_items SET removed_at = ?, removed_by = ?, removal_reason = ? WHERE case_id = ? AND item_id = ? AND removed_at IS NULL").run(this.now(), actor, reason, id, itemId);
       if (!Number(res.changes)) throw new HttpError(404, "item not found");
@@ -213,8 +220,9 @@ export class Cases {
   }
 
   /** open -> resolved -> closed, or back to open. Closing checks questions and needs a closure statement. */
-  setStatus(projectId: string, id: string, body: Record<string, unknown>, actor: string, role: string) {
+  setStatus(projectId: string, id: string, body: Record<string, unknown>, actor: string, role: string, principalType: "human" | "service" = "human") {
     return this.store.transaction(() => {
+      if (principalType === "service" && (body.status === "closed" || body.status === "resolved")) throw new HttpError(403, "agents cannot resolve or close a case; a person decides closure");
       const r = this.row(projectId, id);
       this.checkVersion(r, body.expected_version);
       const status = body.status as Status;
