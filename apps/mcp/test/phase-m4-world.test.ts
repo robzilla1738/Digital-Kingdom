@@ -34,4 +34,13 @@ describe("M4 world tools over MCP", () => {
     expect(l.json).toEqual(await api("/api/projects/demo-castle/scene/locate/api"));
     expect(l.json.incarnation.id).toBe("api~1");
   });
+  it("LP18: dk_asset_interior equals the API interior record", async () => {
+    const c = await connect(ctx.viewer);
+    const r = await call(c, "dk_asset_interior", { asset_id: "api" });
+    expect(r.isError).toBe(false);
+    expect(r.json.schema).toBe("dk.asset_interior.v1");
+    expect(r.json).toEqual(await api("/api/projects/demo-castle/assets/api/interior"));
+    const missing = await call(c, "dk_asset_interior", { asset_id: "no-such-asset" });
+    expect(missing.isError).toBe(true);
+  });
 });

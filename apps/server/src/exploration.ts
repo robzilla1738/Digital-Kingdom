@@ -55,7 +55,7 @@ type Layer = (typeof LAYERS)[number];
 // ------------------------------------------------------------------------------------------------ baseline state
 /** An ARN's resource part (`user/deployer`, `acme-exports`): the name within its authority (the account). */
 const nameInAuthority = (arn: string) => arn.startsWith("arn:") ? arn.split(":").slice(5).join(":") || arn : arn;
-function grantElements(snap: AuthSnapshot): Element[] {
+export function grantElements(snap: AuthSnapshot): Element[] {
   const out: Element[] = [];
   const docs = (layer: Layer, owner: string, authority: string, d: PolicyDoc | PolicyDoc[] | "unknown" | null | undefined) => {
     if (d === undefined || d === null) return;
