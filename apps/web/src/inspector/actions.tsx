@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import type { EventDetailResponse, EventSearchResponse } from "@dk/contracts";
 import type { EventSearchInput, FindingDetailResult, FindingEvidenceResult } from "../lib/investigation.ts";
+import type { Workbench } from "../lib/workbench.ts";
 
 export interface ServerActions {
   importInventory(input: { format: "manifest" | "compose"; revision: string; environment: string; text: string }): Promise<{ graph_revision: string; scene_digest: string; reflow_zones: string[]; warnings: string[]; unresolved: string[] }>;
@@ -24,6 +25,9 @@ export interface ServerActions {
   createCase(body: Record<string, unknown>): Promise<CaseDetail>;
   caseAction(id: string, path: string, body: Record<string, unknown>): Promise<CaseDetail>;
   exportDurableCase(id: string): Promise<void>;
+  /** LP12 investigation workbench (read-only) and opening/refreshing the case's investigation contract. Optional: absent on older servers/mocks. */
+  caseWorkbench?(id: string, signal?: AbortSignal): Promise<Workbench>;
+  openContract?(id: string): Promise<unknown>;
   /** R02.1 connector manifests. */
   connectors(signal?: AbortSignal): Promise<ConnectorCatalogResult>;
   /** R03.2 recipes; with caseId the hypotheses are attached to the case. */

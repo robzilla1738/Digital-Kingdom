@@ -8,6 +8,7 @@ import { BrandMark } from "./panels/TopBar.tsx";
 import { eventSearchParams, type FindingDetailResult } from "./lib/investigation.ts";
 import { loadFindingEvidence, loadBundleEvidence } from "./lib/evidence-loader.ts";
 import { ConnectionCtx, deriveConnection, type Connection, type SyncState, type Transport } from "./lib/connection.ts";
+import { caseDrafts } from "./lib/caseDrafts.ts";
 
 /** Set at build time for the public static demo: never contact a backend, always use bundled fixtures. */
 const STATIC_DEMO = (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_DK_STATIC_DEMO === "1";
@@ -36,6 +37,7 @@ export function App() {
     request.current.sequence++; request.current.controller?.abort(); clearTimers();
     setData(null); currentData.current = null; setConnection(null); lastSync.current = null; serverMode.current = false;
     transport.current = "connecting"; sync.current = "synced";
+    caseDrafts.clearAll();
   }, [clearTimers]);
   const publish = useCallback(() => setConnection({ state: deriveConnection(transport.current, sync.current, reachable.current), since: lastSync.current }), []);
   const load = useCallback(async () => {
@@ -148,6 +150,8 @@ export function App() {
       listCases: (signal) => { check(); return api.get(`${prefix}/cases`, signal); },
       getCase: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}`, signal); },
       createCase: async (body) => { check(); return api.send("POST", `${prefix}/cases`, body); },
+      caseWorkbench: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}/workbench`, signal); },
+      openContract: async (id) => { check(); return api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}/contract`, {}); },
       caseAction: async (id, path, body) => { check(); return api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}${path}`, body); },
       exportDurableCase: async (id) => {
         check(); const bundle = await api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}/export`); check();

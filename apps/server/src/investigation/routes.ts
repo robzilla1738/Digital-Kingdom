@@ -7,6 +7,7 @@ import { checkAgainstContract, draftUnresolvedConclusion } from "./conclusions.t
 import { InvestigationJobs, JOB_LIMITS, type JobsOptions } from "./jobs.ts";
 import { EvidencePackets, PACKET_LIMITS } from "./packets.ts";
 import { ClaimChecker, listConclusions, proposeConclusion } from "./claims.ts";
+import { buildWorkbench } from "./workbench.ts";
 
 /**
  * Local Intelligence Phase M2 HTTP surface (LP08+). Every route rechecks project authorization through
@@ -114,6 +115,10 @@ export function registerInvestigationRoutes(app: FastifyInstance, d: Investigati
     return proposeConclusion(store, checker, pid, C(req), req.body, who(req), req.principal!.principalType, contracts.contractId(pid, C(req)));
   });
   app.get(`/api/projects/:p/cases/:id/conclusions`, { preHandler: authed() }, async (req) => ({ proposals: listConclusions(store, store.require(req.principal!, P(req), "viewer").id, C(req)) }));
+
+  // ---- LP12 investigation workbench (read-only assembly of the above for a person reviewing the case) ----
+  app.get(`/api/projects/:p/cases/:id/workbench`, { preHandler: authed() }, async (req) =>
+    buildWorkbench({ store, cases: d.cases, contracts, jobs, packets }, store.require(req.principal!, P(req), "viewer").id, C(req)));
 
   return { contracts, jobs, packets, checker, limits: { jobs: JOB_LIMITS, packets: PACKET_LIMITS }, afterCaseChange: (projectId: string, caseId: string, actor: string) => {
     if (store.db.prepare("SELECT 1 FROM investigation_contracts WHERE project_id = ? AND case_id = ?").get(projectId, caseId)) {

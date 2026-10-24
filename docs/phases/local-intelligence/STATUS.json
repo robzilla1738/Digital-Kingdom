@@ -499,10 +499,26 @@
     "LP10",
     "LP11"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP12.md",
+   "branch": "phase/li-m3",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "109 files passed, 1 skipped; 784 passed, 1 skipped (4 vitest shards)",
+    "build": "exit 0",
+    "e2e": "workbench-redesign 3 passed, cases-redesign 5 passed (local Chromium headless, SwiftShader requested)"
+   },
+   "reuses": [
+    "R03.1 cases",
+    "LP08 InvestigationContracts.view",
+    "LP09 InvestigationJobs",
+    "LP10 EvidencePackets.build (record:false) + listConclusions",
+    "LP03 provenance",
+    "navigation selection ids",
+    "redesign Playwright harness"
+   ]
   },
   {
    "id": "LP13",
@@ -1106,23 +1122,37 @@
   },
   "LP12-A1": {
    "package": "LP12",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "e2e/workbench-redesign.spec.ts > LP12-A1 (stale reads net::ERR_ABORTED, drafts per case)",
+    "apps/web/src/lib/caseDrafts.test.ts (2 tests)",
+    "docs/phases/local-intelligence/receipts/LP12.md"
+   ]
   },
   "LP12-A2": {
    "package": "LP12",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp12-workbench.test.ts > LP12-A2 (2 tests)",
+    "e2e/workbench-redesign.spec.ts > LP12-A2/A3",
+    "apps/web/src/lib/workbench.test.ts"
+   ]
   },
   "LP12-A3": {
    "package": "LP12",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp12-workbench.test.ts > LP12-A3",
+    "e2e/workbench-redesign.spec.ts > LP12-A2/A3"
+   ]
   },
   "LP12-A4": {
    "package": "LP12",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "e2e/workbench-redesign.spec.ts > LP12-A4 (keyboard, reduced-motion, 390px parity)",
+    "artifacts/phase-local-intelligence/M3/screenshots/lp12-*.png"
+   ]
   },
   "LP13-A1": {
    "package": "LP13",
@@ -1672,6 +1702,21 @@
    "id": "D-M1-CI-1",
    "date": "2026-10-23",
    "decision": "Browser-pilot failures on LP05/LP06 (and li-m2 run 40046522740) were a test timing race in e2e/redesign.spec.ts (baseline camera pose captured before a late overview refit). Fixed in the test by waiting for a stable pose and reading the baseline atomically with the Focus click; assertion unchanged."
+  },
+  {
+   "id": "D-LP12-1",
+   "date": "2026-10-23",
+   "decision": "The workbench is one read model (dk.case_workbench.v1) over existing M2 services and writes nothing; its packet is built with record:false so a person viewing it never makes a record 'available' to an agent's claim check."
+  },
+  {
+   "id": "D-LP12-2",
+   "date": "2026-10-23",
+   "decision": "Service principals (agents) may propose but cannot answer/settle case questions or hypotheses, remove items others added, or resolve/close a case (server-enforced 403). Proposals stay in investigation_conclusions with a per-case proposal_version and accepted:false."
+  },
+  {
+   "id": "D-LP12-3",
+   "date": "2026-10-23",
+   "decision": "Unsaved case drafts live in memory only, scoped to project+case+field, and are cleared with all sensitive client state; never written to web storage."
   }
  ],
  "model_spend_usd": {
