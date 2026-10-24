@@ -11,6 +11,7 @@ import { WORLD_LAYOUT_MIGRATION } from "./world-layout.ts";
 import { LOCAL_REPAIR_MIGRATION } from "./local-repairs.ts";
 import { CAPSULE_MIGRATION } from "./capsule.ts";
 import { MISSIONS_MIGRATION } from "./missions.ts";
+import { LOCAL_CONFIG_MIGRATION } from "./local-config.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -135,6 +136,8 @@ export const MIGRATIONS: string[] = [
   CAPSULE_MIGRATION,
   // Local Intelligence Phase LP29: local missions (brief + truth commitment only) and runner-reported run lifecycle.
   MISSIONS_MIGRATION,
+  // Local Intelligence Phase (final pass): declared configuration snapshots of a local run's enforcement points (append-only).
+  LOCAL_CONFIG_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

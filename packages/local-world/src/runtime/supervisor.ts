@@ -495,6 +495,20 @@ export class Run {
     const o = this.observers.get(id); if (o) return `${id}:observer-${o.up ? "up" : "down"}-h${o.health.length}`;
     throw new RunRefusal("unregistered", `${String(id).slice(0, 80)} is not a resource of ${this.run_id}`);
   }
+  /**
+   * Declared configuration of this run's enforcement points (`dk.local.config_snapshot.v1`): every resource whose
+   * template has a reviewed policy variant, with its current variant, tenant mode and the run's revision string.
+   * Operator side only (the snapshot action); it carries no scenario truth, request or effect.
+   */
+  configuration(token: string) {
+    this.sup.authorize(token, { run_id: this.run_id, action: "snapshot" });
+    const resources = this.world.plan.resources.filter((r) => TEMPLATE_CATALOG[r.template as WorldTemplate].supported_settings.includes("policy_variant") && this.services.has(r.id)).map((r) => {
+      const st = (this.services.get(r.id)!.snapshot() ?? {}) as { variant?: unknown; tenant_mode?: unknown };
+      const tenant = st.tenant_mode ?? r.settings?.tenant_mode;
+      return { resource_id: r.id, template: r.template, policy_variant: String(st.variant ?? r.settings?.policy_variant ?? "baseline"), ...(typeof tenant === "string" ? { tenant_mode: tenant } : {}), revision: this.revisionOf(r.id) };
+    }).sort((a, b) => a.resource_id.localeCompare(b.resource_id));
+    return { schema: "dk.local.config_snapshot.v1" as const, run_id: this.run_id, resources };
+  }
   revisions(): Record<string, string> { return Object.fromEntries([...this.services.keys(), ...this.observers.keys()].sort().map((id) => [id, this.revisionOf(id)])); }
   // ---- LP21: leased typed repairs (the supervisor side; the journalled state machine is the RepairController) ----
   private readonly repairPre = new Map<string, Pre>();

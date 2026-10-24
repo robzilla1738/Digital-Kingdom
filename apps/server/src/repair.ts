@@ -41,8 +41,8 @@ CREATE INDEX repair_candidate_sets_case ON repair_candidate_sets (project_id, ca
 CREATE TRIGGER repair_candidate_sets_append_only_u BEFORE UPDATE ON repair_candidate_sets BEGIN SELECT RAISE(ABORT, 'repair candidate sets are append-only'); END;
 CREATE TRIGGER repair_candidate_sets_append_only_d BEFORE DELETE ON repair_candidate_sets BEGIN SELECT RAISE(ABORT, 'repair candidate sets are append-only'); END;`;
 
-export type ProbeKind = "permission" | "path" | "observer_gap" | "artifact_version";
-export interface ObjectiveProbe { id: string; kind: ProbeKind; principal?: string; action?: string; resource?: string; from?: string; to?: string; source_id?: string; asset_id?: string; version?: string }
+export type ProbeKind = "permission" | "path" | "observer_gap" | "artifact_version" | "tenant_access";
+export interface ObjectiveProbe { id: string; kind: ProbeKind; principal?: string; action?: string; resource?: string; from?: string; to?: string; source_id?: string; asset_id?: string; version?: string; tenant?: string; target_tenant?: string }
 type Holds = "holds" | "does_not_hold" | "unknown";
 
 /** Reviewed templates. Adding one is a reviewed code change with its own tests, never runtime input. */
@@ -62,8 +62,33 @@ export const REPAIR_TEMPLATES = [
   { id: "restart-test-observer", version: 1, action: "restart_test_observer", applies_to: ["observer_gap"], disruption_class: "none", reversible: true,
     prerequisites: ["the observer is run-owned", "a local lab lease to apply it (LP16; none exists in this phase)"],
     explanation: "Restart (re-enable) the run-owned observer so the operation can be independently observed again." },
+  { id: "restore-reviewed-policy", version: 1, action: "set_gateway_policy", applies_to: ["tenant_access"], disruption_class: "targeted", reversible: true,
+    prerequisites: ["the enforcement point is a run-owned local resource whose declared policy variant is in the latest local configuration snapshot", "a supervisor lab lease scoped to this plan (LP20) to apply it"],
+    explanation: "Return the enforcement point from the deliberately weak policy variant to a reviewed variant, so its declared tenant isolation denies the cross-tenant operation again while own-tenant operations keep working." },
 ] as const;
 type Template = (typeof REPAIR_TEMPLATES)[number];
+
+/**
+ * Declared semantics of the reviewed local templates' policy variants for tenant access (model-only; mirrors the
+ * built-in local world services: a tenant API in isolated mode refuses another tenant's records unless its policy is
+ * the deliberately weak lab variant; edge and agent gateways do not decide tenant access). Executed behaviour is
+ * established only by LP22 independent effect verification, never by this table.
+ */
+export const LOCAL_TENANT_POLICY_MODEL = "dk.local.tenant_policy_model.v1";
+export function tenantDecision(policy: Element, tenant: string, target: string): "allows" | "denies" {
+  const a = policy.attrs;
+  return a.template === "api" && a.tenant_mode === "isolated" && a.variant !== "deliberately_weak" && tenant !== target ? "denies" : "allows";
+}
+function tenantPaths(p: ObjectiveProbe, s: AnalysisState, graph: Graph) {
+  const pols = s.elements.filter((e) => e.kind === "policy");
+  const x = explainPath({ graph: graphFromState(graph, s), snap: null, namespace: s.namespace, from: p.from!, to: p.to! });
+  const paths = x.paths.map((path) => {
+    const assets = [p.from!, ...path.hops.map((h) => h.to)];
+    const onPath = assets.map((id) => pols.find((e) => e.attrs.asset_id === id)).filter((e): e is Element => !!e);
+    return { assets, onPath, deniedBy: onPath.find((e) => tenantDecision(e, p.tenant!, p.target_tenant!) === "denies") ?? null };
+  });
+  return { configured: pols.length > 0, reachable: x.reachable, paths };
+}
 
 const REF_RE = /[^A-Za-z0-9_.:-]/g;
 const ref = (prefix: string, key: string) => `${prefix}-${sha256(key).slice(0, 12)}`;
@@ -73,7 +98,7 @@ const revisionOf = (e: Element | undefined) => `rev-${sha256(canonicalJson(e?.at
 function checkProbe(p: unknown, i: number, list: string): ObjectiveProbe {
   if (!p || typeof p !== "object" || Array.isArray(p)) throw new HttpError(422, `${list}[${i}] must be an object`);
   const o = p as Record<string, unknown>;
-  const allowed: Record<ProbeKind, string[]> = { permission: ["principal", "action", "resource"], path: ["from", "to"], observer_gap: ["source_id"], artifact_version: ["asset_id", "version"] };
+  const allowed: Record<ProbeKind, string[]> = { permission: ["principal", "action", "resource"], path: ["from", "to"], observer_gap: ["source_id"], artifact_version: ["asset_id", "version"], tenant_access: ["from", "to", "tenant", "target_tenant"] };
   if (!Object.keys(allowed).includes(o.kind as string)) throw new HttpError(422, `${list}[${i}].kind must be one of ${Object.keys(allowed).join(", ")}`);
   if (typeof o.id !== "string" || !/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/.test(o.id)) throw new HttpError(422, `${list}[${i}].id must be a plain id`);
   const fields = allowed[o.kind as ProbeKind];
@@ -96,6 +121,15 @@ export class Repairs {
     if (p.kind === "path") {
       const x = explainPath({ graph: graphFromState(graph, s), snap: null, namespace: s.namespace, from: p.from!, to: p.to! });
       return { holds: x.reachable === "unresolved" ? "unknown" : x.reachable === "no_declared_path_found" ? "does_not_hold" : "holds", detail: x.reachable };
+    }
+    if (p.kind === "tenant_access") {
+      const t = tenantPaths(p, s, graph);
+      if (!t.configured) return { holds: "unknown", detail: "no declared local configuration (dk.local.config_snapshot.v1) for this project; tenant enforcement is unknown" };
+      if (t.reachable === "unresolved") return { holds: "unknown", detail: "unresolved: an endpoint is not in the inventory" };
+      if (!t.paths.length) return { holds: "does_not_hold", detail: "no declared path" };
+      const open = t.paths.find((x) => !x.deniedBy);
+      return open ? { holds: "holds", detail: `declared path ${open.assets.join(" -> ")}; no enforcement point denies ${p.tenant} -> ${p.target_tenant} (${LOCAL_TENANT_POLICY_MODEL})` }
+        : { holds: "does_not_hold", detail: `every declared path is denied (${[...new Set(t.paths.map((x) => `${x.deniedBy!.attrs.asset_id} ${String(x.deniedBy!.attrs.variant)}`))].join(", ")}; ${LOCAL_TENANT_POLICY_MODEL})` };
     }
     if (p.kind === "observer_gap") {
       const e = s.elements.find((x) => x.kind === "source" && x.id === p.source_id);
@@ -141,6 +175,17 @@ export class Repairs {
           const altRef = ref("artifact", alt.reference);
           out.push({ template: REPAIR_TEMPLATES[3], target: `${p.asset_id}@${parsed}`, covers: [p.id], changes: [{ op: "modify", kind: "artifact", authority: e.authority, id: e.id, attrs: { version: parsed, reference: alt.reference } }],
             actions: [{ target_resource_id: plainId(p.asset_id!), type: "select_test_artifact", parameters: { artifact_ref: altRef }, expected_target_revision: revisionOf(e) }] });
+        }
+      }
+      if (p.kind === "tenant_access") {
+        // the weakened enforcement points on an open declared path, each returned to each reviewed variant
+        const seen = new Set<string>();
+        for (const path of tenantPaths(p, base, graph).paths.filter((x) => !x.deniedBy)) for (const e of path.onPath) {
+          if (e.attrs.template !== "api" || e.attrs.tenant_mode !== "isolated" || e.attrs.variant !== "deliberately_weak" || seen.has(keyOf(e))) continue;
+          seen.add(keyOf(e));
+          for (const variant of ["baseline", "candidate"] as const) out.push({ template: REPAIR_TEMPLATES[5], target: `${String(e.attrs.asset_id)}@policy:${variant}`, covers: [p.id],
+            changes: [{ op: "modify", kind: "policy", authority: e.authority, id: e.id, attrs: { variant } }],
+            actions: [{ target_resource_id: plainId(String(e.attrs.asset_id)), type: "set_gateway_policy", parameters: { policy_ref: `policy:${variant}` }, expected_target_revision: typeof e.attrs.revision === "string" ? e.attrs.revision : revisionOf(e) }] });
         }
       }
       if (p.kind === "observer_gap") {
@@ -301,6 +346,7 @@ function documents(s: AnalysisState, snap: AuthSnapshot | null, keys: string[]):
     } else if (kind === "credential") out.set(`credentials/${plainId(authority!)}/${plainId(id)}.json`, e ? { key_id: e.attrs.key_id, owner: e.attrs.owner, status: e.attrs.status } : null);
     else if (kind === "tool") out.set(`gateways/${plainId(String(e?.attrs.agent ?? id.split("->")[0]))}.json`, s.elements.filter((x) => x.kind === "tool" && x.attrs.agent === (e?.attrs.agent ?? id.split("->")[0])).map((x) => ({ tool: x.attrs.tool, gateway: x.attrs.gateway ?? "allow", policy_ref: x.attrs.policy_ref ?? null })));
     else if (kind === "artifact") out.set(`deployments/${plainId(String(e?.attrs.asset_id ?? id.split(":")[0]))}.json`, e ? { asset_id: e.attrs.asset_id, registry: e.authority, name: e.attrs.name, version: e.attrs.version, reference: e.attrs.reference ?? null } : null);
+    else if (kind === "policy") out.set(`local-policies/${plainId(String(e?.attrs.asset_id ?? id.split("#")[0]))}.json`, e ? { resource_id: e.attrs.asset_id, template: e.attrs.template, policy_variant: e.attrs.variant, tenant_mode: e.attrs.tenant_mode ?? null } : null);
     else if (kind === "source") out.set(`observers/${plainId(id)}.json`, e ? { id: e.id, asset_ids: e.attrs.asset_ids, enabled: !e.attrs.disabled } : null);
     else out.set(`${plainId(kind!)}/${plainId(id)}.json`, e?.attrs ?? null);
   }

@@ -1,3 +1,4 @@
+import { latestLocalConfig, POLICY_VARIANTS, type PolicyVariant } from "./local-config.ts";
 import { randomBytes } from "node:crypto";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { canonicalJson, type Graph, type Relationship } from "@dk/contracts";
@@ -39,12 +40,12 @@ CREATE INDEX analysis_comparisons_project ON analysis_comparisons (project_id, c
 CREATE TRIGGER analysis_comparisons_append_only_u BEFORE UPDATE ON analysis_comparisons BEGIN SELECT RAISE(ABORT, 'analysis comparisons are append-only'); END;
 CREATE TRIGGER analysis_comparisons_append_only_d BEFORE DELETE ON analysis_comparisons BEGIN SELECT RAISE(ABORT, 'analysis comparisons are append-only'); END;`;
 
-export type ElementKind = "grant" | "credential" | "route" | "tool" | "artifact" | "source";
-export const ELEMENT_KINDS: ElementKind[] = ["grant", "credential", "route", "tool", "artifact", "source"];
+export type ElementKind = "grant" | "credential" | "route" | "tool" | "artifact" | "source" | "policy";
+export const ELEMENT_KINDS: ElementKind[] = ["grant", "credential", "route", "tool", "artifact", "source", "policy"];
 export interface Element { kind: ElementKind; authority: string; id: string; attrs: Record<string, unknown>; provenance: string[] }
 export interface AnalysisState {
   schema: typeof ANALYSIS_STATE; project_id: string; namespace: string;
-  base: { graph_revision: string | null; snapshot_id: string | null; snapshot_digest: string | null; source_revisions: Record<string, number> };
+  base: { graph_revision: string | null; snapshot_id: string | null; snapshot_digest: string | null; source_revisions: Record<string, number>; local_config?: { id: string; digest: string } };
   policy_version: string; elements: Element[];
 }
 export const keyOf = (e: Pick<Element, "kind" | "authority" | "id">) => `${e.kind}|${e.authority}|${e.id}`;
@@ -89,10 +90,13 @@ export function baselineState(store: Store, projectId: string, snap: AuthSnapsho
   for (const a of g.assets) for (const r of a.routes ?? []) elements.push({ kind: "route", authority: authorityOfAsset(g, a.id, projectId), id: `${a.id} ${(r.methods ?? []).join(",") || "*"} ${r.path}${r.hosts?.length ? ` @${r.hosts.join(",")}` : ""}`, attrs: { asset_id: a.id, path: r.path, ...(r.methods ? { methods: r.methods } : {}), ...(r.hosts ? { hosts: r.hosts } : {}) }, provenance: [`graph:${g.graph_revision}`] });
   for (const r of g.relationships.filter((x) => x.kind === "invokes_tool")) elements.push({ kind: "tool", authority: authorityOfAsset(g, r.source_id, projectId), id: `${r.source_id}->${r.target_id}`, attrs: { agent: r.source_id, tool: r.target_id, evidence_level: r.evidence_level }, provenance: [`graph:${g.graph_revision}`, `relationship:${r.id}`] });
   for (const a of g.assets.filter((x) => x.deployment)) { const p = parseArtifact(a.deployment!); elements.push({ kind: "artifact", authority: p.authority, id: `${a.id}:${p.name}`, attrs: { asset_id: a.id, name: p.name, version: p.version, reference: a.deployment }, provenance: [`graph:${g.graph_revision}`] }); }
+  // declared policy variants of a local run's enforcement points (latest dk.local.config_snapshot.v1; local runs only)
+  const cfg = latestLocalConfig(store, projectId);
+  for (const r of cfg?.resources ?? []) elements.push({ kind: "policy", authority: authorityOfAsset(g, r.resource_id, projectId), id: `${r.resource_id}#policy`, attrs: { asset_id: r.resource_id, template: r.template, variant: r.policy_variant, ...(r.tenant_mode ? { tenant_mode: r.tenant_mode } : {}), revision: r.revision }, provenance: [`local_config:${cfg!.id}`] });
   for (const s of store.listSources(projectId)) elements.push({ kind: "source", authority: projectId, id: s.id, attrs: { asset_ids: [...(s.asset_ids ?? [])].sort(), disabled: !!(s as { disabled?: boolean }).disabled, kind: (s as { kind?: string }).kind ?? "generic" }, provenance: [`source:${s.id}`] });
   elements.sort((x, y) => keyOf(x).localeCompare(keyOf(y)));
   const revs = Object.fromEntries((store.db.prepare("SELECT id, config_revision FROM sources WHERE project_id = ? ORDER BY id").all(projectId) as { id: string; config_revision: number }[]).map((r) => [r.id, Number(r.config_revision ?? 0)]));
-  return { schema: ANALYSIS_STATE, project_id: projectId, namespace: "baseline", base: { graph_revision: g.graph_revision ?? null, snapshot_id: snap?.snapshot_id ?? null, snapshot_digest: snap ? sha256(canonicalJson(snap)) : null, source_revisions: revs }, policy_version: EVALUATOR_VERSION, elements };
+  return { schema: ANALYSIS_STATE, project_id: projectId, namespace: "baseline", base: { graph_revision: g.graph_revision ?? null, snapshot_id: snap?.snapshot_id ?? null, snapshot_digest: snap ? sha256(canonicalJson(snap)) : null, source_revisions: revs, ...(cfg ? { local_config: { id: cfg.id, digest: cfg.digest } } : {}) }, policy_version: EVALUATOR_VERSION, elements };
 }
 
 // ------------------------------------------------------------------------------------------------ candidates
@@ -104,6 +108,7 @@ const ALLOWED_ATTRS: Record<ElementKind, string[]> = {
   tool: ["agent", "tool", "gateway", "policy_ref"],
   artifact: ["asset_id", "name", "version", "reference"],
   source: ["asset_ids", "disabled"],
+  policy: ["asset_id", "template", "variant", "tenant_mode", "revision"],
 };
 const STATEMENT_KEYS = new Set(["Sid", "Effect", "Action", "NotAction", "Resource", "NotResource", "Principal", "Condition", "NotPrincipal"]);
 function checkChange(c: unknown, i: number): Change {
@@ -128,6 +133,7 @@ function checkChange(c: unknown, i: number): Change {
     }
     if (kind === "credential" && a.status !== "Active" && a.status !== "Inactive") throw new HttpError(422, `changes[${i}].attrs.status must be Active or Inactive`);
     if (kind === "tool" && a.gateway !== undefined && a.gateway !== "allow" && a.gateway !== "deny") throw new HttpError(422, `changes[${i}].attrs.gateway must be allow or deny`);
+    if (kind === "policy" && a.variant !== undefined && !POLICY_VARIANTS.includes(a.variant as PolicyVariant)) throw new HttpError(422, `changes[${i}].attrs.variant must be one of ${POLICY_VARIANTS.join(", ")}`);
     if (kind === "grant" && a.layer !== undefined && !LAYERS.includes(a.layer as Layer)) throw new HttpError(422, `changes[${i}].attrs.layer must be one of ${LAYERS.join(", ")}`);
     if (canonicalJson(a).length > 20_000) throw new HttpError(413, `changes[${i}].attrs too large`);
   }
