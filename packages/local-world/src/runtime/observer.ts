@@ -54,7 +54,13 @@ export class EffectObserver {
     if (!this.up) { this.lost++; return false; }
     const e: ObservedEffect = { op_id, run_id: this.run_id, resource_id, resource_revision: revision, action: effect.action, detail: { ...effect.detail }, at_mono_ms: this.mono(), at: this.wall().toISOString() };
     this.log.push(e);
-    this.reporter?.emit({ asset: resource_id, action: effect.action, outcome: effect.action === "side_effect_observed" ? "observed" : "success", requestId: op_id, details: { operation_id: op_id, resource_revision: revision, observer: this.id, ...effect.detail } });
+    const agentRun = effect.action === "side_effect_observed" && typeof effect.detail.agent_run === "string" ? effect.detail.agent_run : null;
+    this.reporter?.emit({
+      asset: resource_id, action: effect.action, outcome: effect.action === "side_effect_observed" ? "observed" : "success", requestId: op_id,
+      details: { operation_id: op_id, resource_revision: revision, observer: this.id, ...effect.detail },
+      // an agent run's effect carries the run id so the existing agent rules can compare it with the gateway's reports
+      ...(agentRun ? { runId: agentRun, agent: { phase: "effect" as const, origin: "independent_observer" as const, runtime: "local-agent-workspace", tool: "message.send" } } : {}),
+    });
     return true;
   }
 

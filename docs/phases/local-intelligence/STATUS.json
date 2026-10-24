@@ -281,10 +281,30 @@
    "depends_on": [
     "LP05"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP06.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "100 files passed, 1 skipped; 723 passed, 1 skipped",
+    "manual": "pnpm world --once for all three blueprints"
+   },
+   "reuses": [
+    "reference app instrumentation + R05.2 agent boundary split",
+    "@dk/sdk-node (unchanged)",
+    "ordinary /ingest/events with server-side source capabilities and independence groups",
+    "R01.2 coverage history",
+    "R05.1 agent effect rule",
+    "MCP server (unchanged)",
+    "console loadFromServer",
+    "LP03 verification receipt"
+   ],
+   "decisions": [
+    "D-LP06-1: catalog bumped to dk-local-catalog-2 (local_issuer /credentials/verify, artifact_depot /deployed); catalog-1 only compiled previews.",
+    "D-LP06-2: evidence reaches DK only through ordinary per-source ingestion with supervisor-assigned operation ids as trusted request ids; corroboration is decided by registered source kind and independence group, never payload origin.",
+    "D-LP06-3: GET /api/projects/:p/local-world/reporting lists declared capabilities with reporting/silent/unavailable; the console tab is read-only and never launches processes."
+   ]
   },
   {
    "id": "LP07",
@@ -790,23 +810,31 @@
   },
   "LP06-A1": {
    "package": "LP06",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp06-world.test.ts > LP06-A1 (real ingress->api->tenant-db request; identical records via API search/detail, MCP dk_search_events/dk_get_event and the console loadFromServer)"
+   ]
   },
   "LP06-A2": {
    "package": "LP06",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp06-world.test.ts > LP06-A2 (2 tests: permitted observed / prohibited denied+not_observed under api:policy-baseline-r1, receipt pass; deliberately_weak r2 effect observed, receipt fail; concurrent operations not misattributed)"
+   ]
   },
   "LP06-A3": {
    "package": "LP06",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp06-world.test.ts > LP06-A3 (observer outage: real effect unknown, probe/verdict inconclusive, no observer record, sensor_unavailable, coverage history 0 covered ms over the outage)"
+   ]
   },
   "LP06-A4": {
    "package": "LP06",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp06-world.test.ts > LP06-A4 (3 tests: distinct registered authority per source; relay rejected action_not_permitted; same-group sidecar not independent; agent world forged independent_observer rejected, existing rule corroborated only via receiver observer)"
+   ]
   },
   "LP07-A1": {
    "package": "LP07",

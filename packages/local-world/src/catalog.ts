@@ -11,7 +11,9 @@ import { canonicalJson, type AssetKind, type EventAction, type HttpMethod, type 
  *
  * Templates never carry an image, command, script, host mount, port or URL. The supervisor allocates endpoints.
  */
-export const CATALOG_VERSION = "dk-local-catalog-1";
+/** catalog-2 (LP06): local_issuer gains POST /credentials/verify and artifact_depot gains GET/POST /deployed, needed
+ * by the running built-in services. catalog-1 (LP04) only ever compiled previews; no run used it. */
+export const CATALOG_VERSION = "dk-local-catalog-2";
 
 export const WORLD_TEMPLATES = ["gateway", "auth", "api", "tenant_store", "queue", "worker", "artifact_depot", "agent_gateway", "receiver", "observer", "local_issuer"] as const;
 export type WorldTemplate = (typeof WORLD_TEMPLATES)[number];
@@ -84,9 +86,9 @@ export const TEMPLATE_CATALOG: Record<WorldTemplate, TemplateDef> = {
     limitations: ["Runs only reviewed job kinds; there is no code-execution job."],
   }),
   artifact_depot: def({
-    template: "artifact_depot", version: "1.0.0", asset_kind: "pipeline",
+    template: "artifact_depot", version: "1.1.0", asset_kind: "pipeline",
     description: "Content-addressed artifact depot (sha256 digests) with a selectable deployed version.",
-    routes: [{ method: "GET", path: "/artifacts/{digest}", purpose: "fetch an artifact by digest" }, { method: "POST", path: "/artifacts", purpose: "publish a build artifact" }],
+    routes: [{ method: "GET", path: "/artifacts/{digest}", purpose: "fetch an artifact by digest" }, { method: "POST", path: "/artifacts", purpose: "publish a build artifact" }, { method: "GET", path: "/deployed", purpose: "read the selected deployed digest" }, { method: "POST", path: "/deployed", purpose: "select an existing artifact digest as deployed" }],
     self_reports: null, observable_effects: ["side_effect_observed"],
     supported_settings: ["audit_enabled"], inbound_relationship: "writes_to",
     limitations: ["Artifacts are synthetic byte strings; nothing is executed from the depot."],
@@ -115,9 +117,9 @@ export const TEMPLATE_CATALOG: Record<WorldTemplate, TemplateDef> = {
     limitations: ["Observes only the taps of the resources it is attached to; its outage makes those effects unknown for the interval, never 'no effect'."],
   }),
   local_issuer: def({
-    template: "local_issuer", version: "1.0.0", asset_kind: "auth",
+    template: "local_issuer", version: "1.1.0", asset_kind: "auth",
     description: "Short-lived synthetic credential and grant issuer for the local world.",
-    routes: [{ method: "POST", path: "/credentials", purpose: "issue a short-lived synthetic credential" }, { method: "POST", path: "/credentials/{id}/revoke", purpose: "deactivate a synthetic credential" }, { method: "POST", path: "/grants", purpose: "change a synthetic test grant" }],
+    routes: [{ method: "POST", path: "/credentials", purpose: "issue a short-lived synthetic credential" }, { method: "POST", path: "/credentials/verify", purpose: "verify a synthetic credential for another run resource" }, { method: "POST", path: "/credentials/{id}/revoke", purpose: "deactivate a synthetic credential" }, { method: "POST", path: "/grants", purpose: "change a synthetic test grant" }],
     self_reports: { source_kind: "app_auth", actions: ["authentication", "authorization_change"] }, observable_effects: [],
     supported_settings: ["audit_enabled"], inbound_relationship: "calls",
     limitations: ["Credentials are synthetic and meaningless outside the run; no external credential is ever issued or rotated."],

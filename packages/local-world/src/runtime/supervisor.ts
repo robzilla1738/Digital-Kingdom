@@ -44,7 +44,13 @@ export interface ServiceContext {
   /** This resource's own instrumentation (self-report source), or null when its audit is disabled. */
   report: Reporter | null;
 }
-export interface BuiltinService { handle(req: ServiceRequest): Promise<ServiceResponse>; snapshot(): unknown; restore(state: unknown): void; revision(): string; reconfigure?(change: { policy_variant?: string }): void }
+export interface BuiltinService {
+  handle(req: ServiceRequest): Promise<ServiceResponse>; snapshot(): unknown; restore(state: unknown): void; revision(): string;
+  /** Typed configuration change (policy variant only); there is no generic config write. */
+  reconfigure?(change: { policy_variant?: string }): void;
+  /** Background processing (e.g. a worker draining its queue). Runs while the run is running OR paused. */
+  tick?(): Promise<void>;
+}
 export type ServiceFactory = (ctx: ServiceContext) => BuiltinService;
 export type ServiceRegistry = Partial<Record<WorldTemplate, ServiceFactory>>;
 
@@ -213,7 +219,11 @@ export class Run {
     for (const id of this.listeners.keys()) await this.verifyHandshake(id);
     this.writeManifest();
     this.lifecycle("started", { cloned_from: this.manifest.cloned_from });
-    this.watchdog = setInterval(() => { if (monoMs() > this.deadline_mono_ms && (this.state === "running" || this.state === "paused")) void this.abortInternal(`monotonic deadline of ${plan.budget.max_seconds}s reached`); }, 100);
+    this.watchdog = setInterval(() => {
+      if (monoMs() > this.deadline_mono_ms && (this.state === "running" || this.state === "paused")) { void this.abortInternal(`monotonic deadline of ${plan.budget.max_seconds}s reached`); return; }
+      // collectors/background workers keep processing while stimulus is paused
+      if (this.state === "running" || this.state === "paused") void this.tickOnce();
+    }, 50);
     this.watchdog.unref();
   }
 
@@ -256,6 +266,33 @@ export class Run {
       const r = await svc.handle({ method: (req.method ?? "GET") as HttpMethod, path: url.pathname + url.search, headers, body, op_id: op, from: String(req.headers["x-dk-from"] ?? "stimulus") });
       send(r.status, r.body, r.headers);
     } catch (e) { send(500, { error: `service error: ${(e as Error).message.slice(0, 200)}` }); }
+  }
+
+  private ticking: Promise<void> = Promise.resolve();
+  private tickOnce(): Promise<void> {
+    this.ticking = this.ticking.then(async () => {
+      for (const [id, svc] of this.services) {
+        if (!svc.tick || (this.state !== "running" && this.state !== "paused")) continue;
+        try { await svc.tick(); } catch (e) { this.lifecycle("tick_error", { resource: id, error: (e as Error).message.slice(0, 200) }); }
+      }
+    });
+    return this.ticking;
+  }
+  /** Let background processing finish deterministically (bounded rounds), e.g. before reading effects. */
+  async settle(token: string, rounds = 5) { this.sup.authorize(token, { run_id: this.run_id, action: "lifecycle" }); for (let i = 0; i < rounds; i++) await this.tickOnce(); }
+
+  /** Typed configuration action: change a resource's reviewed policy variant. Recorded in private truth. */
+  configure(token: string, resource: string, change: { policy_variant: "baseline" | "candidate" | "deliberately_weak" }) {
+    this.sup.authorize(token, { run_id: this.run_id, action: "configure", resource });
+    this.assertActive("configure");
+    const r = this.world.plan.resources.find((x) => x.id === resource);
+    if (!r) throw new RunRefusal("unregistered", `${String(resource).slice(0, 80)} is not a resource of this run`);
+    if (!TEMPLATE_CATALOG[r.template as WorldTemplate].supported_settings.includes("policy_variant")) throw new RunRefusal("scope", `template ${r.template} has no policy variant`);
+    if (!["baseline", "candidate", "deliberately_weak"].includes(change.policy_variant)) throw new RunRefusal("scope", "policy_variant must be baseline, candidate or deliberately_weak");
+    const svc = this.services.get(resource)!;
+    const from = svc.revision(); svc.reconfigure?.({ policy_variant: change.policy_variant });
+    this.lifecycle("configured", { resource, policy_variant: change.policy_variant, from_revision: from, to_revision: svc.revision() });
+    return { resource, from_revision: from, to_revision: svc.revision() };
   }
 
   private dispatchTap(resourceId: string, op: string, effect: TapEffect) {

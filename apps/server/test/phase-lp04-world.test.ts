@@ -16,7 +16,7 @@ describe("LP04 local world builder API", () => {
     const { store, app, h } = await empty();
     expect(store.listProjects({ kind: "token", id: "x", name: "x", role: "admin", projects: [], principalType: "human" } as never)).toEqual([]);
     const cat = (await app.inject({ url: "/api/local-world/catalog", headers: h })).json();
-    expect(cat.catalog_version).toBe("dk-local-catalog-1");
+    expect(cat.catalog_version).toBe("dk-local-catalog-2");
     expect(cat.blueprints.map((b: { id: string }) => b.id)).toEqual(["saas-storefront", "agent-workspace", "delivery-identity"]);
     const before = (store.db.prepare("SELECT (SELECT COUNT(*) FROM projects) p, (SELECT COUNT(*) FROM sources) s, (SELECT COUNT(*) FROM audit_log) a").get() as Record<string, number>);
     for (const id of ["saas-storefront", "agent-workspace", "delivery-identity"]) {

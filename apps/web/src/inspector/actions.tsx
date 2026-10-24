@@ -38,6 +38,9 @@ export interface ServerActions {
   /** R03.5 notification outbox status and acknowledgement. */
   notifications(signal?: AbortSignal): Promise<NotificationStatus>;
   acknowledgeNotification(id: string): Promise<{ acknowledged: number }>;
+  /** LP04 local world preview (pure read) and LP06 local-run reporting. Optional: absent on older servers/mocks. */
+  localWorldPreview?(input: { blueprint: string; seed: string }): Promise<unknown>;
+  localWorldReporting?(signal?: AbortSignal): Promise<unknown>;
 }
 export interface NotificationStatus {
   counts: { pending: number; delivered: number; failed: number; acknowledged: number };

@@ -143,6 +143,8 @@ export function App() {
       connectors: (signal) => { check(); return api.get(`/api/connectors`, signal); },
       notifications: (signal) => { check(); return api.get(`${prefix}/notifications/status`, signal); },
       acknowledgeNotification: async (id) => { check(); return api.send("POST", `${prefix}/notifications/${encodeURIComponent(id)}/ack`); },
+      localWorldPreview: async (input) => { check(); return api.send("POST", `/api/local-world/preview`, input); },
+      localWorldReporting: (signal) => { check(); return api.get(`${prefix}/local-world/reporting`, signal); },
       listCases: (signal) => { check(); return api.get(`${prefix}/cases`, signal); },
       getCase: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}`, signal); },
       createCase: async (body) => { check(); return api.send("POST", `${prefix}/cases`, body); },
