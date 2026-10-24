@@ -1,5 +1,5 @@
 {
-  "catalog_version": "dk-castle-kit-2.0.0",
+  "catalog_version": "dk-castle-kit-2.1.0",
   "license": "Apache-2.0",
   "provenance": {
     "origin": "Original local procedural geometry for Digital Kingdom. No third-party model, texture, font, AI-generated mesh, or runtime remote asset.",
@@ -14,7 +14,7 @@
     "source_files": [
       {
         "path": "apps/web/src/castle/geometry.ts",
-        "sha256": "10adc36543a034dfc0e04234a3c9b671da4eb6adbc7a9aad966489b9bb2e6b68"
+        "sha256": "9b968d4aa6129ba848c81b8b7c83afa3d6e762e4d3a9ac94e7d800f5ebeaf4ba"
       },
       {
         "path": "apps/web/src/castle/modules.tsx",
@@ -26,7 +26,7 @@
       },
       {
         "path": "packages/contracts/src/catalog.ts",
-        "sha256": "8ca63fdf4f7ce8a0db7932001fd27d5b321d656e832e94b684f4b238641fa6b3"
+        "sha256": "5c839a24221dffd9a5ed9621fbb2e1b06672e364cec3fbab5a49944835b6d39e"
       },
       {
         "path": "apps/web/src/castle/moduleRecovery.ts",
@@ -37,7 +37,7 @@
         "sha256": "fc8b71170d02331c2931a3919e7126c4b3cbf19b341e2465873b601b9c60c81b"
       }
     ],
-    "content_hash": "sha256:edb74d6b9cc3c4b90864a67ed2566e5c2f0139a7948f273aa3027199e2844c1b",
+    "content_hash": "sha256:633e954234ff5475f0a52cd8c9a45c0c3f7d3ae700871a50c29a869bd5ef8fee",
     "hash_method": "SHA-256 over UTF-8 path + NUL + raw file bytes + NUL, in editable_source_paths order. Shared source content hash applies to all ten procedural modules.",
     "ownership": "Repository-owned implementation; no paid or externally generated asset pipeline."
   },
@@ -56,7 +56,7 @@
     "status_geometry_independent": true
   },
   "rendering": {
-    "geometry_cache": "At most 30 module geometries: 10 stable IDs × 3 LODs, shared app lifetime; no cache keys for asset IDs, event ticks, or projects.",
+    "geometry_cache": "At most 48 module geometries: 16 stable IDs × 3 LODs, shared app lifetime; no cache keys for asset IDs, event ticks, or projects.",
     "merged_meshes_per_module": 4,
     "demand_rendering": true,
     "default_quality": "medium",
@@ -95,7 +95,8 @@
       "hit_proxy": {
         "w": 4,
         "d": 2.8,
-        "h": 3.9
+        "h": 3.9,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -124,7 +125,8 @@
               3.740000009536743,
               1.399999976158142
             ]
-          }
+          },
+          "geometry_sha256": "sha256:4d120eb13935e3c581d1dc66c14e60431c019363cf74f986ed01494bbcc86bb1"
         },
         "medium": {
           "triangles": 2060,
@@ -140,7 +142,8 @@
               3.880000114440918,
               1.399999976158142
             ]
-          }
+          },
+          "geometry_sha256": "sha256:c407a943cec16b3eea001819b97759c6cebdc5b38f7ab7166ba78284a94705f6"
         },
         "high": {
           "triangles": 2324,
@@ -156,8 +159,42 @@
               3.880000114440918,
               1.399999976158142
             ]
-          }
+          },
+          "geometry_sha256": "sha256:066ecc807cc7cca0957cdfca51c707bf4403edef522c13cb102208a8a23452fa"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -2,
+          0.35,
+          0
+        ],
+        "east": [
+          2,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.4
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 3.4,
+        "d": 2.2
       }
     },
     {
@@ -182,7 +219,8 @@
       "hit_proxy": {
         "w": 3.4,
         "d": 2.6,
-        "h": 3.35
+        "h": 3.35,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -211,7 +249,8 @@
               3.2699999809265137,
               1.2699999809265137
             ]
-          }
+          },
+          "geometry_sha256": "sha256:5e1daf3681774ec8bd14f1401ca11c7132a9cd1885b24e7edc1a662670e07819"
         },
         "medium": {
           "triangles": 1400,
@@ -227,7 +266,8 @@
               3.3299999237060547,
               1.2699999809265137
             ]
-          }
+          },
+          "geometry_sha256": "sha256:74b58a2b4f3e1dddf3f12b5e7e86ff8a16af39c1bf73440c5e8e90809dfb833c"
         },
         "high": {
           "triangles": 1816,
@@ -243,8 +283,42 @@
               3.3299999237060547,
               1.2699999809265137
             ]
-          }
+          },
+          "geometry_sha256": "sha256:f0508e2d2107162c6b91706c52453a7d4a7660a44369125c34b7e0b22a0cb049"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.7,
+          0.35,
+          0
+        ],
+        "east": [
+          1.7,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.3
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2.8,
+        "d": 2
       }
     },
     {
@@ -269,7 +343,8 @@
       "hit_proxy": {
         "w": 3.85,
         "d": 2.6,
-        "h": 2.8
+        "h": 2.8,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -298,7 +373,8 @@
               2.75,
               1.1699999570846558
             ]
-          }
+          },
+          "geometry_sha256": "sha256:35c4454db293653fc828a2ca9ba8b44fdb4f72a389998fce9d4206c0342a8bc3"
         },
         "medium": {
           "triangles": 840,
@@ -314,7 +390,8 @@
               2.75,
               1.2649999856948853
             ]
-          }
+          },
+          "geometry_sha256": "sha256:da2f706f2597af7d0fe24d7ed25f0162d15098debf08a422eacd2b3a6d5bb7d2"
         },
         "high": {
           "triangles": 1120,
@@ -330,8 +407,42 @@
               2.75,
               1.2649999856948853
             ]
-          }
+          },
+          "geometry_sha256": "sha256:5013c59f97552dcf710e47e66b1c5f956c258858ff1d7dc91b319782e3998b72"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.925,
+          0.35,
+          0
+        ],
+        "east": [
+          1.925,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.3
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 3.25,
+        "d": 2
       }
     },
     {
@@ -356,7 +467,8 @@
       "hit_proxy": {
         "w": 4.6,
         "d": 3.7,
-        "h": 3.85
+        "h": 3.85,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -385,7 +497,8 @@
               3.7799999713897705,
               1.8199999332427979
             ]
-          }
+          },
+          "geometry_sha256": "sha256:48b09c89c4180c425756dea9b1393d1b2811c31c4b76dc567c60f0e39aa80afe"
         },
         "medium": {
           "triangles": 2144,
@@ -401,7 +514,8 @@
               3.815000057220459,
               1.8300000429153442
             ]
-          }
+          },
+          "geometry_sha256": "sha256:f3807afa37a87f7624fce8683dab40881aa24d09c5e96b2b8ddf88d985aba7ec"
         },
         "high": {
           "triangles": 2696,
@@ -417,8 +531,42 @@
               3.815000057220459,
               1.8300000429153442
             ]
-          }
+          },
+          "geometry_sha256": "sha256:00c113571b8cf579955bb00c678c93a13c102074ad17116da066ce41c57ad1a2"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -2.3,
+          0.35,
+          0
+        ],
+        "east": [
+          2.3,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.85
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 4,
+        "d": 3.1
       }
     },
     {
@@ -443,7 +591,8 @@
       "hit_proxy": {
         "w": 3.2,
         "d": 2.65,
-        "h": 2.25
+        "h": 2.25,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -472,7 +621,8 @@
               2.2300000190734863,
               1.2995697259902954
             ]
-          }
+          },
+          "geometry_sha256": "sha256:724053c720250495851ee9a944003d6a6ed25090c3963e407d241560e44caf40"
         },
         "medium": {
           "triangles": 636,
@@ -488,7 +638,8 @@
               2.2300000190734863,
               1.2995697259902954
             ]
-          }
+          },
+          "geometry_sha256": "sha256:82292ed6ace7bc1a50fbdb9f6fe3331abc8cb74ca6ef87b6b3b2002836a63450"
         },
         "high": {
           "triangles": 844,
@@ -504,8 +655,42 @@
               2.2300000190734863,
               1.2995697259902954
             ]
-          }
+          },
+          "geometry_sha256": "sha256:fa82c1ecf709de8a09e3c972d2c65861c2cc6872dcf2aed19cede246f55b9ad1"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.6,
+          0.35,
+          0
+        ],
+        "east": [
+          1.6,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.325
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2.6,
+        "d": 2.05
       }
     },
     {
@@ -530,7 +715,8 @@
       "hit_proxy": {
         "w": 3.15,
         "d": 3.05,
-        "h": 2.5
+        "h": 2.5,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -559,7 +745,8 @@
               2.495000123977661,
               1.5099999904632568
             ]
-          }
+          },
+          "geometry_sha256": "sha256:03749e2c0d1630564d0d691c27f01ed689399649ff3a6594b8158562993d6557"
         },
         "medium": {
           "triangles": 900,
@@ -575,7 +762,8 @@
               2.495000123977661,
               1.5099999904632568
             ]
-          }
+          },
+          "geometry_sha256": "sha256:fbf9a86015c04f9773fa6628a171871c0b70a72db0edaf2cf5c53cf258a4e3a6"
         },
         "high": {
           "triangles": 1036,
@@ -591,8 +779,42 @@
               2.495000123977661,
               1.5099999904632568
             ]
-          }
+          },
+          "geometry_sha256": "sha256:ac5b2a4609eef35bc472a1584bee40b22ac89b346b6152df9c0297461be8ae2d"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.575,
+          0.35,
+          0
+        ],
+        "east": [
+          1.575,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.525
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2.55,
+        "d": 2.45
       }
     },
     {
@@ -617,7 +839,8 @@
       "hit_proxy": {
         "w": 2.6,
         "d": 2.6,
-        "h": 5.4
+        "h": 5.4,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -646,7 +869,8 @@
               5.380000114440918,
               1.2799999713897705
             ]
-          }
+          },
+          "geometry_sha256": "sha256:3ef6739e532c8bfb7cf3b56ba7046d4f2156956d1188795917207b5bc87deba7"
         },
         "medium": {
           "triangles": 728,
@@ -662,7 +886,8 @@
               5.380000114440918,
               1.2799999713897705
             ]
-          }
+          },
+          "geometry_sha256": "sha256:ddf27d3718026e6a9a426bdd3180e4645efbfba3333589db290c9d09656e5263"
         },
         "high": {
           "triangles": 1484,
@@ -678,8 +903,42 @@
               5.380000114440918,
               1.2799999713897705
             ]
-          }
+          },
+          "geometry_sha256": "sha256:ad21c2ee09a73b8e85d42255b71f9a3a8f9a470e903fa887c26ace6394887ab9"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.3,
+          0.35,
+          0
+        ],
+        "east": [
+          1.3,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.3
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2,
+        "d": 2
       }
     },
     {
@@ -704,7 +963,8 @@
       "hit_proxy": {
         "w": 3.05,
         "d": 2.05,
-        "h": 2.25
+        "h": 2.25,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -733,7 +993,8 @@
               2.190000057220459,
               0.925000011920929
             ]
-          }
+          },
+          "geometry_sha256": "sha256:418160bc79700ede281cd90b39f68ddf200470138897b334f86c3bab2e19b79d"
         },
         "medium": {
           "triangles": 1048,
@@ -749,7 +1010,8 @@
               2.2265257835388184,
               0.9950000047683716
             ]
-          }
+          },
+          "geometry_sha256": "sha256:4f00e171748edd50e0da4c7e9f5fc3b7962b7e76fa7ffee7be1e9c389ec43106"
         },
         "high": {
           "triangles": 1224,
@@ -765,8 +1027,42 @@
               2.2265257835388184,
               0.9950000047683716
             ]
-          }
+          },
+          "geometry_sha256": "sha256:dc8209d63e35722e96d4308ef5fffed705a40708e9be7b182134e08516ed1e81"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.525,
+          0.35,
+          0
+        ],
+        "east": [
+          1.525,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.025
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2.45,
+        "d": 1.45
       }
     },
     {
@@ -791,7 +1087,8 @@
       "hit_proxy": {
         "w": 3.5,
         "d": 3,
-        "h": 2.85
+        "h": 2.85,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -820,7 +1117,8 @@
               2.819999933242798,
               1.4700000286102295
             ]
-          }
+          },
+          "geometry_sha256": "sha256:00d4f1cf85aad09308d21286ab99b4383d1c5bb0861d8dae07700c94a4189cc4"
         },
         "medium": {
           "triangles": 940,
@@ -836,7 +1134,8 @@
               2.819999933242798,
               1.4700000286102295
             ]
-          }
+          },
+          "geometry_sha256": "sha256:72b1bd3dfcbfc31f046e958b21a8cadb7348bc8927cd5fbd2ab22d5e19a02100"
         },
         "high": {
           "triangles": 1028,
@@ -852,8 +1151,42 @@
               2.819999933242798,
               1.4700000286102295
             ]
-          }
+          },
+          "geometry_sha256": "sha256:48f1d0fe4c85d51532c41c672e084b692a4cc6feafa819fd66e45befcb448c49"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.75,
+          0.35,
+          0
+        ],
+        "east": [
+          1.75,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.5
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2.9,
+        "d": 2.4
       }
     },
     {
@@ -878,7 +1211,8 @@
       "hit_proxy": {
         "w": 3.1,
         "d": 1.85,
-        "h": 3.35
+        "h": 3.35,
+        "roofs_off_h": 0.24
       },
       "groups": [
         "module-root",
@@ -907,7 +1241,8 @@
               3.309999942779541,
               0.8999999761581421
             ]
-          }
+          },
+          "geometry_sha256": "sha256:27f062f0d1b51b544317d0a4c8ad70b87feba8b118d3665748d2e35c52f3f55c"
         },
         "medium": {
           "triangles": 396,
@@ -923,7 +1258,8 @@
               3.3450000286102295,
               0.8999999761581421
             ]
-          }
+          },
+          "geometry_sha256": "sha256:918694f8064c33f23ec3d6f50ee09f0a4fa4b5e751e3dfd24da686add29e90dc"
         },
         "high": {
           "triangles": 628,
@@ -939,13 +1275,793 @@
               3.3450000286102295,
               0.8999999761581421
             ]
-          }
+          },
+          "geometry_sha256": "sha256:46ee11d03a509bf5e7766bfb7579e6e8e949e81de30e788bd1300b9c81fdbd33"
         }
+      },
+      "since_catalog": "2.0.0",
+      "silhouette": "original kit module",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.55,
+          0.35,
+          0
+        ],
+        "east": [
+          1.55,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          0.925
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2.5,
+        "d": 1.25
+      }
+    },
+    {
+      "id": "dns_registry",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 340,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.649999976158142,
+              1.3411045607369942e-9,
+              -1.340000033378601
+            ],
+            "max": [
+              1.6649999618530273,
+              3.1600000858306885,
+              1.2999999523162842
+            ]
+          },
+          "geometry_sha256": "sha256:65697755bdd6602eaffbbe05c0685516becf7748f18de64675ac776cac92c346"
+        },
+        "medium": {
+          "triangles": 1048,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.649999976158142,
+              1.3411045607369942e-9,
+              -1.340000033378601
+            ],
+            "max": [
+              1.6799999475479126,
+              3.299999952316284,
+              1.2999999523162842
+            ]
+          },
+          "geometry_sha256": "sha256:a6c08dfbc0256160828ca4e7ef0b39ad26335e5331587999ea65e9902ff78132"
+        },
+        "high": {
+          "triangles": 1232,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.649999976158142,
+              1.3411045607369942e-9,
+              -1.340000033378601
+            ],
+            "max": [
+              1.6799999475479126,
+              3.299999952316284,
+              1.2999999523162842
+            ]
+          },
+          "geometry_sha256": "sha256:404918675f596e43d2136d2a5f038579281009467cdd556be55e7e598bf4e19f"
+        }
+      },
+      "footprint": {
+        "w": 3.4,
+        "d": 2.7
+      },
+      "height": 3.35,
+      "label_anchor": [
+        0,
+        4.05,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.65,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.4,
+        "d": 2.7,
+        "h": 3.35,
+        "roofs_off_h": 0.24
+      },
+      "since_catalog": "2.1.0",
+      "silhouette": "compact registry hall with a signboard court and a small bell-clock turret",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.7,
+          0.35,
+          0
+        ],
+        "east": [
+          1.7,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.35
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2.8,
+        "d": 2.1
+      }
+    },
+    {
+      "id": "dispatch_house",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 260,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -2.1500000953674316,
+              -5.9604645663569045e-9,
+              -1.2200000286102295
+            ],
+            "max": [
+              2.1500000953674316,
+              2.2300000190734863,
+              1.2118381261825562
+            ]
+          },
+          "geometry_sha256": "sha256:c0efb62510ef1339802690b5d1af10eac79dc52ab91ff177742a00cf4034c47b"
+        },
+        "medium": {
+          "triangles": 1100,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -2.1500000953674316,
+              -5.9604645663569045e-9,
+              -1.2200000286102295
+            ],
+            "max": [
+              2.1500000953674316,
+              2.2666776180267334,
+              1.215000033378601
+            ]
+          },
+          "geometry_sha256": "sha256:b34313da2d231f81c01adf4a0c2ee3fae0741facbdb3d6509200fc61dfbfdd37"
+        },
+        "high": {
+          "triangles": 1348,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -2.1500000953674316,
+              -5.9604645663569045e-9,
+              -1.2200000286102295
+            ],
+            "max": [
+              2.1500000953674316,
+              2.2666776180267334,
+              1.215000033378601
+            ]
+          },
+          "geometry_sha256": "sha256:87c677a04e29731306d4ea38d04d009ab3a119802ac40bce1238ad656fe89bf6"
+        }
+      },
+      "footprint": {
+        "w": 4.4,
+        "d": 2.5
+      },
+      "height": 2.35,
+      "label_anchor": [
+        0,
+        3.05,
+        0
+      ],
+      "status_anchor": [
+        0,
+        2.65,
+        0
+      ],
+      "hit_proxy": {
+        "w": 4.4,
+        "d": 2.5,
+        "h": 2.35,
+        "roofs_off_h": 0.24
+      },
+      "since_catalog": "2.1.0",
+      "silhouette": "long low warehouse with two loading bays and a raised central sorting roof",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -2.2,
+          0.35,
+          0
+        ],
+        "east": [
+          2.2,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.25
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 3.8,
+        "d": 1.9
+      }
+    },
+    {
+      "id": "key_registry",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 348,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.5199999809265137,
+              1.7881393032936899e-9,
+              -1.290000081062317
+            ],
+            "max": [
+              1.5199999809265137,
+              2.9100000858306885,
+              1.2300000190734863
+            ]
+          },
+          "geometry_sha256": "sha256:df065473b0671a3ecd7e14e2d7dfc7897e0f229cdc82589489721c0efb5a320d"
+        },
+        "medium": {
+          "triangles": 1064,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.5199999809265137,
+              1.7881393032936899e-9,
+              -1.290000081062317
+            ],
+            "max": [
+              1.5199999809265137,
+              3.049999952316284,
+              1.25
+            ]
+          },
+          "geometry_sha256": "sha256:fef6da8c1a72ff79c90f6a8270ac9699af5f5c9f7c7492589983f063b0d66aa2"
+        },
+        "high": {
+          "triangles": 1152,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.5199999809265137,
+              1.7881393032936899e-9,
+              -1.290000081062317
+            ],
+            "max": [
+              1.5199999809265137,
+              3.049999952316284,
+              1.25
+            ]
+          },
+          "geometry_sha256": "sha256:4335d8c397e91dc2297880eb5d64814ed943060e13ad2c8eef0b8d041efd1aa1"
+        }
+      },
+      "footprint": {
+        "w": 3.1,
+        "d": 2.7
+      },
+      "height": 3.1,
+      "label_anchor": [
+        0,
+        3.8,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.4,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.1,
+        "d": 2.7,
+        "h": 3.1,
+        "roofs_off_h": 0.24
+      },
+      "since_catalog": "2.1.0",
+      "silhouette": "small fortified administrative hall with a recessed key-room and record shelves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.55,
+          0.35,
+          0
+        ],
+        "east": [
+          1.55,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.35
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 2.5,
+        "d": 2.1
+      }
+    },
+    {
+      "id": "supply_depot",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 280,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.899999976158142,
+              -2.98023217215615e-10,
+              -1.4500000476837158
+            ],
+            "max": [
+              1.9049999713897705,
+              2.9800000190734863,
+              1.4500000476837158
+            ]
+          },
+          "geometry_sha256": "sha256:3468f4d7eb9b53251c21190b856c54fc1beac5a7ec02e72295db3e03ee2ea510"
+        },
+        "medium": {
+          "triangles": 760,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.899999976158142,
+              -2.98023217215615e-10,
+              -1.4500000476837158
+            ],
+            "max": [
+              1.9049999713897705,
+              2.9800000190734863,
+              1.4500000476837158
+            ]
+          },
+          "geometry_sha256": "sha256:603045ed06b67264305133ad04ef2dd055b841d2e5173123918bc03c6f90cb75"
+        },
+        "high": {
+          "triangles": 848,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.899999976158142,
+              -2.98023217215615e-10,
+              -1.4500000476837158
+            ],
+            "max": [
+              1.9049999713897705,
+              2.9800000190734863,
+              1.4500000476837158
+            ]
+          },
+          "geometry_sha256": "sha256:763ad7a024cf8f3700e9905553749d6948bf890e9acaf2707144edbf6dbaae01"
+        }
+      },
+      "footprint": {
+        "w": 3.9,
+        "d": 3
+      },
+      "height": 3.1,
+      "label_anchor": [
+        0,
+        3.85,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.4,
+        0
+      ],
+      "hit_proxy": {
+        "w": 3.9,
+        "d": 3,
+        "h": 3.1,
+        "roofs_off_h": 0.24
+      },
+      "since_catalog": "2.1.0",
+      "silhouette": "stepped storage complex with a loading platform, shelving and a contained hoist",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.95,
+          0.35,
+          0
+        ],
+        "east": [
+          1.95,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.5
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 3.3,
+        "d": 2.4
+      }
+    },
+    {
+      "id": "archive",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 536,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -2.075000047683716,
+              -2.98023217215615e-10,
+              -1.3799999952316284
+            ],
+            "max": [
+              2.075000047683716,
+              2.700000047683716,
+              1.340000033378601
+            ]
+          },
+          "geometry_sha256": "sha256:841b085a5ffce2f4bbb7b9e02b3ae2d67684859d9d1093bc191e0af37c400c4f"
+        },
+        "medium": {
+          "triangles": 2040,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -2.0899999141693115,
+              -2.98023217215615e-10,
+              -1.3799999952316284
+            ],
+            "max": [
+              2.0899999141693115,
+              2.7360823154449463,
+              1.340000033378601
+            ]
+          },
+          "geometry_sha256": "sha256:8d0ff64ab73bd24bf96278cf724618f2c5ce55964a7b658eeda197774d1c9c0f"
+        },
+        "high": {
+          "triangles": 2472,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -2.0899999141693115,
+              -2.98023217215615e-10,
+              -1.3799999952316284
+            ],
+            "max": [
+              2.0899999141693115,
+              2.7360823154449463,
+              1.340000033378601
+            ]
+          },
+          "geometry_sha256": "sha256:c002741401d6b1bc3107188719968456e83be697dafa2383c18b44c44d88a7fc"
+        }
+      },
+      "footprint": {
+        "w": 4.2,
+        "d": 2.8
+      },
+      "height": 2.75,
+      "label_anchor": [
+        0,
+        3.5,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.05,
+        0
+      ],
+      "hit_proxy": {
+        "w": 4.2,
+        "d": 2.8,
+        "h": 2.75,
+        "roofs_off_h": 0.24
+      },
+      "since_catalog": "2.1.0",
+      "silhouette": "broad stone archive with two roof heights and a protected columned entrance",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -2.1,
+          0.35,
+          0
+        ],
+        "east": [
+          2.1,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.4
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 3.6,
+        "d": 2.2
+      }
+    },
+    {
+      "id": "outpost",
+      "editable_source": "apps/web/src/castle/geometry.ts",
+      "license": "Apache-2.0",
+      "groups": [
+        "module-root",
+        "structure",
+        "roof",
+        "interior-structure",
+        "detail-static",
+        "hit-proxy",
+        "anchor-label",
+        "anchor-status",
+        "anchor-connections"
+      ],
+      "group_note": "Empty detail/interior groups may be absent at a lower LOD; module-root and anchors stay stable. Hit proxy is owned by the room wrapper, not by noninteractive architecture.",
+      "lods": {
+        "low": {
+          "triangles": 332,
+          "meshes": 3,
+          "bounds": {
+            "min": [
+              -1.149999976158142,
+              -5.9604645663569045e-9,
+              -1.149999976158142
+            ],
+            "max": [
+              1.149999976158142,
+              3.4800000190734863,
+              1.1799999475479126
+            ]
+          },
+          "geometry_sha256": "sha256:2c302ff4f4b0c80ca120cd6573c5aa8e3b7dbb460b064d1f02dfda7f2408042a"
+        },
+        "medium": {
+          "triangles": 1228,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.149999976158142,
+              -5.9604645663569045e-9,
+              -1.149999976158142
+            ],
+            "max": [
+              1.159999966621399,
+              3.619999885559082,
+              1.1799999475479126
+            ]
+          },
+          "geometry_sha256": "sha256:c910e4e1ce0952c90c8838b278aec931bfd21c7706fc780b03aa5b787c5b72e6"
+        },
+        "high": {
+          "triangles": 1356,
+          "meshes": 4,
+          "bounds": {
+            "min": [
+              -1.149999976158142,
+              -5.9604645663569045e-9,
+              -1.149999976158142
+            ],
+            "max": [
+              1.159999966621399,
+              3.619999885559082,
+              1.1799999475479126
+            ]
+          },
+          "geometry_sha256": "sha256:949f3bf908efdac2c89c561ad65fd2db8de6acf2b8c3fb6722d333fce67088de"
+        }
+      },
+      "footprint": {
+        "w": 2.4,
+        "d": 2.4
+      },
+      "height": 3.65,
+      "label_anchor": [
+        0,
+        4.35,
+        0
+      ],
+      "status_anchor": [
+        0,
+        3.9499999999999997,
+        0
+      ],
+      "hit_proxy": {
+        "w": 2.4,
+        "d": 2.4,
+        "h": 3.65,
+        "roofs_off_h": 0.24
+      },
+      "since_catalog": "2.1.0",
+      "silhouette": "modest isolated watch-tower pavilion on a raised platform",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "connection_anchors": {
+        "west": [
+          -1.2,
+          0.35,
+          0
+        ],
+        "east": [
+          1.2,
+          0.35,
+          0
+        ],
+        "front": [
+          0,
+          0.35,
+          1.2
+        ]
+      },
+      "interior_anchor": {
+        "position": [
+          0,
+          0.32,
+          0
+        ],
+        "w": 1.8,
+        "d": 1.8
       }
     }
   ],
   "verification": {
     "automated": "apps/web/src/castle/architecture.test.ts checks bounds, all 30 triangle budgets, shared geometry, real raycast openings and roof grouping.",
     "visual": "Synthetic three-module and ten-module sheets are exposed by ?moduleSheet=prototype and ?moduleSheet=all; screenshots and release-gate results recorded separately. This manifest does not claim human approval."
-  }
+  },
+  "materials_sha256": "sha256:8833af5e7fb1fb5c8100b064ca8f1ca73e74d29aaacafb17637efa43a816a01e",
+  "manifest_sha256": "sha256:f1cfceb47b2a4e7063d67fd11cf4deefe4eda9857f3e9e3a43ca1e7fb156ba11"
 }

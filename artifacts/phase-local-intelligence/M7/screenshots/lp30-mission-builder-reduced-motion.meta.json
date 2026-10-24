@@ -1,0 +1,22 @@
+{
+  "name": "lp30-mission-builder-reduced-motion",
+  "file": "lp30-mission-builder-reduced-motion.png",
+  "sha256": "06ee228903ad2eb993a1f892f60d37ac43e50a7ad2c6a35daa23e8403b0b1f71",
+  "bytes": 280049,
+  "capturedAt": "2026-10-24T07:58:16.599Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": true,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,6 +1,9 @@
 import { createContext } from "react";
 import type { EventDetailResponse, EventSearchResponse } from "@dk/contracts";
 import type { EventSearchInput, FindingDetailResult, FindingEvidenceResult } from "../lib/investigation.ts";
+import type { AttentionQueue } from "../lib/attention.ts";
+import type { Workbench } from "../lib/workbench.ts";
+import type { PathExplanation } from "../lib/pathInspector.ts";
 
 export interface ServerActions {
   importInventory(input: { format: "manifest" | "compose"; revision: string; environment: string; text: string }): Promise<{ graph_revision: string; scene_digest: string; reflow_zones: string[]; warnings: string[]; unresolved: string[] }>;
@@ -24,6 +27,14 @@ export interface ServerActions {
   createCase(body: Record<string, unknown>): Promise<CaseDetail>;
   caseAction(id: string, path: string, body: Record<string, unknown>): Promise<CaseDetail>;
   exportDurableCase(id: string): Promise<void>;
+  /** LP12 investigation workbench (read-only) and opening/refreshing the case's investigation contract. Optional: absent on older servers/mocks. */
+  caseWorkbench?(id: string, signal?: AbortSignal): Promise<Workbench>;
+  openContract?(id: string): Promise<unknown>;
+  /** LP15 local attention queue (in-app only) and acknowledgement (never closes a case or finding). Optional. */
+  attention?(signal?: AbortSignal): Promise<AttentionQueue>;
+  acknowledgeAttention?(id: string, expectedSeq: number): Promise<unknown>;
+  /** LP13 "why can this reach that?" over the stored inventory and authorization snapshot. Optional. */
+  analysisPaths?(q: { from: string; to: string; principal?: string; action?: string; resource?: string; comparison?: string }, signal?: AbortSignal): Promise<PathExplanation>;
   /** R02.1 connector manifests. */
   connectors(signal?: AbortSignal): Promise<ConnectorCatalogResult>;
   /** R03.2 recipes; with caseId the hypotheses are attached to the case. */
@@ -35,9 +46,19 @@ export interface ServerActions {
   /** R07.1 controls. */
   controls(signal?: AbortSignal): Promise<{ controls: { id: string; name: string; kind: string; asset_ids: string[]; state: string; state_reason: string }[] }>;
   control(id: string): Promise<any>;
+  /** LP19 baseline-versus-repair world comparison (read-only). */
+  worldComparison?(id: string, signal?: AbortSignal): Promise<WorldComparisonView>;
   /** R03.5 notification outbox status and acknowledgement. */
   notifications(signal?: AbortSignal): Promise<NotificationStatus>;
   acknowledgeNotification(id: string): Promise<{ acknowledged: number }>;
+  /** LP04 local world preview (pure read) and LP06 local-run reporting. Optional: absent on older servers/mocks. */
+  localWorldPreview?(input: { blueprint: string; seed: string }): Promise<unknown>;
+  localWorldReporting?(signal?: AbortSignal): Promise<unknown>;
+  /** LP29 mission desk. Optional: absent on older servers/mocks and in the offline demo. */
+  missions?: {
+    templates(signal?: AbortSignal): Promise<unknown>; preview(body: { draft?: unknown; proposal?: unknown }): Promise<unknown>; create(draft: unknown): Promise<unknown>;
+    list(signal?: AbortSignal): Promise<unknown>; get(id: string, signal?: AbortSignal): Promise<unknown>; openTruth(id: string, reason: string): Promise<unknown>; cancel(id: string): Promise<unknown>;
+  };
 }
 export interface NotificationStatus {
   counts: { pending: number; delivered: number; failed: number; acknowledged: number };
@@ -48,9 +69,12 @@ export interface NotificationStatus {
 export interface GithubPreview { preview_id: string; base_graph_revision: string | null; repository: string; additions: string[]; removals: string[]; changes: string[]; collisions: string[]; partial: { resource: string; reason: string }[] }
 export interface RecipeRun {
   recipe: { id: string; version: number; title: string };
-  hypotheses: { id: string; statement: string; status: string; needs: string; supporting_event_ids: string[]; counter_event_ids: string[]; notes: string[] }[];
+  hypotheses: { id: string; kind?: "observable" | "intent" | "authorization"; statement: string; status: string; needs: string; supporting_event_ids: string[]; counter_event_ids: string[]; notes: string[] }[];
   stop_conditions: { condition: string; triggered: boolean; reason: string }[];
   conclusion_allowed: boolean; unlinked_follow_on_event_ids: string[]; notes: string[];
+  /** LP02 (dk.recipe_run.v2): explicit unfinished work. Absent on v1 results. */
+  completeness?: "complete" | "partial";
+  outstanding?: { purpose: string; status: string; reason: string }[];
   budget: { max_queries: number; used: number };
 }
 export interface ConnectorCatalogResult {
@@ -73,3 +97,15 @@ export interface CoverageHistoryResult {
 }
 export interface BundleMeta { bundle_id: string; bundle_digest: string; finding_revision: number; reference_count: number; expires_at: string | null; pinned: boolean; omissions: string[] }
 export const ActionsCtx = createContext<ServerActions | null>(null);
+
+/** LP19 `dk.world_comparison.v1` as the castle reads it. */
+export interface WorldComparisonView {
+  schema: "dk.world_comparison.v1"; comparison_id: string; namespace: string; mode: "model_only";
+  revisions: { baseline: { state_hash: string; graph_revision: string; scene_digest: string; layout_version: number | null; current: boolean }; candidate: { state_hash: string; namespace: string; receipt_digest: string } };
+  layout: string;
+  rooms: { asset_id: string; change: "added" | "removed" | "changed"; refs: string[]; baseline_position: { x: number; z: number } | null; placement: string }[];
+  changes: { key: string; op: "added" | "removed" | "changed"; kind: string; asset_ids: string[]; resolved_to_asset: boolean; unresolved: string[]; note?: string }[];
+  model_only: { access: { probe: { principal: string; action: string; resource: string }; base: string; candidate: string; executed: false; verified: false; basis: string; reason?: string }[]; condition_keys: string[]; unassessed_paths: string[] };
+  executed_local: { results: { link_id: string; run_id: string; security_verdict: string; whole_run: string; verified: boolean; executed: true; residual_access: string[]; disruption: string[]; tested_target_revision: string; scope: string }[]; note: string };
+  warnings: string[]; not_claimed: string[];
+}

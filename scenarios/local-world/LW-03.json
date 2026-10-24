@@ -1,0 +1,26 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "LW-03",
+ "version": 1,
+ "title": "Short-lived credential use with a grant change and deactivation (delivery and identity)",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "dsl": "scenarios/local-world/dsl/LW-03.scenario.json",
+ "expected_observations": [
+  "Credential without its grant is refused and no data use observed",
+  "With the grant the data use is independently observed",
+  "After deactivation the credential is refused"
+ ],
+ "disallowed_claims": [
+  "Issuing a credential proves it was used",
+  "A refused request read data"
+ ],
+ "missing_evidence_variant": "n/a (observer present throughout)",
+ "benign_alternative": "artifact publish and selection by the builder identity",
+ "tests": [
+  {
+   "file": "examples/reference-app/lp07-scenarios.test.ts",
+   "name": "the viewer-token view of Digital Kingdom leaks nothing from private truth"
+  }
+ ]
+}

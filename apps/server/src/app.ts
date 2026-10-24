@@ -17,7 +17,7 @@ import { assessChange, securityContext, summarize } from "./context.ts";
 import { coverageHistory, parseCoverageQuestion } from "./coverage-history.ts";
 import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } from "./bundles.ts";
 import { Cases } from "./cases.ts";
-import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
+import { buildHierarchy, buildInterior, compileScene, footprintCollisions, layoutDiff, locateAsset, searchWorld } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
@@ -25,15 +25,27 @@ import { Controls } from "./controls.ts";
 import { ChangeReviews, type ChangePlanInput } from "./change-review.ts";
 import { Notifier, type FetchLike as NotifyFetch } from "./notify.ts";
 import { Regressions } from "./regression.ts";
+import { LocalRepairs } from "./local-repairs.ts";
+import { buildCapsule, CapsuleRefusal, importCapsule } from "./capsule.ts";
 import { Verifications } from "./verification.ts";
 import { assistCase, type AssistModel } from "./assistant.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
 import { assess as assessVulns } from "./vuln.ts";
 import { evaluateLineage, type LineageInput, type ProvenancePolicy } from "./lineage.ts";
-import { accessPaths, type AuthSnapshot } from "./access/aws-policy.ts";
+import { accessPaths, EVALUATOR_VERSION, type AuthSnapshot } from "./access/aws-policy.ts";
 import { mapCloudTrail, summarizeExport, type CloudTrailRecord } from "./adapters/aws.ts";
 import { verifyIdToken, type OidcConfig } from "./oidc.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
+import { runtimePolicy } from "./phase-policy.ts";
+import { parseLocalRun, provenanceOf } from "./provenance.ts";
+import { deriveCapability, LOCAL_CONTRACTS, INVESTIGATION_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
+import { registerLocalWorld } from "./local-world.ts";
+import { missionRecord, registerMissions } from "./missions.ts";
+import { registerInvestigationRoutes } from "./investigation/routes.ts";
+import { registerExplorationRoutes, grantElements } from "./exploration.ts";
+import { registerRepairRoutes } from "./repair.ts";
+import { latestLocalConfig, recordLocalConfig } from "./local-config.ts";
+import { registerAttentionRoutes, type AttentionSinkConfig } from "./attention.ts";
 
 export interface AppConfig {
   store: Store;
@@ -63,6 +75,8 @@ export interface AppConfig {
   notifyAllowLoopback?: boolean;
   /** R05.4: optional case assistant model. None by default; every path works without it. */
   assistant?: AssistModel | null;
+  /** LP15: optional loopback-only sink that receives minimized attention items. Local testing only; off by default. */
+  attentionTestSink?: AttentionSinkConfig | null;
 }
 
 declare module "fastify" {
@@ -267,13 +281,15 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/me", { preHandler: authed() }, async (req) => ({ name: req.principal!.name, role: req.principal!.role, kind: req.principal!.kind, demo_mode: cfg.demoMode }));
 
   // ---- projects ----
-  app.get("/api/projects", { preHandler: authed() }, async (req) => store.listProjects(req.principal!).map((p) => ({ id: p.id, name: p.name, dataset_kind: p.dataset_kind })));
+  app.get("/api/projects", { preHandler: authed() }, async (req) => store.listProjects(req.principal!).map((p) => ({ id: p.id, name: p.name, dataset_kind: p.dataset_kind, provenance: provenanceOf(p) })));
   app.post("/api/projects", { preHandler: authed("admin") }, async (req) => {
     if (req.principal!.projects !== "*") throw new HttpError(403, "only an installation admin may create projects");
-    const b = req.body as { id: string; name: string; dataset_kind?: "live" | "synthetic" };
-    const proj = store.createProject(b.id, b.name ?? b.id, b.dataset_kind ?? "live");
-    store.audit(who(req), "project.create", proj.id, null, { dataset_kind: proj.dataset_kind });
-    return proj;
+    const b = req.body as { id: string; name: string; dataset_kind?: "live" | "synthetic"; local_run?: unknown };
+    // LP03: optional local run provenance, validated against dk.local.run_provenance.v1; dataset_kind is unchanged by it
+    const localRun = b.local_run === undefined ? undefined : parseLocalRun(b.local_run);
+    const proj = store.createProject(b.id, b.name ?? b.id, b.dataset_kind ?? "live", localRun ? { local_run: localRun } : {});
+    store.audit(who(req), "project.create", proj.id, null, { dataset_kind: proj.dataset_kind, ...(localRun ? { local_run: localRun.run_id } : {}) });
+    return { ...proj, provenance: provenanceOf(proj) };
   });
 
   app.get("/api/projects/:p/snapshot", { preHandler: authed() }, async (req) => {
@@ -281,7 +297,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const events = store.listEvents(proj.id, { limit: 5000 });
     const head = store.outboxHead();
     return {
-      project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, meta: proj.meta },
+      project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, meta: proj.meta, provenance: provenanceOf(proj) },
       graph: store.getGraph(proj.id) ?? null,
       scene: store.getScene(proj.id) ?? null,
       sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision, connector_id }) => ({ id, label, kind, asset_ids, disabled, independence_group, allowed_actions, identity_namespace, run_namespace, config_revision, connector_id })),
@@ -312,11 +328,11 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (recent.length >= 30) { reply.header("retry-after", "10"); throw new HttpError(429, "too many searches: at most 30 per 10 seconds per principal"); }
     recent.push(now); searchCalls.set(key, recent);
     const { query, cursor } = parseSearchQuery((req.query ?? {}) as Record<string, unknown>);
-    return searchEvents(store, proj.id, query, cfg.secret, cursor);
+    return { ...searchEvents(store, proj.id, query, cfg.secret, cursor), provenance: provenanceOf(proj) };
   });
   app.get("/api/projects/:p/events/:id", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
-    return eventDetail(store, proj.id, (req.params as { id: string }).id);
+    return { ...eventDetail(store, proj.id, (req.params as { id: string }).id), provenance: provenanceOf(proj) };
   });
   app.get("/api/projects/:p/evidence/:ref", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
@@ -395,18 +411,57 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const scene = store.getScene(proj.id);
     if (!scene) throw new HttpError(404, "project has no scene");
     const id = (req.params as { asset: string }).asset;
-    const live = scene.rooms.find((r) => r.asset_id === id);
-    if (live) return { asset_id: id, state: "current", room: live };
-    const hist = scene.historical_rooms?.find((r) => r.asset_id === id);
-    if (hist) return { asset_id: id, state: "historical", room: hist, note: `Last position before it left the graph in revision ${hist.retired_in_revision}; not a live structure.` };
+    const wanted = (req.query as { incarnation?: string }).incarnation;
+    // LP16-A2: each incarnation of an asset id resolves to its own location; a recreated asset never inherits the
+    // earlier incarnation's record, and a retired incarnation is never presented as a live structure.
+    const loc = locateAsset(scene, id);
+    const incarnations = [...(loc.current ? [{ incarnation_id: loc.current.incarnation.id, state: "current" as const, provider_id: loc.current.incarnation.provider_id, since_revision: loc.current.incarnation.since_revision }] : []),
+      ...loc.history.map((h) => ({ incarnation_id: h.incarnation_id, state: "historical" as const, retired_in_revision: h.retired_in_revision }))];
+    if (wanted) {
+      if (loc.current?.incarnation.id === wanted) return { asset_id: id, state: "current", incarnation: loc.current.incarnation, room: loc.current.room, incarnations };
+      const h = loc.history.find((x) => x.incarnation_id === wanted);
+      if (h) return { asset_id: id, state: "historical", incarnation_id: wanted, room: h.room, incarnations, note: `Last position of incarnation ${wanted} before it left the graph in revision ${h.retired_in_revision}; not a live structure.` };
+      throw new HttpError(404, "no such incarnation of this asset");
+    }
+    if (loc.current) return { asset_id: id, state: "current", incarnation: loc.current.incarnation, room: loc.current.room, incarnations };
+    const hist = loc.history[0];
+    if (hist) return { asset_id: id, state: "historical", incarnation_id: hist.incarnation_id, room: hist.room, incarnations, note: `Last position before it left the graph in revision ${hist.retired_in_revision}; not a live structure.` };
     throw new HttpError(404, "asset has no current or historical position");
+  });
+  // LP16-A3: complete asset search over the hierarchy index (current structures first, archived incarnations labelled).
+  app.get("/api/projects/:p/scene/search", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const scene = store.getScene(proj.id), graph = store.getGraph(proj.id);
+    if (!scene || !graph) throw new HttpError(404, "project has no scene");
+    const q = String((req.query as { q?: unknown }).q ?? "").slice(0, 200);
+    const limit = Math.max(1, Math.min(500, Number((req.query as { limit?: unknown }).limit ?? 100) || 100));
+    const r = searchWorld(buildHierarchy(graph, scene), q, limit);
+    return { query: r.query, total: r.total, truncated: r.total > r.results.length, results: r.results.map(({ search: _s, ...e }) => e), scene_digest: scene.digest };
+  });
+  // LP16-A1: intentional reflow is previewed (nothing is stored) and the apply may be bound to that preview.
+  const reflowPreview = (projectId: string) => {
+    const scene = store.getScene(projectId), graph = store.getGraph(projectId);
+    const row = store.db.prepare("SELECT proposal FROM scenes WHERE project_id = ? AND graph_revision = ?").get(projectId, scene?.graph_revision ?? "") as { proposal: string } | undefined;
+    if (!row || !scene || !graph) throw new HttpError(404, "no scene");
+    const next = compileScene(graph, JSON.parse(row.proposal), { previous: scene, reflow: true, source: scene.proposal_source });
+    const diff = layoutDiff(scene, next);
+    return { proposal: JSON.parse(row.proposal), diff, preview_digest: sha256(canonicalJson({ base: scene.digest, base_layout: scene.layout_version ?? 1, next: next.digest, next_layout: next.layout_version })), applied: false as const,
+      note: "Preview only: nothing was stored. Applying starts layout version " + String(next.layout_version) + "; every moved room is listed. Layout is presentation, never a security fact." };
+  };
+  app.get("/api/projects/:p/scene/reflow/preview", { preHandler: authed("analyst") }, async (req) => {
+    const { proposal: _p, ...preview } = reflowPreview(store.require(req.principal!, P(req), "analyst").id);
+    return preview;
+  });
+  app.get("/api/projects/:p/scene/layouts", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    return { project_id: proj.id, current_layout_version: store.getScene(proj.id)?.layout_version ?? null, layouts: store.layoutHistory(proj.id, Number((req.query as { limit?: unknown }).limit ?? 50) || 50) };
   });
   app.post("/api/projects/:p/scene/reflow", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");
-    const scene = store.getScene(proj.id);
-    const row = store.db.prepare("SELECT proposal FROM scenes WHERE project_id = ? AND graph_revision = ?").get(proj.id, scene?.graph_revision ?? "") as { proposal: string } | undefined;
-    if (!row) throw new HttpError(404, "no scene");
-    return store.applyProposal(proj.id, JSON.parse(row.proposal), scene!.proposal_source, who(req), true);
+    const preview = reflowPreview(proj.id);
+    const bound = (req.body as { preview_digest?: unknown } | undefined)?.preview_digest;
+    if (bound !== undefined && bound !== preview.preview_digest) throw new HttpError(409, "the layout changed since this reflow was previewed; preview again", [], { current: { preview_digest: preview.preview_digest } });
+    return store.applyProposal(proj.id, preview.proposal, store.getScene(proj.id)!.proposal_source, who(req), true);
   });
   app.post("/api/projects/:p/scene/plan", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
@@ -482,7 +537,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.get("/api/projects/:p/bundles/:bid/events", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
     const q = req.query as Record<string, unknown>;
-    return bundleEvents(store, proj.id, (req.params as { bid: string }).bid, intParam(q.offset, "offset", 0) ?? 0, intParam(q.limit, "limit", 1) ?? 200);
+    return { ...bundleEvents(store, proj.id, (req.params as { bid: string }).bid, intParam(q.offset, "offset", 0) ?? 0, intParam(q.limit, "limit", 1) ?? 200), provenance: provenanceOf(proj) };
   });
   app.post("/api/projects/:p/bundles/:bid/pin", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");
@@ -585,7 +640,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const findings = store.listFindings(proj.id).filter((f) => f.lifecycle !== "closed");
     const ev = store.evaluation(proj.id);
     return {
-      project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind },
+      project: { id: proj.id, name: proj.name, dataset_kind: proj.dataset_kind, provenance: provenanceOf(proj) },
       assets: graph?.assets.map((a) => ({ id: a.id, name: a.name, kind: a.kind, owner: a.owner, sensitivity: a.sensitivity })) ?? [],
       open_findings: findings.map(summarize),
       coverage: ev.coverage, unobserved_asset_ids: ev.unobserved_asset_ids,
@@ -666,12 +721,23 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (!graph) throw new HttpError(404, "project has no graph");
     const cov = store.health(proj.id).coverage;
     const ctl = controls.list(proj.id);
+    const prov = provenanceOf(proj);
+    const at = store.now().toISOString();
     const structures = graph.assets.filter((a) => a.lifecycle !== "tombstoned").map((a) => {
       const s = surfaceForAsset(a);
       const sources = cov.filter((c) => c.asset_ids.includes(a.id));
       const tested = ctl.filter((c) => c.asset_ids.includes(a.id) && c.state === "tested");
+      // LP03: the capability badge comes only from scoped records of this project and asset, never from the
+      // surface family or registry text (s.support stays the product-wide registry ceiling, unchanged).
+      const scope = { project_id: proj.id, asset_id: a.id };
+      const receipts: CapabilityReceipt[] = [
+        { schema: "dk.local.capability_receipt.v1", surface_id: s.id, level: "declared", scope, basis: "declared_inventory", evidence_refs: [`graph:${graph.graph_revision}#${a.id}`], recorded_at: at },
+        ...sources.filter((c) => c.last_event_at).map((c) => ({ schema: "dk.local.capability_receipt.v1" as const, surface_id: s.id, level: "instrumented" as const, scope, basis: "source_delivery" as const, evidence_refs: [`source:${c.source_id}`], recorded_at: c.last_event_at! })),
+        ...(prov.local_run ? tested.map((c) => ({ schema: "dk.local.capability_receipt.v1" as const, surface_id: s.id, level: "local_verified" as const, scope: { ...scope, run_id: prov.run_id }, basis: "control_test" as const, evidence_refs: [`control:${c.id}`], recorded_at: at })) : []),
+      ];
       return {
         entity: { kind: "asset", id: a.id }, surface: s.id, family: s.family, presentation: s.presentation, support: s.support, selectable: true,
+        capability: deriveCapability({ ...scope, surface_id: s.id }, receipts),
         // overlays exist only because a record exists
         overlays: [
           ...sources.map((c) => ({ kind: "watchtower", entity: { kind: "source", id: c.source_id }, state: c.state, note: c.state === "healthy" ? "reporting; not proof of complete detection" : `sensor ${c.state}` })),
@@ -682,7 +748,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     });
     const boundaries = [...new Set(graph.assets.map((a) => a.environment))].map((env) => ({ kind: "environment_boundary", id: `env:${env}`, category: "boundary", note: "organizational boundary, not an enforcement control" }));
     const decorations = [{ kind: "lawn_and_trees", category: "decoration", selectable: false, note: "decoration only; carries no data" }, { kind: "curtain_wall", category: "decoration", selectable: false, note: "the castle wall is a layout boundary, not a network perimeter" }];
-    return { surface_registry_version: SURFACE_REGISTRY_VERSION, structures, boundaries, decorations, unsupported_families: SURFACES.filter((x) => x.requires_data && !structures.some((st) => st.surface === x.id)).map((x) => ({ surface: x.id, family: x.family, reason: `not drawn: ${x.support_evidence}` })) };
+    return { surface_registry_version: SURFACE_REGISTRY_VERSION, provenance: prov, capability_note: "capability.tier is derived from scoped receipts for this project and asset; support is the product-wide registry ceiling for the surface family, not a per-asset badge.", structures, boundaries, decorations, unsupported_families: SURFACES.filter((x) => x.requires_data && !structures.some((st) => st.surface === x.id)).map((x) => ({ surface: x.id, family: x.family, reason: `not drawn: ${x.support_evidence}` })) };
   });
 
   // ---- security change review (R04.4) ----
@@ -698,20 +764,23 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const proj = store.require(req.principal!, P(req), "viewer");
     const b = (req.body ?? {}) as { finding_id?: unknown; max_queries?: unknown; case_id?: unknown; expected_version?: unknown };
     if (typeof b.finding_id !== "string") throw new HttpError(400, "finding_id is required");
-    const result = runRecipe(store, proj.id, (req.params as { rid: string }).rid, b.finding_id, cfg.secret, typeof b.max_queries === "number" ? b.max_queries : 6);
+    const result = { ...runRecipe(store, proj.id, (req.params as { rid: string }).rid, b.finding_id, cfg.secret, typeof b.max_queries === "number" ? b.max_queries : 6), provenance: provenanceOf(proj) };
     if (typeof b.case_id !== "string") return result;
     // Attaching to a case is an explicit analyst write: open hypotheses become case hypotheses.
     store.require(req.principal!, proj.id, "analyst");
     let version = typeof b.expected_version === "number" ? b.expected_version : -1;
     let c: ReturnType<Cases["get"]> | undefined;
-    for (const h of result.hypotheses) { c = cases.addItem(proj.id, b.case_id, { kind: "hypothesis", text: `[${result.recipe.id}@${result.recipe.version}] ${h.statement} Needs: ${h.needs}`.slice(0, 1000), expected_version: version }, who(req)); version = c.version; }
+    for (const h of result.hypotheses) { c = cases.addItem(proj.id, b.case_id, { kind: "hypothesis", text: `[${result.recipe.id}@${result.recipe.version}] (${h.kind}) ${h.statement} Needs: ${h.needs}`.slice(0, 1000), expected_version: version }, who(req)); version = c.version; }
     const stops = result.stop_conditions.filter((s) => s.triggered).map((s) => s.reason);
-    c = cases.addItem(proj.id, b.case_id, { kind: "note", text: `Recipe ${result.recipe.id}@${result.recipe.version} on ${b.finding_id}: ${result.conclusion_allowed ? "no stop condition triggered" : `conclusion blocked: ${stops.join(" ")}`} ${result.unlinked_follow_on_event_ids.length} unlinked follow-on event(s).`.slice(0, 4000), expected_version: version }, who(req));
+    c = cases.addItem(proj.id, b.case_id, { kind: "note", text: `Recipe ${result.recipe.id}@${result.recipe.version} on ${b.finding_id}: ${result.conclusion_allowed ? "no stop condition triggered and every obligation satisfied (observable propositions only)" : `conclusion blocked: ${[...stops, ...result.outstanding.map((o) => `Outstanding: ${o.purpose} (${o.reason}).`)].join(" ")}`} ${result.unlinked_follow_on_event_ids.length} unlinked follow-on event(s).`.slice(0, 4000), expected_version: version }, who(req));
     return { ...result, case: { id: c.id, version: c.version } };
   });
 
   // ---- durable cases (R03.1) ----
   const cases = new Cases(store);
+  // LP23: executed local repairs (LP22 verifications + LP23 regressions) linked to cases; closure gate; staleness.
+  const localRepairs = new LocalRepairs(store);
+  cases.closureGate = (p, c) => localRepairs.closureBlockers(p, c);
   const notifier = new Notifier(store.db, () => store.now(), cfg.notifyFetch ?? ((u, i) => fetch(u, i)), cfg.publicUrl ?? null, cfg.notifyAllowLoopback ?? false);
   app.decorate("notifier", notifier);
   const body = (req: FastifyRequest) => ((req.body && typeof req.body === "object" && !Array.isArray(req.body)) ? req.body : {}) as Record<string, unknown>;
@@ -725,11 +794,12 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   });
   app.get("/api/capabilities", { preHandler: authed() }, async () => ({
     schema: "dk.capabilities.v1", api_version: "v1", ruleset: RULESET_VERSION,
-    contracts: { recipe_run: "dk.recipe_run.v1", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2" },
+    contracts: { recipe_run: "dk.recipe_run.v2", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2", access_decision: EVALUATOR_VERSION, local: LOCAL_CONTRACTS, investigation: INVESTIGATION_CONTRACTS },
     recipes: RECIPES.map((r) => `${r.id}@${r.version}`),
     budgets: { search_limit_max: 100, search_window_days_max: 31, recipe_queries_max: 12, case_changes_page: 50 },
     delivery: { incremental: "poll /cases/changes with next_since every poll_after_seconds", push: "not supported" },
     transports: ["stdio MCP (local)"], remote_mcp: "not offered",
+    runtime_policy: runtimePolicy({ planner: cfg.planner, assistant: cfg.assistant, githubToken: cfg.githubToken ?? process.env.DK_GITHUB_TOKEN, db: store.db }),
   }));
   app.get("/api/projects/:p/cases", { preHandler: authed() }, async (req) => ({ cases: cases.list(store.require(req.principal!, P(req), "viewer").id) }));
   app.post("/api/projects/:p/cases", { preHandler: authed("analyst") }, async (req) => {
@@ -743,8 +813,17 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const before = cases.get(pid, CP(req)).owner;
     const c = cases.update(pid, CP(req), body(req), who(req));
     if (c.owner !== before) notifier.enqueue({ projectId: pid, kind: "case_assigned", severity: "medium", dedupKey: `case:${c.id}:owner:${c.owner}`, owner: c.owner, caseId: c.id });
+    investigation.afterCaseChange(pid, c.id, who(req));
     return c;
   });
+  // ---- Local Intelligence Phase M2: investigation contracts, plans, packets, claim checks ----
+  const investigation = registerInvestigationRoutes(app, { store, secret: cfg.secret, cases, authed, who });
+  // LP13 bounded path and change exploration (model-only analysis namespace; never writes baseline records).
+  const exploration = registerExplorationRoutes(app, { store, authed, who });
+  // LP14 reviewable repair candidates (plan-only; no executor, no approval recording, no publication).
+  registerRepairRoutes(app, { store, exploration, cases, authed, who });
+  // LP15 local attention queue (in-app only; never uses the notifier or any remote destination).
+  registerAttentionRoutes(app, { store, exploration, sink: cfg.attentionTestSink ?? null, authed, who });
 
   // ---- optional bounded case assistance (R05.4): read-only drafts; deterministic without a model ----
   app.post("/api/projects/:p/cases/:id/assist", { preHandler: authed() }, async (req) => {
@@ -753,6 +832,48 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     return assistCase(store, pid, cases.get(pid, CP(req)) as never, cfg.assistant ?? null, { max_queries: typeof b.max_queries === "number" ? b.max_queries : undefined });
   });
 
+  app.post("/api/projects/:p/cases/:id/local-repairs", { preHandler: authed("analyst"), bodyLimit: 1_048_576 }, async (req) => localRepairs.link(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
+  app.get("/api/projects/:p/cases/:id/local-repairs", { preHandler: authed() }, async (req) => localRepairs.list(store.require(req.principal!, P(req), "viewer").id, CP(req)));
+  // Declared configuration of a local run's enforcement points (launcher/admin only; read by the analysis state and LP14).
+  app.post("/api/projects/:p/local-configuration", { preHandler: authed("admin"), bodyLimit: 262_144 }, async (req) => recordLocalConfig(store, store.require(req.principal!, P(req), "admin").id, body(req), who(req)));
+  app.get("/api/projects/:p/local-configuration", { preHandler: authed("analyst") }, async (req) => latestLocalConfig(store, store.require(req.principal!, P(req), "analyst").id) ?? { schema: "dk.local.config_snapshot.v1", none: true });
+  app.post("/api/projects/:p/local-regressions/check", { preHandler: authed("analyst") }, async (req) => ({ regressions: localRepairs.check(store.require(req.principal!, P(req), "analyst").id, body(req), who(req)) }));
+  // LP28: evidence-only case capsule (training capsules with a sealed oracle are built by the evaluation harness only;
+  // the server never holds private truth). Import goes into a new, separate namespace after full in-memory checks.
+  app.post("/api/projects/:p/cases/:id/capsule", { preHandler: authed("analyst") }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "analyst").id, cid = CP(req);
+    const exp = cases.export(pid, cid, who(req), cfg.secret);
+    const scene = store.getScene(pid), graph = store.getGraph(pid);
+    const docs = localRepairs.documents(pid, cid);
+    // Optional LP29 mission records (investigator view only: brief + truth commitment + runner-reported runs).
+    const reqBody = (req.body ?? {}) as { mission_ids?: unknown };
+    const missionIds = reqBody.mission_ids === undefined ? [] : Array.isArray(reqBody.mission_ids) && reqBody.mission_ids.length <= 20 && reqBody.mission_ids.every((x) => typeof x === "string") ? [...new Set(reqBody.mission_ids as string[])] : null;
+    if (!missionIds) throw new HttpError(400, "mission_ids must be an array of at most 20 mission ids");
+    const missions = missionIds.map((id) => { const m = missionRecord(store, id); if (!m) throw new HttpError(404, `unknown mission ${id}`); return m; });
+    try {
+      const c = buildCapsule({ kind: "evidence_only", caseExport: exp as never, scene: scene && graph ? { digest: scene.digest, layout_version: (scene as { layout_version?: number }).layout_version ?? null, graph_revision: graph.graph_revision } : null, regressions: docs.regressions, verifications: docs.verifications, missions, signingSecret: cfg.secret, now: store.now() });
+      store.audit(who(req), "case.capsule_export", pid, cid, { capsule_id: c.manifest.capsule_id, entries: (c.manifest.entries as unknown[]).length });
+      return { manifest: c.manifest, signature: c.signature, archive_base64: c.archive.toString("base64"), media_type: "application/gzip", file_name: `${String(c.manifest.capsule_id)}.dkcapsule.tar.gz` };
+    } catch (e) { if (e instanceof CapsuleRefusal) throw new HttpError(422, e.message, e.problems); throw e; }
+  });
+  app.post("/api/capsules/import", { preHandler: authed("admin"), bodyLimit: 48 * 1024 * 1024 }, async (req) => {
+    const b = body(req);
+    if (typeof b.archive_base64 !== "string") throw new HttpError(400, "archive_base64 is required");
+    let imp;
+    try { imp = importCapsule(Buffer.from(b.archive_base64, "base64"), { signingSecret: cfg.secret }); }
+    catch (e) { if (e instanceof CapsuleRefusal) throw new HttpError(422, e.message, e.problems.length ? e.problems : [e.code]); throw e; }
+    if (store.db.prepare("SELECT 1 FROM capsule_imports WHERE namespace = ?").get(imp.namespace)) throw new HttpError(409, "this capsule is already imported");
+    const { sealed, ...rest } = imp;
+    const stored = { ...rest, sealed: { present: sealed.present, opened: false, note: sealed.present ? "a sealed training oracle is attached; the server never opens it" : "no sealed attachment" } };
+    store.db.prepare("INSERT INTO capsule_imports (namespace, capsule_id, kind, manifest, body, imported_by, imported_at) VALUES (?, ?, ?, ?, ?, ?, ?)").run(imp.namespace, String(imp.manifest.capsule_id), imp.kind, JSON.stringify(imp.manifest), JSON.stringify(stored), who(req), store.now().toISOString());
+    store.audit(who(req), "capsule.import", imp.namespace, String(imp.manifest.capsule_id), { kind: imp.kind, signature: imp.checks.signature });
+    return stored;
+  });
+  app.get("/api/capsules/:ns", { preHandler: authed("viewer") }, async (req) => {
+    const r = store.db.prepare("SELECT body FROM capsule_imports WHERE namespace = ?").get((req.params as { ns: string }).ns) as { body: string } | undefined;
+    if (!r) throw new HttpError(404, "no such imported capsule");
+    return JSON.parse(r.body);
+  });
   // ---- regression proposals from closed cases (R07.4) ----
   const regressions = new Regressions(store);
   app.post("/api/projects/:p/cases/:id/regression-proposal", { preHandler: authed("analyst") }, async (req) => { const pid = store.require(req.principal!, P(req), "analyst").id; return regressions.propose(pid, CP(req), body(req), who(req), cases.get(pid, CP(req)) as never); });
@@ -768,10 +889,10 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.post("/api/notifications/destinations/:id/test", { preHandler: authed("admin") }, async (req) => { const r = notifier.test(CP(req)); await notifier.deliver(); return r; });
   app.get("/api/projects/:p/notifications/status", { preHandler: authed() }, async (req) => notifier.status(store.require(req.principal!, P(req), "viewer").id));
   app.post("/api/projects/:p/notifications/:id/ack", { preHandler: authed("analyst") }, async (req) => notifier.acknowledge(store.require(req.principal!, P(req), "analyst").id, CP(req), who(req)));
-  app.post("/api/projects/:p/cases/:id/items", { preHandler: authed("analyst") }, async (req) => cases.addItem(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
-  app.post("/api/projects/:p/cases/:id/items/:item/question", { preHandler: authed("analyst") }, async (req) => cases.setQuestion(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req)));
-  app.post("/api/projects/:p/cases/:id/items/:item/remove", { preHandler: authed("analyst") }, async (req) => cases.removeItem(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req)));
-  app.post("/api/projects/:p/cases/:id/status", { preHandler: authed("analyst") }, async (req) => cases.setStatus(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req), req.principal!.role));
+  app.post("/api/projects/:p/cases/:id/items", { preHandler: authed("analyst") }, async (req) => { const pid = store.require(req.principal!, P(req), "analyst").id; const c = cases.addItem(pid, CP(req), body(req), who(req)); investigation.afterCaseChange(pid, c.id, who(req)); return c; });
+  app.post("/api/projects/:p/cases/:id/items/:item/question", { preHandler: authed("analyst") }, async (req) => cases.setQuestion(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req), req.principal!.principalType));
+  app.post("/api/projects/:p/cases/:id/items/:item/remove", { preHandler: authed("analyst") }, async (req) => { const pid = store.require(req.principal!, P(req), "analyst").id; const c = cases.removeItem(pid, CP(req), (req.params as { item: string }).item, body(req), who(req), req.principal!.principalType); investigation.afterCaseChange(pid, c.id, who(req)); return c; });
+  app.post("/api/projects/:p/cases/:id/status", { preHandler: authed("analyst") }, async (req) => cases.setStatus(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req), req.principal!.role, req.principal!.principalType));
   app.post("/api/verify-export", { preHandler: authed("viewer") }, async (req) => verifyCase(req.body, cfg.secret));
   // Installation admins see the whole audit log; project admins only their projects' entries.
   app.get("/api/audit", { preHandler: authed("admin") }, async (req) => {
@@ -875,9 +996,25 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const q = req.query as { from?: string; action?: string; resource?: string; max_hops?: string };
     if (!q.from || !q.action || !q.resource || q.from.length > 300 || q.resource.length > 400 || !/^[a-z0-9-]+:[A-Za-z*]+$/.test(q.action)) throw new HttpError(400, "from, action (service:Action) and resource are required");
     const snap = latestSnapshot(proj.id);
-    if (!snap) return { schema: "dk.access_paths.v1", snapshot: null, paths: [], result: "unresolved", reasons: ["no authorization snapshot has been stored"] };
+    if (!snap) return { schema: "dk.access_paths.v1", evaluator: EVALUATOR_VERSION, snapshot: null, paths: [], result: "unresolved", reasons: ["no authorization snapshot has been stored"] };
     const paths = accessPaths(snap, q.from, q.action, q.resource, Math.min(3, Math.max(0, Number(q.max_hops ?? 2) || 0)));
-    return { schema: "dk.access_paths.v1", snapshot: { id: snap.snapshot_id, taken_at: snap.taken_at }, result: paths[0]?.decision.result ?? "unresolved", paths: paths.slice(0, 20), note: "Configured permission only. Use event search or coverage history for what actually happened." };
+    return { schema: "dk.access_paths.v1", evaluator: EVALUATOR_VERSION, snapshot: { id: snap.snapshot_id, taken_at: snap.taken_at }, result: paths[0]?.decision.result ?? "unresolved", paths: paths.slice(0, 20), note: "Configured permission only. Use event search or coverage history for what actually happened." };
+  });
+  // LP18: evidence-linked interior of one asset (dk.asset_interior.v1). Every object carries its exact authoritative
+  // record and provenance; declared/configured links are never transit; grants come from the latest authorization
+  // snapshot (null snapshot => grants unknown, never "none"). Read-only, viewer scope.
+  app.get("/api/projects/:p/assets/:asset/interior", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const graph = store.getGraph(proj.id);
+    if (!graph) throw new HttpError(404, "project has no graph");
+    const asset = (req.params as { asset: string }).asset;
+    const snap = latestSnapshot(proj.id);
+    const evaluation = store.evaluation(proj.id);
+    const interior = buildInterior({ project_id: proj.id, graph, asset_id: asset, events: store.listEvents(proj.id, { asset, limit: 5000 }),
+      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled }) => ({ id, label, kind, asset_ids, disabled })), coverage: evaluation.coverage,
+      controls: controls.list(proj.id), grants: snap ? grantElements(snap).filter((g): g is typeof g & { kind: "grant" | "credential" } => g.kind === "grant" || g.kind === "credential") : null });
+    if (!interior) throw new HttpError(404, "no such asset");
+    return interior;
   });
   app.get("/api/projects/:p/aftermath/aws-key/:key", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");
@@ -947,6 +1084,10 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const reasons = [...new Set(results.filter((r) => r.status === "rejected").map((r) => (r as { reason: string }).reason))];
     return { partialSuccess: { rejectedSpans: String(rejected), errorMessage: `${rejected} span(s) rejected${reasons.length ? `: ${reasons.join(", ")}` : " (invalid span structure)"}` } };
   });
+
+  // ---- LP04+: local world builder (preview) and local run reporting ----
+  registerLocalWorld(app, { store, authed });
+  registerMissions(app, { store, authed, who });
 
   // ---- static web app ----
   const dist = cfg.webDist ?? resolve(import.meta.dirname, "../../web/dist");

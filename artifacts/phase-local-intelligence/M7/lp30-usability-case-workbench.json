@@ -1,0 +1,60 @@
+{
+  "scope": "API-backed isolated synthetic server; Chromium headless with SwiftShader (software WebGL). Automated checks only.",
+  "renderer": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "findings": [],
+  "view": "case-workbench",
+  "open_ms": 6019,
+  "axe_region": {
+    "violations": [],
+    "incomplete": 2,
+    "passes": 13
+  },
+  "keyboard": {
+    "presses": 12,
+    "focused": 11,
+    "with_visible_indicator": 11,
+    "sample": [
+      {
+        "tag": "BUTTON",
+        "text": "Refresh",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px inset"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Acknowledge Contradiction f-1smha6p11bwr",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px inset"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Acknowledge Contradiction f-1ogfivz17xdj",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px inset"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Acknowledge Observer gap src-db-audit",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px inset"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Acknowledge Stale check src-falco",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px inset"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Acknowledge Stale check src-edge",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(255, 255, 255, 0.02) 0px 1px 0px 0px inset"
+      }
+    ]
+  },
+  "reduced_motion_media": true,
+  "overflow_390_px": 0
+}

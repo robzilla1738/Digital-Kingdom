@@ -1,0 +1,517 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dk:local:repair-regression:v1",
+  "title": "Local repair regression descriptor (LP23): a sanitized, replayable regression captured from an executed and independently verified local repair. Synthetic, local-only, no secrets, no private oracle, no executable content.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "dk.local.repair_regression.v1"
+    },
+    "regression_id": {
+      "type": "string",
+      "pattern": "^lrg-[a-f0-9]{16}$"
+    },
+    "lesson": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "world": {
+      "type": "object",
+      "properties": {
+        "blueprint": {
+          "enum": [
+            "saas-storefront",
+            "agent-workspace",
+            "delivery-identity"
+          ]
+        },
+        "blueprint_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seed": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+        },
+        "plan_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "catalog_version": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+        },
+        "catalog_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "blueprint",
+        "blueprint_version",
+        "seed",
+        "plan_digest",
+        "catalog_version",
+        "catalog_digest"
+      ],
+      "additionalProperties": false
+    },
+    "prerequisites": {
+      "type": "object",
+      "properties": {
+        "defect": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "properties": {
+              "resource_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "setting": {
+                "const": "policy_variant"
+              },
+              "value": {
+                "enum": [
+                  "baseline",
+                  "candidate",
+                  "deliberately_weak"
+                ]
+              }
+            },
+            "required": [
+              "resource_id",
+              "setting",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "principals": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "pattern": "^principal-[0-9]{1,2}$"
+              },
+              "kind": {
+                "const": "session"
+              },
+              "account": {
+                "type": "string",
+                "pattern": "^acct:[a-z0-9-]+:[a-z0-9-]+$"
+              }
+            },
+            "required": [
+              "ref",
+              "kind",
+              "account"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "defect",
+        "principals"
+      ],
+      "additionalProperties": false
+    },
+    "repair": {
+      "type": "object",
+      "properties": {
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "properties": {
+              "action_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "type": {
+                "enum": [
+                  "set_gateway_policy",
+                  "deactivate_test_token",
+                  "remove_test_grant",
+                  "select_test_artifact",
+                  "restart_test_observer"
+                ]
+              },
+              "target_resource_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "parameters": {
+                "type": "object",
+                "maxProperties": 1,
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 200
+                }
+              },
+              "expected_target_revision": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              }
+            },
+            "required": [
+              "action_id",
+              "type",
+              "target_resource_id",
+              "parameters",
+              "expected_target_revision"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "actions"
+      ],
+      "additionalProperties": false
+    },
+    "probes": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "expectation": {
+            "enum": [
+              "prohibited",
+              "permitted"
+            ]
+          },
+          "control": {
+            "enum": [
+              "negative",
+              "positive"
+            ]
+          },
+          "request": {
+            "type": "object",
+            "properties": {
+              "resource": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "method": {
+                "enum": [
+                  "GET",
+                  "POST"
+                ]
+              },
+              "path": {
+                "type": "string",
+                "pattern": "^/[A-Za-z0-9/_.:-]{0,200}$"
+              },
+              "principal": {
+                "type": "string",
+                "pattern": "^principal-[0-9]{1,2}$"
+              }
+            },
+            "required": [
+              "resource",
+              "method",
+              "path",
+              "principal"
+            ],
+            "additionalProperties": false
+          },
+          "effect": {
+            "type": "object",
+            "properties": {
+              "observer": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "resource": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              }
+            },
+            "required": [
+              "observer",
+              "resource"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "expectation",
+          "control",
+          "request",
+          "effect"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "expected": {
+      "type": "object",
+      "properties": {
+        "baseline": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "properties": {
+              "probe_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "actual_effect": {
+                "enum": [
+                  "observed",
+                  "not_observed",
+                  "unknown"
+                ]
+              }
+            },
+            "required": [
+              "probe_id",
+              "actual_effect"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "without_repair": {
+          "type": "object",
+          "properties": {
+            "prohibited_effects": {
+              "const": "observed"
+            }
+          },
+          "required": [
+            "prohibited_effects"
+          ],
+          "additionalProperties": false
+        },
+        "after_repair": {
+          "type": "object",
+          "properties": {
+            "security_verdict": {
+              "const": "pass"
+            },
+            "residual_access": {
+              "type": "array",
+              "maxItems": 0
+            },
+            "disruption": {
+              "type": "array",
+              "maxItems": 0
+            },
+            "whole_run": {
+              "const": "success"
+            }
+          },
+          "required": [
+            "security_verdict",
+            "residual_access",
+            "disruption",
+            "whole_run"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "baseline",
+        "without_repair",
+        "after_repair"
+      ],
+      "additionalProperties": false
+    },
+    "versions": {
+      "type": "object",
+      "properties": {
+        "policies": {
+          "type": "object",
+          "maxProperties": 20,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "template": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "template_version": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "template_digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "revision_at_validation": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              }
+            },
+            "required": [
+              "template",
+              "template_version",
+              "template_digest",
+              "revision_at_validation"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "tools": {
+          "type": "object",
+          "properties": {
+            "effect_verifier": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+            },
+            "repair_controller": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+            },
+            "repair_operations": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+            },
+            "replayer": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+            }
+          },
+          "required": [
+            "effect_verifier",
+            "repair_controller",
+            "repair_operations",
+            "replayer"
+          ],
+          "additionalProperties": false
+        },
+        "artifacts": {
+          "type": "object",
+          "maxProperties": 20,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "required": [
+        "policies",
+        "tools",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
+    "linkage": {
+      "type": "object",
+      "properties": {
+        "case_ref": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{16}$"
+        },
+        "control_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "maxItems": 20
+        },
+        "plan_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "execution_receipt_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "verification_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "verification_outcome": {
+          "const": "success"
+        }
+      },
+      "required": [
+        "case_ref",
+        "control_ids",
+        "plan_digest",
+        "execution_receipt_digest",
+        "verification_digest",
+        "verification_outcome"
+      ],
+      "additionalProperties": false
+    },
+    "residual_uncertainty": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 40,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 400
+      }
+    },
+    "replay": {
+      "type": "object",
+      "properties": {
+        "llm": {
+          "const": "not_used"
+        },
+        "executor": {
+          "const": "typed_repair_controller_under_supervisor_lease"
+        },
+        "scope": {
+          "const": "local_run_only"
+        },
+        "data_origin": {
+          "const": "synthetic_local"
+        },
+        "private_truth": {
+          "const": "not_included"
+        }
+      },
+      "required": [
+        "llm",
+        "executor",
+        "scope",
+        "data_origin",
+        "private_truth"
+      ],
+      "additionalProperties": false
+    },
+    "descriptor_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "schema",
+    "regression_id",
+    "lesson",
+    "world",
+    "prerequisites",
+    "repair",
+    "probes",
+    "expected",
+    "versions",
+    "linkage",
+    "residual_uncertainty",
+    "replay",
+    "descriptor_digest"
+  ],
+  "additionalProperties": false
+}

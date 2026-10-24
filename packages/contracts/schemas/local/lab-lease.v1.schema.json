@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dk:local:lab-lease:v1",
+  "title": "Local lab lease (LP20): supervisor-issued, run-scoped, expiring authority for exact typed repair actions. Never a human approval.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "dk.local.lab_lease.v1"
+    },
+    "namespace": {
+      "const": "dk.local.lab_authorization"
+    },
+    "lease_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "plan_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "baseline_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "candidate_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "controller_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "type": {
+            "enum": [
+              "set_gateway_policy",
+              "deactivate_test_token",
+              "remove_test_grant",
+              "select_test_artifact",
+              "restart_test_observer"
+            ]
+          },
+          "target_resource_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "parameter_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "expected_target_revision": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          }
+        },
+        "required": [
+          "action_id",
+          "type",
+          "target_resource_id",
+          "parameter_digest",
+          "expected_target_revision"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 12
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ttl_ms": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 900000
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "max_operations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      },
+      "required": [
+        "max_operations"
+      ],
+      "additionalProperties": false
+    },
+    "issuer": {
+      "const": "supervisor"
+    },
+    "approval_kind": {
+      "const": "local_lab_lease"
+    },
+    "counts_as_human_approval": {
+      "const": false
+    },
+    "authorizes": {
+      "const": "typed_repair_actions_on_run_owned_disposable_resources"
+    },
+    "production_path": {
+      "const": "not_authorized"
+    }
+  },
+  "required": [
+    "schema",
+    "namespace",
+    "lease_id",
+    "run_id",
+    "project_id",
+    "plan_id",
+    "plan_digest",
+    "baseline_digest",
+    "candidate_digest",
+    "controller_id",
+    "actions",
+    "issued_at",
+    "expires_at",
+    "ttl_ms",
+    "budget",
+    "issuer",
+    "approval_kind",
+    "counts_as_human_approval",
+    "authorizes",
+    "production_path"
+  ],
+  "additionalProperties": false
+}

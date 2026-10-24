@@ -1,0 +1,42 @@
+{
+  "schema": "dk.local.investigation_contract.proposed.v1",
+  "id": "contract-example",
+  "case_id": "case-example",
+  "project_id": "local-lab-example",
+  "run_id": "run-example",
+  "revision": 1,
+  "question": "What supports the observed effect and what remains unknown?",
+  "scope": {
+    "asset_ids": [
+      "api",
+      "receiver"
+    ],
+    "after": "2026-10-23T10:00:00Z",
+    "before": "2026-10-23T10:10:00Z"
+  },
+  "obligations": [
+    {
+      "id": "resolve-origin",
+      "question": "Resolve operation identity using source authority.",
+      "status": "not_started",
+      "evidence_refs": [],
+      "query_refs": [],
+      "reason": ""
+    },
+    {
+      "id": "effect-coverage",
+      "question": "Establish relevant independent observer capability.",
+      "status": "unavailable",
+      "evidence_refs": [],
+      "query_refs": [
+        "query-coverage"
+      ],
+      "reason": "Observer unavailable during a portion of the interval."
+    }
+  ],
+  "readiness": "collecting",
+  "snapshot_refs": [
+    "snapshot-example"
+  ],
+  "private_truth_access": false
+}

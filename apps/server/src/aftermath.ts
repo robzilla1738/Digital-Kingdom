@@ -1,7 +1,7 @@
 import type { SecurityEvent } from "@dk/contracts";
 import type { Store } from "./store.ts";
 import { coverageHistory } from "./coverage-history.ts";
-import { evaluate, type AuthSnapshot } from "./access/aws-policy.ts";
+import { evaluate, type AuthSnapshot, type Decision } from "./access/aws-policy.ts";
 import { keyFingerprint } from "./adapters/aws.ts";
 
 /**
@@ -18,6 +18,8 @@ export interface Descendant {
   current_state: "active" | "inactive" | "expired" | "removed" | "unknown";
   surviving_permission: string | null;
   pattern: string | null;
+  /** LP01: the evaluator decision behind surviving_permission (same object the access-paths API returns). */
+  access_decision?: Decision;
 }
 export interface AftermathReport {
   schema: "dk.credential_aftermath.v1"; key: string; malicious_claimed: false; original_state: "active" | "inactive" | "unknown";
@@ -64,6 +66,7 @@ export function credentialAftermath(store: Store, projectId: string, keyId: stri
       if (d.current_state === "active" && owner) {
         const probe = snap!.resources[0] ? evaluate(snap!, owner.arn, "s3:GetObject", `${snap!.resources[0].arn}/*`) : null;
         d.surviving_permission = `${owner.arn} via active key ${d.id}${probe && probe.result !== "blocked" ? `; s3:GetObject on ${snap!.resources[0]!.arn} is ${probe.result}` : ""}`;
+        if (probe) d.access_decision = probe;
       }
       const creator = snap?.principals.find((p) => p.access_keys?.some((k) => k.id === d.created_by_key));
       if (creator && owner && creator.arn === owner.arn) d.pattern = "same-user key creation: consistent with routine rotation; confirm with the owner before treating it as malicious";

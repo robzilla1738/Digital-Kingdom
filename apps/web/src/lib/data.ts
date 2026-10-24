@@ -1,6 +1,8 @@
 import type { CompiledScene, CoverageRecord, Finding, Graph, SecurityEvent } from "@dk/contracts";
 import { compileScene, defaultProposal } from "@dk/scene-compiler";
 import { evaluate, processDeliveries, type Delivery, type PipelineStats, type SourceConfig } from "@dk/detections";
+import { emptyPresentation } from "./emptyPresentation.ts";
+export { emptyPresentation };
 import demoGraph from "../../../../fixtures/demo/graph.json";
 import demoSources from "../../../../fixtures/demo/sources.json";
 import demoDeliveries from "../../../../fixtures/demo/deliveries.json";
@@ -8,7 +10,7 @@ import demoMeta from "../../../../fixtures/demo/meta.json";
 
 export interface Dataset {
   mode: "offline-demo" | "server";
-  project: { id: string; name: string; dataset_kind: "synthetic" | "live"; description?: string };
+  project: { id: string; name: string; dataset_kind: "synthetic" | "live"; description?: string; provenance?: LocalProvenance };
   projects: { id: string; name: string; dataset_kind: string }[];
   graph: Graph;
   scene: CompiledScene;
@@ -72,8 +74,10 @@ export class Api {
 }
 export class ApiError extends Error { constructor(readonly status: number, message: string, readonly issues?: string[], readonly current?: Record<string, string | number | boolean>) { super(message); } }
 
+/** LP03: server-reported local run provenance (orthogonal to dataset_kind). Absent from older servers. */
+export type LocalProvenance = { local_run: true; label: string; run_id: string; execution_mode: string; data_origin: "synthetic_local"; scope: "local_run_only" } | { local_run: false };
 interface Snapshot {
-  project: { id: string; name: string; dataset_kind: "synthetic" | "live"; meta?: { description?: string; start?: string; end?: string } };
+  project: { id: string; name: string; dataset_kind: "synthetic" | "live"; meta?: { description?: string; start?: string; end?: string }; provenance?: LocalProvenance };
   graph: Graph | null; scene: CompiledScene | null; sources: (SourceConfig & { disabled?: boolean })[]; events: SecurityEvent[];
   evidence: Record<string, Record<string, unknown>>; findings: Finding[]; coverage: CoverageRecord[]; unobserved_asset_ids: string[];
   cursor: number; server_time: string; role: Dataset["role"]; planner_available: boolean;
@@ -95,16 +99,9 @@ export async function loadFromServer(api: Api, projectId?: string, signal?: Abor
   const start = s.project.meta?.start ?? new Date((times.length ? Math.min(...times) : Date.parse(s.server_time)) - 60_000).toISOString();
   const end = s.project.dataset_kind === "live" ? s.server_time : s.project.meta?.end ?? new Date((times.length ? Math.max(...times) : Date.parse(s.server_time)) + 60_000).toISOString();
   return {
-    mode: "server", project: { id: s.project.id, name: s.project.name, dataset_kind: s.project.dataset_kind, ...(s.project.meta?.description ? { description: s.project.meta.description } : {}) },
+    mode: "server", project: { id: s.project.id, name: s.project.name, dataset_kind: s.project.dataset_kind, ...(s.project.meta?.description ? { description: s.project.meta.description } : {}), ...(s.project.provenance ? { provenance: s.project.provenance } : {}) },
     projects, graph, scene, sources: s.sources, events: s.events, evidence: s.evidence, findings: s.findings,
     coverage: s.coverage, unobserved_asset_ids: s.unobserved_asset_ids, role: s.role, cursor: s.cursor, coverage_as_of: s.server_time, window: { start, end }, planner_available: s.planner_available,
   };
 }
 
-/** Local empty viewport only. This is not a compiled server inventory or an evidence record. */
-export function emptyPresentation(graph: Graph): CompiledScene {
-  return { scene_schema_version: "0.2", compiler_version: "not-compiled", catalog_version: "not-compiled", graph_revision: graph.graph_revision,
-    project_id: graph.project_id, seed: 1, style_profile: "stone-slate-v1", camera_profile: "isometric-v1", proposal_source: "default", rooms: [], zones: [], paths: [], pins: {},
-    capacities: { public: 0, application: 0, data: 0, automation: 0, delivery: 0, external: 0 }, reflow_zones: [],
-    wall: { minX: -1, maxX: 1, minZ: -1, maxZ: 1 }, bounds: { minX: -1, maxX: 1, minZ: -1, maxZ: 1 }, digest: "not-compiled-empty-project" };
-}

@@ -5,7 +5,9 @@ import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
 type M = { id: string; title: string; execution: string; tests: { file: string; name: string }[]; unavailable_reason?: string };
-const manifests = readdirSync(join(ROOT, "scenarios/dk-t")).filter((f) => f.endsWith(".json")).sort().map((f) => JSON.parse(readFileSync(join(ROOT, "scenarios/dk-t", f), "utf8")) as M);
+// DK-T01..16 (R07.3) and the LP07 local-world scenarios (their DSL documents live in scenarios/local-world/dsl/)
+const DIRS = ["scenarios/dk-t", "scenarios/local-world"];
+const manifests = DIRS.flatMap((d) => readdirSync(join(ROOT, d)).filter((f) => f.endsWith(".json")).sort().map((f) => JSON.parse(readFileSync(join(ROOT, d, f), "utf8")) as M));
 const files = [...new Set(manifests.flatMap((m) => m.tests.map((t) => t.file)))];
 const out = join(ROOT, "artifacts/scenarios"); mkdirSync(out, { recursive: true });
 const report = join(out, "vitest.json");

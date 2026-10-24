@@ -1,0 +1,205 @@
+{
+  "schema": "dk.local.eval_incident.v1",
+  "preregistration": "li-m6-c2c34916",
+  "recorded_at": "2026-10-24T03:54:09.828Z",
+  "kind": "records_lost",
+  "summary": "The sandbox was reset while the held-out model block and the advisory AI critique were running or had just finished. Files written after about 03:29 UTC (Fri 2026-10-23 10:29 PM CDT (UTC-05:00)) did not survive: model attempt records for the slots listed below, their ledger entries and progress lines, and every critique record. The surviving records are byte-for-byte what the runner wrote.",
+  "surviving_model_records": 26,
+  "planned_slots": 54,
+  "missing_model_slots": [
+    {
+      "index": 26,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 27,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 28,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 29,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 30,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 31,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 32,
+      "block": "heldout",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 33,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 34,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 35,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 36,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "index": 37,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "index": 38,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "index": 39,
+      "block": "heldout",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "index": 40,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "index": 41,
+      "block": "heldout",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "index": 42,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "index": 43,
+      "block": "heldout",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "index": 44,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "index": 45,
+      "block": "heldout",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "index": 46,
+      "block": "heldout",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "index": 47,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "index": 48,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "index": 49,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "index": 50,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 2
+    },
+    {
+      "index": 51,
+      "block": "heldout",
+      "condition": "C2",
+      "repetition": 2
+    },
+    {
+      "index": 52,
+      "block": "heldout",
+      "condition": "C1",
+      "repetition": 2
+    },
+    {
+      "index": 53,
+      "block": "heldout",
+      "condition": "C3",
+      "repetition": 2
+    }
+  ],
+  "not_re_attempted": "Missing slots are NOT re-run: each preregistered slot is attempted at most once per mode, and an attempt whose outcome was already seen (by the previous session) cannot be re-rolled. They are reported as missing, outside every denominator, never as failures or successes.",
+  "reported_by_previous_session_unverifiable": {
+    "note": "The previous session's summary said all 54 slots ran with e2e C1 dev 6/6 held-out 10/12, C2 dev 6/6 held-out 11/12, C3 dev 0/6 held-out 0/12, ledger $0.522 plus a pending critique. Those held-out records do not exist; these figures are quoted for transparency and are NOT data of this report.",
+    "e2e": {
+      "dev/C1": "6/6",
+      "heldout/C1": "10/12",
+      "dev/C2": "6/6",
+      "heldout/C2": "11/12",
+      "dev/C3": "0/6",
+      "heldout/C3": "0/12"
+    },
+    "ledger_usd": 0.522
+  },
+  "spend_estimate": {
+    "method": "conservative: each missing attempt is charged the largest settled amount of any surviving attempt in its block; the critique is charged its per-request bound (28k prompt tokens + the full completion cap at live pricing) for every slot without a surviving critique record, since it is unknown how many critique requests ran",
+    "pricing_per_token": {
+      "input": 1e-7,
+      "output": 2e-7
+    },
+    "missing_attempts": 28,
+    "attempt_estimate_usd": 0.6532966160000018,
+    "critique_requests_bound": 54,
+    "critique_bound_each_usd": 0.006,
+    "critique_estimate_usd": 0.324
+  },
+  "critique": "incomplete: no critique record survived; the advisory critique is reported as not available for this run"
+}

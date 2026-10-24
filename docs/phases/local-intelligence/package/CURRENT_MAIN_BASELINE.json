@@ -1,0 +1,97 @@
+{
+  "schema": "dk.phase_baseline.v1",
+  "repository": "robzilla1738/Digital-Kingdom",
+  "branch": "main",
+  "head": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+  "review_date": "2026-10-23",
+  "checked_this_turn": [
+    "main ref",
+    "docs/roadmap/REMAINING.md",
+    "apps/server/src/recipes.ts",
+    "examples/reference-app/src/lab/runner.ts",
+    "artifacts/completion/evaluation/REPORT.md",
+    "apps/mcp/src/server.ts",
+    "apps/server/src/access/aws-policy.ts"
+  ],
+  "not_performed_this_turn": [
+    "repository changes",
+    "application test execution",
+    "model calls",
+    "live-provider tests",
+    "deployment",
+    "human review"
+  ],
+  "prior_review_context": "The earlier exact-head review reported successful CI and the downloadable repository status review. This phase preparation rechecked relevant source, not that complete execution.",
+  "existing_components_to_extend": {
+    "facts_and_coverage": [
+      "apps/server/src/facts.ts",
+      "apps/server/src/coverage-history.ts"
+    ],
+    "investigation": [
+      "apps/server/src/cases.ts",
+      "apps/server/src/bundles.ts",
+      "apps/server/src/recipes.ts",
+      "apps/server/src/investigate.ts"
+    ],
+    "authority_and_change": [
+      "apps/server/src/access/aws-policy.ts",
+      "apps/server/src/aftermath.ts",
+      "apps/server/src/change-review.ts",
+      "apps/server/src/response-plan.ts",
+      "apps/server/src/verification.ts"
+    ],
+    "local_runtime": [
+      "examples/reference-app/src/pack.ts",
+      "examples/reference-app/src/agent/boundary.ts",
+      "examples/reference-app/src/lab/runner.ts"
+    ],
+    "interfaces": [
+      "apps/mcp/src/server.ts",
+      "apps/web/src/workspaces/investigate/CasesWorkspace.tsx",
+      "apps/web/src/lib/layers.ts",
+      "packages/scene-compiler/src/hierarchy.ts",
+      "packages/contracts/src/surfaces.ts"
+    ],
+    "evaluation": [
+      "eval/src/v2/harness.ts",
+      "eval/src/v2/preflight.ts",
+      "eval/src/v2/report.ts"
+    ]
+  },
+  "source_review_findings": [
+    {
+      "id": "F01",
+      "state": "previously reproduced in isolated evaluator; unchanged predicate rechecked",
+      "path": "apps/server/src/access/aws-policy.ts",
+      "detail": "Final conditional decision checks identity/resource conditional denies, not all restrictive layers; reproduce in full module before repairing."
+    },
+    {
+      "id": "F02",
+      "state": "source-reviewed risk; new failing tests required",
+      "path": "apps/server/src/recipes.ts",
+      "detail": "Bounded query helpers, null coverage/budget exhaustion, scope joins and inference from follow-on events need explicit incomplete/unknown handling. Do not infer credential guessing success or authorized intent from sign-in/follow-on alone."
+    },
+    {
+      "id": "F03",
+      "state": "source-reviewed verification-hardening opportunity, not independently reproduced exploit",
+      "path": "examples/reference-app/src/lab/runner.ts",
+      "detail": "Hostname validation and effect counter snapshots alone do not establish owned target identity or isolated effects. Bind run-owned endpoints, correlate observers per operation, recheck liveness and preserve cleanup failure separately."
+    }
+  ],
+  "frozen_evaluation": {
+    "path": "artifacts/completion/evaluation/REPORT.md",
+    "heldout_full_tools": {
+      "attempts": 72,
+      "event_records_exposed": 485,
+      "required_records": 534,
+      "automatic_unsuccessful": 13
+    },
+    "heldout_event_tools": {
+      "attempts": 72,
+      "event_records_exposed": 534,
+      "required_records": 534,
+      "automatic_unsuccessful": 0
+    },
+    "interpretation": "Motivates retrieval/completeness work. Not a human-reviewed performance or causal result; do not overwrite prior records."
+  }
+}

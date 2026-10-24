@@ -1,0 +1,34 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "LW-01",
+ "version": 1,
+ "title": "Tenant boundary through a policy change, observer outage and delayed evidence (SaaS storefront)",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "dsl": "scenarios/local-world/dsl/LW-01.scenario.json",
+ "expected_observations": [
+  "Own-tenant read observed; cross-tenant read denied and not observed under the baseline policy",
+  "Under the deliberately weak policy the cross-tenant read is independently observed",
+  "During the audit observer outage the cross-tenant effect is unknown, not absent; delayed API records keep their occurrence time"
+ ],
+ "disallowed_claims": [
+  "No cross-tenant data was read during the outage",
+  "The distractor tenant-b user's own read is the incident"
+ ],
+ "missing_evidence_variant": "audit observer stopped -> effect unknown; api-sdk records delayed until release",
+ "benign_alternative": "tenant-b user reading tenant-b records (labelled distractor in private truth only)",
+ "tests": [
+  {
+   "file": "examples/reference-app/lp07-scenarios.test.ts",
+   "name": "two fresh runs of LW-01 have identical intended state"
+  },
+  {
+   "file": "examples/reference-app/lp07-scenarios.test.ts",
+   "name": "delayed and missing evidence"
+  },
+  {
+   "file": "examples/reference-app/lp07-scenarios.test.ts",
+   "name": "the viewer-token view of Digital Kingdom leaks nothing from private truth"
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+  "scope": "API-backed isolated synthetic server, Chromium headless SwiftShader; local runner in the test process.",
+  "cases": [
+    {
+      "case": "mission desk lifecycle",
+      "mission": "mission-saas-storefront-fba531",
+      "run": "run-021ba332c869",
+      "run_status": "complete",
+      "invalid_draft_kept": true,
+      "investigator_truth_markers_absent": true,
+      "truth_opened_taints": true,
+      "narrow_390_horizontal_overflow_px": 0,
+      "result": "passed"
+    }
+  ]
+}

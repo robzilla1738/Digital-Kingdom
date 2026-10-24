@@ -1,0 +1,22 @@
+{
+  "name": "lp17-f15-families-district",
+  "file": "lp17-f15-families-district.png",
+  "sha256": "91594bba9a58bba36b4295461e206ba54c79b10c9c3539d421b36b9092e289db",
+  "bytes": 295475,
+  "capturedAt": "2026-10-24T06:04:08.888Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F15"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

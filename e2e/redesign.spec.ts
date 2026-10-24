@@ -147,10 +147,11 @@ test('V11: replay uses explicit known-time basis and keeps source-coverage limit
   await captureRedesign(page,'V11c-expanded-exact-record-lanes');
 });
 
-test('V09–V10: ten architectural modules and actual roof removal', async ({ page }) => {
+test('V09–V10: all stable architectural modules and actual roof removal', async ({ page }) => {
   await page.goto(h.offlineUrl + '/?moduleSheet=all');
-  await expect(page.getByRole('heading', { name: /ten stable module IDs/ })).toBeVisible();
-  await expect.poll(async () => (await page.locator('canvas').screenshot()).length).toBeGreaterThan(25000);
+  await expect(page.getByRole('heading', { name: /16 stable module IDs/ })).toBeVisible();
+  // 16 modules (kit 2.1.0) make the first SwiftShader frame slower; the first element screenshot can exceed the 10 s action timeout.
+  await expect.poll(async () => (await page.locator('canvas').screenshot({ timeout: 30_000 })).length, { timeout: 60_000 }).toBeGreaterThan(25000);
   await page.waitForTimeout(500); await captureRedesign(page, 'V09-ten-module-sheet');
   await page.goto(h.offlineUrl + '/?moduleSheet=near');
   await expect(page.getByRole('heading', { name: /four-module near inspection/ })).toBeVisible();
@@ -321,8 +322,19 @@ test('explicit camera focus and context loss preserve stable selection and graph
     const [width, height] = (canvas.dataset.cameraViewport ?? '').split('x').map(Number), bounds = canvas.getBoundingClientRect();
     return Math.abs(width - bounds.width) < 1 && Math.abs(height - bounds.height) < 1;
   })).toBe(true);
-  const initial=await page.locator('canvas').getAttribute('data-camera-pose');
-  await page.getByRole('button',{name:'Focus asset',exact:true}).click();
+  // A late layout pass (an inspector scrollbar appearing once its content settles, ~15 px) can refit
+  // the unmanipulated overview once more after the first viewport match (CI runs 40047042997,
+  // 40048249657: zoom 20.184 -> 19.683, so Back correctly restored the refitted view, not the stale
+  // baseline). Wait for pose and drawing surface to be stable across a quiet interval, then read the
+  // baseline and press Focus in the same task so no refit can fall between the two.
+  const settledPose = () => page.locator('canvas').evaluate(canvas => {
+    const [width, height] = (canvas.dataset.cameraViewport ?? '').split('x').map(Number), bounds = canvas.getBoundingClientRect();
+    return Math.abs(width - bounds.width) < 1 && Math.abs(height - bounds.height) < 1 && canvas.dataset.cameraActive !== 'true' ? canvas.dataset.cameraPose ?? null : null;
+  });
+  await expect.poll(async () => { const a = await settledPose(); await page.waitForTimeout(500); const b = await settledPose(); return a !== null && a === b; }, {timeout: 10_000}).toBe(true);
+  const focusButton = page.getByRole('button',{name:'Focus asset',exact:true});await expect(focusButton).toBeEnabled();
+  const initial = await focusButton.evaluate(button => { const pose = document.querySelector('canvas')?.dataset.cameraPose ?? null; (button as HTMLButtonElement).click(); return pose; });
+  expect(initial).not.toBeNull();
   await expect.poll(()=>page.locator('canvas').getAttribute('data-camera-pose')).not.toBe(initial);
   await page.waitForTimeout(600);const focused=await page.locator('canvas').getAttribute('data-camera-pose');
   const selection=await page.locator('aside.evidence').getAttribute('data-selection-id');
@@ -439,6 +451,9 @@ test('A11Y-05: reduced-motion preference makes focus immediate and leaves no con
   await page.emulateMedia({reducedMotion:'reduce'});await offline(page,'?fixture=F01#workspace=kingdom&view=castle&sel=asset:api');await rendered(page);const canvas=page.locator('canvas');const before=await canvas.getAttribute('data-camera-pose');
   await canvas.evaluate(element=>{const states:(string|null)[]=[];(window as any).__motionStates=states;const observer=new MutationObserver(records=>{for(const record of records)states.push(record.oldValue,element.getAttribute('data-camera-active'));});observer.observe(element,{attributes:true,attributeFilter:['data-camera-active'],attributeOldValue:true});(window as any).__motionObserver=observer;});
   await page.getByRole('button',{name:'Focus asset',exact:true}).click();await expect.poll(()=>canvas.getAttribute('data-camera-pose')).not.toBe(before);await page.waitForTimeout(450);
+  // One late demand frame can follow an immediate focus (LOD/selection settling: CI run 40051696346 saw 7 -> 8 inside the idle
+  // window). Continuous motion never settles, so require a quiet 300 ms first (bounded), then assert a full 700 ms idle window.
+  await expect.poll(async()=>{const a=await canvas.getAttribute('data-render-count');await page.waitForTimeout(300);return a===await canvas.getAttribute('data-render-count');},{timeout:5_000}).toBe(true);
   const focused=await canvas.getAttribute('data-camera-pose'),framesBefore=await canvas.getAttribute('data-render-count');await page.waitForTimeout(700);const framesAfter=await canvas.getAttribute('data-render-count');expect(framesAfter).toBe(framesBefore);expect(await canvas.getAttribute('data-camera-pose')).toBe(focused);
   const motion=await page.evaluate(()=>{(window as any).__motionObserver.disconnect();return {prefersReduced:matchMedia('(prefers-reduced-motion: reduce)').matches,cameraActiveStates:(window as any).__motionStates,runningDomAnimations:document.getAnimations().filter(a=>a.playState==='running').length};});expect(motion.prefersReduced).toBe(true);expect(motion.cameraActiveStates).not.toContain('true');expect(motion.runningDomAnimations).toBe(0);
   writeRedesignEvidence('reduced-motion-behavior.json',{scope:'Chromium media preference emulation, real 3D focus and MutationObserver, 700ms idle observation; not a physical OS-setting or screen-reader certification',before,focused,framesBefore,framesAfter,...motion});

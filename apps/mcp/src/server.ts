@@ -1,5 +1,6 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { createFocusedServer, type FocusedProfile } from "./focused.ts";
 
 /**
  * Digital Kingdom MCP server — the agent interface. It talks to the same Digital Kingdom server (and so the
@@ -51,6 +52,10 @@ export interface CreateServerOptions {
    * server enforces.
    */
   tools?: readonly string[];
+  /** LP11: a focused investigation profile (investigation-read | investigation-author) instead of the full toolset. */
+  profile?: FocusedProfile;
+  /** LP11: per-call job unit cap for the focused author profile (default 20). */
+  maxUnitsPerCall?: number;
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
@@ -67,6 +72,7 @@ export function parseToolAllowlist(v: string | undefined): string[] | undefined 
 }
 
 export function createServer(client: DkClient, opts: CreateServerOptions = {}): McpServer {
+  if (opts.profile) return createFocusedServer(client, { profile: opts.profile, maxOutputBytes: opts.maxOutputBytes ?? MAX_OUTPUT_BYTES, maxUnitsPerCall: opts.maxUnitsPerCall });
   const out = (data: unknown, note?: string) => outWith(opts.maxOutputBytes ?? MAX_OUTPUT_BYTES, data, note);
   const server = new McpServer({ name: "digital-kingdom", version: "0.3.2" }, {
     instructions:
@@ -250,7 +256,7 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
 
   server.registerTool("dk_run_recipe", {
     title: "Weigh explanations for a finding",
-    description: "Run a recipe on a finding: competing hypotheses with supporting and counter event ids, bounded follow-on queries (including events no finding references), coverage checks, and stop conditions. If conclusion_allowed is false, do not conclude; say which observer was missing. Read-only.",
+    description: "Run a recipe on a finding: competing hypotheses typed observable/intent/authorization with supporting and counter event ids, paged follow-on queries bounded by correlation namespace (including events no finding references), coverage checks, obligations, outstanding work with continuation cursors, and stop conditions. If conclusion_allowed is false, do not conclude; name the missing observer or outstanding work. Telemetry never settles intent or approval. Read-only.",
     inputSchema: { recipe_id: z.string().max(80), finding_id: z.string().max(200), max_queries: z.number().int().min(1).max(12).optional(), project }, annotations: RO,
   }, async ({ recipe_id, finding_id, max_queries, project: p }) => out(await client.req("POST", client.p(`/recipes/${encodeURIComponent(recipe_id)}/run`, p), { finding_id, ...(max_queries ? { max_queries } : {}) })));
 
@@ -259,6 +265,26 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     description: "Presentation-only hierarchy (realm > environment > account > district > structure) from declared environment, provider account and zone, plus a flat searchable index with paths. Groups never imply an incident.",
     inputSchema: { project }, annotations: RO,
   }, async ({ project: p }) => out(await client.req("GET", client.p("/scene/hierarchy", p))));
+
+  server.registerTool("dk_world_locate", {
+    title: "Search the world and locate incarnations",
+    description: "LP16: search every asset and archived placement (name, id, alias, owner, provider identity, path) with an honest total, or locate one asset id: its current incarnation and every retired incarnation at its own last position. Archived placements are layout history, never live structures. Read-only.",
+    inputSchema: { text: z.string().max(200).optional().describe("Words to match in names, ids, aliases, owners, provider identities and paths"), asset_id: z.string().max(200).optional(), incarnation: z.string().max(220).optional(), limit: z.number().int().min(1).max(500).optional(), project }, annotations: RO,
+  }, async ({ text, asset_id, incarnation, limit, project: p }) => out(asset_id
+    ? await client.req("GET", client.p(`/scene/locate/${encodeURIComponent(asset_id)}${incarnation ? `?incarnation=${encodeURIComponent(incarnation)}` : ""}`, p))
+    : await client.req("GET", client.p(`/scene/search?${new URLSearchParams({ q: text ?? "", ...(limit ? { limit: String(limit) } : {}) })}`, p))));
+
+  server.registerTool("dk_asset_interior", {
+    title: "Evidence-linked interior of one asset",
+    description: "LP18: the typed objects inside one asset (routes, grants and credential references, data relationships and accesses, tool links, runs, decisions, executions, independently observed effects, artifacts, controls, sources), each with its exact authoritative record, provenance and basis (declared, configured, observed, tested, unknown, hypothetical). Declared and configured links are never transit; a decision is not an execution and an execution is not its effect. Read-only.",
+    inputSchema: { asset_id: z.string().max(200), project }, annotations: RO,
+  }, async ({ asset_id, project: p }) => out(await client.req("GET", client.p(`/assets/${encodeURIComponent(asset_id)}/interior`, p))));
+
+  server.registerTool("dk_local_missions", {
+    title: "Local missions (investigator view)",
+    description: "LP29: local-only synthetic missions as the investigator sees them: mode, reviewed world components, declared sources, budget preview, unknowns, blinded/non-blinded state and runner-reported run lifecycle. Builder-only details are not held by the server (only a SHA-256 commitment). No remote setup is involved. Read-only.",
+    inputSchema: { mission_id: z.string().max(100).optional() }, annotations: RO,
+  }, async ({ mission_id }) => out(await client.req("GET", mission_id ? `/api/local-missions/${encodeURIComponent(mission_id)}` : "/api/local-missions")));
 
   server.registerTool("dk_capabilities", {
     title: "Server capabilities and contract versions",

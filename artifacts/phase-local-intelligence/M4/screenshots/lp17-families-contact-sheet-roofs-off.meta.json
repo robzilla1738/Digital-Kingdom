@@ -1,0 +1,22 @@
+{
+  "name": "lp17-families-contact-sheet-roofs-off",
+  "file": "lp17-families-contact-sheet-roofs-off.png",
+  "sha256": "982c75d445dc6d767473708a0d7ed3bc10689f6d6ae7ddcb348e129abfae8fae",
+  "bytes": 207044,
+  "capturedAt": "2026-10-24T06:03:27.106Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "moduleSheet": "families"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

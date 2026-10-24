@@ -1,0 +1,2783 @@
+{
+ "schema": "dk.local_phase.status.v1",
+ "phase": "local-intelligence",
+ "package": "docs/phases/local-intelligence/package (copied verbatim from the owner's phase package, fingerprinted in FROZEN_DIGESTS.json)",
+ "branch": "phase/local-intelligence",
+ "status_vocabulary": {
+  "not_started": "No work on this package in this phase.",
+  "in_progress": "Work started; not all acceptance ids executed.",
+  "implemented_locally_verified": "Code and tests exist; typecheck and the full local suite passed on the recorded commit.",
+  "ci_verified": "implemented_locally_verified plus a passing GitHub CI run on the recorded head.",
+  "blocked": "Two genuine attempts failed; reason recorded; independent packages continue."
+ },
+ "requirement_status_vocabulary": {
+  "not_run": "No executed test yet.",
+  "passed_local": "An executed automated test passed; evidence names the test file and receipt.",
+  "failed": "An executed test failed; receipt kept.",
+  "not_exercised": "Needs an actual model/agent route that has not run (AI execution only).",
+  "deferred": "Depends on an external gate in DEFERRALS.json; never passed locally.",
+  "blocked": "Could not be executed in this environment; reason recorded."
+ },
+ "baseline": {
+  "package_baseline": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+  "recovered_head": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+  "recovered_at": "2026-10-23 (America/Chicago)",
+  "recovered_branch": "main (origin/main), clean",
+  "working_tree_at_recovery": "clean: git status reported nothing to commit; no stash; no uncommitted or unknown work to preserve",
+  "other_remote_branches": [
+   "design/castle-3d",
+   "eval/real-agent-readonly",
+   "fix/investigation-quality-gates",
+   "improve/investigation-honesty",
+   "pilot/browser-pilot",
+   "quality/completion",
+   "roadmap/batch3",
+   "roadmap/batch4",
+   "roadmap/r00-correctness",
+   "roadmap/r01-evidence"
+  ],
+  "other_branches_note": "Not touched, merged or rebased. eval/real-agent-readonly is the reference for prior eval code (also present on main under eval/).",
+  "rebase_decision": "Explicit: phase/local-intelligence was created from origin/main at 9fec7ed because no phase branch existed and main equalled the package baseline. No automatic rebase; if main moves, rebasing or merging is a recorded decision in this ledger, never implicit."
+ },
+ "previous_ledgers": [
+  "docs/roadmap/STATUS.json",
+  "docs/quality/COMPLETION-2026-10-23.md",
+  "support-matrix/SUPPORT_MATRIX.json"
+ ],
+ "frozen_history": {
+  "manifest": "docs/phases/local-intelligence/FROZEN_DIGESTS.json",
+  "verify": "tsx scripts/phase-frozen-digests.ts",
+  "test": "apps/server/test/phase-lp00-baseline.test.ts"
+ },
+ "permission_matrix": {
+  "note": "What this phase may do without new owner authorization. Derived from MASTER_PROMPT.md, 02_AGENT_HANDOFF.md, DEFERRALS.json and the implementer brief.",
+  "allowed": [
+   "edit code, tests and docs on branch phase/local-intelligence; push that branch",
+   "run local typecheck, unit/integration/browser/scenario tests and local reference applications on loopback",
+   "read GitHub CI status for the branch"
+  ],
+  "requires_fresh_approval": [
+   "any model/provider call (phase cap $3.00 total via the brief's AI Gateway route, only for packages that genuinely need a real model run; old $5 v2 ledger not inherited)",
+   "merge, deploy, GitHub settings changes, force-push, pushing main"
+  ],
+  "never_in_this_phase": [
+   "connecting real cloud/identity/SaaS accounts (EXT01)",
+   "remote notifications (EXT02)",
+   "production actions or executors (EXT03)",
+   "outside-user testing (EXT04)",
+   "recording human review or approval (EXT05)",
+   "physical GPU/assistive-technology certification claims (EXT06)",
+   "generic shell or arbitrary-URL executors",
+   "investigator access to private scenario truth"
+  ]
+ },
+ "existing_to_new_mapping": {
+  "LP01": {
+   "reuses": [
+    "R04.3 scoped AWS evaluator (apps/server/src/access/aws-policy.ts)",
+    "R04.4 change review",
+    "R03.3 credential aftermath",
+    "MCP dk_access_paths"
+   ],
+   "prior_receipts": [
+    "docs/roadmap/R04-RECEIPT.md",
+    "docs/roadmap/R03-RECEIPT.md"
+   ]
+  },
+  "LP02": {
+   "reuses": [
+    "R03.2 recipes (apps/server/src/recipes.ts)",
+    "R01.5 bounded event search with signed cursors",
+    "R01.2 historical coverage",
+    "R00.2 typed namespaced correlation"
+   ],
+   "prior_receipts": [
+    "docs/roadmap/R03-RECEIPT.md",
+    "docs/roadmap/R01-RECEIPT.md",
+    "docs/roadmap/R00-RECEIPT.md"
+   ]
+  },
+  "LP03": {
+   "reuses": [
+    "@dk/contracts schemas + precompiled validators",
+    "R06.2 surface registry and support levels",
+    "R02.1 connector manifests and capability levels",
+    "R11 support matrix"
+   ],
+   "prior_receipts": [
+    "docs/roadmap/R06-RECEIPT.md",
+    "docs/roadmap/R02-RECEIPT.md",
+    "docs/roadmap/R11-RECEIPT.md"
+   ]
+  },
+  "frozen_evaluation": {
+   "path": "artifacts/completion/evaluation/REPORT.md",
+   "heldout_full_tools_records": "485/534",
+   "heldout_event_tools_records": "534/534",
+   "note": "Context for LP05+ retrieval work only; not re-scored or rewritten."
+  }
+ },
+ "packages": [
+  {
+   "id": "LP00",
+   "milestone": "M0",
+   "title": "Recover baseline and phase boundaries",
+   "depends_on": [],
+   "status": "ci_verified",
+   "commit": "9c0aec5",
+   "ci_run": 40039948906,
+   "receipt": "docs/phases/local-intelligence/receipts/LP00.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "90 files passed, 1 skipped; 626 passed, 1 skipped"
+   },
+   "ci_result": "success (check + browser-pilot jobs)"
+  },
+  {
+   "id": "LP01",
+   "milestone": "M0",
+   "title": "Repair scoped permission semantics",
+   "depends_on": [
+    "LP00"
+   ],
+   "status": "ci_verified",
+   "commit": "21b0f46",
+   "ci_run": 40040722901,
+   "receipt": "docs/phases/local-intelligence/receipts/LP01.md",
+   "before": {
+    "commit": "9c0aec5 (evaluator source identical to 9fec7ed)",
+    "failed": 12,
+    "of": 16,
+    "failing_tests": [
+     "LP01-A1 conditional denies in every restrictive layer > permission boundary conditional deny -> conditional (was feasible)",
+     "LP01-A1 conditional denies in every restrictive layer > session policy conditional deny -> conditional (was feasible)",
+     "LP01-A1 conditional denies in every restrictive layer > service control policy conditional deny -> conditional (was feasible)",
+     "LP01-A1 conditional denies in every restrictive layer > a conditional deny on a role-assumption hop makes the path conditional",
+     "LP01-A2 precedence: definite denies block, missing inputs never become feasible > missing controlling inputs are unresolved, including an unstated resource policy",
+     "LP01-A3 unsupported constructs and case-sensitive resource identifiers > Resource matching is case-sensitive; action matching is not",
+     "LP01-A3 unsupported constructs and case-sensitive resource identifiers > NotPrincipal, policy variables and unknown statement keys are unsupported and never produce feasible",
+     "LP01-A3 unsupported constructs and case-sensitive resource identifiers > an unsupported allow cannot be dropped into a confident implicit-deny block",
+     "LP01-A3 unsupported constructs and case-sensitive resource identifiers > every decision names the evaluator version and its declared limits",
+     "LP01-A4 one authoritative decision across API, change review, aftermath and MCP > paths API, change review and aftermath expose the same decision and evidence",
+     "LP01-A4 one authoritative decision across API, change review, aftermath and MCP > credential aftermath reports the same decision for a surviving descendant key",
+     "LP01-A4 one authoritative decision across API, change review, aftermath and MCP > MCP dk_access_paths returns the API decision unchanged"
+    ]
+   },
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "91 files passed, 1 skipped; 642 passed, 1 skipped",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)"
+   },
+   "ci_result": "success (check + browser-pilot jobs)"
+  },
+  {
+   "id": "LP02",
+   "milestone": "M0",
+   "title": "Harden recipe conclusions and incomplete work",
+   "depends_on": [
+    "LP00"
+   ],
+   "status": "ci_verified",
+   "commit": "01de8b9",
+   "ci_run": 40041433027,
+   "receipt": "docs/phases/local-intelligence/receipts/LP02.md",
+   "before": {
+    "commit": "21b0f46 (recipes@1)",
+    "failed": 10,
+    "of": 11,
+    "old_behaviour_probe": "docs/phases/local-intelligence/receipts/LP02.md#reproduction-first"
+   },
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "92 files passed, 1 skipped; 653 passed, 1 skipped",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "build": "exit 0"
+   },
+   "ci_result": "success (check + browser-pilot jobs)"
+  },
+  {
+   "id": "LP03",
+   "milestone": "M0",
+   "title": "Define run provenance and capability contracts",
+   "depends_on": [
+    "LP00"
+   ],
+   "status": "ci_verified",
+   "commit": "936f558",
+   "ci_run": 40042276966,
+   "receipt": "docs/phases/local-intelligence/receipts/LP03.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "94 files passed, 1 skipped; 673 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "build": "exit 0",
+    "frozen_digests": "12/12 same"
+   },
+   "ci_result": "success (check + browser-pilot jobs)"
+  },
+  {
+   "id": "LP04",
+   "milestone": "M1",
+   "title": "Compile local application blueprints",
+   "depends_on": [
+    "LP03"
+   ],
+   "status": "ci_verified",
+   "commit": "f0a8d56",
+   "ci_run": 40045896413,
+   "receipt": "docs/phases/local-intelligence/receipts/LP04.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "96 files passed, 1 skipped; 688 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "deps:inventory": "notices unchanged"
+   },
+   "reuses": [
+    "dk.local.world_plan.v1 (LP03)",
+    "graph-core importers + R09.1 routesFromOpenApi",
+    "R00.3 matchDeclaredRoutes",
+    "scene-compiler compileScene/defaultProposal (pins)"
+   ],
+   "decisions": [
+    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec \u00a722; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
+    "D-LP04-2: world_plan.v1 template enum unchanged; observers compile to declared sources (not assets); asset id = logical resource id; revision = lw-sha256(catalog digest, plan digest).",
+    "D-LP04-3: LP00-A2 test hashes frozen trees once with a 90 s timeout (timed out under concurrent load on a 2-CPU sandbox); assertions unchanged."
+   ],
+   "ci_result": "success (check + browser-pilot)"
+  },
+  {
+   "id": "LP05",
+   "milestone": "M1",
+   "title": "Own and isolate the local runtime",
+   "depends_on": [
+    "LP03",
+    "LP04"
+   ],
+   "status": "ci_verified",
+   "commit": "09cdeb3",
+   "ci_run": 40047042997,
+   "receipt": "docs/phases/local-intelligence/receipts/LP05.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "98 files passed, 1 skipped; 709 passed, 1 skipped"
+   },
+   "reuses": [
+    "R07.2 lab runner semantics (budgets, abort, positive control, inconclusive on unavailability)",
+    "reference pack loopback-only binding",
+    "LP04 compiled worlds",
+    "R00.3 templateMatches"
+   ],
+   "decisions": [
+    "D-LP05-1: run control is a library (Supervisor/Run in @dk/local-world); the server exposes no run-control endpoint and runtime_policy.local_actions stays plan_only.",
+    "D-LP05-2: trusted_builtin_processes is the only executable mode and is reported restricted; operator_isolated_containers is refused (launcher handshake not implemented), with a generated reviewable profile only.",
+    "D-LP05-3: R07.2 runner kept for existing control tests; its receipts now say target_ownership unverified_url_allowlist (negative test reproduced the unowned-listener acceptance)."
+   ],
+   "ci_result": "failure: browser-pilot e2e/redesign.spec.ts camera-baseline timing race (test captured a stale baseline; LP05 touches no web code). check job passed. Repaired in the LP07 commit.",
+   "ci_verified_on": {
+    "head": "fa8de4a",
+    "ci_run": 40050596307,
+    "result": "success (check + browser-pilot)",
+    "note": "own-commit CI run failed only on the browser-pilot camera-baseline race (D-M1-CI-1); package code unchanged and green on this head"
+   }
+  },
+  {
+   "id": "LP06",
+   "milestone": "M1",
+   "title": "Run instrumented services and independent observers",
+   "depends_on": [
+    "LP05"
+   ],
+   "status": "ci_verified",
+   "commit": "798f653",
+   "ci_run": 40048249657,
+   "receipt": "docs/phases/local-intelligence/receipts/LP06.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "100 files passed, 1 skipped; 723 passed, 1 skipped",
+    "manual": "pnpm world --once for all three blueprints"
+   },
+   "reuses": [
+    "reference app instrumentation + R05.2 agent boundary split",
+    "@dk/sdk-node (unchanged)",
+    "ordinary /ingest/events with server-side source capabilities and independence groups",
+    "R01.2 coverage history",
+    "R05.1 agent effect rule",
+    "MCP server (unchanged)",
+    "console loadFromServer",
+    "LP03 verification receipt"
+   ],
+   "decisions": [
+    "D-LP06-1: catalog bumped to dk-local-catalog-2 (local_issuer /credentials/verify, artifact_depot /deployed); catalog-1 only compiled previews.",
+    "D-LP06-2: evidence reaches DK only through ordinary per-source ingestion with supervisor-assigned operation ids as trusted request ids; corroboration is decided by registered source kind and independence group, never payload origin.",
+    "D-LP06-3: GET /api/projects/:p/local-world/reporting lists declared capabilities with reporting/silent/unavailable; the console tab is read-only and never launches processes."
+   ],
+   "ci_result": "failure: same browser-pilot camera-baseline race as LP05 (identical zoom 20.184 vs 19.683). check job passed. Repaired in the LP07 commit.",
+   "ci_verified_on": {
+    "head": "fa8de4a",
+    "ci_run": 40050596307,
+    "result": "success (check + browser-pilot)",
+    "note": "own-commit CI run failed only on the browser-pilot camera-baseline race (D-M1-CI-1); package code unchanged and green on this head"
+   }
+  },
+  {
+   "id": "LP07",
+   "milestone": "M1",
+   "title": "Build a finite scenario and fault DSL",
+   "depends_on": [
+    "LP06"
+   ],
+   "status": "ci_verified",
+   "commit": "fa8de4a",
+   "ci_run": 40050596307,
+   "receipt": "docs/phases/local-intelligence/receipts/LP07.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "106 files passed, 1 skipped; 776 passed, 1 skipped (rebased onto M2 49286ae/4917204)",
+    "lp07": "13 passed",
+    "scenarios": "DK-T unchanged (12 passed, 1 partial_passed, 3 unavailable); LW-01..03 passed",
+    "validate:fixtures": "exit 0"
+   },
+   "reuses": [
+    "scenarios/dk-t manifest format + scripts/run-scenarios.ts",
+    "LP05 supervisor (tokens, budgets, configure, snapshot/reset, ScenarioClock, RunRefusal)",
+    "LP06 services, effect observers, ReporterHub faults, ordinary ingestion",
+    "LP04 compiled worlds + templateMatches",
+    "server/MCP read surfaces unchanged as the investigator view"
+   ],
+   "decisions": [
+    "D-LP07-1",
+    "D-LP07-2",
+    "D-LP07-3",
+    "D-M1-CI-1"
+   ],
+   "ci_result": "success (check + browser-pilot)"
+  },
+  {
+   "id": "LP08",
+   "milestone": "M2",
+   "title": "Add investigation contracts and obligations",
+   "depends_on": [
+    "LP01",
+    "LP02",
+    "LP03"
+   ],
+   "status": "ci_verified",
+   "commit": "0ab5027",
+   "ci_run": 40049323638,
+   "receipt": "docs/phases/local-intelligence/receipts/LP08.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "95 files passed, 1 skipped; 685 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "generate:validators": "byte-identical"
+   },
+   "pre_rebase_commit": "e12ef0a",
+   "ci_run_pre_rebase": {
+    "id": 40046522740,
+    "check": "success",
+    "browser_pilot": "failure: flaky e2e/redesign.spec.ts:314 (camera zoom timing; also failed on M1 head 09cdeb3)"
+   },
+   "ci_head": "49286ae",
+   "ci_result": "success (check + browser-pilot jobs) on head 49286ae, which contains this commit; the four M2 commits were pushed together, so no per-commit run exists on phase/local-intelligence",
+   "local_checks_rebased": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "head": "49286ae",
+    "note": "re-run in worktree DK-m2 on the rebased tree, Node v22, aarch64"
+   }
+  },
+  {
+   "id": "LP09",
+   "milestone": "M2",
+   "title": "Execute bounded investigation plans",
+   "depends_on": [
+    "LP08"
+   ],
+   "status": "ci_verified",
+   "commit": "5b31ec0",
+   "ci_run": 40049323638,
+   "receipt": "docs/phases/local-intelligence/receipts/LP09.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "97 files passed, 1 skipped; 698 passed, 1 skipped",
+    "validate:fixtures": "exit 0"
+   },
+   "pre_rebase_commit": "882d987",
+   "ci_run_pre_rebase": {
+    "id": 40047366167,
+    "check": "success",
+    "browser_pilot": "success"
+   },
+   "ci_head": "49286ae",
+   "ci_result": "success (check + browser-pilot jobs) on head 49286ae, which contains this commit; the four M2 commits were pushed together, so no per-commit run exists on phase/local-intelligence",
+   "local_checks_rebased": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "head": "49286ae",
+    "note": "re-run in worktree DK-m2 on the rebased tree, Node v22, aarch64"
+   }
+  },
+  {
+   "id": "LP10",
+   "milestone": "M2",
+   "title": "Deliver compact evidence and check claims",
+   "depends_on": [
+    "LP09"
+   ],
+   "status": "ci_verified",
+   "commit": "dbc9fde",
+   "ci_run": 40049323638,
+   "receipt": "docs/phases/local-intelligence/receipts/LP10.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "98 files passed, 1 skipped; 708 passed, 1 skipped",
+    "validate:fixtures": "exit 0"
+   },
+   "pre_rebase_commit": "3281c88",
+   "ci_run_pre_rebase": {
+    "id": 40048100457,
+    "check": "success",
+    "browser_pilot": "failure: same flaky redesign.spec.ts:314"
+   },
+   "ci_head": "49286ae",
+   "ci_result": "success (check + browser-pilot jobs) on head 49286ae, which contains this commit; the four M2 commits were pushed together, so no per-commit run exists on phase/local-intelligence",
+   "local_checks_rebased": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "head": "49286ae",
+    "note": "re-run in worktree DK-m2 on the rebased tree, Node v22, aarch64"
+   }
+  },
+  {
+   "id": "LP11",
+   "milestone": "M2",
+   "title": "Expose a focused MCP workflow",
+   "depends_on": [
+    "LP10"
+   ],
+   "status": "ci_verified",
+   "commit": "8b0b0c9",
+   "ci_run": 40049323638,
+   "receipt": "docs/phases/local-intelligence/receipts/LP11.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "99 files passed, 1 skipped; 713 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "build": "exit 0"
+   },
+   "pre_rebase_commit": "7763ba1",
+   "ci_head": "49286ae",
+   "ci_result": "success (check + browser-pilot jobs) on head 49286ae, which contains this commit; the four M2 commits were pushed together, so no per-commit run exists on phase/local-intelligence",
+   "local_checks_rebased": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "head": "49286ae",
+    "note": "re-run in worktree DK-m2 on the rebased tree, Node v22, aarch64"
+   }
+  },
+  {
+   "id": "LP12",
+   "milestone": "M3",
+   "title": "Build the investigation workbench",
+   "depends_on": [
+    "LP08",
+    "LP10",
+    "LP11"
+   ],
+   "status": "ci_verified",
+   "commit": "bf2685c",
+   "ci_run": "40058755915 success (check + browser-pilot) on c27402e; pre-rebase 40054523494 success on ca87929",
+   "receipt": "docs/phases/local-intelligence/receipts/LP12.md",
+   "branch": "phase/li-m3",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "109 files passed, 1 skipped; 784 passed, 1 skipped (4 vitest shards)",
+    "build": "exit 0",
+    "e2e": "workbench-redesign 3 passed, cases-redesign 5 passed (local Chromium headless, SwiftShader requested)"
+   },
+   "reuses": [
+    "R03.1 cases",
+    "LP08 InvestigationContracts.view",
+    "LP09 InvestigationJobs",
+    "LP10 EvidencePackets.build (record:false) + listConclusions",
+    "LP03 provenance",
+    "navigation selection ids",
+    "redesign Playwright harness"
+   ]
+  },
+  {
+   "id": "LP13",
+   "milestone": "M3",
+   "title": "Add bounded path and change exploration",
+   "depends_on": [
+    "LP01",
+    "LP08"
+   ],
+   "status": "ci_verified",
+   "commit": "d630485",
+   "ci_run": "40058755915 success (check + browser-pilot) on c27402e; pre-rebase 40055538817 failure (CASTLE-11 late frame, D-M3-CI-1)",
+   "receipt": "docs/phases/local-intelligence/receipts/LP13.md",
+   "branch": "phase/li-m3",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "111 files passed, 1 skipped; 789 passed, 1 skipped (4 vitest shards)",
+    "build": "exit 0",
+    "e2e": "exploration-redesign 1 passed"
+   },
+   "reuses": [
+    "LP01 aws-policy evaluate/accessPaths (dk.aws_policy_eval.v2)",
+    "R04.4 reviewChange",
+    "access_snapshots",
+    "R00.3 declared routes",
+    "R01 source revisions",
+    "console relationship vocabulary"
+   ]
+  },
+  {
+   "id": "LP14",
+   "milestone": "M3",
+   "title": "Generate reviewable repair candidates",
+   "depends_on": [
+    "LP13"
+   ],
+   "status": "ci_verified",
+   "commit": "82cea39",
+   "ci_run": "40058755915 success (check + browser-pilot) on c27402e; pre-rebase 40056591089 success on 8789032",
+   "receipt": "docs/phases/local-intelligence/receipts/LP14.md",
+   "branch": "phase/li-m3",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "112 files passed, 1 skipped; 796 passed, 1 skipped (4 vitest shards)",
+    "build": "exit 0",
+    "e2e": "repairs-redesign 1 passed"
+   },
+   "reuses": [
+    "LP13 exploration (applyChanges, compareStates, explainPath, stateHash)",
+    "LP01 evaluate (dk.aws_policy_eval.v2)",
+    "R03.1 cases",
+    "LP03 provenance run_id",
+    "R08.2 changed-digest-cannot-reuse-approval principle",
+    "package repair-plan proposal + negative fixtures"
+   ],
+   "final_pass_extension": {
+    "commits": [
+     "648c30d",
+     "9ca8ba1"
+    ],
+    "what": "Local-world candidates: dk.local.config_snapshot.v1 (launcher/admin, local-run projects, matching run id) becomes analysis 'policy' elements; probe kind tenant_access and reviewed template restore-reviewed-policy (set_gateway_policy policy:baseline|candidate, bound to the run revision); agent-workspace tool-gateway path defect covered too. Model-only (dk.local.tenant_policy_model.v1).",
+    "tests": "apps/server/test/phase-lp14-local-world-repairs.test.ts (4 tests, failing first)"
+   }
+  },
+  {
+   "id": "LP15",
+   "milestone": "M3",
+   "title": "Create a local attention queue",
+   "depends_on": [
+    "LP12"
+   ],
+   "status": "ci_verified",
+   "commit": "14a0c13",
+   "ci_run": "40058755915 success (check + browser-pilot) on c27402e; pre-rebase 40058039470 success on 73e5be6",
+   "receipt": "docs/phases/local-intelligence/receipts/LP15.md",
+   "branch": "phase/li-m3",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "115 files (114 passed, 1 skipped); 804 passed, 1 skipped (4 vitest shards). One timing-sensitive test (examples/reference-app/lp07-scenarios.test.ts LP07-A3 delayed evidence lag) failed once while a concurrent model-eval run in another worktree loaded the machine; it passed 13/13 on an isolated rerun. No LP15 code is involved.",
+    "build": "exit 0",
+    "e2e": "attention-redesign 1 passed; cases-redesign 5 passed; exploration-redesign 1, repairs-redesign 1, workbench-redesign A1-A3 passed; workbench-redesign LP12-A4 timed out twice on the Cases tab 'stable' wait under the same machine load (before any LP15 UI renders) and passed on rerun"
+   },
+   "reuses": [
+    "outbox project change stream",
+    "Store.sourceState (R01.2)",
+    "source stale_after_seconds",
+    "R03.1 cases scope + linked findings",
+    "LP14 repair_candidate_sets (+ repair_candidates stream record)",
+    "LP13 Exploration.baseline",
+    "store.require project authorization",
+    "audit_log"
+   ]
+  },
+  {
+   "id": "LP16",
+   "milestone": "M4",
+   "title": "Render world hierarchy and semantic zoom",
+   "depends_on": [
+    "LP04",
+    "LP12"
+   ],
+   "status": "ci_verified",
+   "commit": "c2a439f",
+   "ci_run": 40069056700,
+   "receipt": "docs/phases/local-intelligence/receipts/LP16.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "4 vitest shards: shard 2 212/212, shard 3 201/201, shard 4 211 passed 1 skipped; shard 1 186/187 with examples/reference-app/lp06-world.test.ts LP06-A3 (wall-clock timing) failing under concurrent load from other worktrees, 11/11 on isolated rerun; no LP16 code involved. validate:fixtures exit 0",
+    "e2e": "e2e/world-redesign.spec.ts A2/A3/A4 passed (real Chromium, SwiftShader; no GPU claim)"
+   },
+   "progress_note": "Rebased onto phase/local-intelligence ab5ae29 (was f3a2dbc on phase/li-m4)."
+  },
+  {
+   "id": "LP17",
+   "milestone": "M4",
+   "title": "Build six meaningful architectural families",
+   "depends_on": [
+    "LP16"
+   ],
+   "status": "ci_verified",
+   "commit": "39484e9 + 978b273 + 1af0907",
+   "ci_run": 40069056700,
+   "receipt": "docs/phases/local-intelligence/receipts/LP17.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "8 vitest shards at 56d697a: 873 passed, 1 skipped; after sheet/offline changes: families, redesign-fixtures, groupSelection, architecture 122/122",
+    "e2e": "e2e/families-redesign.spec.ts 3/3 passed; redesign.spec.ts V09-V10 passed (Chromium headless, SwiftShader)"
+   },
+   "progress_note": "Rebased onto phase/local-intelligence ab5ae29 (was 99169a0, 56d697a, 34681ae on phase/li-m4)."
+  },
+  {
+   "id": "LP18",
+   "milestone": "M4",
+   "title": "Add evidence-linked interiors",
+   "depends_on": [
+    "LP12",
+    "LP16",
+    "LP17"
+   ],
+   "status": "ci_verified",
+   "commit": "3f692cf + 232a328 + 417d8a8",
+   "ci_run": 40069056700,
+   "receipt": "docs/phases/local-intelligence/receipts/LP18.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "phase-lp18-interior 3/3; apps/mcp 10 files 31/31",
+    "e2e": "e2e/interior-redesign.spec.ts 2/2 passed (Chromium headless, SwiftShader)"
+   },
+   "progress_note": "Rebased onto phase/local-intelligence ab5ae29 (was 2e53a7e, 997628b, 63c623d on phase/li-m4)."
+  },
+  {
+   "id": "LP19",
+   "milestone": "M4",
+   "title": "Add baseline-versus-repair world comparison",
+   "depends_on": [
+    "LP13",
+    "LP14",
+    "LP18"
+   ],
+   "status": "ci_verified",
+   "commit": "4267ca7 + d7e59e6",
+   "ci_run": 40069056700,
+   "receipt": "docs/phases/local-intelligence/receipts/LP19.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "phase-lp19-world-comparison 1/1; full vitest 4 shards at 63c623d (LP18 head) all passed",
+    "e2e": "e2e/comparison-redesign.spec.ts 1/1 passed (Chromium headless, SwiftShader)"
+   },
+   "progress_note": "Rebased onto phase/local-intelligence ab5ae29 (was ed6ed76, 3810406 on phase/li-m4). Limitations: castle overlay only (no 2D overlay), no comparison replay scope; LP22 verifications exist on this branch now but are not yet linked into executed_local."
+  },
+  {
+   "id": "LP20",
+   "milestone": "M5",
+   "title": "Introduce run-scoped local authority leases",
+   "depends_on": [
+    "LP05",
+    "LP14"
+   ],
+   "status": "ci_verified",
+   "commit": "18f06da",
+   "ci_run": "40062942807 success (check + browser-pilot, attempt 2) on phase/local-intelligence 3c8166d; attempt 1 check failed only in `pnpm scenarios` LW-01 (LP07 timing, D-M5-CI-2); branch runs: 40060924990 success on 18f06da",
+   "receipt": "docs/phases/local-intelligence/receipts/LP20.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
+    "targeted": "examples/reference-app/lp20-leases.test.ts 6 passed"
+   },
+   "reuses": [
+    "LP05 supervisor (run tokens, authorize, run-owned resources, monotonic clock, private truth, halt revocation)",
+    "LP14 dk.local.repair_plan.v1 + validateRepairPlan",
+    "R08.2 changed-digest-cannot-reuse-approval principle",
+    "existing human-admin containment decision path (unchanged)"
+   ]
+  },
+  {
+   "id": "LP21",
+   "milestone": "M5",
+   "title": "Execute typed local repairs",
+   "depends_on": [
+    "LP20",
+    "LP06"
+   ],
+   "status": "ci_verified",
+   "commit": "e18c095",
+   "ci_run": "40062942807 success (check + browser-pilot, attempt 2) on phase/local-intelligence 3c8166d; attempt 1 check failed only in `pnpm scenarios` LW-01 (LP07 timing, D-M5-CI-2); branch runs: 40061416252 failure on e18c095 (D-M5-CI-1)",
+   "receipt": "docs/phases/local-intelligence/receipts/LP21.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
+    "targeted": "examples/reference-app/lp21-repairs.test.ts 9 passed"
+   },
+   "reuses": [
+    "LP05 registry-resolved handshake-verified send, assertRoute, budgets, run directory/manifest/cleanup, private truth",
+    "LP06 built-in services (policy variants, local issuer credentials/grants, artifact depot), observers",
+    "LP14 five action types",
+    "LP20 leases"
+   ]
+  },
+  {
+   "id": "LP22",
+   "milestone": "M5",
+   "title": "Verify effects independently",
+   "depends_on": [
+    "LP21",
+    "LP07"
+   ],
+   "status": "ci_verified",
+   "commit": "b2b90b8",
+   "ci_run": "40062942807 success (check + browser-pilot, attempt 2) on phase/local-intelligence 3c8166d; attempt 1 check failed only in `pnpm scenarios` LW-01 (LP07 timing, D-M5-CI-2); branch runs: 40061825278 success (check + browser-pilot) on b2b90b8",
+   "receipt": "docs/phases/local-intelligence/receipts/LP22.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
+    "targeted": "examples/reference-app/lp22-verify.test.ts 7 passed"
+   },
+   "reuses": [
+    "LP06 EffectObserver per-operation answers + health intervals",
+    "LP06 probeOf / verificationReceipt (dk.local.verification_receipt.v1)",
+    "LP05 monotonic clock, tick, run tokens",
+    "LP07 fault semantics (observer outage = unknown)",
+    "LP21 execution receipts"
+   ]
+  },
+  {
+   "id": "LP23",
+   "milestone": "M5",
+   "title": "Capture a repair as a replayable regression",
+   "depends_on": [
+    "LP22",
+    "LP19"
+   ],
+   "status": "ci_verified",
+   "commit": "b4c6f4e + 2c82242 + ddab371",
+   "ci_run": "40071651385 success (check + browser-pilot) on ddab371; earlier 40070984746 (b4c6f4e, typecheck: test type error) and 40071303206 (2c82242, hardening downgrade list) failed and were fixed in ddab371",
+   "receipt": "docs/phases/local-intelligence/receipts/LP23.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "ddab371: all 133 vitest files passed (1 skipped file), sharded 8/16 on aarch64 sandbox",
+    "validate_fixtures": "exit 0",
+    "targeted": "examples/reference-app/lp23-regression.test.ts 4 passed; apps/server/test/phase-lp23-local-repairs.test.ts 3 passed"
+   },
+   "reuses": [
+    "LP21 RepairController + LP20 leases",
+    "LP22 EffectVerifier",
+    "LP04 compileWorld template/catalog digests",
+    "R03.1 case closure",
+    "LP13/LP19 world comparison"
+   ],
+   "progress_note": "LP23 done incl. LP19 executed-local gap; 2D-graph comparison overlay still not implemented. CI b4c6f4e failed typecheck (test type), 2c82242 failed hardening downgrade list; fixed ddab371."
+  },
+  {
+   "id": "LP24",
+   "milestone": "M6",
+   "title": "Support a bring-your-agent local investigation",
+   "depends_on": [
+    "LP11",
+    "LP07"
+   ],
+   "status": "ci_verified",
+   "commit": "2de0fbf",
+   "ci_run": 40056632819,
+   "receipt": "docs/phases/local-intelligence/receipts/LP24.md",
+   "branch": "phase/li-m6",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "110 files passed, 1 skipped; 795 passed, 1 skipped (working tree incl. LP25/LP26 tests)",
+    "lp24": "5 passed (eval/test/li-lp24-bring-your-agent.test.ts)"
+   },
+   "reuses": [
+    "LP07 scenario engine + private truth store",
+    "LP05/LP06 supervisor, services, ingestion",
+    "LP08-LP11 case/contract/job/packet routes and the LP11 investigation-read MCP profile",
+    "existing 22-tool read-only investigation allowlist",
+    "documented stdio MCP launch path + SDK client re-export",
+    "eval/src/agent.ts bounded tool loop pattern and chat() budget reservation (chat/Msg now exported)"
+   ],
+   "decisions": [
+    "D-LP24-1",
+    "D-LP24-2"
+   ],
+   "pre_rebase_commit": "3b327db",
+   "ci_result_li_m6": "success on 3b327db (run 40056632819, check + browser-pilot)"
+  },
+  {
+   "id": "LP25",
+   "milestone": "M6",
+   "title": "Separate private truth and admissible-evidence grading",
+   "depends_on": [
+    "LP24"
+   ],
+   "status": "ci_verified",
+   "commit": "3e330e4",
+   "ci_run": 40056712935,
+   "receipt": "docs/phases/local-intelligence/receipts/LP25.md",
+   "branch": "phase/li-m6",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "lp25": "8 passed (eval/test/li-lp25-private-truth.test.ts)",
+    "lp24": "5 passed"
+   },
+   "reuses": [
+    "LP07 PrivateTruth (executed ops + effect tap log, 0600 run file)",
+    "scenario DSL validators + seedCommitment",
+    "LP04 compiled-world observation table and blueprint accounts/resources"
+   ],
+   "decisions": [
+    "D-LP25-1",
+    "D-LP25-2",
+    "D-LP25-3"
+   ],
+   "pre_rebase_commit": "b82d3a3",
+   "fix_commits": [
+    "5b2b6db"
+   ],
+   "ci_result_li_m6": "success on b82d3a3 (run 40056712935) and on the li-referee-2 fix 6af3ed1 (run 40057428775)"
+  },
+  {
+   "id": "LP26",
+   "milestone": "M6",
+   "title": "Evaluate guided versus current investigation loops",
+   "depends_on": [
+    "LP25",
+    "LP10"
+   ],
+   "status": "ci_verified",
+   "commit": "b4afa9c",
+   "ci_run": 40065627734,
+   "receipt": "docs/phases/local-intelligence/receipts/LP26.md",
+   "branch": "phase/li-m6",
+   "commits": [
+    "925de91",
+    "6bfe7c7",
+    "e05a354",
+    "93f469c",
+    "e6b03b6",
+    "1b19ec6",
+    "2e49c00",
+    "8e5b9b2",
+    "b4afa9c"
+   ],
+   "pre_rebase_commits": [
+    "b95ff3e",
+    "dbedf84",
+    "73a13de",
+    "8c5f6b2",
+    "a159fe0",
+    "38acd29",
+    "798d8e2",
+    "fb8f94f",
+    "9085868"
+   ],
+   "ci_runs_li_m6": {
+    "dbedf84": "40056817647 success",
+    "73a13de": "40057111092 success",
+    "6af3ed1": "40057428775 success",
+    "8c5f6b2": "40060309968 failure: pnpm scenarios LW-01 (unchanged product code; passes locally and on every later run - flaky)",
+    "a159fe0": "40060841243 failure: new LP26.1 eval test hit a ms created_at/effective_at race (fixed in 798d8e2)",
+    "38acd29": "40060858305 success",
+    "798d8e2": "40061292021 check success; browser-pilot failure e2e/pilot.spec.ts F snapshot (live-source freshness; flaky, unrelated)",
+    "aef7f12": "40064260489 failure: lp06-world.test.ts:161 (1 ms covered during a deliberate outage) - pre-existing per-source health pairing race, not LP26.1; fixed in 970e278 (D-M6b-CI-1)",
+    "970e278": "40065153104 success (check + browser-pilot)",
+    "0dc7e74": "40065627734 success (check + browser-pilot)"
+   },
+   "sub_packages": [
+    {
+     "id": "LP26.1",
+     "title": "Local-run coverage reflects live observers (defect found by the LP26 comparison)",
+     "commits": [
+      "e6b03b6",
+      "2e49c00"
+     ],
+     "tests": [
+      "apps/server/test/phase-lp26-1-coverage.test.ts (5)",
+      "eval/test/li-lp26-1-coverage.test.ts (3)"
+     ],
+     "negative_tests_first": "3 of 5 product tests and the eval satisfied-obligation test failed before the fix; the eval test also fails with either fix alone",
+     "decision": "D-LP26-4"
+    }
+   ],
+   "evaluations": {
+    "li-m6-c2c34916": {
+     "label": "v1, sealed as is, records-lost incident",
+     "report": "artifacts/local-intelligence/m6-eval/REPORT.md",
+     "model_records": "26/54 (dev 18/18, held-out 8/36; 28 lost, not re-run, outside every denominator)",
+     "scripted": "54/54, 100%",
+     "e2e": {
+      "dev/C1": "6/6",
+      "dev/C2": "6/6",
+      "dev/C3": "0/6",
+      "heldout/C1": "4/5",
+      "heldout/C2": "1/1",
+      "heldout/C3": "0/2"
+     },
+     "predicates": {
+      "dev/C1": "66/66",
+      "dev/C2": "66/66",
+      "dev/C3": "58/66",
+      "heldout/C1": "52/54",
+      "heldout/C2": "12/12",
+      "heldout/C3": "22/24"
+     },
+     "critique": "incomplete: no record survived"
+    },
+    "li-m6-e61d01f7": {
+     "label": "follow-up after LP26.1 on the same documents (held-out burned), 1 repetition",
+     "report": "artifacts/local-intelligence/m6-eval-followup/REPORT.md",
+     "model_records": "27/27",
+     "scripted": "27/27, 100%",
+     "e2e": {
+      "dev/C1": "2/3",
+      "dev/C2": "3/3",
+      "dev/C3": "3/3",
+      "heldout/C1": "5/6",
+      "heldout/C2": "6/6",
+      "heldout/C3": "4/6"
+     },
+     "predicates": {
+      "dev/C1": "32/33",
+      "dev/C2": "33/33",
+      "dev/C3": "33/33",
+      "heldout/C1": "59/60",
+      "heldout/C2": "60/60",
+      "heldout/C3": "57/60"
+     },
+     "unsupported_affirmatives": 0,
+     "critique": "not run (budget)"
+    }
+   },
+   "decisions": [
+    "D-LP26-1",
+    "D-LP26-2",
+    "D-LP26-3",
+    "D-LP26-4",
+    "D-LP26-5"
+   ],
+   "rebased_commit_map": "pre-rebase -> phase/local-intelligence: LP24 3b327db->2de0fbf; LP25 b82d3a3->3e330e4 (fix 6af3ed1->5b2b6db); LP26 b95ff3e->925de91, dbedf84->6bfe7c7, 73a13de->e05a354, 8c5f6b2->93f469c, a159fe0->e6b03b6, 38acd29->1b19ec6, 798d8e2->2e49c00, fb8f94f->8e5b9b2, 9085868->b4afa9c; ledger bab16d8",
+   "ci_note": "CI-verified on phase/local-intelligence 0dc7e74 (run 40065627734, check + browser-pilot), which contains every LP26/LP26.1 commit plus the 970e278 coverage per-asset fix (D-M6b-CI-1)"
+  },
+  {
+   "id": "LP27",
+   "milestone": "M6",
+   "title": "Exercise adversarial and fault variants",
+   "depends_on": [
+    "LP25",
+    "LP22"
+   ],
+   "status": "ci_verified",
+   "commit": "0dc7e74",
+   "ci_run": 40065627734,
+   "receipt": "docs/phases/local-intelligence/receipts/LP27.md",
+   "branch": "phase/local-intelligence (from phase/li-m6b)",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "lp27": "10 passed (eval/test/li-lp27-variants.test.ts)",
+    "eval": "11 files, 64 passed",
+    "coverage+lp06+lp07+lp26.1+m6b": "6 files, 42 passed"
+   },
+   "reuses": [
+    "LP07 scenario DSL (parseScenario, checkScenarioAgainstWorld) and runScenario",
+    "LP05/LP06 supervisor, observers, reporter hub faults",
+    "LP25 referee answerKey/gradeAnswer/logicalKey",
+    "LP24 scripted analyze, parseAnswer, scoreAttempt",
+    "LP20 request budget"
+   ],
+   "artifacts": [
+    "artifacts/phase-local-intelligence/M6/lp27-variant-report.json"
+   ],
+   "model_run": "not attempted (optional); scripted variants only; spend $0.00",
+   "decisions": [
+    "D-LP27-1",
+    "D-LP27-2"
+   ]
+  },
+  {
+   "id": "LP28",
+   "milestone": "M7",
+   "title": "Package evidence-only and training capsules",
+   "depends_on": [
+    "LP23",
+    "LP25"
+   ],
+   "status": "ci_verified",
+   "commit": "72383a6",
+   "ci_run": "40072232517 success (check + browser-pilot) on 72383a6. Ledger commit 261cfd4 run 40072612866 attempt 1: check failed only in examples/reference-app/e2e.test.ts (events 0 vs 10, collector timing; same code passed check on 72383a6 and locally) - re-ran failed jobs (attempt 2: check success).",
+   "receipt": "docs/phases/local-intelligence/receipts/LP28.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "72383a6: 8 vitest shards, 134 files (133 passed, 1 skipped); 952 passed, 1 skipped",
+    "targeted": "apps/server/test/phase-lp28-capsules.test.ts 4 passed; hardening 12 passed"
+   },
+   "reuses": [
+    "R03.1 signed case export",
+    "R10.2 backup scrypt parameters",
+    "LP23 checkRegression + local_repair_links",
+    "LP25 oracle separation (server never holds private truth)"
+   ],
+   "progress_note": "LP28 done; no web UI button and no public-key signature (HMAC origin only)."
+  },
+  {
+   "id": "LP29",
+   "milestone": "M7",
+   "title": "Build a local mission and scenario composer",
+   "depends_on": [
+    "LP07",
+    "LP18",
+    "LP28"
+   ],
+   "status": "ci_verified",
+   "commit": "d3eb304",
+   "ci_run": "40075197316 success (check + browser-pilot) on d3eb304; ledger commit 031e69e run 40075237943 success",
+   "receipt": "docs/phases/local-intelligence/receipts/LP29.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "d3eb304: 8 vitest shards, 135 files (134 passed, 1 skipped); 962 passed, 1 skipped",
+    "targeted": "examples/reference-app/lp29-missions.test.ts 10 passed; e2e/missions-redesign.spec.ts 1 passed (SwiftShader)"
+   },
+   "reuses": [
+    "LP04 compileWorld/previewWorld",
+    "LP07 parseScenario/checkScenarioAgainstWorld/runScenario",
+    "LP06 startLocalWorld",
+    "LP25 truth separation"
+   ],
+   "progress_note": "LP29 done; runs via pnpm mission run (console never launches processes); no mission capsule packaging or console capsule button yet."
+  },
+  {
+   "id": "LP30",
+   "milestone": "M7",
+   "title": "Measure local robustness and visual usability",
+   "depends_on": [
+    "LP29",
+    "LP27"
+   ],
+   "status": "ci_verified",
+   "commit": "b10de50 + 10e66e9",
+   "ci_run": "40076967713 success (check + browser-pilot) on 10e66e9; 40076513358 on b10de50 failed (release:verify dirty tree, fixed in 10e66e9)",
+   "receipt": "docs/phases/local-intelligence/receipts/LP30.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "targeted": "examples/reference-app/lp30-robustness.test.ts 3 passed; e2e/usability-redesign.spec.ts 7 passed (run in groups, SwiftShader)",
+    "test": "no product code changed; candidate d3eb304 full suite 962 passed, 1 skipped"
+   },
+   "model_spend_usd": 0,
+   "progress_note": "LP30 CI-verified; both 390px findings fixed in 4358bbc (tested, screenshots inspected).",
+   "followups": {
+    "commit": "4358bbc",
+    "findings_fixed": [
+     "390px: an open comparison is now rendered in flow above the list/map (collapsed summary 'Comparison open ...'), visible in the list view before 'Show map'",
+     "390px: the comparison no longer overlaps the Castle view camera toolbar (bounding boxes asserted disjoint)"
+    ],
+    "tests": [
+     "e2e/usability-redesign.spec.ts comparison-branch (narrow: data-variant=inline, visible before Show map, no overlap with toolbar 'Castle view'; desktop: data-variant=overlay)"
+    ],
+    "screenshots": [
+     "artifacts/phase-local-intelligence/M7/screenshots/lp30-comparison-branch-narrow-390-list-view.png",
+     "artifacts/phase-local-intelligence/M7/screenshots/lp30-comparison-branch-narrow-390.png"
+    ],
+    "missions_in_capsules": "LP29 mission records travel in LP28 evidence-only capsules (role 'mission'; builder-truth fields refused at build and import): apps/server/test/phase-lp31-mission-capsules.test.ts (2 tests)",
+    "ci": "4358bbc covered by run 40078019427; final head dca446d run 40078498692 success"
+   }
+  },
+  {
+   "id": "LP31",
+   "milestone": "M7",
+   "title": "Deliver the integrated local phase",
+   "depends_on": [
+    "LP30",
+    "LP26"
+   ],
+   "status": "ci_verified",
+   "commit": "dca446d (final candidate; loop c4174f4, LP30 follow-ups 4358bbc)",
+   "ci_run": "40078498692 success (check + browser-pilot) on dca446d",
+   "receipt": "docs/phases/local-intelligence/receipts/LP31.md",
+   "branch": "phase/local-intelligence",
+   "deliverables": [
+    "eval/local/integrated-loop.ts",
+    "scripts/local-loop.ts (pnpm loop:local)",
+    "eval/test/li-lp31-integrated-loop.test.ts",
+    "eval/test/li-lp31-ledger.test.ts",
+    "docs/phases/local-intelligence/PHASE_REPORT.md"
+   ],
+   "model_spend_usd": 0.41225387,
+   "progress_note": "Final excellence pass in progress: gaps (1)-(3) closed and pushed; optional fresh-document AI comparison and final verification next (see receipts/LP31.md 'Final excellence pass').",
+   "local_checks": {
+    "head": "dca446d",
+    "typecheck": "exit 0",
+    "test": "8 shards: 139 files (138 passed, 1 skipped); 970 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "15 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "build": "exit 0",
+    "release:manifest + release:verify": "release matches recorded build dca446d (18 files)",
+    "key e2e": "comparison-redesign LP19, missions-redesign LP29, usability comparison-branch + mission-builder: 4 passed (SwiftShader)",
+    "integrated loop": "pnpm loop:local LOOP OK; eval/test/li-lp31-integrated-loop.test.ts passed"
+   },
+   "final_pass": {
+    "commits": [
+     "648c30d",
+     "3d083b6",
+     "9ca8ba1",
+     "9436054"
+    ],
+    "closed": [
+     "LP14 returned 0 candidates for the local world -> 2 valid generated candidates; the loop executes the rank-1 generated plan unmodified",
+     "second disposable run -> one leased world (startLocalCase {lab:'leased'}; default plan-only, tested)",
+     "placeholder castle comparison -> the executed candidate's own LP13 change list (api room changed)"
+    ],
+    "loop_receipt_stages": "world_and_scenario complete; case_and_guided_contract completed; investigation_focused_mcp complete; evidence_and_claim_checks passed; repair_candidates 2 valid of 2; lease issued; typed_local_repair executed (set_gateway_policy@api policy:baseline, LP14 rank 1 unmodified); independent_verification success; regression_capture_and_replay replayed; case_link_and_castle_comparison linked (api:changed, success/verified/local_run_only); post_repair_model_check no_repair_needed; capsule_export_import imported; single_run true",
+    "ai_comparison": {
+     "preregistration": "li-m7-7f4a12cd (committed 7f1d615 before any attempt)",
+     "dir": "artifacts/local-intelligence/m7-fresh-eval",
+     "documents": "12 newly generated held-out (4 per family), fresh master seed, revealed at seal",
+     "model": "meta/muse-spark-1.3-contributor",
+     "records": "36/36 model, 36/36 scripted, none lost (committed as produced)",
+     "heldout_e2e": {
+      "C1": "11/12",
+      "C2": "11/12",
+      "C3": "8/12"
+     },
+     "heldout_predicates": {
+      "C1": "96/99",
+      "C2": "98/99",
+      "C3": "89/99"
+     },
+     "retrieval": "108/108 each",
+     "unsupported_affirmatives": 0,
+     "underclaims": {
+      "C1": 3,
+      "C2": 1,
+      "C3": 10
+     },
+     "scripted": "12/12 e2e, 99/99 predicates each condition",
+     "spend_true_usd": 0.208718,
+     "spend_attributed_usd": 0.412254
+    }
+   }
+  }
+ ],
+ "requirements": {
+  "LP00-A1": {
+   "package": "LP00",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp00-baseline.test.ts > LP00-A1",
+    "docs/phases/local-intelligence/receipts/LP00.md#recovered-state-lp00-a1"
+   ]
+  },
+  "LP00-A2": {
+   "package": "LP00",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp00-baseline.test.ts > LP00-A2",
+    "scripts/phase-frozen-digests.ts",
+    "docs/phases/local-intelligence/FROZEN_DIGESTS.json"
+   ]
+  },
+  "LP00-A3": {
+   "package": "LP00",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp00-baseline.test.ts > LP00-A3 (4 tests)",
+    "apps/server/src/phase-policy.ts"
+   ]
+  },
+  "LP00-A4": {
+   "package": "LP00",
+   "status": "passed_local",
+   "evidence": [
+    "docs/phases/local-intelligence/receipts/LP00.md#baseline-checks-lp00-a4 (typecheck, 620 tests, fixtures, scenarios, build executed; collector binary and Playwright recorded not_run locally)"
+   ]
+  },
+  "LP01-A1": {
+   "package": "LP01",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp01-permissions.test.ts > LP01-A1 (5 tests; boundary/session/SCP/hop failed before the fix)"
+   ]
+  },
+  "LP01-A2": {
+   "package": "LP01",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp01-permissions.test.ts > LP01-A2 (3 tests)"
+   ]
+  },
+  "LP01-A3": {
+   "package": "LP01",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp01-permissions.test.ts > LP01-A3 (5 tests)"
+   ]
+  },
+  "LP01-A4": {
+   "package": "LP01",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp01-permissions.test.ts > LP01-A4 (API, change review, aftermath via CloudTrail ingestion, MCP)",
+    "apps/server/test/phase-lp00-baseline.test.ts > LP00-A2 (frozen records unchanged)"
+   ]
+  },
+  "LP02-A1": {
+   "package": "LP02",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp02-recipes.test.ts > LP02-A1 (budget exhaustion, failed page, zero observers, no data store)"
+   ]
+  },
+  "LP02-A2": {
+   "package": "LP02",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp02-recipes.test.ts > LP02-A2 (130 padding events: retrieved via continuation pages; budget 1: partial + resumable cursor)"
+   ]
+  },
+  "LP02-A3": {
+   "package": "LP02",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp02-recipes.test.ts > LP02-A3 (different namespace, undeclared namespace, shared-namespace positive control)"
+   ]
+  },
+  "LP02-A4": {
+   "package": "LP02",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp02-recipes.test.ts > LP02-A4 (auth recipe and agent recipe through real ingestion)",
+    "apps/server/test/recipes-r03.test.ts (updated, explicit)"
+   ]
+  },
+  "LP03-A1": {
+   "package": "LP03",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp03-contracts.test.ts > LP03-A1 (4 tests: enums unchanged, v0.3 fixture upgrade, dataset_kind untouched, explicit proposal-id migration)"
+   ]
+  },
+  "LP03-A2": {
+   "package": "LP03",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp03-contracts.test.ts > LP03-A2 (API 9 surfaces incl. both exports; MCP overview/search/event; invalid local_run 422)",
+    "apps/web/src/panels/localProvenance.test.ts (UI pill + dataset mapping)"
+   ]
+  },
+  "LP03-A3": {
+   "package": "LP03",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp03-contracts.test.ts > LP03-A3 (package negative fixtures; 17 forbidden fields at every level of 4 contracts; semantic rules)"
+   ]
+  },
+  "LP03-A4": {
+   "package": "LP03",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp03-contracts.test.ts > LP03-A4 (5 tests incl. surfaces API from project records)"
+   ]
+  },
+  "LP04-A1": {
+   "package": "LP04",
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp04-blueprints.test.ts > LP04-A1 (3 tests: three blueprints compile+preview with no credential/endpoint; reviewed components; explicit observation gaps)",
+    "apps/server/test/phase-lp04-world.test.ts > LP04-A1 (empty DB previews all three via API; zero project/source/audit rows written)"
+   ]
+  },
+  "LP04-A2": {
+   "package": "LP04",
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp04-blueprints.test.ts > LP04-A2 (5 tests: hostile compose ignored/rejected with reasons; interpolation; YAML tags/alias bomb/size; OpenAPI remote/local refs, servers, callbacks, links, webhooks; manifest; world-plan injections)",
+    "apps/server/test/phase-lp04-world.test.ts > LP04-A2 (descriptor preview via API)"
+   ]
+  },
+  "LP04-A3": {
+   "package": "LP04",
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp04-blueprints.test.ts > LP04-A3 (3 tests: identical compiled world + layout per blueprint/seed; seed only as commitment; seed/setting/budget change => new revision)"
+   ]
+  },
+  "LP04-A4": {
+   "package": "LP04",
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp04-blueprints.test.ts > LP04-A4 (2 tests: added service preserves prior coordinates/identities/sources; ambiguous route stays ambiguous)"
+   ]
+  },
+  "LP05-A1": {
+   "package": "LP05",
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp05-supervisor.test.ts > LP05-A1 (7 tests: registered peer; URL/metadata/LAN/unregistered/route refusals with zero hits; 20-address destination table; redirects refused, never followed; port-rebind impostor fails handshake; ambient HTTP_PROXY unused; unsigned direct request 403)",
+    "examples/reference-app/lp05-legacy-runner.test.ts (negative reproduction: URL allowlist admits an unowned loopback listener; receipts now target_ownership unverified)"
+   ]
+  },
+  "LP05-A2": {
+   "package": "LP05",
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp05-supervisor.test.ts > LP05-A2 (4 tests: cross-run token refused; forged signature; env/header labels grant nothing; non-lab project refused; least-authority scope; clone has new ids/nonces/tokens)"
+   ]
+  },
+  "LP05-A3": {
+   "package": "LP05",
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp05-supervisor.test.ts > LP05-A3 (3 tests: owned cleanup idempotent; symlink swap, hard link, user file and same-named user dir survive with recorded failure and cleanup_failed outcome; cleanup refused while active)"
+   ]
+  },
+  "LP05-A4": {
+   "package": "LP05",
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp05-supervisor.test.ts > LP05-A4 (5 tests: frozen Date + frozen scenario clock + paused run still abort on monotonic deadline; pause; budgets; preflight control states, container mode refused, profile constraints; tampered world ignored)"
+   ]
+  },
+  "LP06-A1": {
+   "package": "LP06",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp06-world.test.ts > LP06-A1 (real ingress->api->tenant-db request; identical records via API search/detail, MCP dk_search_events/dk_get_event and the console loadFromServer)"
+   ]
+  },
+  "LP06-A2": {
+   "package": "LP06",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp06-world.test.ts > LP06-A2 (2 tests: permitted observed / prohibited denied+not_observed under api:policy-baseline-r1, receipt pass; deliberately_weak r2 effect observed, receipt fail; concurrent operations not misattributed)"
+   ]
+  },
+  "LP06-A3": {
+   "package": "LP06",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp06-world.test.ts > LP06-A3 (observer outage: real effect unknown, probe/verdict inconclusive, no observer record, sensor_unavailable, coverage history 0 covered ms over the outage)"
+   ]
+  },
+  "LP06-A4": {
+   "package": "LP06",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp06-world.test.ts > LP06-A4 (3 tests: distinct registered authority per source; relay rejected action_not_permitted; same-group sidecar not independent; agent world forged independent_observer rejected, existing rule corroborated only via receiver observer)"
+   ]
+  },
+  "LP07-A1": {
+   "package": "LP07",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp07-scenarios.test.ts > LP07-A1 (3 tests: finite vocabulary, executable/network fields and traversal rejected; every reference resolves in the compiled world; no process/eval/dynamic-code path in engine, DSL, services, supervisor)",
+    "docs/phases/local-intelligence/receipts/LP07.md"
+   ]
+  },
+  "LP07-A2": {
+   "package": "LP07",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp07-scenarios.test.ts > LP07-A2 (3 tests: identical intended-state digest across two fresh LW-01 runs with different run/op ids and recorded per-step timing; different seed differs and mismatched seed refused; snapshot/reset; partial accounting for stopped schedules and budget refusals)",
+    "docs/phases/local-intelligence/receipts/LP07.md"
+   ]
+  },
+  "LP07-A3": {
+   "package": "LP07",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp07-scenarios.test.ts > LP07-A3 (2 tests: LW-02 dropped observer evidence leaves truth identical to the unfaulted run but absent from DK; LW-01 delayed records keep occurrence time with receipt lag; outage effect in truth graded unknown)",
+    "docs/phases/local-intelligence/receipts/LP07.md"
+   ]
+  },
+  "LP07-A4": {
+   "package": "LP07",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp07-scenarios.test.ts > LP07-A4 (4 tests: viewer-token API view of LW-01..03 has no seed/commitment/scenario id/labels/expectations/role markers/tokens/keys/passwords, checker mutation-tested; truth file 0600 in run dir; no MCP tool or API route exposes truth; API/MCP/web sources never reference DSL documents or the engine; static serving cannot traverse to a DSL document beside the bundle)",
+    "docs/phases/local-intelligence/receipts/LP07.md"
+   ]
+  },
+  "LP08-A1": {
+   "package": "LP08",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp08-contracts.test.ts > LP08-A1 (4 tests: derivation from scope/asset kinds/recipes, twin worlds + canary, import isolation, proposal/truth/unbounded rejection)"
+   ]
+  },
+  "LP08-A2": {
+   "package": "LP08",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp08-contracts.test.ts > LP08-A2 (3 tests: scope-mismatched results refused, no satisfied route, documented analyst inapplicability, validator)"
+   ]
+  },
+  "LP08-A3": {
+   "package": "LP08",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp08-contracts.test.ts > LP08-A3 (2 tests: unresolved_answer_ready only after every obligation attempted; honest unresolved draft; negative claim refused)"
+   ]
+  },
+  "LP08-A4": {
+   "package": "LP08",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp08-contracts.test.ts > LP08-A4 (3 tests: interval change, late arrival, asset add/remove; append-only revisions and ledger)"
+   ]
+  },
+  "LP09-A1": {
+   "package": "LP09",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp09-jobs.test.ts > LP09-A1 (40 tied timestamps, page size 5, late arrivals mid-search: exact snapshot, key event beyond page one)"
+   ]
+  },
+  "LP09-A2": {
+   "package": "LP09",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp09-jobs.test.ts > LP09-A2 (2 tests: typed plans refuse SQL/path/URL/graph/credential/unknown fields; scope-safe pivots)",
+    "apps/mcp/test/phase-lp09-tool-params.test.ts > LP09-A2 (every MCP tool input schema audited)"
+   ]
+  },
+  "LP09-A3": {
+   "package": "LP09",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp09-jobs.test.ts > LP09-A3 (4 tests: crash-before-commit + new process resume, cursor-expiry restart, cancellation, creator-token revocation)"
+   ]
+  },
+  "LP09-A4": {
+   "package": "LP09",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp09-jobs.test.ts > LP09-A4 (5 tests: budget exhaustion/extension, purge mid-pagination, failed page, explicit counters and read-only preview, quota)"
+   ]
+  },
+  "LP10-A1": {
+   "package": "LP10",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp10-packets.test.ts > LP10-A1 (2 tests: machine-readable omissions and exact-once expansion; not-stored required record is an individual omission)"
+   ]
+  },
+  "LP10-A2": {
+   "package": "LP10",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp10-packets.test.ts > LP10-A2 (2 tests: availability vs existence vs project scope; cross-revision scope and stale revision)"
+   ]
+  },
+  "LP10-A3": {
+   "package": "LP10",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp10-packets.test.ts > LP10-A3 (3 tests: narrative flags keep draft, predicates checked only against delivered records, absence claims)"
+   ]
+  },
+  "LP10-A4": {
+   "package": "LP10",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp10-packets.test.ts > LP10-A4 (3 tests: counterevidence first and uncertainty intact under limits, signed export with tamper detection, reads change nothing)"
+   ]
+  },
+  "LP11-A1": {
+   "package": "LP11",
+   "status": "passed_local",
+   "evidence": [
+    "apps/mcp/test/phase-lp11-focused.test.ts > LP11-A1 (real stdio; both profiles: event detail parity, bundle-page parity, cross-project 404/not found)"
+   ]
+  },
+  "LP11-A2": {
+   "package": "LP11",
+   "status": "passed_local",
+   "evidence": [
+    "apps/mcp/test/phase-lp11-focused.test.ts > LP11-A2 (annotations, read tools change no rows, viewer token refused 403 on every author write)"
+   ]
+  },
+  "LP11-A3": {
+   "package": "LP11",
+   "status": "passed_local",
+   "evidence": [
+    "apps/mcp/test/phase-lp11-focused.test.ts > LP11-A3 (injected imperative text stays untrusted; profile/project/unit cap/budget/approvals unchanged)"
+   ]
+  },
+  "LP11-A4": {
+   "package": "LP11",
+   "status": "passed_local",
+   "evidence": [
+    "apps/mcp/test/phase-lp11-focused.test.ts > LP11-A4 (bounded pages with cursors; disconnect + new process resume; model_calls 0)",
+    "apps/mcp/test/phase-lp11-focused.test.ts > exportable configuration launches the server over stdio"
+   ]
+  },
+  "LP12-A1": {
+   "package": "LP12",
+   "status": "passed_local",
+   "evidence": [
+    "e2e/workbench-redesign.spec.ts > LP12-A1 (stale reads net::ERR_ABORTED, drafts per case)",
+    "apps/web/src/lib/caseDrafts.test.ts (2 tests)",
+    "docs/phases/local-intelligence/receipts/LP12.md"
+   ]
+  },
+  "LP12-A2": {
+   "package": "LP12",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp12-workbench.test.ts > LP12-A2 (2 tests)",
+    "e2e/workbench-redesign.spec.ts > LP12-A2/A3",
+    "apps/web/src/lib/workbench.test.ts"
+   ]
+  },
+  "LP12-A3": {
+   "package": "LP12",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp12-workbench.test.ts > LP12-A3",
+    "e2e/workbench-redesign.spec.ts > LP12-A2/A3"
+   ]
+  },
+  "LP12-A4": {
+   "package": "LP12",
+   "status": "passed_local",
+   "evidence": [
+    "e2e/workbench-redesign.spec.ts > LP12-A4 (keyboard, reduced-motion, 390px parity)",
+    "artifacts/phase-local-intelligence/M3/screenshots/lp12-*.png"
+   ]
+  },
+  "LP13-A1": {
+   "package": "LP13",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp13-exploration.test.ts > LP13-A1",
+    "apps/web/src/lib/pathInspector.test.ts",
+    "e2e/exploration-redesign.spec.ts > LP13-A1"
+   ]
+  },
+  "LP13-A2": {
+   "package": "LP13",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp13-exploration.test.ts > LP13-A2 (21 baseline tables + scene digest unchanged)"
+   ]
+  },
+  "LP13-A3": {
+   "package": "LP13",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp13-exploration.test.ts > LP13-A3"
+   ]
+  },
+  "LP13-A4": {
+   "package": "LP13",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp13-exploration.test.ts > LP13-A4 (deterministic receipt digest, stale base 409, recheck)"
+   ]
+  },
+  "LP14-A1": {
+   "package": "LP14",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp14-repairs.test.ts > LP14-A1/A2 (3 tests)",
+    "e2e/repairs-redesign.spec.ts > LP14-A1/A2",
+    "apps/server/test/phase-lp14-local-world-repairs.test.ts (local-world candidates for LP04 policy-variant defects)"
+   ]
+  },
+  "LP14-A2": {
+   "package": "LP14",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp14-repairs.test.ts > LP14-A1/A2 (ranking criteria + optimality disclaimer)",
+    "e2e/repairs-redesign.spec.ts > tradeoff table"
+   ]
+  },
+  "LP14-A3": {
+   "package": "LP14",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp14-repairs.test.ts > LP14-A3 (canary, static import/exec checks, no apply/publish routes, temp-dir-only materialisation)"
+   ]
+  },
+  "LP14-A4": {
+   "package": "LP14",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp14-repairs.test.ts > LP14-A4 (exact digest binding, stale baseline, expiry, authorizes_execution false)",
+    "apps/server/test/phase-lp14-repairs.test.ts > contract tests (2)"
+   ]
+  },
+  "LP15-A1": {
+   "package": "LP15",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp15-attention.test.ts > LP15-A1 (2 tests: retries/burst/replay/restart; five kinds + bounded urgency)",
+    "e2e/attention-redesign.spec.ts (every record delivered twice -> one item, 3 records)"
+   ]
+  },
+  "LP15-A2": {
+   "package": "LP15",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp15-attention.test.ts > LP15-A2 (table digests unchanged, extra fields 422, reopen on new record)",
+    "e2e/attention-redesign.spec.ts (case + finding unchanged after Acknowledge)"
+   ]
+  },
+  "LP15-A3": {
+   "package": "LP15",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp15-attention.test.ts > LP15-A3",
+    "apps/web/src/lib/attention.test.ts"
+   ]
+  },
+  "LP15-A4": {
+   "package": "LP15",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp15-attention.test.ts > LP15-A4 (no destinations / disabled destination: 0 fetch, 0 notifier calls, 0 notify_outbox rows; loopback-only test sink)",
+    "e2e/attention-redesign.spec.ts (page requests only the local server)"
+   ]
+  },
+  "LP16-A1": {
+   "package": "LP16",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A1",
+    "docs/phases/local-intelligence/receipts/LP16.md"
+   ]
+  },
+  "LP16-A2": {
+   "package": "LP16",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-red.test.ts",
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A2",
+    "e2e/world-redesign.spec.ts > LP16-A2"
+   ]
+  },
+  "LP16-A3": {
+   "package": "LP16",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A3",
+    "apps/mcp/test/phase-m4-world.test.ts",
+    "e2e/world-redesign.spec.ts > LP16-A3"
+   ]
+  },
+  "LP16-A4": {
+   "package": "LP16",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A4",
+    "e2e/world-redesign.spec.ts > LP16-A4"
+   ]
+  },
+  "LP17-A1": {
+   "package": "LP17",
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A1",
+    "e2e/families-redesign.spec.ts > contact sheet + 16-module sheet",
+    "artifacts/phase-local-intelligence/M4/screenshots/lp17-families-contact-sheet.png"
+   ]
+  },
+  "LP17-A2": {
+   "package": "LP17",
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A2",
+    "e2e/families-redesign.spec.ts > F15 roofs-off click-through (environment + interior scale, clear ground)",
+    "artifacts/phase-local-intelligence/M4/lp17-families-verification.json"
+   ]
+  },
+  "LP17-A3": {
+   "package": "LP17",
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A3",
+    "apps/web/src/castle/architecture.test.ts > castle asset provenance"
+   ]
+  },
+  "LP17-A4": {
+   "package": "LP17",
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A4",
+    "work/m4-red/lp17-unknown-module-red.log",
+    "e2e/families-redesign.spec.ts > family-capability text in inspector"
+   ]
+  },
+  "LP18-A1": {
+   "package": "LP18",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A1",
+    "apps/mcp/test/phase-m4-world.test.ts > LP18",
+    "e2e/interior-redesign.spec.ts (inspector + castle marker open exact record)"
+   ]
+  },
+  "LP18-A2": {
+   "package": "LP18",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A2",
+    "e2e/interior-redesign.spec.ts (transit only observed; text status and basis in markers)"
+   ]
+  },
+  "LP18-A3": {
+   "package": "LP18",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A3"
+   ]
+  },
+  "LP18-A4": {
+   "package": "LP18",
+   "status": "passed_local",
+   "evidence": [
+    "e2e/interior-redesign.spec.ts (selection survives 3D/2D; 420px narrow)"
+   ]
+  },
+  "LP19-A1": {
+   "package": "LP19",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (baseline unchanged after viewing)"
+   ]
+  },
+  "LP19-A2": {
+   "package": "LP19",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (exact keys, unresolved conditions, badges on baseline rooms)"
+   ]
+  },
+  "LP19-A3": {
+   "package": "LP19",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (not executed / not verified; executed-local separate)"
+   ]
+  },
+  "LP19-A4": {
+   "package": "LP19",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp19-world-comparison.test.ts (both revisions, export header, stale warning)",
+    "e2e/comparison-redesign.spec.ts"
+   ]
+  },
+  "LP20-A1": {
+   "package": "LP20",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp20-leases.test.ts > LP20-A1 (2 tests)",
+    "docs/phases/local-intelligence/receipts/LP20.md"
+   ]
+  },
+  "LP20-A2": {
+   "package": "LP20",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp20-leases.test.ts > LP20-A2 (1 test)"
+   ]
+  },
+  "LP20-A3": {
+   "package": "LP20",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp20-leases.test.ts > LP20-A3 (2 tests)"
+   ]
+  },
+  "LP20-A4": {
+   "package": "LP20",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp20-leases.test.ts > LP20-A4 (1 test, real DK server via inject)"
+   ]
+  },
+  "LP21-A1": {
+   "package": "LP21",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp21-repairs.test.ts > LP21-A1 (2 tests)",
+    "docs/phases/local-intelligence/receipts/LP21.md"
+   ]
+  },
+  "LP21-A2": {
+   "package": "LP21",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp21-repairs.test.ts > LP21-A2 (2 tests: crash after apply, crash before apply)"
+   ]
+  },
+  "LP21-A3": {
+   "package": "LP21",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp21-repairs.test.ts > LP21-A3 (1 test incl. static import/capability scan)"
+   ]
+  },
+  "LP21-A4": {
+   "package": "LP21",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp21-repairs.test.ts > LP21-A4 (4 tests: cancellation, quota, partial failure + compensation, cleanup)"
+   ]
+  },
+  "LP22-A1": {
+   "package": "LP22",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp22-verify.test.ts > LP22-A1 (2 tests)",
+    "docs/phases/local-intelligence/receipts/LP22.md"
+   ]
+  },
+  "LP22-A2": {
+   "package": "LP22",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp22-verify.test.ts > LP22-A2 (3 tests: delayed + concurrent correlation, observer outage, verifier independence)"
+   ]
+  },
+  "LP22-A3": {
+   "package": "LP22",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp22-verify.test.ts > LP22-A3 (1 test)"
+   ]
+  },
+  "LP22-A4": {
+   "package": "LP22",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp22-verify.test.ts > LP22-A4 (1 test: cleanup_failed, execution_incomplete)"
+   ]
+  },
+  "LP23-A1": {
+   "package": "LP23",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp23-regression.test.ts > LP23-A1 (2 tests: capture + two fresh model-free replays with identical results; committed LR-01 replays)",
+    "docs/phases/local-intelligence/receipts/LP23.md"
+   ]
+  },
+  "LP23-A2": {
+   "package": "LP23",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp23-regression.test.ts > LP23-A2 (template/catalog/tool/artifact changes -> stale; stale not replayed)",
+    "apps/server/test/phase-lp23-local-repairs.test.ts > A2 (stale propagation to the case, sticky, closure gated)"
+   ]
+  },
+  "LP23-A3": {
+   "package": "LP23",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp23-regression.test.ts > LP23-A3/A4 negative (secrets, headers, oracle fields, commands, shell type, URLs, unrelated records, tampering refused; descriptor scan)"
+   ]
+  },
+  "LP23-A4": {
+   "package": "LP23",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp23-local-repairs.test.ts > A4 (failed verification blocks closure; accepted unknown with reason recorded)",
+    "examples/reference-app/lp23-regression.test.ts > failed verification cannot be captured"
+   ]
+  },
+  "LP24-A1": {
+   "package": "LP24",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A1 (2 tests: scripted C1/C2/C3 investigators over real stdio subprocesses with a project-scoped service viewer token answer the 5 executed in-scope LW-01 requests; token revocation refuses the live session's next call; the native-agent kit's mcp.json launches the recording proxy in front of the real investigation-read server)",
+    "docs/phases/local-intelligence/receipts/LP24.md"
+   ]
+  },
+  "LP24-A2": {
+   "package": "LP24",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A2 (mode must be explicit; incomplete approved_provider/local_model configurations incl. the historical DK_EVAL_V2_APPROVED resolve to not_exercised with ai_checks not_exercised; unknown route / remote local_model throw)"
+   ]
+  },
+  "LP24-A3": {
+   "package": "LP24",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A3 (native_agent is always development_assisted and cannot be declared blinded; repo access relabels a model run development_assisted; kit TASK.md carries the label)"
+   ]
+  },
+  "LP24-A4": {
+   "package": "LP24",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A4 (loopback stand-in provider whose replies carry reasoning payloads: trace/turns contain no reasoning field or payload and no token; payload not replayed; trace entries are tool list/tool calls only; MCP env is the public handle only)"
+   ]
+  },
+  "LP25-A1": {
+   "package": "LP25",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A1 (oracle/truth/score/seed tools refused as unknown_tool and recorded; inspect of oracle/scenario/seed/canary refs found:false recorded; HTTP truth/oracle/score/scenario/seed/referee/traversal probes 404/403 with no marker; no unprompted response contains a private marker; canary positive control)",
+    "docs/phases/local-intelligence/receipts/LP25.md"
+   ]
+  },
+  "LP25-A2": {
+   "package": "LP25",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A2 (3 tests: referee imports no product detector/claims/packets/coverage/findings code; deleting product evidence leaves the key unchanged and fails the investigator that trusted it; a changed controlled schedule changes the key)"
+   ]
+  },
+  "LP25-A3": {
+   "package": "LP25",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A3 (2 tests: outage admits only unknown, silent loss admits not_observed/unknown with world divergence reported, observable facts and missing operations still fail; 6 generated held-out variants: stopped-observer ops admit unknown and the delivered-evidence-only scripted baseline reaches the full score)"
+   ]
+  },
+  "LP25-A4": {
+   "package": "LP25",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A4 (2 tests: renamed resources/sources/observers/labels + timing jitter give the same logical key, task and full score with no leak; held-out docs random-id, label/expectation-free, private 0600/0700 outside the repo, commitment-bound, never overwritten)"
+   ]
+  },
+  "LP26-A1": {
+   "package": "LP26",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp26-loop-comparison.test.ts > LP26-A1 (2 tests: equal reach/digests/tools for C1/C2/C3 before the investigator starts; an unreachable required record makes the attempt invalid_preflight with zero model requests and outside the model denominator)",
+    "docs/phases/local-intelligence/receipts/LP26.md"
+   ]
+  },
+  "LP26-A2": {
+   "package": "LP26",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp26-loop-comparison.test.ts > LP26-A2 (right answer without required records exposed is not end-to-end success; errors/timeouts/limits/schema failures stay in the denominator)",
+    "docs/phases/local-intelligence/receipts/LP26.md"
+   ]
+  },
+  "LP26-A3": {
+   "package": "LP26",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp26-loop-comparison.test.ts > LP26-A3 (structured predicates, ai_reviewed_advisory critique and coverage limitations reported with separate denominators)",
+    "docs/phases/local-intelligence/receipts/LP26.md"
+   ]
+  },
+  "LP26-A4": {
+   "package": "LP26",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp26-loop-comparison.test.ts > LP26-A4 (historical v2 $5 ledger refused; paid mode needs explicit route/model/cap/approval; worst-case pre-reservation; failed requests keep the reserved maximum)",
+    "artifacts/local-intelligence/m6-eval/model-spend-ledger.json",
+    "docs/phases/local-intelligence/receipts/LP26.md"
+   ]
+  },
+  "LP27-A1": {
+   "package": "LP27",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp27-variants.test.ts > LP27-A1 removed denials",
+    "eval/test/li-lp27-variants.test.ts > LP27-A1 skipped page",
+    "eval/test/li-lp27-variants.test.ts > LP27-A1 model refusal",
+    "docs/phases/local-intelligence/receipts/LP27.md"
+   ]
+  },
+  "LP27-A2": {
+   "package": "LP27",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp27-variants.test.ts > LP27-A2 (24 pairs differ only as declared; diff catches undeclared change)",
+    "eval/test/li-lp27-variants.test.ts > LP27 execution (clean-repeat variability; keys change only as declared; injected vs clean scripted answers)",
+    "docs/phases/local-intelligence/receipts/LP27.md"
+   ]
+  },
+  "LP27-A3": {
+   "package": "LP27",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp27-variants.test.ts > LP27-A3 (finite DSL, world resolution, safetyScan; 4 escape attempts refused)",
+    "docs/phases/local-intelligence/receipts/LP27.md"
+   ]
+  },
+  "LP27-A4": {
+   "package": "LP27",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp27-variants.test.ts > LP27-A4 (partial run, outage, request-budget refusals, noise-budget exhaustion)",
+    "docs/phases/local-intelligence/receipts/LP27.md"
+   ]
+  },
+  "LP28-A1": {
+   "package": "LP28",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp28-capsules.test.ts > LP28-A1/A4 round trip into a fresh instance (exact refs, absent records)",
+    "docs/phases/local-intelligence/receipts/LP28.md"
+   ]
+  },
+  "LP28-A2": {
+   "package": "LP28",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp28-capsules.test.ts > LP28-A2 (20 hostile archives refused before import)"
+   ]
+  },
+  "LP28-A3": {
+   "package": "LP28",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp28-capsules.test.ts > LP28-A3 (oracle/tokens/secrets/credentials/fonts excluded) and training capsule leak tests"
+   ]
+  },
+  "LP28-A4": {
+   "package": "LP28",
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp28-capsules.test.ts > LP28-A1/A4 (integrity wording in manifest and import result; signature reported as origin only)"
+   ]
+  },
+  "LP29-A1": {
+   "package": "LP29",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp29-missions.test.ts > LP29-A1/A4 create, preview, run and reopen",
+    "e2e/missions-redesign.spec.ts",
+    "docs/phases/local-intelligence/receipts/LP29.md"
+   ]
+  },
+  "LP29-A2": {
+   "package": "LP29",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp29-missions.test.ts > LP29-A2 opening truth taints",
+    "e2e/missions-redesign.spec.ts (builder vs investigator, open truth)"
+   ]
+  },
+  "LP29-A3": {
+   "package": "LP29",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp29-missions.test.ts > LP29-A3 (library 9 invalid drafts; API 422 zero rows)",
+    "e2e/missions-redesign.spec.ts (invalid draft kept, Create disabled)"
+   ]
+  },
+  "LP29-A4": {
+   "package": "LP29",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp29-missions.test.ts > LP29-A1/A4 (scope on API/list/MCP; no remote setup)",
+    "e2e/missions-redesign.spec.ts (Local only badge)"
+   ]
+  },
+  "LP30-A1": {
+   "package": "LP30",
+   "status": "passed_local",
+   "evidence": [
+    "d3eb304 full suite 962 passed / 1 skipped; CI 40075197316 (check + browser-pilot incl. pilot:redesign)",
+    "docs/phases/local-intelligence/receipts/LP30.md (A1)"
+   ]
+  },
+  "LP30-A2": {
+   "package": "LP30",
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp30-robustness.test.ts (8 cycles, cleanup failure surfaced, LP27 variants)",
+    "e2e/usability-redesign.spec.ts > LP30-A2 repeated switching",
+    "artifacts/phase-local-intelligence/M7/lp30-robustness-report.json"
+   ]
+  },
+  "LP30-A3": {
+   "package": "LP30",
+   "status": "passed_local",
+   "evidence": [
+    "e2e/usability-redesign.spec.ts (6 views x desktop/reduced-motion/390px, failure state)",
+    "artifacts/phase-local-intelligence/M7/screenshots/lp30-*.png",
+    "e2e/missions-redesign.spec.ts",
+    "e2e/usability-redesign.spec.ts comparison-branch 390px findings fixed in 4358bbc (inline comparison visible in list view; no overlap with camera toolbar)"
+   ]
+  },
+  "LP30-A4": {
+   "package": "LP30",
+   "status": "passed_local",
+   "evidence": [
+    "docs/phases/local-intelligence/receipts/LP30.md (environment, SwiftShader renderer string, deferrals EXT06/manual screen reader kept deferred)"
+   ]
+  },
+  "LP31-A1": {
+   "package": "LP31",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp31-integrated-loop.test.ts > LP31-A1 (ONE leased run: LW-01 world + scenario, case + guided contract, scripted investigation over the real stdio focused MCP read profile, evidence/claim checks 15/15 + 0 cited-missing, investigator revoked, declared configuration snapshot, LP14 generated 2 valid candidates, the rank-1 generated plan leased + executed unmodified (set_gateway_policy@api policy:baseline) in the same run, independent verification success, regression capture + model-free replay, case link + castle comparison of the executed candidate's own change list (api changed, executed-local verified), post-repair model check no_repair_needed, evidence-only capsule export/import on a fresh instance; plus: the default investigation world stays plan-only)",
+    "docs/phases/local-intelligence/receipts/LP31.md"
+   ]
+  },
+  "LP31-A2": {
+   "package": "LP31",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp31-integrated-loop.test.ts asserts the integrated receipt states model {used:false, spend_usd:0, ai_loop:not_exercised_in_this_run} and still completes the scripted loop",
+    "docs/phases/local-intelligence/receipts/LP26.md (the only AI-loop runs that actually ran: li-m6-c2c34916 with 28/54 records lost, li-m6-e61d01f7 follow-up)",
+    "docs/phases/local-intelligence/PHASE_REPORT.md"
+   ]
+  },
+  "LP31-A3": {
+   "package": "LP31",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp31-ledger.test.ts (all 128 ids mapped with allowed statuses; passed ids cite existing test/receipt paths; EXT01-EXT09 remain deferred_by_owner)",
+    "docs/phases/local-intelligence/receipts/LP31.md"
+   ]
+  },
+  "LP31-A4": {
+   "package": "LP31",
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp31-ledger.test.ts (spend within cap, handoff names precise next work, package statuses never beyond ci_verified)",
+    "docs/phases/local-intelligence/PHASE_REPORT.md (no merge to main, no PR, no deploy, no provider call in M7; main unchanged at 9fec7ed)"
+   ]
+  }
+ },
+ "deferrals": [
+  {
+   "id": "EXT01",
+   "topic": "Real cloud/identity/SaaS accounts",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT02",
+   "topic": "Remote notifications",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT03",
+   "topic": "Production response",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT04",
+   "topic": "Outside users",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT05",
+   "topic": "Human semantic review",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT06",
+   "topic": "Manual accessibility and physical GPUs",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT07",
+   "topic": "Paid/new model provider",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT08",
+   "topic": "Federation/team storage",
+   "status": "deferred_by_owner"
+  },
+  {
+   "id": "EXT09",
+   "topic": "Merge/deploy/release administration",
+   "status": "deferred_by_owner"
+  }
+ ],
+ "decisions": [
+  {
+   "id": "D-LP00-1",
+   "date": "2026-10-23",
+   "decision": "Phase package copied into docs/phases/local-intelligence/package and fingerprinted, so the spec cannot drift silently and CI can read contracts/fixtures."
+  },
+  {
+   "id": "D-LP00-2",
+   "date": "2026-10-23",
+   "decision": "Runtime policy is computed from actual server configuration and exposed in /api/capabilities (runtime_policy); it authorizes nothing."
+  },
+  {
+   "id": "D-LP00-3",
+   "date": "2026-10-23",
+   "decision": "eval/src/v2/run.ts BudgetLedger(5) is historical; no phase model run may use it. Any LP24+ run needs a new ledger capped by the phase budget ($3.00 total)."
+  },
+  {
+   "id": "D-LP01-1",
+   "date": "2026-10-23",
+   "decision": "Evaluator decisions carry evaluator=dk.aws_policy_eval.v2; access_paths schema id unchanged because the change is additive fields plus corrected classification, recorded here and in the receipt."
+  },
+  {
+   "id": "D-LP01-2",
+   "date": "2026-10-23",
+   "decision": "An omitted resource policy key is now unresolved (null = none). An omitted permission boundary keeps v1 meaning 'none'; exporters must send 'unknown' when unreadable (declared limit)."
+  },
+  {
+   "id": "D-LP02-1",
+   "date": "2026-10-23",
+   "decision": "Recipe run contract bumped to dk.recipe_run.v2 and every recipe to @2 (meaning changed: obligations, kinds, paging). v1 recipes are retired, not kept runnable, because v1 reproduces the LP02 defects; stored case text that quotes @1 is unchanged."
+  },
+  {
+   "id": "D-LP02-2",
+   "date": "2026-10-23",
+   "decision": "Recipe budget unit is one search page or one coverage question (max 12). Running out produces partial/not_run obligations and outstanding continuations, never an implied answer."
+  },
+  {
+   "id": "D-LP03-1",
+   "date": "2026-10-23",
+   "decision": "Run provenance is project-level in projects.meta.local_run (no DB migration), validated against dk.local.run_provenance.v1, orthogonal to dataset_kind. Reference pack uses dataset_kind live + local_run."
+  },
+  {
+   "id": "D-LP03-2",
+   "date": "2026-10-23",
+   "decision": "Adopted world-plan and verification-receipt proposals as dk.local.*.v1 (proposal ids rejected until migrated). investigation-contract, conclusion and repair-plan proposals deferred to the packages that implement them."
+  },
+  {
+   "id": "D-LP03-3",
+   "date": "2026-10-23",
+   "decision": "Surface registry support stays the product-wide ceiling; per-asset capability tier is derived only from scoped receipts and capped by the ceiling. externally_verified receipts are rejected while EXT01 is deferred."
+  },
+  {
+   "id": "D-LP08-1",
+   "date": "2026-10-23",
+   "decision": "Adopted investigation-contract and conclusion proposals as dk.local.investigation_contract.v1 / dk.local.conclusion.v1 (proposal ids rejected), extended with typed obligation targets, derivation inputs digest, negative-claim requirements, closure prerequisites and an optional machine-checkable claim predicate."
+  },
+  {
+   "id": "D-LP08-2",
+   "date": "2026-10-23",
+   "decision": "Contracts are derived only from case scope, linked findings/events, declared asset kinds, applicable recipes and the versioned obligation catalog dk.obligation_catalog.v1. Revisions and the obligation ledger are append-only (DB triggers). Readers get an effective view with invalidations applied; writes record them as a new revision."
+  },
+  {
+   "id": "D-LP08-3",
+   "date": "2026-10-23",
+   "decision": "M2 is implemented on branch phase/li-m2 in a separate worktree while M1 runs on phase/local-intelligence; it is rebased and fast-forwarded onto phase/local-intelligence after all four packages are green (never force-pushed)."
+  },
+  {
+   "id": "D-LP09-1",
+   "date": "2026-10-23",
+   "decision": "Jobs advance only on explicit analyst calls (no background worker, no model). Each unit commits deliveries, cursor and budget in one transaction; deliveries are unique per (channel, job, step, ref). Budget-cut steps are partial_budget (resumable) and keep the contract collecting."
+  },
+  {
+   "id": "D-LP09-2",
+   "date": "2026-10-23",
+   "decision": "A result planned under an earlier contract revision counts only when that obligation's target and (if interval-bound) the interval are unchanged since; decisions bump the revision without invalidating unrelated in-flight work."
+  },
+  {
+   "id": "D-LP10-1",
+   "date": "2026-10-23",
+   "decision": "Claim availability = delivered to the investigator through a contract channel (job step, packet page, inspection) under a contract revision with the same scope; packet/inspect reads append to that access log but change no case, contract, job or conclusion."
+  },
+  {
+   "id": "D-LP10-2",
+   "date": "2026-10-23",
+   "decision": "Packets never trim the uncertainty section (413 instead); counterevidence is ordered first; required records are individual omissions; machine_proved is never emitted and flagged narrative keeps a conclusion a draft pending human semantic review (EXT05, deferred)."
+  },
+  {
+   "id": "D-LP11-1",
+   "date": "2026-10-23",
+   "decision": "Focused MCP profiles investigation-read / investigation-author are selected by DK_MCP_PROFILE at process start; the full toolset stays the default. Profile, project, output budget and per-call unit cap are fixed at start and no tool takes such an argument. Output envelope dk.mcp_envelope.v1. lab-request is not offered (no executor exists)."
+  },
+  {
+   "id": "D-M2-REBASE",
+   "date": "2026-10-23",
+   "decision": "phase/li-m2 (LP08-LP11) rebased onto origin/phase/local-intelligence at 798f653 (M1 LP04-LP06). Conflicts: app.ts imports (kept both registerLocalWorld and registerInvestigationRoutes); STATUS.json merged automatically with every upstream package, requirement and decision entry preserved (checked by script). Re-ran typecheck, full suite, fixtures and scenarios on the rebased head before the fast-forward push; no force push."
+  },
+  {
+   "id": "D-M2-CI",
+   "date": "2026-10-23",
+   "decision": "M2 recorded ci_verified on head 49286ae (CI run 40049323638: check + browser-pilot success). Package entries keep their own rebased commits and cite the containing head's run; receipts gained a commits/CI section. No M2 code changed after review."
+  },
+  {
+   "id": "D-LP07-1",
+   "date": "2026-10-23",
+   "decision": "dk.local.scenario.v1 is a closed data format (14 typed actions, plain ids, declared route templates, single-segment params, unknown keys rejected at every level) validated twice: shape, then every reference against the compiled world. The engine executes only typed supervisor operations and hub faults."
+  },
+  {
+   "id": "D-LP07-2",
+   "date": "2026-10-23",
+   "decision": "Private truth (seed, labels, expectations, step records, tap-log effects) is a run-owned 0600 file in the run directory; the referee grades from truth + independent observers only; the investigator view is built solely from the DK API with a viewer token and leak-checked."
+  },
+  {
+   "id": "D-LP07-3",
+   "date": "2026-10-23",
+   "decision": "Scenario DSL documents stay in the repository for now; DK API/MCP/web are tested to have no path to them (source scan + static traversal test). Investigators with repo access are not blinded: such runs are development feedback, not held-out evaluation."
+  },
+  {
+   "id": "D-M1-CI-1",
+   "date": "2026-10-23",
+   "decision": "Browser-pilot failures on LP05/LP06 (and li-m2 run 40046522740) were a test timing race in e2e/redesign.spec.ts (baseline camera pose captured before a late overview refit). Fixed in the test by waiting for a stable pose and reading the baseline atomically with the Focus click; assertion unchanged."
+  },
+  {
+   "id": "D-LP12-1",
+   "date": "2026-10-23",
+   "decision": "The workbench is one read model (dk.case_workbench.v1) over existing M2 services and writes nothing; its packet is built with record:false so a person viewing it never makes a record 'available' to an agent's claim check."
+  },
+  {
+   "id": "D-LP12-2",
+   "date": "2026-10-23",
+   "decision": "Service principals (agents) may propose but cannot answer/settle case questions or hypotheses, remove items others added, or resolve/close a case (server-enforced 403). Proposals stay in investigation_conclusions with a per-case proposal_version and accepted:false."
+  },
+  {
+   "id": "D-LP12-3",
+   "date": "2026-10-23",
+   "decision": "Unsaved case drafts live in memory only, scoped to project+case+field, and are cleared with all sensitive client state; never written to web storage."
+  },
+  {
+   "id": "D-LP13-1",
+   "date": "2026-10-23",
+   "decision": "Analysis state elements are identified by (kind, authority, id): grants by AWS account + name within the account, artifacts by registry + asset:name. Addressing an element under another authority is refused, never resolved by name."
+  },
+  {
+   "id": "D-LP13-2",
+   "date": "2026-10-23",
+   "decision": "Candidates live only in append-only analysis_comparisons (namespace branch:<proposal digest>); comparisons are model_only and their receipt digest excludes timestamps so equal inputs give equal receipts."
+  },
+  {
+   "id": "D-LP13-3",
+   "date": "2026-10-23",
+   "decision": "A path hop is observed (and may animate) only when the relationship's own evidence level is observed with evidence refs; configured or conditional permission is never observed use, enforced on the server and again in the console."
+  },
+  {
+   "id": "D-LP14-1",
+   "date": "2026-10-23",
+   "decision": "Repair templates are a reviewed code constant (dk.repair_templates.v1), one per finite local action type; adding a template is a reviewed code change with tests, never runtime input."
+  },
+  {
+   "id": "D-LP14-2",
+   "date": "2026-10-23",
+   "decision": "Repair plans are plan_only and bound to the LP13 baseline and candidate state hashes; the authorization check only reports whether an approval descriptor still binds those digests and never authorizes execution. No apply/publish/PR route exists; patches are exported or materialised only in a fresh temp directory outside the checkout."
+  },
+  {
+   "id": "D-LP14-3",
+   "date": "2026-10-23",
+   "decision": "An objective needs at least one permitted operation (positive control); ranking uses only recorded criteria (validity, coverage, positive controls broken, unknowns, elements changed) and states it is not globally optimal."
+  },
+  {
+   "id": "D-LP15-1",
+   "date": "2026-10-23",
+   "decision": "The attention queue derives from the server's own project change stream (outbox) through a durable per-project cursor plus a bounded staleness scan; it never uses the R03.5 notifier or any remote destination. The only outbound path is an optional loopback-only test sink, off by default and checked at startup."
+  },
+  {
+   "id": "D-LP15-2",
+   "date": "2026-10-23",
+   "decision": "One item per (project, dedup_key); each distinct underlying record is an occurrence in the append-only attention_log, an identical record again only increments repeats. Acknowledgement accepts no fields beyond expected_seq, changes only the item, and a new distinct record reopens it."
+  },
+  {
+   "id": "D-LP15-3",
+   "date": "2026-10-23",
+   "decision": "Urgency is bounded: per-kind ceilings, never critical from local signals, repeats never raise it, and at most 5 items per project become high per hour (the rest are recorded medium with the reason). Items carry ids, counts and fixed template text only."
+  },
+  {
+   "id": "D-M1-CI-2",
+   "date": "2026-10-23",
+   "decision": "Browser-pilot on the docs-only ledger commit 5a8f410 (run 40051696346) failed A11Y-05: one late demand frame (render count 7 -> 8) inside the 700 ms reduced-motion idle window after an immediate focus; the identical code passed on fa8de4a. Fixed in the test by first requiring a bounded 300 ms quiet interval (continuous motion never settles, so it still fails) before the unchanged 700 ms no-frame assertion."
+  },
+  {
+   "id": "D-M3-CI-1",
+   "date": "2026-10-23",
+   "decision": "Browser-pilot on b8b21a2 (run 40055538817) failed CASTLE-11 (e2e/camera-redesign.spec.ts): one late demand frame (render count 6 -> 7) inside the 700 ms no-frame window after selecting an unlinked event in the offline F06 fixture; no LP13 code is on that path and the same spec passed on 8789032 (run 40056591089). Fixed in the test like D-M1-CI-2: first wait (bounded, 10 s) for one full quiet 700 ms window, which a continuously animated trail never produces, then the unchanged 700 ms no-frame and camera assertions. Locally under heavy machine load (a concurrent model-eval run) the spec still failed 1 of 3 repeats; CI is the gate."
+  },
+  {
+   "id": "D-M3-REBASE-1",
+   "date": "2026-10-23",
+   "decision": "M3 (LP12-LP15) rebased from phase/li-m3 onto origin/phase/local-intelligence 7aa9975 (M1 final ledger + A11Y-05 race fix). Only STATUS.json conflicted; resolved by keeping each M3 commit's entries and re-applying upstream D-M1-CI-2 and the M1 final_head. No db.ts/validators conflict at this point (the M6 branch had not pushed). Rebased hashes: LP12 bf2685c, LP13 d630485, LP14 82cea39, LP15 14a0c13."
+  },
+  {
+   "id": "D-M5-1",
+   "date": "2026-10-23",
+   "decision": "Local lab authority (LP20) lives in the supervisor library, not the server: leases are issued only with the supervisor's one-time operator credential, controllers get a separate repair_execute-only identity, the default is plan_only and the kill switch is permanent. The server keeps runtime_policy.local_actions = plan_only / executor not_available and accepts no lease anywhere; a lease is never human approval (EXT05 stays deferred)."
+  },
+  {
+   "id": "D-M5-2",
+   "date": "2026-10-23",
+   "decision": "LP21 compensation never restores compromised authority: deactivated test tokens, removed grants, previously deployed artifacts and a deliberately weak policy are recorded not_restored; only a reviewed gateway policy is restored. This narrows LP14's plan-level compensation (exact inverse changes, kept as a review description) for actual execution."
+  },
+  {
+   "id": "D-M5-3",
+   "date": "2026-10-23",
+   "decision": "LP22 whole-run success requires a completed execution, a passing independent security verdict and completed cleanup; settle windows below 200 ms are refused (they could miss delayed effects and pass falsely); a baseline that never showed the prohibited effect cannot support a pass."
+  },
+  {
+   "id": "D-M5-CI-1",
+   "date": "2026-10-23",
+   "decision": "CI run 40061416252 (e18c095) failed LP21-A4 intermittently: lease.controller_id carried the raw base64url token id, which may start with '-' or '_' and then violates the plain-id pattern. Fixed in b2b90b8 by recording non-secret identity references (ctl-/vrf- + 16 hex of sha256) instead of token ids."
+  },
+  {
+   "id": "D-LP24-1",
+   "date": "2026-10-23",
+   "decision": "M6 is implemented in worktree DK-m6 on branch phase/li-m6 (from origin/phase/local-intelligence 7aa9975) while M3 runs concurrently in DK-m3; M6 touches only eval/, its tests, receipts and this ledger (no console/workbench/UI files)."
+  },
+  {
+   "id": "D-LP24-2",
+   "date": "2026-10-23",
+   "decision": "The bring-your-agent harness lives in eval/local/ as a new track (li-m6), separate from v1/v2 eval code and artifacts, which stay untouched (only chat/Msg are exported from eval/src/agent.ts). Every investigator reaches DK only through stdio MCP with a project-scoped service viewer token; the controller keeps the private handle in-process and writes the oracle (with a canary) 0600 under the OS temp root. Native coding agents are development_assisted by construction."
+  },
+  {
+   "id": "D-LP25-1",
+   "date": "2026-10-23",
+   "decision": "The referee derives world truth from the executed schedule and the supervisor's effect tap log, and admissibility from the compiled world's observer attachment plus schedule faults: observer stopped -> only unknown; observer records silently dropped/held -> not_observed or unknown (world truth kept as divergence); otherwise the world value. It imports no product detector/claim/packet/contract code (static test)."
+  },
+  {
+   "id": "D-LP25-2",
+   "date": "2026-10-23",
+   "decision": "Held-out scenarios are generated from a private master seed into a 0700 directory under the OS temp root, never committed before seal; the preregistration holds only SHA-256 commitments. Dev scenarios (LW-01..03) stay repository-resident and are labelled as such."
+  },
+  {
+   "id": "D-LP25-3",
+   "date": "2026-10-23",
+   "decision": "li-referee-2 (6af3ed1, negative test first, preregistration amendment-2 before any comparison slot): saas boundary admits {truth, unknown} unless the operation's own delivered denial records the tenant-isolation reason; li-referee-1 demanded an own-tenant fact no source delivered. Underclaims (unknown where delivered evidence established the fact) reported separately; still failed predicates."
+  },
+  {
+   "id": "D-LP26-1",
+   "date": "2026-10-23",
+   "decision": "LP26 uses a new phase ledger (artifacts/local-intelligence/m6-eval/model-spend-ledger.json, M6 allowance $2.00 of the $3.00 phase cap, run stop $1.80) that refuses the historical v2 $5 ledger; every request reserves its worst case; failed requests keep the reserved maximum."
+  },
+  {
+   "id": "D-LP26-2",
+   "date": "2026-10-23",
+   "decision": "Preregistration amendment-1 (before any comparison slot): completion cap 6000 -> 16000 for every condition, because the provider counts hidden reasoning tokens against the cap and the dev smoke ended in reasoning-only length stops. Nothing else changed."
+  },
+  {
+   "id": "D-LP26-3",
+   "date": "2026-10-23",
+   "decision": "Records-lost incident (v1 li-m6-c2c34916): a sandbox reset lost 28 held-out model records and every critique record. Missing slots are never re-run (one attempt per slot per mode; outcomes had been seen) and are outside every denominator; the previous session's summary is quoted as unverifiable, not data. Spend for the lost work is charged as a conservative estimate: $0.653297 (each lost attempt at the largest surviving held-out charge) + $0.324000 (critique bound: 54 x (28k prompt + 16k completion tokens) at live pricing). v1 is sealed as is (26/54 model records)."
+  },
+  {
+   "id": "D-LP26-4",
+   "date": "2026-10-23",
+   "decision": "LP26.1 coverage defect: v1 C3 reported every coverage obligation unavailable while observers were live. (1) coverage-history called a source 'silent for more than 600s' between registration and a first receipt milliseconds later; now a first receipt within the freshness threshold of registration makes [registration, first receipt) live - never-reporting, late-first-report, pre-registration, future, outage, disabled, incapable, sampled and retention-limited time stays unknown. (2) The harness case interval [start-60s, setup+120s] contained time before any observer existed and in the future; it is now [later of every source's created_at and first-revision effective_at, last stored record], and the controller refuses records outside it. Failing tests first; truly uncovered time still makes obligations unavailable (negative controls)."
+  },
+  {
+   "id": "D-LP26-5",
+   "date": "2026-10-23",
+   "decision": "Follow-up li-m6-e61d01f7 (preregistered before any attempt, after LP26.1): same dev and revealed (burned) held-out documents, C1/C2/C3 x 1 repetition, v1 limits and referee, no critique, shared M6 ledger. Result: dev e2e C1 2/3, C2 3/3, C3 3/3; held-out C1 5/6, C2 6/6, C3 4/6; 0 unsupported affirmatives. Remaining C3 failures are effect=unknown on the two delivery-identity documents with a real observer outage (whole-interval obligation truthfully unavailable). No superiority claim. Candidate follow-on: per-operation coverage questions in the contract."
+  },
+  {
+   "id": "D-M5-CI-2",
+   "date": "2026-10-23",
+   "decision": "CI run 40062942807 attempt 1 on 3c8166d: the full vitest step passed (117 files passed, 1 skipped; 826 passed, 1 skipped) but the following `pnpm scenarios` step reran examples/reference-app/lp07-scenarios.test.ts and reported LW-01 failed (timing-sensitive LP07 delayed-evidence/lag assertions under runner load, the sensitivity noted for M3). M5 touched no LP07, scenario or saas-storefront code. Failed jobs were rerun unchanged: attempt 2 success (check + browser-pilot); 3 local reruns of lp07 13/13. Not hardened here (outside M5 scope); recorded for the LP07 owner."
+  },
+  {
+   "id": "D-M6b-CI-1",
+   "date": "2026-10-24",
+   "decision": "CI 40064260489 (aef7f12) lp06-world:161: coverage history paired sensor_unavailable/sensor_restored per source, so a multi-asset observer's restoration of another asset 1 ms earlier ended this asset's outage and 1 ms of a deliberate outage counted as covered. Pre-existing since R01 (not LP26.1; aef7f12 and bab16d8 have identical product code). Negative test apps/server/test/phase-m6b-outage-assets.test.ts (3 failing before); fix pairs health reports per asset (id/name/alias; multi-asset reports apply to each). Reproduced 3/60 locally before, 0/81 after. Commit 970e278."
+  },
+  {
+   "id": "D-M6b-CI-2",
+   "date": "2026-10-24",
+   "decision": "LW-01 delayed-evidence assertion (D-M5-CI-2) hardened without weakening: the fixed +25 ms lag margin is replaced by the run's own measured hold gap (steps[11].started - steps[8].started, -2 ms rounding) plus a timing-independent causal receipt-order check. 26/26 under 4 CPU burners. e2e/pilot.spec.ts F snapshot flake (798d8e2 run 40061292021) noted, unchanged."
+  },
+  {
+   "id": "D-LP27-1",
+   "date": "2026-10-24",
+   "decision": "LP27 delivered as scripted variants (li-variants-1, 24 families over LW-01/02/03) graded by the LP25 referee; the optional small real-model run was not attempted in this session (time budget), so nothing was preregistered and model spend is $0.00. Real-model injection resistance stays not_exercised; the injected/clean protocol is in place for a later preregistered run."
+  },
+  {
+   "id": "D-LP27-2",
+   "date": "2026-10-24",
+   "decision": "Variant/clean equivalence is proven on the document (LCS step alignment + field diff against a per-family declaration) and on outcomes (LP25 key by label: identical / superset / changed_steps), with clean-repeat variability measured by running each clean scenario twice. Lease-escape variants are DSL documents that must be refused before any run (parse or world stage); none can express a URL, shell, scan or credential collection."
+  }
+ ],
+ "model_spend_usd": {
+  "phase_cap": 3.0,
+  "spent": 2.138016,
+  "runs": [
+   {
+    "id": "lp24-smoke",
+    "usd": 0.024962
+   },
+   {
+    "id": "li-m6-c2c34916",
+    "usd": 1.361433,
+    "of_which_estimates": 0.977297
+   },
+   {
+    "id": "li-m6-e61d01f7",
+    "usd": 0.339367
+   },
+   {
+    "id": "li-m6b (LP27 + CI stabilisation)",
+    "usd": 0.0
+   },
+   {
+    "id": "li-m7 (LP29 + LP30 + LP31)",
+    "usd": 0.0
+   },
+   {
+    "id": "li-m7-7f4a12cd (final-pass fresh-document comparison)",
+    "usd": 0.41225387,
+    "gateway_reported_usd": 0.208717694,
+    "note": "attributed ledger sum (over-counts overlapping attempts under --concurrency 2); true spend = gateway-reported = BudgetLedger incurred $0.208718; see artifacts/local-intelligence/m7-fresh-eval/spend-reconciliation.json"
+   }
+  ],
+  "m6_allowance": 2.0,
+  "m6_ledger": "artifacts/local-intelligence/m6-eval/model-spend-ledger.json",
+  "m6_breakdown": {
+   "smokes_and_connectivity": 0.024962,
+   "v1_surviving_attempts_settled": 0.384136,
+   "v1_lost_attempts_estimate": 0.653297,
+   "v1_lost_critique_bound": 0.324,
+   "followup_attempts_settled": 0.339367
+  },
+  "settled_on_surviving_records": 0.748466,
+  "gateway_reported_on_surviving_records": 0.392134,
+  "note": "spent = sum of conservative ledger totals: M6 ledger $1.725762 (incl. $0.977297 estimates for lost records) + li-m7 attributed $0.412254 = $2.138016 of the $3.00 cap. True li-m7 spend $0.208718 (phase total $1.934480 on that basis).",
+  "spent_true_gateway_reported_note": "Conservative 'spent' sums attributed ledger amounts and the v1 lost-records estimates. The attribution over-counts overlapping attempts (found in li-m7; the M6 runs show the same pattern: follow-up attributed $0.339367 vs gateway $0.173074; v1 surviving $0.384136 vs $0.194108). Gateway-reported: M6 surviving records $0.392134 (as recorded above) + li-m7 $0.208718 = $0.600852, plus at most $0.977297 for lost v1 work.",
+  "final_pass_allowance": {
+   "approved_by": "owner instruction 2026-10-24 (max $0.90 new spend; phase total under $3.00)",
+   "ledger": "artifacts/local-intelligence/m7-fresh-eval/model-spend-ledger.json",
+   "allowance_usd": 0.9,
+   "used_true_usd": 0.208718,
+   "used_attributed_usd": 0.412254
+  }
+ },
+ "next_action": {
+  "package": null,
+  "phase": "local-intelligence complete locally (engineering-verified per executed gates); awaiting owner review",
+  "why": "All LP00-LP31 implemented; LP31 CI on the final head recorded in receipts/LP31.md. No package is eligible inside this phase without owner action.",
+  "eligible_now": [],
+  "blocked": {
+   "EXT01-EXT09": "deferred_by_owner (external accounts, remote notifications, production response, outside users, human semantic review, manual accessibility/physical GPU, paid/new model provider, federation, merge/deploy)"
+  },
+  "precise_next_work": [
+   "Owner review of PHASE_REPORT.md, then decide whether to merge phase/local-intelligence to main (EXT09; not done by agents).",
+   "EXT05/EXT06: human semantic review, manual screen-reader and physical-GPU acceptance.",
+   "Local-world observer gaps (audit observer stopped) are not in the analysis state; restart-test-observer candidates for local worlds would need the observer health in the configuration snapshot.",
+   "AI loop: on fresh documents C3 underclaimed (10 answers 'unknown' after seeing coverage unavailable where the evidence was sufficient); investigate whether the guided contract's coverage obligations make the investigator over-conservative before any further model run (remaining cap $0.861984 on the conservative basis)."
+  ]
+ },
+ "milestones": {
+  "M0": {
+   "packages": [
+    "LP00",
+    "LP01",
+    "LP02",
+    "LP03"
+   ],
+   "status": "ci_verified",
+   "head": "936f558",
+   "ci_run": 40042276966,
+   "note": "Engineering-verified locally and in CI for the executed tests only. No model runs; AI execution not exercised (not needed for M0)."
+  },
+  "M2": {
+   "packages": [
+    "LP08",
+    "LP09",
+    "LP10",
+    "LP11"
+   ],
+   "status": "ci_verified",
+   "head": "49286ae",
+   "rebased_onto": "798f653",
+   "ci_run": 40049323638,
+   "ci_result": "success (check + browser-pilot)",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)"
+   },
+   "note": "Engineering-verified locally and in CI for the executed tests only. Scripted/protocol checks; AI execution not exercised (no model run, $0 spend). The pre-rebase browser-pilot failures (runs 40046522740, 40048100457) were the flaky e2e/redesign.spec.ts:314 WebGL camera spec, outside M2 code; it passed on 40049323638."
+  },
+  "M1": {
+   "packages": [
+    "LP04",
+    "LP05",
+    "LP06",
+    "LP07"
+   ],
+   "status": "ci_verified",
+   "head": "fa8de4a",
+   "ci_run": 40050596307,
+   "commits": {
+    "LP04": "f0a8d56",
+    "LP05": "09cdeb3",
+    "LP06": "798f653",
+    "LP07": "fa8de4a"
+   },
+   "ci_runs": {
+    "LP04": "40045896413 success",
+    "LP05": "40047042997 failure (browser-pilot race, D-M1-CI-1)",
+    "LP06": "40048249657 failure (same race)",
+    "LP07": "40050596307 success",
+    "ledger 5a8f410": "40051696346 failure (A11Y-05 late-frame race, D-M1-CI-2)"
+   },
+   "note": "Engineering-verified locally and in CI for the executed tests only. No model runs; AI execution not exercised (not needed for M1). Scenario DSL documents are repository-resident: DK API/MCP/web cannot serve them (tested), but repo-reading investigators are not blinded (D-LP07-3).",
+   "final_head": {
+    "head": "109a127",
+    "ci_run": 40052836345,
+    "result": "success (check + browser-pilot)",
+    "note": "Last code change of M1 (A11Y-05 e2e race fix, D-M1-CI-2). Later commits that only edit this ledger are not separately recorded here."
+   }
+  },
+  "M3": {
+   "packages": [
+    "LP12",
+    "LP13",
+    "LP14",
+    "LP15"
+   ],
+   "status": "ci_verified",
+   "head": "c27402e",
+   "rebased_onto": "7aa9975",
+   "ci_run": 40058755915,
+   "ci_result": "success (check + browser-pilot)",
+   "commits": {
+    "LP12": "bf2685c",
+    "LP13": "d630485",
+    "LP14": "82cea39",
+    "LP15": "14a0c13",
+    "CASTLE-11 race fix + ledger": "c27402e"
+   },
+   "pre_rebase": {
+    "branch": "phase/li-m3",
+    "commits": {
+     "LP12": "ca87929",
+     "LP13": "b8b21a2",
+     "LP14": "8789032",
+     "LP15": "73e5be6"
+    },
+    "ci_runs": {
+     "LP12": "40054523494 success",
+     "LP13": "40055538817 failure (browser-pilot CASTLE-11 late demand frame, D-M3-CI-1)",
+     "LP14": "40056591089 success",
+     "LP15": "40058039470 success"
+    }
+   },
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "post-rebase 4 vitest shards: 115 files (114 passed, 1 skipped); 804 passed, 1 skipped, after an isolated rerun of examples/reference-app/lp07-scenarios.test.ts (13/13) whose wall-clock lag assertion failed in the shard run while a concurrent model-eval run loaded the machine",
+    "build": "exit 0",
+    "e2e": "attention-redesign 1, repairs-redesign 1, exploration-redesign 1, cases-redesign 5, workbench-redesign 3 (LP12-A4 needed a rerun under load) passed locally; full redesign + pilot suites green in CI run 40058755915"
+   },
+   "note": "Engineering-verified locally and in CI for the executed tests only. Scripted/protocol checks; no model call, AI execution not exercised, $0 model spend for M3. Repair plans are plan-only (no executor; lab leases are LP16; human approval EXT05 deferred); the attention queue makes no remote delivery (R03.5 destinations remain gated)."
+  },
+  "M5": {
+   "packages": [
+    "LP20",
+    "LP21",
+    "LP22",
+    "LP23"
+   ],
+   "status": "in_progress",
+   "done": [
+    "LP20",
+    "LP21",
+    "LP22"
+   ],
+   "pending": {
+    "LP23": "depends on LP19 (M4)"
+   },
+   "commits": {
+    "LP20": "18f06da",
+    "LP21": "e18c095",
+    "LP22": "b2b90b8"
+   },
+   "note": "Engineering-verified locally and in CI for the executed tests only. Scripted/protocol checks; no model call, AI execution not exercised, $0 model spend for M5. Trusted host-process mode only; the executor is a library inside disposable supervisor-owned runs, the server has no executor. External effectiveness (EXT01) and human approval (EXT05) stay deferred.",
+   "ci_runs": {
+    "LP20": "40060924990 success on 18f06da",
+    "LP21": "40061416252 failure on e18c095 (D-M5-CI-1)",
+    "LP22": "40061825278 success (check + browser-pilot) on b2b90b8"
+   },
+   "head": "3c8166d",
+   "ci_run": 40062942807,
+   "ci_result": "success (check + browser-pilot) on attempt 2"
+  },
+  "M6": {
+   "packages": [
+    "LP24",
+    "LP25",
+    "LP26",
+    "LP27"
+   ],
+   "status": "ci_verified",
+   "done": [
+    "LP24",
+    "LP25",
+    "LP26 (+LP26.1)"
+   ],
+   "remaining": [
+    "LP27 (deps LP25, LP22)"
+   ],
+   "note": "LP24/LP25/LP26/LP27 engineering-verified for executed tests; LP26 model evaluations recorded in its receipt; LP27 scripted only (model not_exercised). Human/provider gates remain deferred.",
+   "head": "0dc7e74",
+   "ci_run": 40065627734
+  },
+  "M4": {
+   "packages": [
+    "LP16",
+    "LP17",
+    "LP18",
+    "LP19"
+   ],
+   "status": "complete_for_engineering",
+   "done": [
+    "LP16",
+    "LP17",
+    "LP18",
+    "LP19"
+   ],
+   "commits": {
+    "LP16": "c2a439f",
+    "LP17": "39484e9 978b273 1af0907",
+    "LP18": "3f692cf 232a328 417d8a8",
+    "LP19": "4267ca7 d7e59e6"
+   },
+   "note": "Rebased onto phase/local-intelligence ab5ae29 and retested: typecheck exit 0; 4 vitest shards 941 passed, 1 skipped; validate:fixtures exit 0; e2e families 3/3, interior 2/2, comparison 1/1, world 3/3 (Chromium headless SwiftShader, no GPU claim). No model calls, $0 spend. LP19 limitations: castle overlay only, no comparison replay scope, LP22 verifications not yet linked into executed_local.",
+   "head": "1d9d7d8",
+   "ci_run": 40069056700,
+   "ci_result": "success (check + browser-pilot incl. pilot:redesign) on 1d9d7d8"
+  },
+  "M7": {
+   "packages": [
+    "LP28",
+    "LP29",
+    "LP30",
+    "LP31"
+   ],
+   "status": "ci_verified",
+   "head": "dca446d",
+   "ci_run": 40078498692,
+   "ci_result": "success (check + browser-pilot)",
+   "note": "Engineering-verified locally and in CI for the executed tests only. LP31 loop is scripted (AI not exercised in it); AI-loop evidence is LP26 only. No merge, PR, deploy or provider call."
+  }
+ }
+}

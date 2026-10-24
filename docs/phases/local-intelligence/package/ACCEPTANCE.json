@@ -1,0 +1,902 @@
+{
+  "schema": "dk.local_phase.acceptance.v1",
+  "status": "specification_only",
+  "requirements": [
+    {
+      "id": "LP00-A1",
+      "requirement": "Record the actual HEAD and preserve unknown/uncommitted work; rebase decisions are explicit, not automatic.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP00"
+    },
+    {
+      "id": "LP00-A2",
+      "requirement": "Historical evaluation and receipt trees are fingerprinted and unchanged after bootstrap.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP00"
+    },
+    {
+      "id": "LP00-A3",
+      "requirement": "Runtime network, model-budget and local-action policy default to no external access/no new provider calls.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP00"
+    },
+    {
+      "id": "LP00-A4",
+      "requirement": "Baseline checks are executed where available; unavailable checks remain not_run and are not described as passed.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP00"
+    },
+    {
+      "id": "LP01-A1",
+      "requirement": "Boundary, session-policy and SCP conditional-deny fixtures reproduce the old behavior and return conditional after repair.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP01"
+    },
+    {
+      "id": "LP01-A2",
+      "requirement": "A definitely applicable unconditional deny remains blocked; missing controlling inputs cannot become feasible.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP01"
+    },
+    {
+      "id": "LP01-A3",
+      "requirement": "Unsupported policy constructs and case-sensitive resource identifiers are exercised and conservatively handled within declared support.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP01"
+    },
+    {
+      "id": "LP01-A4",
+      "requirement": "The API, change review, aftermath and MCP expose consistent decision and evidence, without changing frozen evaluation records.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP01"
+    },
+    {
+      "id": "LP02-A1",
+      "requirement": "Budget exhaustion, a null coverage result, a failed page and zero configured observers each remain partial/unknown and cannot imply visibility.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP02"
+    },
+    {
+      "id": "LP02-A2",
+      "requirement": "A decisive event beyond the first 100 results is retrieved or explicitly outstanding; no silent completion.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP02"
+    },
+    {
+      "id": "LP02-A3",
+      "requirement": "Same raw actor/session/run IDs under unrelated authorities do not support a joint hypothesis.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP02"
+    },
+    {
+      "id": "LP02-A4",
+      "requirement": "Failed logins followed by success and benign activity never alone establish malicious guessing; allowed tool calls never alone establish approval.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP02"
+    },
+    {
+      "id": "LP03-A1",
+      "requirement": "Existing synthetic/live examples remain valid or receive an explicit tested versioned migration; no silent semantic relabeling.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP03"
+    },
+    {
+      "id": "LP03-A2",
+      "requirement": "Local recorded activity always exposes synthetic-data and local-scope qualifiers in API/UI/MCP/export.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP03"
+    },
+    {
+      "id": "LP03-A3",
+      "requirement": "Every new contract rejects unknown executable, credential and arbitrary-target fields.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP03"
+    },
+    {
+      "id": "LP03-A4",
+      "requirement": "Capability badges derive from scoped receipts, not from a surface family name or an LLM declaration.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP03"
+    },
+    {
+      "id": "LP04-A1",
+      "requirement": "An empty workspace can preview all three templates without provider credentials.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP04"
+    },
+    {
+      "id": "LP04-A2",
+      "requirement": "Untrusted Compose/OpenAPI/manifest strings are treated as data; scripts, interpolation, remote refs and executable assets are rejected or ignored explicitly.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP04"
+    },
+    {
+      "id": "LP04-A3",
+      "requirement": "Same blueprint version/seed yields the same logical graph and layout proposal; changed input yields a new revision.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP04"
+    },
+    {
+      "id": "LP04-A4",
+      "requirement": "Adding a service preserves unrelated identities and coordinates; ambiguous routes stay ambiguous.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP04"
+    },
+    {
+      "id": "LP05-A1",
+      "requirement": "A different localhost service, redirect, metadata/LAN/public address or unregistered endpoint is refused before action.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP05"
+    },
+    {
+      "id": "LP05-A2",
+      "requirement": "A run token cannot reach another run or a non-lab project; forged environment labels do not grant authority.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP05"
+    },
+    {
+      "id": "LP05-A3",
+      "requirement": "Stopping/aborting cleans only manifest-owned resources and records cleanup failure without removing user files.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP05"
+    },
+    {
+      "id": "LP05-A4",
+      "requirement": "Frozen scenario time cannot suspend wall-clock limits; resource and network controls are checked or the execution mode is explicitly restricted/refused.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP05"
+    },
+    {
+      "id": "LP06-A1",
+      "requirement": "A real local request reaches the expected service and appears identically in API, browser and MCP evidence.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP06"
+    },
+    {
+      "id": "LP06-A2",
+      "requirement": "A permitted operation and a prohibited operation produce independently observed outcomes under the current policy.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP06"
+    },
+    {
+      "id": "LP06-A3",
+      "requirement": "A deliberate observer outage becomes unknown for the affected interval, not a no-effect conclusion.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP06"
+    },
+    {
+      "id": "LP06-A4",
+      "requirement": "Every source has independent declared authority; relayed/self-reported records cannot corroborate themselves.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP06"
+    },
+    {
+      "id": "LP07-A1",
+      "requirement": "DSL cannot execute scripts, shell, plugins or unrestricted network requests.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP07"
+    },
+    {
+      "id": "LP07-A2",
+      "requirement": "Same seed/action schedule reproduces intended state; runtime timing differences are recorded, not hidden.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP07"
+    },
+    {
+      "id": "LP07-A3",
+      "requirement": "Missing/delayed/dropped evidence affects observability without rewriting private operation truth.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP07"
+    },
+    {
+      "id": "LP07-A4",
+      "requirement": "Investigator views contain no answer labels, hidden seeds, expected action IDs or oracle credentials.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP07"
+    },
+    {
+      "id": "LP08-A1",
+      "requirement": "Contracts derive from public case scope and supported recipes, never private scenario truth.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP08"
+    },
+    {
+      "id": "LP08-A2",
+      "requirement": "An obligation is satisfied only by the required scoped evidence or a documented inapplicability reason.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP08"
+    },
+    {
+      "id": "LP08-A3",
+      "requirement": "An incomplete investigation can honestly conclude unresolved without asserting a negative or malicious intent.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP08"
+    },
+    {
+      "id": "LP08-A4",
+      "requirement": "Changing scope or evidence invalidates affected obligations without overwriting previous decisions.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP08"
+    },
+    {
+      "id": "LP09-A1",
+      "requirement": "A key event beyond page one is fetched under a stable snapshot without duplicate/skip at tied timestamps.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP09"
+    },
+    {
+      "id": "LP09-A2",
+      "requirement": "No tool accepts raw SQL, arbitrary paths, unrestricted graph queries or source credentials.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP09"
+    },
+    {
+      "id": "LP09-A3",
+      "requirement": "Restart resumes from committed job state; cancellation/revocation stops further authorized work.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP09"
+    },
+    {
+      "id": "LP09-A4",
+      "requirement": "Budget/truncation/error states remain explicit and do not mark downstream obligations satisfied.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP09"
+    },
+    {
+      "id": "LP10-A1",
+      "requirement": "A summary never substitutes for a missing required record; packet omissions are machine-readable.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP10"
+    },
+    {
+      "id": "LP10-A2",
+      "requirement": "Citations to existing but not retrieved records fail availability checks; cross-run/revision refs fail scope checks.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP10"
+    },
+    {
+      "id": "LP10-A3",
+      "requirement": "Arbitrary natural-language support is not labeled machine-proved merely because IDs exist.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP10"
+    },
+    {
+      "id": "LP10-A4",
+      "requirement": "Counterevidence, source uncertainty and partial query status survive packet size limits and exports.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP10"
+    },
+    {
+      "id": "LP11-A1",
+      "requirement": "Both profiles receive only permitted project/run evidence and the same records as the UI.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP11"
+    },
+    {
+      "id": "LP11-A2",
+      "requirement": "Case/job writes have correct annotations and backend privileges; viewer cannot persist a change by calling a nominal read tool.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP11"
+    },
+    {
+      "id": "LP11-A3",
+      "requirement": "Prompt text in an event/tool result cannot change profile, budget, target or approval policy.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP11"
+    },
+    {
+      "id": "LP11-A4",
+      "requirement": "Tool outputs are bounded with resumable refs; disconnected clients can resume without hidden extra model calls.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP11"
+    },
+    {
+      "id": "LP12-A1",
+      "requirement": "Changing cases aborts stale reads and preserves unsaved drafts in the correct scope.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP12"
+    },
+    {
+      "id": "LP12-A2",
+      "requirement": "A user can reach supporting/counterevidence, failed queries and uncertainty without navigating a 3D camera.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP12"
+    },
+    {
+      "id": "LP12-A3",
+      "requirement": "Agent completion cannot silently resolve an unanswered case question or erase a person\u2019s note.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP12"
+    },
+    {
+      "id": "LP12-A4",
+      "requirement": "Keyboard/reduced-motion/narrow-screen automated workflows retain the same critical evidence and status.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP12"
+    },
+    {
+      "id": "LP13-A1",
+      "requirement": "Conditional permission never animates as observed use; unsupported provider semantics remain unresolved.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP13"
+    },
+    {
+      "id": "LP13-A2",
+      "requirement": "A proposed candidate cannot modify baseline facts, findings, scenes or approval receipts.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP13"
+    },
+    {
+      "id": "LP13-A3",
+      "requirement": "Same-name resources/versions under different authorities remain distinct throughout a comparison.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP13"
+    },
+    {
+      "id": "LP13-A4",
+      "requirement": "A comparison records the exact state, policy version, conditions and unassessed paths.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP13"
+    },
+    {
+      "id": "LP14-A1",
+      "requirement": "At least two valid candidates or an explicit no-supported-repair result are returned for applicable scenarios.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP14"
+    },
+    {
+      "id": "LP14-A2",
+      "requirement": "Ranking records objective coverage, disruption, prerequisites and unknowns; it does not claim global optimality.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP14"
+    },
+    {
+      "id": "LP14-A3",
+      "requirement": "A patch cannot execute evidence instructions, write the operator checkout or publish a PR.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP14"
+    },
+    {
+      "id": "LP14-A4",
+      "requirement": "A stale baseline/candidate digest prevents old approval from authorizing a changed repair.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP14"
+    },
+    {
+      "id": "LP15-A1",
+      "requirement": "Repeated source retries do not create a notification storm or discard the underlying case event.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP15"
+    },
+    {
+      "id": "LP15-A2",
+      "requirement": "Acknowledging a queue item never closes a finding or case implicitly.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP15"
+    },
+    {
+      "id": "LP15-A3",
+      "requirement": "Notifications contain scoped minimized summaries and never expose another project\u2019s details.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP15"
+    },
+    {
+      "id": "LP15-A4",
+      "requirement": "The workflow works with every remote destination disabled and no outbound notification call.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP15"
+    },
+    {
+      "id": "LP16-A1",
+      "requirement": "Adding a service preserves unrelated coordinates; intentional reflow is previewed and versioned.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP16"
+    },
+    {
+      "id": "LP16-A2",
+      "requirement": "Removed/recreated resources resolve to their own incarnation and historical location.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP16"
+    },
+    {
+      "id": "LP16-A3",
+      "requirement": "Every aggregated district retains a complete accessible membership list and asset search.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP16"
+    },
+    {
+      "id": "LP16-A4",
+      "requirement": "WebGL loss, resize, back navigation and selection changes retain the case and evidence scope.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP16"
+    },
+    {
+      "id": "LP17-A1",
+      "requirement": "Every family has a readable unique silhouette and in-bounds geometry at supported LOD; no placeholder cube is counted as finished art.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP17"
+    },
+    {
+      "id": "LP17-A2",
+      "requirement": "Roof-off and selection proxies work at overview and interior scales without intercepting unrelated clicks.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP17"
+    },
+    {
+      "id": "LP17-A3",
+      "requirement": "Geometry/material/manifest hashes and licenses are recorded; no user font files are distributed in handoff exports.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP17"
+    },
+    {
+      "id": "LP17-A4",
+      "requirement": "Rendered families do not imply discovery or control verification; unsupported surfaces display honest capability state.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP17"
+    },
+    {
+      "id": "LP18-A1",
+      "requirement": "Selecting an interior object opens the exact authoritative record and its provenance, not a generated description alone.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP18"
+    },
+    {
+      "id": "LP18-A2",
+      "requirement": "Declared doors/grants are not drawn as observed attacker transit; status is never color-only.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP18"
+    },
+    {
+      "id": "LP18-A3",
+      "requirement": "Agent decisions, executions and effects remain distinct and link to their independent evidence.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP18"
+    },
+    {
+      "id": "LP18-A4",
+      "requirement": "The same workflow and selected IDs survive 3D/2D/list switching and narrow-screen use.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP18"
+    },
+    {
+      "id": "LP19-A1",
+      "requirement": "Creating or viewing a branch does not change baseline state or current source coverage.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP19"
+    },
+    {
+      "id": "LP19-A2",
+      "requirement": "Removed/added/changed authority is visible with exact references and unresolved conditions.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP19"
+    },
+    {
+      "id": "LP19-A3",
+      "requirement": "A simulated blocked path never appears as a verified executed control.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP19"
+    },
+    {
+      "id": "LP19-A4",
+      "requirement": "Comparison export identifies both revisions and preserves incomplete/changed evidence warnings.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP19"
+    },
+    {
+      "id": "LP20-A1",
+      "requirement": "An investigator/service token cannot issue, extend or approve its own lease.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP20"
+    },
+    {
+      "id": "LP20-A2",
+      "requirement": "Lease targets are supervisor-owned resources; forged lab metadata or a real provider ARN is refused.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP20"
+    },
+    {
+      "id": "LP20-A3",
+      "requirement": "Expired/stale/replayed approval or changed parameters cannot authorize execution.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP20"
+    },
+    {
+      "id": "LP20-A4",
+      "requirement": "A local lease never counts as human approval and cannot authorize the existing production-facing response path.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP20"
+    },
+    {
+      "id": "LP21-A1",
+      "requirement": "An approved local plan changes only the exact registered target revision and records an effect receipt.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP21"
+    },
+    {
+      "id": "LP21-A2",
+      "requirement": "Crash after application but before receipt is reconciled without applying the change twice.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP21"
+    },
+    {
+      "id": "LP21-A3",
+      "requirement": "Shell commands, arbitrary endpoints, host paths and production adapter requests are rejected.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP21"
+    },
+    {
+      "id": "LP21-A4",
+      "requirement": "Cancellation, quota, partial failure and cleanup are surfaced; original compromised authority is not restored as rollback.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP21"
+    },
+    {
+      "id": "LP22-A1",
+      "requirement": "An accepted action with unchanged target behavior fails verification.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP22"
+    },
+    {
+      "id": "LP22-A2",
+      "requirement": "Delayed and unrelated concurrent effects are correlated correctly; unavailable observer yields inconclusive.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP22"
+    },
+    {
+      "id": "LP22-A3",
+      "requirement": "Prohibited behavior blocked while legitimate behavior broken cannot be a verified repair.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP22"
+    },
+    {
+      "id": "LP22-A4",
+      "requirement": "Cleanup failure remains visible and prevents whole-run success even when the security assertion passed.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP22"
+    },
+    {
+      "id": "LP23-A1",
+      "requirement": "A regression reruns without an LLM and reproduces the supported boundary result.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP23"
+    },
+    {
+      "id": "LP23-A2",
+      "requirement": "Changing a relevant policy/tool/artifact version marks the old validation stale.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP23"
+    },
+    {
+      "id": "LP23-A3",
+      "requirement": "No secret, private oracle, arbitrary executable or unrelated record is exported in the descriptor.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP23"
+    },
+    {
+      "id": "LP23-A4",
+      "requirement": "Closing a case requires scoped answers/accepted unknowns; a failed verification cannot silently close it.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP23"
+    },
+    {
+      "id": "LP24-A1",
+      "requirement": "A real stdio client can investigate the local world through normal authenticated endpoints.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP24"
+    },
+    {
+      "id": "LP24-A2",
+      "requirement": "No provider route is silently selected; missing model availability remains not_exercised for AI-specific checks.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP24"
+    },
+    {
+      "id": "LP24-A3",
+      "requirement": "A native coding agent with repo/oracle access is labeled development_assisted, not held-out blinded.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP24"
+    },
+    {
+      "id": "LP24-A4",
+      "requirement": "Captured traces include observable tool I/O and claims, not hidden model reasoning or tokens.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP24"
+    },
+    {
+      "id": "LP25-A1",
+      "requirement": "Investigator attempts to read oracle paths, seed/config keys and scoring endpoints are denied and recorded.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP25"
+    },
+    {
+      "id": "LP25-A2",
+      "requirement": "Grading uses actual controlled operations/state, not the same detector/helper whose output is being tested.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP25"
+    },
+    {
+      "id": "LP25-A3",
+      "requirement": "The answer key accepts uncertainty when decisive facts are unobservable; it never demands omniscience.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP25"
+    },
+    {
+      "id": "LP25-A4",
+      "requirement": "Renaming resources or changing nuisance fields does not leak the answer or change a logically equivalent objective.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP25"
+    },
+    {
+      "id": "LP26-A1",
+      "requirement": "All conditions pass evidence-access/metadata equality before attempts; invalid preflight is not a model score.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP26"
+    },
+    {
+      "id": "LP26-A2",
+      "requirement": "Missing reachable evidence counts against retrieval and end-to-end success; no outcome is inferred by subtracting automatic failures.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP26"
+    },
+    {
+      "id": "LP26-A3",
+      "requirement": "Structured task/repair predicates, semantic critique and coverage limitations use separate denominators.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP26"
+    },
+    {
+      "id": "LP26-A4",
+      "requirement": "No prior $5 budget or historical approval is reused; remote paid mode requires an explicit new route, cap and pre-reservation.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP26"
+    },
+    {
+      "id": "LP27-A1",
+      "requirement": "Removing a denial, skipping a required page or substituting a model refusal makes the corresponding test fail.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP27"
+    },
+    {
+      "id": "LP27-A2",
+      "requirement": "Clean/injected pairs differ only in the intended field and are compared against clean-repeat variability.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP27"
+    },
+    {
+      "id": "LP27-A3",
+      "requirement": "No scenario launches external scans, malware, arbitrary shell or real credential collection.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP27"
+    },
+    {
+      "id": "LP27-A4",
+      "requirement": "Errors, partial runs, observer outages and budget exhaustion remain in the run/accounting records.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP27"
+    },
+    {
+      "id": "LP28-A1",
+      "requirement": "Round-trip retains exact supported evidence references and explicitly reports absent records.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP28"
+    },
+    {
+      "id": "LP28-A2",
+      "requirement": "Zip-slip, absolute paths, links, oversized entries, decompression bombs and unsupported executables are rejected before extraction.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP28"
+    },
+    {
+      "id": "LP28-A3",
+      "requirement": "Evidence-only exports exclude oracle data, tokens, secrets, provider credentials and private font files.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP28"
+    },
+    {
+      "id": "LP28-A4",
+      "requirement": "Hash/signature validation is described as integrity/origin checking, not proof of truth, completeness or independent approval.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP28"
+    },
+    {
+      "id": "LP29-A1",
+      "requirement": "An operator creates, previews, runs and reopens a supported local mission without editing source.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP29"
+    },
+    {
+      "id": "LP29-A2",
+      "requirement": "Builder and investigator views are distinct; opening truth explicitly taints the run as non-blinded.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP29"
+    },
+    {
+      "id": "LP29-A3",
+      "requirement": "Invalid plans keep drafts and do not create partial resources or fabricated connected status.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP29"
+    },
+    {
+      "id": "LP29-A4",
+      "requirement": "Local-only operation is obvious throughout UI/MCP/export; remote setup is not a prerequisite.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP29"
+    },
+    {
+      "id": "LP30-A1",
+      "requirement": "Existing tests still pass or changes have a versioned reason and retained old evidence; no weakened assertions for green CI.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP30"
+    },
+    {
+      "id": "LP30-A2",
+      "requirement": "Repeated start/reset/project/camera/case cycles are bounded under recorded conditions and failed cleanup is surfaced.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP30"
+    },
+    {
+      "id": "LP30-A3",
+      "requirement": "Real rendered screenshots and browser interactions cover new families, interiors, branches and failure states.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP30"
+    },
+    {
+      "id": "LP30-A4",
+      "requirement": "Claims stay scoped to tested hardware/software; manual screen-reader, physical GPU and external-use acceptance remain deferred.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP30"
+    },
+    {
+      "id": "LP31-A1",
+      "requirement": "An end-to-end scripted run covers launch, incident, investigation, repair, verification and export on the same candidate.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP31"
+    },
+    {
+      "id": "LP31-A2",
+      "requirement": "An actually available approved AI route exercises the loop or AI status remains explicitly not_exercised without blocking truthful scripted completion.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP31"
+    },
+    {
+      "id": "LP31-A3",
+      "requirement": "All phase requirements have receipts or explicit reasons; external deferred items are never silently approved.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP31"
+    },
+    {
+      "id": "LP31-A4",
+      "requirement": "No unauthorized repository merge/deployment/provider call occurred; handoff names precise next work instead of declaring universal readiness.",
+      "status": "not_run",
+      "evidence": [],
+      "work_package": "LP31"
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+[
+  {
+    "id": "R01",
+    "type": "repository",
+    "title": "docs/roadmap/REMAINING.md",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/docs/roadmap/REMAINING.md",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Existing externally gated work and explicit AWS/notification deferrals.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R02",
+    "type": "repository",
+    "title": "apps/server/src/recipes.ts",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/apps/server/src/recipes.ts",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Existing bounded recipe behavior, query/coverage handling and observable-claim hardening opportunities; not independently executed this turn.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R03",
+    "type": "repository",
+    "title": "examples/reference-app/src/lab/runner.ts",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/examples/reference-app/src/lab/runner.ts",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Current finite HTTP lab runner and places to strengthen target ownership, per-operation effects and cleanup accounting.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R04",
+    "type": "repository",
+    "title": "artifacts/completion/evaluation/REPORT.md",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/artifacts/completion/evaluation/REPORT.md",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Prior actual aggregate report; not new evaluation results or human-reviewed accuracy.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R05",
+    "type": "repository",
+    "title": "apps/mcp/src/server.ts",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/apps/mcp/src/server.ts",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Existing case/history/bundle/recipe tools and permissions to reuse.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R06",
+    "type": "repository",
+    "title": "apps/server/src/access/aws-policy.ts",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/apps/server/src/access/aws-policy.ts",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Unchanged conditional-result predicate; previously reported isolated reproduction, new full regression required.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R07",
+    "type": "repository",
+    "title": "packages/contracts/src/surfaces.ts",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/packages/contracts/src/surfaces.ts",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Existing surface descriptors and named architectural families; prior review context.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R08",
+    "type": "repository",
+    "title": "docs/quality/COMPLETION-2026-10-23.md",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/docs/quality/COMPLETION-2026-10-23.md",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Existing local completion evidence and limits; prior exact-head review context.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R09",
+    "type": "repository",
+    "title": "docs/roadmap/R01-RECEIPT.md",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/docs/roadmap/R01-RECEIPT.md",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Existing history, bundle, concurrency and query implementation; prior exact-head review context.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "R10",
+    "type": "repository",
+    "title": "docs/roadmap/R05-RECEIPT.md",
+    "url": "https://github.com/robzilla1738/Digital-Kingdom/blob/9fec7ed24dea46157af8a7c0ef09bee77c2ffa88/docs/roadmap/R05-RECEIPT.md",
+    "commit": "9fec7ed24dea46157af8a7c0ef09bee77c2ffa88",
+    "use": "Supported agent boundary and independent observation; prior exact-head review context.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "E01",
+    "type": "primary_documentation",
+    "title": "AWS IAM policy evaluation logic",
+    "url": "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
+    "use": "Why applicable denies/restrictive layers matter. No claim of full provider-equivalent local policy engine.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "E02",
+    "type": "primary_documentation",
+    "title": "MCP Security Best Practices",
+    "url": "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices",
+    "use": "Scope minimization, authorization boundaries, SSRF/token handling and local-server concerns. Pin actual supported SDK/protocol in implementation.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "E03",
+    "type": "primary_documentation",
+    "title": "Docker Engine security",
+    "url": "https://docs.docker.com/engine/security/",
+    "use": "Daemon/mount authority and isolation limitations; keep daemon control out of the web app and use finite local operations.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "E04",
+    "type": "primary_documentation",
+    "title": "Docker Rootless mode",
+    "url": "https://docs.docker.com/engine/security/rootless/",
+    "use": "Optional non-root launcher profile where supported, not an absolute sandbox claim or instruction to install Docker.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "E05",
+    "type": "primary_documentation",
+    "title": "Compose networking",
+    "url": "https://docs.docker.com/compose/how-tos/networking/",
+    "use": "Explicit networks/service identities and changed addresses; default networking is not assumed to enforce the phase egress policy.",
+    "retrieved": "2026-10-23"
+  },
+  {
+    "id": "E06",
+    "type": "primary_documentation",
+    "title": "Playwright visual comparisons",
+    "url": "https://playwright.dev/docs/test-snapshots",
+    "use": "Actual screenshots and same-environment comparisons, not human visual/device approval.",
+    "retrieved": "2026-10-23"
+  }
+]

@@ -62,9 +62,9 @@ export interface AgentResult {
   tools_offered: string[]; duration_ms: number; format_reminders: number;
 }
 
-type Msg = { role: "system" | "user" | "assistant" | "tool"; content: string | null; tool_calls?: unknown[]; tool_call_id?: string };
+export type Msg = { role: "system" | "user" | "assistant" | "tool"; content: string | null; tool_calls?: unknown[]; tool_call_id?: string };
 
-async function chat(cfg: AgentConfig, messages: Msg[], tools: unknown[] | undefined, signal: AbortSignal) {
+export async function chat(cfg: AgentConfig, messages: Msg[], tools: unknown[] | undefined, signal: AbortSignal) {
   for (let attempt = 0; attempt < 3; attempt++) {
     const body = JSON.stringify({ model: cfg.model, messages, ...(tools?.length ? { tools, tool_choice: "auto" } : {}), max_tokens: cfg.maxCompletionTokens, ...(cfg.temperature !== undefined ? { temperature: cfg.temperature } : {}) });
     const reservation = randomUUID();

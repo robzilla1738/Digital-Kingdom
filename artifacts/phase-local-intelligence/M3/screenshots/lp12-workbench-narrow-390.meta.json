@@ -1,0 +1,22 @@
+{
+  "name": "lp12-workbench-narrow-390",
+  "file": "lp12-workbench-narrow-390.png",
+  "sha256": "16a13bf575ad1ed6106a43c11b4bdca0a4fdd37286d751ef3996f9e091649e56",
+  "bytes": 99686,
+  "capturedAt": "2026-10-24T02:31:15.380Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

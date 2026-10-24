@@ -1,0 +1,22 @@
+{
+  "name": "lp16-world-navigator-district-focus-200",
+  "file": "lp16-world-navigator-district-focus-200.png",
+  "sha256": "3ad644d79bdbc041082afee278a76428e075b67e61e90b24e04dc8182ddfc70a",
+  "bytes": 338865,
+  "capturedAt": "2026-10-24T06:06:29.302Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F13"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

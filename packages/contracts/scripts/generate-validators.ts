@@ -16,7 +16,23 @@ const dir = new URL("../", import.meta.url);
 const load = (n: string) => JSON.parse(readFileSync(new URL(`schemas/${n}.schema.json`, dir), "utf8"));
 const ajv = new Ajv2020({ allErrors: true, strict: true, strictTypes: false, allowUnionTypes: true, code: { source: true, esm: true, lines: false } });
 addFormats(ajv, ["date-time"]);
-const map: Record<string, string> = { validateGraph: "graph", validateEvent: "event", validateIngestEvent: "ingest-event", validateSceneProposal: "scene-proposal" };
+const map: Record<string, string> = { validateGraph: "graph", validateEvent: "event", validateIngestEvent: "ingest-event", validateSceneProposal: "scene-proposal",
+  // Local Intelligence Phase (LP03) contracts
+  validateWorldPlan: "local/world-plan.v1", validateRunProvenance: "local/run-provenance.v1", validateVerificationReceipt: "local/verification-receipt.v1", validateCapabilityReceipt: "local/capability-receipt.v1",
+  // Local Intelligence Phase (LP08/LP10) investigation contracts
+  validateInvestigationContract: "local/investigation-contract.v1", validateConclusion: "local/conclusion.v1",
+  // Local Intelligence Phase (LP14) repair plans
+  validateRepairPlan: "local/repair-plan.v1",
+  // Local Intelligence Phase (LP20) lab leases
+  validateLabLease: "local/lab-lease.v1",
+  // Local Intelligence Phase (LP21) repair execution receipts
+  validateRepairExecution: "local/repair-execution.v1",
+  // Local Intelligence Phase (LP22) independent repair verification
+  validateRepairVerification: "local/repair-verification.v1",
+  // Local Intelligence Phase (LP23) replayable repair regressions
+  validateRepairRegression: "local/repair-regression.v1",
+  // Local Intelligence Phase (LP28) portable case capsules
+  validateCapsuleManifest: "local/capsule-manifest.v1" };
 for (const [, n] of Object.entries(map)) ajv.addSchema(load(n), n);
 let code = standalone(ajv, Object.fromEntries(Object.entries(map).map(([k, v]) => [k, v])));
 // Make the output dependency-free (browser + node, no CommonJS require).

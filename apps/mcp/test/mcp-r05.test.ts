@@ -26,7 +26,7 @@ describe("R05.3 MCP cases and incremental delivery", () => {
     try {
       const c = (await t.call(await t.connect(t.ctx.viewer), "dk_capabilities")).json;
       expect(c).toMatchObject({ schema: "dk.capabilities.v1", delivery: { push: "not supported" }, remote_mcp: "not offered" });
-      expect(c.recipes).toContain("auth-burst-then-success@1");
+      expect(c.recipes).toContain("auth-burst-then-success@2");
     } finally { await t.stop(); }
   });
 

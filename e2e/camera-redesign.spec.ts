@@ -93,6 +93,10 @@ test('CASTLE-11: an unlinked event highlights its asset without inventing or ani
  await expect(page.locator('svg.graph2d animate, svg.graph2d animateMotion')).toHaveCount(0);expect(await page.locator('[data-edge-id]').evaluateAll(es=>es.flatMap(e=>e.getAnimations({subtree:true})).filter(a=>a.playState==='running').length)).toBe(0);
  await page.evaluate(asset=>{location.hash='workspace=kingdom&view=castle&sel=asset:'+asset;},asset.id);const canvas=page.locator('canvas');await expect.poll(async()=>Number(await canvas.getAttribute('data-render-count'))).toBeGreaterThan(0);await page.waitForTimeout(650);const before=await canvas.getAttribute('data-camera-pose');
  await page.evaluate(event=>{location.hash='workspace=kingdom&view=castle&sel=event:'+event;},event);await expect(page.getByTestId('event-unlinked')).toBeVisible();await expect(page.locator(`[data-asset-label="${asset.id}"]`)).toHaveClass(/is-selected/);await page.waitForTimeout(400);
+ // Late demand frames can follow the selection change (CI run 40055538817 saw 6 -> 7 inside the idle window; same race as
+ // D-M1-CI-2). With software rendering under load, demand frames can be several hundred ms apart, so first wait (bounded) for
+ // one full quiet 700 ms window; a continuously animated trail never produces one and still fails. Then the unchanged assertion.
+ await expect.poll(async()=>{const a=await canvas.getAttribute('data-render-count');await page.waitForTimeout(700);return a===await canvas.getAttribute('data-render-count');},{timeout:10_000}).toBe(true);
  const frames=await canvas.getAttribute('data-render-count');await page.waitForTimeout(700);expect(await canvas.getAttribute('data-render-count')).toBe(frames);expect(await canvas.getAttribute('data-camera-pose')).toBe(before);
  await captureRedesign(page,'unlinked-event-static-asset-highlight');reports.push({case:'unlinked event has no invented causal trail',event,asset:asset.id,existingStaticRelationshipIds:eventIds,renderCountStable:frames,cameraUnchanged:true,result:'passed'});
 });

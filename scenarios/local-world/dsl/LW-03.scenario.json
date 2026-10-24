@@ -1,0 +1,24 @@
+{
+ "schema": "dk.local.scenario.v1",
+ "id": "LW-03",
+ "version": 1,
+ "blueprint": "delivery-identity",
+ "blueprint_version": 1,
+ "seed": "lw03-seed-2b7c",
+ "start": "2026-10-19T16:00:00Z",
+ "steps": [
+  { "at_ms": 0, "action": "publish_artifact", "name": "build-1", "actor": "svc:builder", "as": "a1" },
+  { "at_ms": 10, "action": "select_artifact", "artifact": "a1" },
+  { "at_ms": 20, "action": "issue_credential", "subject": "svc:deployer", "as": "c1" },
+  { "at_ms": 30, "action": "use_credential", "credential": "c1", "resource": "deploy", "route": "GET /tenants/{tenant}/records", "params": { "tenant": "release" }, "label": "lw03-no-grant" },
+  { "at_ms": 40, "action": "change_grant", "subject": "svc:deployer", "grant": "read:deploy-data", "op": "add" },
+  { "at_ms": 50, "action": "use_credential", "credential": "c1", "resource": "deploy", "route": "GET /tenants/{tenant}/records", "params": { "tenant": "release" }, "label": "lw03-granted" },
+  { "at_ms": 60, "action": "revoke_credential", "credential": "c1" },
+  { "at_ms": 70, "action": "use_credential", "credential": "c1", "resource": "deploy", "route": "GET /tenants/{tenant}/records", "params": { "tenant": "release" }, "label": "lw03-revoked" }
+ ],
+ "expect": [
+  { "label": "lw03-no-grant", "status_class": "4xx", "effect": "not_observed", "resource": "deploy-data" },
+  { "label": "lw03-granted", "status_class": "2xx", "effect": "observed", "resource": "deploy-data" },
+  { "label": "lw03-revoked", "status_class": "4xx", "effect": "not_observed", "resource": "deploy-data" }
+ ]
+}

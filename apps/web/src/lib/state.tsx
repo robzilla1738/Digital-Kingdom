@@ -12,10 +12,14 @@ export type { AssetStatus, Selection, View, Workspace };
 export interface UiState extends NavigationState {
   hover: string | null; playing: boolean; speed: number; roofs: boolean;
   layers: Record<Layer, boolean>; showHypothetical: boolean; focusMode: FocusMode; reducedMotion: boolean; reduceAutomaticAnnouncements: boolean;
-  query: string; tab: 'findings' | 'assets' | 'coverage'; webglFailed: string | null; announce: string;
+  query: string; tab: 'findings' | 'assets' | 'coverage' | 'world'; webglFailed: string | null; announce: string;
   sidebar: boolean; inspector: boolean; focusRevision: number; focusHandledRevision: number; quality: 'low' | 'medium' | 'high'; shortcuts: boolean;
   resolvedEvent: { id: string; assetIds: string[] } | null; eventAssetFilter: string | null; inspectorSection: string; updateRevision: number;
   historyMode: 'push' | 'replace' | 'none'; navigationRevision: number;
+  /** LP16: draw retired incarnations at their last position (outlines only, never live structures). */
+  showArchived: boolean;
+  /** LP16-A4: display details of the scoped case (id is navigation state; title/assets come from the case record). */
+  caseScope: { id: string; title: string; assetIds: string[] } | null;
 }
 export type Action =
  | {type:'view';view:View} | {type:'workspace';workspace:Workspace} | {type:'investigateTab';tab:UiState['investigateTab']}
@@ -28,7 +32,9 @@ export type Action =
  | {type:'focus'} | {type:'focusHandled';revision:number} | {type:'quality';quality:UiState['quality']} | {type:'shortcuts';on:boolean}
  | {type:'eventAssetFilter';assetId:string|null} | {type:'inspectorSection';section:string}
  | {type:'resolvedEvent';id:string;assetIds:string[]}
- | {type:'acceptUpdates'} | {type:'announce';message:string} | {type:'restoreNavigation';state:NavigationState};
+ | {type:'acceptUpdates'} | {type:'announce';message:string} | {type:'restoreNavigation';state:NavigationState}
+ | {type:'worldFocus';focus:string|null;announce?:string} | {type:'showArchived';on:boolean}
+ | {type:'caseScope';scope:{id:string;title:string;assetIds:string[]}|null};
 const navigate = (s:UiState, patch:Partial<UiState>, historyMode:'push'|'replace'='push'):UiState => ({...s,...patch,historyMode,navigationRevision:s.navigationRevision+1});
 export function reducer(s:UiState,a:Action):UiState {
  switch(a.type) {
@@ -66,7 +72,10 @@ export function reducer(s:UiState,a:Action):UiState {
  case 'resolvedEvent': return s.selection?.kind==='event'&&s.selection.id===a.id?{...s,resolvedEvent:{id:a.id,assetIds:[...new Set(a.assetIds)]}}:s;
  case 'acceptUpdates': return {...s,updateRevision:s.updateRevision+1,announce:'Latest confirmed snapshot applied'};
  case 'announce': return {...s,announce:a.message};
- case 'restoreNavigation': return {...s,...a.state,inspector:!!a.state.selection,resolvedEvent:a.state.selection?.kind==='event'&&a.state.selection.id===s.resolvedEvent?.id?s.resolvedEvent:null,historyMode:'none',navigationRevision:s.navigationRevision+1};
+ case 'worldFocus': return s.focus===a.focus?s:navigate(s,{focus:a.focus,announce:a.announce??(a.focus?`World focus ${a.focus}`:'World focus cleared')});
+ case 'showArchived': return {...s,showArchived:a.on};
+ case 'caseScope': { const id=a.scope?.id??null; return id!==(s.caseId??null)?navigate(s,{caseId:id,caseScope:a.scope}):{...s,caseScope:a.scope}; }
+ case 'restoreNavigation': return {...s,...a.state,caseScope:a.state.caseId&&a.state.caseId===s.caseScope?.id?s.caseScope:null,inspector:!!a.state.selection,resolvedEvent:a.state.selection?.kind==='event'&&a.state.selection.id===s.resolvedEvent?.id?s.resolvedEvent:null,historyMode:'none',navigationRevision:s.navigationRevision+1};
  }
 }
 export interface ViewModel {
@@ -88,7 +97,7 @@ export function AppStateProvider({data:incoming,children}:{data:Dataset;children
   if(!location.hash&&narrow)nav.view='graph';
   return {...nav,hover:null,playing:false,speed:30,roofs:true,layers:{runtime:true,identity:false,data:true,deployment:false,tools:true},showHypothetical:false,focusMode:'none',
    reducedMotion:reduced,reduceAutomaticAnnouncements:false,query:'',tab:'findings',webglFailed:null,announce:'',sidebar:true,inspector:!!nav.selection,
-   focusRevision:0,focusHandledRevision:0,quality:narrow?'low':'medium',shortcuts:false,resolvedEvent:null,eventAssetFilter:null,inspectorSection:'summary',updateRevision:0,historyMode:'replace',navigationRevision:0} satisfies UiState;
+   focusRevision:0,focusHandledRevision:0,quality:narrow?'low':'medium',shortcuts:false,resolvedEvent:null,eventAssetFilter:null,inspectorSection:'summary',updateRevision:0,historyMode:'replace',navigationRevision:0,showArchived:false,caseScope:null} satisfies UiState;
  });
  const [data,setData]=useState(incoming);
  const appliedUpdate=useRef(0);

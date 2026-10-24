@@ -1,0 +1,22 @@
+{
+  "name": "lp18-interior-opened-relationship-record",
+  "file": "lp18-interior-opened-relationship-record.png",
+  "sha256": "545637c46eb7a837f5d9ccc5e0cfba1cc0cb671a7579454e8c3ed3dbd0059294",
+  "bytes": 334363,
+  "capturedAt": "2026-10-24T06:05:18.681Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

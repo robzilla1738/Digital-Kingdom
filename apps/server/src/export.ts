@@ -1,3 +1,4 @@
+import { provenanceOf } from "./provenance.ts";
 import { canonicalJson, CATALOG_VERSION } from "@dk/contracts";
 import { COMPILER_VERSION } from "@dk/scene-compiler";
 import { PARSER_VERSION, RULESET_VERSION } from "@dk/detections";
@@ -49,6 +50,7 @@ export function exportCase(store: Store, projectId: string, findingId: string, a
     format: "digital-kingdom-case/1",
     project_id: projectId,
     dataset_kind: graph.dataset_kind,
+    provenance: provenanceOf(store.getProject(projectId)!),
     finding_id: findingId,
     exported_at: store.now().toISOString(),
     exported_by: actor,

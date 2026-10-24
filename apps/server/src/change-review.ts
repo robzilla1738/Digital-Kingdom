@@ -3,7 +3,7 @@ import type { DatabaseSync } from "node:sqlite";
 import type { Graph } from "@dk/contracts";
 import { digest } from "@dk/contracts";
 import { HttpError } from "./store.ts";
-import { evaluate, type AuthSnapshot } from "./access/aws-policy.ts";
+import { evaluate, EVALUATOR_VERSION, type AuthSnapshot, type Decision } from "./access/aws-policy.ts";
 
 /**
  * Security change review (roadmap R04.4). A ChangePlan pins base and candidate: commits, artifact digests, the
@@ -32,9 +32,11 @@ export function reviewChange(input: ChangePlanInput) {
   if (!candidate.snapshot) unknowns.push("the candidate's authorization snapshot was not supplied: effective authority is unknown");
   if (!base.snapshot) unknowns.push("the base authorization snapshot was not supplied: grant changes cannot be compared");
   const rank: Record<string, number> = { blocked: 0, unresolved: 1, conditional: 2, feasible: 3 };
+  const accessDecisions: { probe: { principal: string; action: string; resource: string }; evaluator: string; base: Decision; candidate: Decision }[] = [];
   if (candidate.snapshot && base.snapshot) {
     for (const p of input.probes ?? []) {
       const b = evaluate(base.snapshot, p.principal, p.action, p.resource), c = evaluate(candidate.snapshot, p.principal, p.action, p.resource);
+      accessDecisions.push({ probe: { principal: p.principal, action: p.action, resource: p.resource }, evaluator: EVALUATOR_VERSION, base: b, candidate: c });
       if (c.result === "unresolved") unknowns.push(`${p.principal} ${p.action} ${p.resource}: unresolved in the candidate (${c.reasons[0]})`);
       else if (rank[c.result]! > rank[b.result]!) changes.push({ kind: "broader_grant", detail: `${p.principal} ${p.action} on ${p.resource}: ${b.result} -> ${c.result}`, assets: [] });
     }
@@ -60,7 +62,7 @@ export function reviewChange(input: ChangePlanInput) {
     : [{ for: c.detail, negative: "n/a", positive: `a test event from ${c.assets[0]} arrives at Digital Kingdom` }]);
   const posture = changes.length || unknowns.length ? "review_required" : "no_material_change_found";
   const candidateDigest = digest({ commit: candidate.commit, graph: candidate.graph, snapshot: candidate.snapshot ?? null, sources: candidate.sources, artifacts: candidate.artifacts, agents: candidate.agents ?? [] });
-  return { schema: "dk.change_review.v1", base_commit: base.commit, candidate_commit: candidate.commit, candidate_digest: candidateDigest, posture, changes, unknowns, suggested_tests: tests,
+  return { schema: "dk.change_review.v1", base_commit: base.commit, candidate_commit: candidate.commit, candidate_digest: candidateDigest, posture, changes, unknowns, suggested_tests: tests, access_decisions: accessDecisions,
     note: posture === "no_material_change_found" ? "No new ingress, grant, tool, model-route or telemetry change was found in the stated inputs; this is not a statement that the change is safe." : "Unknown scope is never treated as favourable." };
 }
 

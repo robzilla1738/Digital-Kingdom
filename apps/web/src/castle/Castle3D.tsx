@@ -5,6 +5,8 @@ import { Html, Line, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import type { CompiledScene, SceneRoom } from "@dk/contracts";
 import { CastleModule } from "./modules.tsx";
+import { InteriorMarkers } from "./InteriorMarkers.tsx";
+import { ComparisonBadges, ComparisonPanel, useNarrowLayout, useWorldComparison } from "./ComparisonOverlay.tsx";
 import { Environment } from "./Environment.tsx";
 import { hatchTexture } from "./materials.ts";
 import { EdgeChooser, type EdgeChoice } from "./EdgeChooser.tsx";
@@ -15,17 +17,23 @@ import { useApp } from "../lib/state.tsx";
 import { ASSET_COVERAGE_LABEL } from "../lib/presentation.ts";
 import { LAYER_STYLE, OUTCOME_STYLE, RELATIONSHIP_LAYER, SEVERITY_RANK } from "../lib/vocab.ts";
 import { Icon, StateIcon } from "../lib/icons.tsx";
-import { groupSummary, presentationMembers, selectionDistrictKey, presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, presentationCollisions, selectionAssets, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
+import { groupSummary, presentationMembers, selectionDistrictKey, presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, presentationCollisions, selectionAssets, selectionProxy, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
 import { cachedModuleGeometryCount, type DetailLevel } from "./geometry.ts";
 import type { ModuleFailureCode } from "./moduleRecovery.ts";
 import { watchRendererShaders } from "./shaderRecovery.ts";
+import { semanticLevelForScale, type SemanticLevel } from "@dk/scene-compiler";
+import { districtGroupKey, focusMembers, worldHierarchy } from "../lib/world.ts";
 
 const BG = "#0c0e12", ACCENT = "#c3cbf5", CAM_DIST = 110;
-type Command = { n: number; type: "in" | "out" | "fit" | "focus" | "back"; group?: string };
+type Command = { n: number; type: "in" | "out" | "fit" | "focus" | "back"; group?: string; ids?: string[] };
 type Pose = { pos: THREE.Vector3; target: THREE.Vector3; zoom: number };
 // Harmless camera-only context survives Castle/Graph toggles. Bounded; never contains evidence.
 const cameraPoses = new Map<string, Pose>();
 const districtPoses = new Map<string, string | null>();
+// LP16: the last world focus each project's castle framed, so a remount (Graph -> Castle, WebGL recovery) restores the
+// saved camera instead of re-running an old focus animation.
+const handledFocus = new Map<string, string | null>();
+const LABEL_BUDGET: Record<SemanticLevel, number> = { realm: 4, environment: 5, district: 8, structure: 12, interior: 12, evidence: 12 };
 class CanvasBoundary extends Component<{ onError: (msg: string) => void; children: ReactNode }, { failed: boolean }> {
   override state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
@@ -38,13 +46,16 @@ export function Castle3D() {
   const scene = useMemo(() => presentationScene(vm.data.scene), [topologyKey]);
   const collisions = useMemo(() => presentationCollisions(scene.rooms), [scene]);
   const wrap = useRef<HTMLDivElement>(null);
+  const comparison = useWorldComparison(); const narrowLayout = useNarrowLayout();
   const [edgeChoice, setEdgeChoice] = useState<EdgeChoice | null>(null);
   useEffect(() => { setEdgeChoice(null); }, [ui.selection, ui.layers, ui.showHypothetical, topologyKey]);
   const groups = useMemo(() => presentationGroups(scene, vm.data.graph), [scene, membershipKey]);
   const [district, setDistrict] = useState<string | null>(() => districtPoses.get(scene.project_id) ?? null), [help, setHelp] = useState(false);
   const [quality, setQuality] = useState(ui.quality), [reduced, setReduced] = useState(false);
   const [cmd, setCmd] = useState<Command>({ n: 0, type: "fit" });
-  const send = (type: Command["type"], group?: string) => setCmd(c => ({ n: c.n + 1, type, group }));
+  const send = (type: Command["type"], group?: string, ids?: string[]) => setCmd(c => ({ n: c.n + 1, type, group, ids }));
+  const [level, setLevel] = useState<SemanticLevel>("environment");
+  const hierarchy = worldHierarchy(vm.data.graph, vm.data.scene);
   useEffect(() => { setQuality(ui.quality); setReduced(false); }, [ui.quality]);
   const latestDistrict = useRef(district); latestDistrict.current = district;
   useEffect(() => { setDistrict(districtPoses.get(scene.project_id) ?? null); return () => { districtPoses.set(scene.project_id, latestDistrict.current); if (districtPoses.size > 4) districtPoses.delete(districtPoses.keys().next().value!); }; }, [scene.project_id]);
@@ -59,7 +70,19 @@ export function Castle3D() {
     if (grouped) { const key = selectionDistrictKey(groups, focus); if (key) { setDistrict(key); setFocusedLabels(focus); } }
   }, [ui.focusRevision, ui.focusHandledRevision, grouped, groups, focus]);
   const visibleIds = useMemo(() => new Set(visibleRooms.map(r => r.asset_id)), [visibleRooms]);
-  return <div ref={wrap} className="castle-wrap" role="region" tabIndex={0} aria-label={`Architectural map of ${scene.rooms.length} assets. Select a building to inspect it; Focus moves the camera. Graph and lists show the same evidence.`}
+  // LP16: a world focus chosen in the navigator, graph or castle frames the same stable hierarchy node here.
+  useEffect(() => {
+    if ((handledFocus.get(scene.project_id) ?? null) === (ui.focus ?? null)) return;
+    handledFocus.set(scene.project_id, ui.focus ?? null);
+    if (handledFocus.size > 4) handledFocus.delete(handledFocus.keys().next().value!);
+    const target = focusMembers(hierarchy, ui.focus);
+    if (!target) { if (!ui.focus) return; send("fit"); return; }
+    const key = districtGroupKey(target.node.id);
+    if (grouped) setDistrict(key ?? (target.node.kind === "structure" ? selectionDistrictKey(groups, target.assetIds) : null));
+    if (target.node.kind === "realm") send("fit"); else send("focus", undefined, [...target.assetIds]);
+  }, [ui.focus, hierarchy, grouped, groups, scene.project_id]);
+  const archived = ui.showArchived ? scene.historical_rooms ?? [] : [];
+  return <div ref={wrap} className="castle-wrap" data-semantic-level={level} role="region" tabIndex={0} aria-label={`Architectural map of ${scene.rooms.length} assets. Select a building to inspect it; Focus moves the camera. Graph and lists show the same evidence.`}
     onKeyDown={e => {
       if (!ui.shortcuts || e.target !== e.currentTarget || e.ctrlKey || e.metaKey || e.altKey) return;
       if (["+", "=", "-", "0", "f"].includes(e.key)) { e.preventDefault(); if (e.key === "f") dispatch({ type: "focus" }); else send(e.key === "0" ? "fit" : e.key === "-" ? "out" : "in"); }
@@ -71,20 +94,23 @@ export function Castle3D() {
         onCreated={({ gl }) => { gl.toneMapping = THREE.NeutralToneMapping; gl.toneMappingExposure = 1.05; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
         onPointerMissed={e => { if (e.type === "click") dispatch({ type: "select", selection: null }); }}>
         <color attach="background" args={[BG]} />
-        <Rig scene={scene} command={cmd} groups={groups} />
+        <Rig scene={scene} command={cmd} groups={groups} onLevel={setLevel} />
         <Lights scene={scene} quality={quality} />
         <SceneLifecycle quality={quality} onSlow={() => { if (quality !== "low") { setQuality(quality === "high" ? "medium" : "low"); setReduced(true); } }} />
-        <LabelLayer budget={district ? 12 : 5} reservedLeft={grouped ? 320 : 0}>
+        <LabelLayer budget={district ? 12 : LABEL_BUDGET[level]} reservedLeft={grouped ? 320 : 0}>
           <Suspense fallback={null}>
             <Environment scene={scene} groups={groups} quality={quality} highContrast={scene.style_profile === "high-contrast-v1"} />
             {visibleRooms.map(room => <Room key={room.asset_id} room={room} selected={focus.has(room.asset_id)} focused={grouped && !!district && focusedLabels.has(room.asset_id)} quality={quality} />)}
             {grouped && !district && groups.map(g => <District key={g.key} group={g} onFocus={() => { setDistrict(g.key); send("focus", g.key); }} />)}
             <Paths scene={scene} visibleIds={visibleIds} onChoice={setEdgeChoice} />
+            {comparison.view && <ComparisonBadges view={comparison.view} />}
+            {archived.map(r => <ArchivedPlacement key={`${r.asset_id}:${r.incarnation_id ?? r.retired_in_revision}`} room={r} />)}
           </Suspense>
         </LabelLayer>
       </Canvas>
     </CanvasBoundary>
     {edgeChoice && <EdgeChooser choice={edgeChoice} paths={scene.paths} graph={vm.data.graph} width={wrap.current?.clientWidth ?? 800} height={wrap.current?.clientHeight ?? 600} onChoose={id => { dispatch({ type: "select", selection: { kind: "path", id } }); setEdgeChoice(null); }} onClose={() => setEdgeChoice(null)} />}
+    {!narrowLayout && <ComparisonPanel view={comparison.view} error={comparison.error} id={comparison.id} />}
     <div className="stage-tools" style={{ zIndex: 30 }} role="toolbar" aria-label="Castle view">
       <button className="icon-btn sm" onClick={() => send("in")} aria-label="Zoom in"><Icon name="plus" size={15} /></button>
       <button className="icon-btn sm" onClick={() => send("out")} aria-label="Zoom out"><Icon name="minus" size={15} /></button>
@@ -93,6 +119,7 @@ export function Castle3D() {
       <button onClick={() => send("back")} aria-label="Back to previous camera view">Back</button>
       <button className={`icon-btn sm${ui.roofs ? " on" : ""}`} aria-pressed={ui.roofs} onClick={() => dispatch({ type: "roofs", roofs: !ui.roofs })} aria-label="Show roofs"><Icon name="roof" size={15} /></button>
       <button onClick={() => setHelp(!help)} aria-expanded={help}>View help</button>
+      <span className="semantic-level" data-testid="semantic-level" title="Semantic zoom level: distant levels suppress label detail, never findings or unobserved resources">{level}</span>
     </div>
     {!!collisions.length && <div role="status" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "polite"} style={panelStyle}>This stored layout has {collisions.length} overlapping module bounds with the upgraded kit. Positions are preserved; use Graph or request an explicit layout reflow.</div>}
     {help && <div className="scene-help" style={panelStyle}><strong>Architectural map</strong><p>Drag empty space to orbit. Right-drag to pan. Scroll to zoom. Click selects without moving the camera. Focus selection moves it; Back restores the previous view.</p><p>Terraces are organizational, not security boundaries. Marker border is finding severity; the glyph describes outcome. Hatching is current source coverage, not asset health.</p><button onClick={() => dispatch({ type: "view", view: "graph" })}>Use graph and list view</button></div>}
@@ -139,14 +166,15 @@ function SceneLifecycle({ quality, onSlow }: { quality: DetailLevel; onSlow: () 
   });
   return null;
 }
-function Rig({ scene, command, groups }: { scene: CompiledScene; command: Command; groups: PresentationGroup[] }) {
+function Rig({ scene, command, groups, onLevel }: { scene: CompiledScene; command: Command; groups: PresentationGroup[]; onLevel: (level: SemanticLevel) => void }) {
+  const lastLevel = useRef<SemanticLevel | null>(null);
   const { camera, size, invalidate, gl } = useThree(), { ui, vm, dispatch } = useApp();
   const ctl = useRef<React.ComponentRef<typeof OrbitControls>>(null), tween = useRef<{ t: number; from: Pose; to: Pose; focusRevision?: number } | null>(null);
   const focusInFlight = useRef(0);
   const history = useRef<Pose[]>([]), initialized = useRef(false), manual = useRef(false);
   const b = scene.bounds, key = `${scene.project_id}:${scene.graph_revision}`;
   const dir = useMemo(() => new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(52), Math.PI / 4), []);
-  const fit = (rooms?: SceneRoom[]): Pose => {
+  const fit = (rooms?: SceneRoom[], maxZoom = 140): Pose => {
     const xs = rooms?.length ? rooms.flatMap(r => [r.position.x - r.footprint.w / 2, r.position.x + r.footprint.w / 2]) : [b.minX, b.maxX];
     const zs = rooms?.length ? rooms.flatMap(r => [r.position.z - r.footprint.d / 2, r.position.z + r.footprint.d / 2]) : [b.minZ, b.maxZ];
     const minX = Math.min(...xs), maxX = Math.max(...xs), minZ = Math.min(...zs), maxZ = Math.max(...zs);
@@ -162,7 +190,7 @@ function Rig({ scene, command, groups }: { scene: CompiledScene; command: Comman
     if (!px.length) { px.push(-5, 5); py.push(-5, 5); }
     const x0 = Math.min(...px), x1 = Math.max(...px), y0 = Math.min(...py), y1 = Math.max(...py);
     target.addScaledVector(right, (x0 + x1) / 2).addScaledVector(up, (y0 + y1) / 2);
-    const zoom = Math.max(1, Math.min((size.width - 64) / (x1 - x0), (size.height - 88) / (y1 - y0)) * 0.94);
+    const zoom = Math.min(maxZoom, Math.max(1, Math.min((size.width - 64) / (x1 - x0), (size.height - 88) / (y1 - y0)) * 0.94));
     return { pos: target.clone().addScaledVector(dir, CAM_DIST), target, zoom };
   };
   const current = (): Pose => ({ pos: camera.position.clone(), target: ctl.current!.target.clone(), zoom: (camera as THREE.OrthographicCamera).zoom });
@@ -191,7 +219,7 @@ function Rig({ scene, command, groups }: { scene: CompiledScene; command: Comman
     if (!command.n || !ctl.current) return;
     if (command.type === "back") { const p = history.current.pop(); if (p) go(p, false); }
     else if (command.type === "fit") go(fit());
-    else if (command.type === "focus") { const ids = selectionAssets(ui.selection, vm); const rs = command.group ? groups.find(g => g.key === command.group)?.rooms : scene.rooms.filter(r => ids.has(r.asset_id)); if (rs?.length) go(fit(rs)); }
+    else if (command.type === "focus") { const ids = command.ids ? new Set(command.ids) : selectionAssets(ui.selection, vm); const rs = command.group ? groups.find(g => g.key === command.group)?.rooms : scene.rooms.filter(r => ids.has(r.asset_id)); if (rs?.length) go(fit(rs, command.ids ? 42 : 140)); }
     else { const p = current(); p.zoom = THREE.MathUtils.clamp(p.zoom * (command.type === "in" ? 1.25 : 0.8), 1, 140); go(p); }
   }, [command.n]);
   useEffect(() => {
@@ -206,6 +234,8 @@ function Rig({ scene, command, groups }: { scene: CompiledScene; command: Comman
       apply({ pos: t.from.pos.clone().lerp(t.to.pos, k), target: t.from.target.clone().lerp(t.to.target, k), zoom: THREE.MathUtils.lerp(t.from.zoom, t.to.zoom, k) }); if (t.t === 1) { tween.current = null; gl.domElement.dataset.cameraActive = "false"; if (t.focusRevision) dispatch({ type: "focusHandled", revision: t.focusRevision }); }
     }
     publishPose();
+    const level = semanticLevelForScale((camera as THREE.OrthographicCamera).zoom, !ui.roofs);
+    if (level !== lastLevel.current) { lastLevel.current = level; gl.domElement.dataset.semanticLevel = level; onLevel(level); }
   });
   return <OrbitControls ref={ctl} makeDefault enableDamping={false} rotateSpeed={0.6} zoomSpeed={0.8} minPolarAngle={THREE.MathUtils.degToRad(25)} maxPolarAngle={THREE.MathUtils.degToRad(65)} minZoom={1} maxZoom={140}
     onStart={() => { gl.domElement.dataset.cameraActive = "true"; if (tween.current?.focusRevision) dispatch({ type: "focusHandled", revision: tween.current.focusRevision }); tween.current = null; manual.current = true; }} onEnd={() => { gl.domElement.dataset.cameraActive = "false"; }} onChange={() => { const c = ctl.current; if (!c) return;
@@ -241,16 +271,19 @@ function Room({ room, selected, focused, quality }: { room: SceneRoom; selected:
   const labelRef = useLabel(`room:${room.asset_id}`, [room.position.x, room.label_anchor.y, room.position.z], priority);
   const select = () => dispatch({ type: "select", selection: { kind: "asset", id: room.asset_id }, announce: `Selected ${asset.name}. ${status ? ASSET_COVERAGE_LABEL[status.coverage] : "Coverage not assessed"}.` });
   const w = room.footprint.w, d = room.footprint.d;
+  // LP17-A2: full volume with roofs on; a low plinth under the floor with roofs off so interiors stay clickable.
+  const proxy = selectionProxy({ footprint: room.footprint, height: room.height }, ui.roofs);
   const moduleIdentity = useMemo(() => ({ assetId: asset.id, name: asset.name, width: room.rotation_y % 180 ? d : w, depth: room.rotation_y % 180 ? w : d, height: room.height,
     onFailure: (code: ModuleFailureCode) => setModuleFault({ id: room.module_id, code }) }), [asset.id, asset.name, w, d, room.rotation_y, room.height, room.module_id]);
   return <group name={`asset:${room.asset_id}`} position={[room.position.x, 0.08, room.position.z]} userData={{ asset_id: room.asset_id, node_id: room.node_id }}>
     <group rotation={[0, room.rotation_y * Math.PI / 180, 0]}><CastleModule id={room.module_id} roofs={ui.roofs} lod={lod}
       identity={moduleIdentity} /></group>
-    <mesh name="hit-proxy" position={[0, room.height / 2, 0]} userData={{ asset_id: room.asset_id }} onClick={e => { if (e.delta > 6) return; e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); select(); dispatch({ type: "focus" }); }}
+    <mesh name="hit-proxy" position={[0, proxy.y, 0]} userData={{ asset_id: room.asset_id, roofs_off_plinth: !ui.roofs || undefined }} onClick={e => { if (e.delta > 6) return; e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); select(); dispatch({ type: "focus" }); }}
       onPointerOver={e => { e.stopPropagation(); dispatch({ type: "hover", id: room.asset_id }); document.body.style.cursor = "pointer"; }} onPointerOut={() => { dispatch({ type: "hover", id: null }); document.body.style.cursor = ""; }}>
-      <boxGeometry args={[w, room.height, d]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+      <boxGeometry args={[proxy.w, proxy.h, proxy.d]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
     </mesh>
     {(selected || hovered) && <Line points={[[-w / 2 - 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, -d / 2 - 0.18]]} color={selected ? ACCENT : "#EEF3FA"} lineWidth={selected ? 2.6 : 1.5} raycast={() => null} />}
+    {selected && !ui.roofs && <InteriorMarkers assetId={room.asset_id} />}
     {gap && <CoverageHatch w={w + 0.32} d={d + 0.32} warning={status.coverage === "gap" || status.coverage === "partial"} />}
     <Html position={[0, room.label_anchor.y - 0.08, 0]} center zIndexRange={[20, 10]}>
       <div ref={labelRef} className="lbl"><button data-asset-label={asset.id} data-module-recovery={moduleFailure ?? undefined} className={`room-label${selected ? " is-selected" : ""}${dim ? " dim" : ""}`} onClick={e => { e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); dispatch({ type: "focus" }); }}
@@ -304,4 +337,20 @@ function Paths({ scene, visibleIds, onChoice }: { scene: CompiledScene; visibleI
       {chosen && <Html position={points[1]!.toArray()} center><span style={{ background: "#121C29", color: "#EEF3FA", padding: 6, fontSize: 12 }}>{relationshipMeaning(p.kind, p.evidence_level).label}</span></Html>}
     </group>;
   })}</group>;
+}
+
+/** LP16: a retired incarnation at its last position. Outline and label only: never architecture, never a hit proxy,
+ * never status. Selecting it opens the asset record, which states that it is not in the current graph. */
+function ArchivedPlacement({ room }: { room: NonNullable<CompiledScene["historical_rooms"]>[number] }) {
+  const { dispatch } = useApp();
+  const w = room.footprint.w / 2 + 0.1, d = room.footprint.d / 2 + 0.1, y = 0.12;
+  // Anchored at the footprint's front edge (shown on explicit request) so it never sits on a live label at the same spot.
+  const ref = useLabel(`archived:${room.asset_id}:${room.incarnation_id ?? room.retired_in_revision}`, [room.position.x, 0.1, room.position.z + d + 0.9], 185, 18);
+  return <group name={`archived:${room.asset_id}`} position={[room.position.x, 0, room.position.z]} userData={{ archived: true, asset_id: room.asset_id, incarnation_id: room.incarnation_id ?? null }}>
+    <Line points={[[-w, y, -d], [w, y, -d], [w, y, d], [-w, y, d], [-w, y, -d]]} color="#9AA4B1" lineWidth={1.4} dashed dashSize={0.3} gapSize={0.22} raycast={() => null} />
+    <Html position={[0, 0.1, d + 0.9]} center zIndexRange={[18, 9]}><div ref={ref} className="lbl"><button className="room-label archived-label" data-archived-asset={room.asset_id} data-incarnation={room.incarnation_id ?? ""}
+      aria-label={`Archived placement of ${room.asset_id}${room.incarnation_id ? `, incarnation ${room.incarnation_id}` : ""}, retired in graph revision ${room.retired_in_revision}. Not a live structure.`}
+      onClick={e => { e.stopPropagation(); dispatch({ type: "select", selection: { kind: "asset", id: room.asset_id }, announce: `Selected archived placement of ${room.asset_id}. Not a live structure.` }); }}>
+      <span className="name">Archived · {room.asset_id}</span><small>retired in {room.retired_in_revision}</small></button></div></Html>
+  </group>;
 }

@@ -1,6 +1,6 @@
 import {
   CATALOG_VERSION, MODULE_CATALOG, ZONE_IDS, ZONE_LABELS, digest, fnv1a,
-  type CompiledScene, type Graph, type SceneProposal, type ScenePath, type SceneRoom, type SceneZone, type Vec3, type ZoneId,
+  type CompiledScene, type Graph, type SceneIncarnation, type SceneProposal, type ScenePath, type SceneRoom, type SceneZone, type Vec3, type ZoneId,
 } from "@dk/contracts";
 import { validateProposal } from "./validate.ts";
 
@@ -13,7 +13,7 @@ const DEFAULT_CAPACITY: Record<ZoneId, number> = { public: 3, application: 9, da
 
 export interface CompileOptions {
   /** Previously approved scene: its pins and capacities keep unrelated rooms stable. */
-  previous?: (Pick<CompiledScene, "pins" | "capacities"> & Partial<Pick<CompiledScene, "rooms" | "historical_rooms" | "layout_version">>) | null;
+  previous?: (Pick<CompiledScene, "pins" | "capacities"> & Partial<Pick<CompiledScene, "rooms" | "historical_rooms" | "layout_version" | "incarnations">>) | null;
   /** Discard pins and capacities, and lay the castle out from scratch (an accepted reflow). */
   reflow?: boolean;
   source?: CompiledScene["proposal_source"];
@@ -234,14 +234,84 @@ export function compileScene(graph: Graph, proposal: SceneProposal, opts: Compil
     style_profile: proposal.style_profile, camera_profile: proposal.camera_profile, proposal_source: opts.source ?? "default",
     rooms, zones, paths, pins, capacities: caps, reflow_zones: reflow, wall, bounds,
   };
-  // R06.1: positions of assets that left the graph stay available for historical lookup (never re-placed), and an
-  // approved reflow or capacity growth starts a new layout version. Both are metadata outside the geometry digest.
+  // R06.1 + LP16: positions of assets that left the graph stay available for historical lookup (never re-placed), and
+  // an approved reflow or capacity growth starts a new layout version. History is kept per INCARNATION: an asset id
+  // that is removed and later recreated (or whose declared provider identity changes) is a new incarnation, and the
+  // earlier one keeps its own retired location. All of this is metadata outside the geometry digest.
   const prior = opts.previous ?? null;
-  const current = new Set(rooms.map((r) => r.asset_id));
-  const historical = [...(prior?.historical_rooms ?? []), ...(prior?.rooms ?? []).map((r) => ({ ...r, retired_in_revision: graph.graph_revision }))]
-    .filter((r, i, all) => !current.has(r.asset_id) && all.findIndex((x) => x.asset_id === r.asset_id) === i).slice(-500);
+  const { incarnations, retired } = trackIncarnations(graph, rooms, prior);
+  const historical = [...(prior?.historical_rooms ?? []), ...retired]
+    .filter((r, i, all) => all.findIndex((x) => historyKey(x) === historyKey(r)) === i).slice(-500);
   const layoutVersion = (prior?.layout_version ?? 1) + (opts.reflow || reflow.length ? 1 : 0);
-  return { ...body, layout_version: layoutVersion, ...(historical.length ? { historical_rooms: historical } : {}), digest: digest({ ...body, proposal_source: undefined }) };
+  return { ...body, layout_version: layoutVersion, ...(historical.length ? { historical_rooms: historical } : {}), incarnations, digest: digest({ ...body, proposal_source: undefined }) };
+}
+
+const historyKey = (r: { asset_id: string; incarnation_id?: string; retired_in_revision: string }) => r.incarnation_id ?? `${r.asset_id}@${r.retired_in_revision}`;
+const providerIdentity = (a: Graph["assets"][number] | undefined) => a?.provider_ref ? `${a.provider_ref.scope}/${a.provider_ref.id}` : null;
+const ordinal = (id: string | undefined) => { const m = /~(\d+)$/.exec(id ?? ""); return m ? Number(m[1]) : 0; };
+
+/**
+ * LP16-A2: incarnation identity. A current asset keeps its prior incarnation while it stays in the graph with the
+ * same declared provider identity. It gets a NEW incarnation (`<id>~<n+1>`) when it reappears after removal or when
+ * its provider identity changes; the replaced incarnation is retired with its own last position. A scene stored
+ * before LP16 has no incarnation map: each of its current assets is treated as incarnation 1 with an unknown
+ * provider identity, which is adopted rather than read as a change.
+ */
+export function trackIncarnations(graph: Graph, rooms: SceneRoom[], prior: CompileOptions["previous"]): { incarnations: Record<string, SceneIncarnation>; retired: (SceneRoom & { retired_in_revision: string; incarnation_id: string })[] } {
+  const assets = new Map(graph.assets.map((a) => [a.id, a]));
+  const priorRooms = new Map((prior?.rooms ?? []).map((r) => [r.asset_id, r]));
+  const legacy = !!prior && !prior.incarnations;
+  const priorInc = (id: string): SceneIncarnation | undefined => prior?.incarnations?.[id] ?? (legacy && priorRooms.has(id) ? { id: `${id}~1`, provider_id: null, since_revision: "legacy" } : undefined);
+  const highest = new Map<string, number>();
+  for (const h of prior?.historical_rooms ?? []) highest.set(h.asset_id, Math.max(highest.get(h.asset_id) ?? 0, ordinal(h.incarnation_id) || 1));
+  for (const [id] of priorRooms) highest.set(id, Math.max(highest.get(id) ?? 0, ordinal(priorInc(id)?.id)));
+  const incarnations: Record<string, SceneIncarnation> = {};
+  const retired: (SceneRoom & { retired_in_revision: string; incarnation_id: string })[] = [];
+  const retire = (room: SceneRoom, inc: SceneIncarnation | undefined) => retired.push({ ...room, retired_in_revision: graph.graph_revision, incarnation_id: inc?.id ?? `${room.asset_id}~1` });
+  for (const room of rooms) {
+    const provider = providerIdentity(assets.get(room.asset_id));
+    const was = priorRooms.get(room.asset_id), inc = was ? priorInc(room.asset_id) : undefined;
+    if (was && inc && (inc.provider_id === provider || (inc.since_revision === "legacy" && inc.provider_id === null))) { incarnations[room.asset_id] = { ...inc, provider_id: provider }; continue; }
+    if (was) retire(was, inc); // provider identity changed under the same asset id: the old entity retires here
+    const n = (highest.get(room.asset_id) ?? 0) + 1;
+    incarnations[room.asset_id] = { id: `${room.asset_id}~${n}`, provider_id: provider, since_revision: graph.graph_revision };
+  }
+  for (const [id, room] of priorRooms) if (!incarnations[id]) retire(room, priorInc(id));
+  return { incarnations, retired };
+}
+
+/** LP16-A2: every recorded incarnation of an asset id, current first. Historical rooms are never live structures. */
+export function locateAsset(scene: Pick<CompiledScene, "rooms" | "historical_rooms" | "incarnations">, assetId: string) {
+  const room = scene.rooms.find((r) => r.asset_id === assetId) ?? null;
+  const current = room ? { incarnation: scene.incarnations?.[assetId] ?? { id: `${assetId}~1`, provider_id: null, since_revision: "legacy" }, room } : null;
+  const history = (scene.historical_rooms ?? []).filter((r) => r.asset_id === assetId)
+    .map((r) => ({ incarnation_id: r.incarnation_id ?? null, retired_in_revision: r.retired_in_revision, room: r }))
+    .sort((a, b) => ordinal(b.incarnation_id ?? undefined) - ordinal(a.incarnation_id ?? undefined));
+  return { asset_id: assetId, current, history };
+}
+
+/**
+ * LP16-A1: what a layout change does, room by room. Used to PREVIEW an intentional reflow before it is applied and to
+ * record each applied layout version. Positions only; it never reads findings or activity.
+ */
+export function layoutDiff(before: Pick<CompiledScene, "rooms" | "layout_version" | "digest"> | null | undefined, after: Pick<CompiledScene, "rooms" | "layout_version" | "digest">) {
+  const prev = new Map((before?.rooms ?? []).map((r) => [r.asset_id, r]));
+  const next = new Map(after.rooms.map((r) => [r.asset_id, r]));
+  const moved: { asset_id: string; from: { x: number; z: number; zone_id: string }; to: { x: number; z: number; zone_id: string } }[] = [];
+  const module_changed: { asset_id: string; from: string; to: string }[] = [];
+  let unchanged = 0;
+  for (const [id, r] of next) {
+    const p = prev.get(id); if (!p) continue;
+    if (p.position.x !== r.position.x || p.position.z !== r.position.z || p.zone_id !== r.zone_id) moved.push({ asset_id: id, from: { x: p.position.x, z: p.position.z, zone_id: p.zone_id }, to: { x: r.position.x, z: r.position.z, zone_id: r.zone_id } });
+    else unchanged++;
+    if (p.module_id !== r.module_id) module_changed.push({ asset_id: id, from: p.module_id, to: r.module_id });
+  }
+  return {
+    from_layout_version: before?.layout_version ?? null, to_layout_version: after.layout_version ?? 1,
+    from_digest: before?.digest ?? null, to_digest: after.digest,
+    added: [...next.keys()].filter((id) => !prev.has(id)).sort(), retired: [...prev.keys()].filter((id) => !next.has(id)).sort(),
+    moved: moved.sort((a, b) => a.asset_id.localeCompare(b.asset_id)), module_changed, unchanged,
+  };
 }
 
 function route(a: Vec3, b: Vec3, h: number): Vec3[] {

@@ -1,0 +1,40 @@
+{
+  "schema": "dk.local.verification_receipt.proposed.v1",
+  "run_id": "run-example",
+  "plan_id": "repair-example",
+  "tested_target_revision": "revision-2",
+  "probes": [
+    {
+      "operation_id": "op-denied",
+      "expectation": "prohibited",
+      "actual_effect": "not_observed",
+      "observer_scope": "sufficient",
+      "evidence_refs": [
+        "ev-denial",
+        "ev-observer-window"
+      ],
+      "result": "as_expected"
+    },
+    {
+      "operation_id": "op-allowed",
+      "expectation": "permitted",
+      "actual_effect": "observed",
+      "observer_scope": "sufficient",
+      "evidence_refs": [
+        "ev-allowed",
+        "ev-observed"
+      ],
+      "result": "as_expected"
+    }
+  ],
+  "security_verdict": "pass",
+  "cleanup": {
+    "outcome": "completed",
+    "notes": "Illustrative schema example only; no test was run."
+  },
+  "overall_outcome": "pass",
+  "scope": "local_run_only",
+  "unassessed_paths": [
+    "External providers were not assessed."
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "schema": "dk.lp30.robustness.v1",
+  "environment": {
+    "platform": "linux",
+    "arch": "arm64",
+    "cpus": 2,
+    "cpu_model": "unknown",
+    "total_mem_mb": 7946,
+    "node": "v22.23.3",
+    "note": "sandbox measurements; not a hardware benchmark"
+  },
+  "cycles": {
+    "conditions": "one in-process server (in-memory DB), 8 sequential runMission cycles of LW-01 (13 steps) at time scale 0",
+    "cycles": [
+      {
+        "cycle": 0,
+        "status": "complete",
+        "wall_ms": 305,
+        "active_resources": 8,
+        "heap_mb": 56,
+        "cleanup": "completed"
+      },
+      {
+        "cycle": 1,
+        "status": "complete",
+        "wall_ms": 152,
+        "active_resources": 8,
+        "heap_mb": 57.1,
+        "cleanup": "completed"
+      },
+      {
+        "cycle": 2,
+        "status": "complete",
+        "wall_ms": 178,
+        "active_resources": 8,
+        "heap_mb": 58.2,
+        "cleanup": "completed"
+      },
+      {
+        "cycle": 3,
+        "status": "complete",
+        "wall_ms": 146,
+        "active_resources": 8,
+        "heap_mb": 59,
+        "cleanup": "completed"
+      },
+      {
+        "cycle": 4,
+        "status": "complete",
+        "wall_ms": 137,
+        "active_resources": 8,
+        "heap_mb": 59.9,
+        "cleanup": "completed"
+      },
+      {
+        "cycle": 5,
+        "status": "complete",
+        "wall_ms": 134,
+        "active_resources": 8,
+        "heap_mb": 60.7,
+        "cleanup": "completed"
+      },
+      {
+        "cycle": 6,
+        "status": "complete",
+        "wall_ms": 137,
+        "active_resources": 8,
+        "heap_mb": 61.4,
+        "cleanup": "completed"
+      },
+      {
+        "cycle": 7,
+        "status": "complete",
+        "wall_ms": 153,
+        "active_resources": 8,
+        "heap_mb": 62.1,
+        "cleanup": "completed"
+      }
+    ],
+    "wall_ms": {
+      "min": 134,
+      "p95": 305,
+      "max": 305
+    },
+    "active_resources": {
+      "baseline": 6,
+      "after": 8,
+      "delta": 2
+    },
+    "heap_delta_mb": 12.7,
+    "runs_recorded": 8,
+    "egress": {
+      "connections": 403,
+      "distinct": [
+        "localhost"
+      ],
+      "non_loopback": []
+    }
+  },
+  "cleanup_failure": {
+    "run_status": "complete",
+    "supervisor_outcome": "failed",
+    "failures": [
+      "contains entries this run does not own (operator-left-this.txt); left in place"
+    ],
+    "mission_run_cleanup": {
+      "outcome": "failed",
+      "failures": 1
+    }
+  },
+  "variants": [
+    {
+      "variant": "V01",
+      "category": "observer_fault",
+      "steps": 15,
+      "status": "complete",
+      "executed": 15,
+      "refused": 0,
+      "failed": 0,
+      "not_run": 0,
+      "wall_ms": 176,
+      "mission_run_status": "complete",
+      "cleanup": "completed"
+    },
+    {
+      "variant": "V04",
+      "category": "dropped_evidence",
+      "steps": 17,
+      "status": "complete",
+      "executed": 17,
+      "refused": 0,
+      "failed": 0,
+      "not_run": 0,
+      "wall_ms": 128,
+      "mission_run_status": "complete",
+      "cleanup": "completed"
+    },
+    {
+      "variant": "V07",
+      "category": "noise",
+      "steps": 25,
+      "status": "complete",
+      "executed": 25,
+      "refused": 0,
+      "failed": 0,
+      "not_run": 0,
+      "wall_ms": 268,
+      "mission_run_status": "complete",
+      "cleanup": "completed"
+    },
+    {
+      "variant": "V24",
+      "category": "partial_run",
+      "steps": 8,
+      "status": "partial",
+      "executed": 5,
+      "refused": 0,
+      "failed": 0,
+      "not_run": 3,
+      "wall_ms": 61,
+      "mission_run_status": "partial",
+      "cleanup": "completed"
+    }
+  ]
+}

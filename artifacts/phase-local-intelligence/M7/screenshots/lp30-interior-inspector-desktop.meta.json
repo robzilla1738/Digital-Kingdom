@@ -1,0 +1,22 @@
+{
+  "name": "lp30-interior-inspector-desktop",
+  "file": "lp30-interior-inspector-desktop.png",
+  "sha256": "b1fdf65caed29f462569c81e3ccc6d2e6f7eb6ece1fd84de3ab1e779cbbe43c4",
+  "bytes": 368728,
+  "capturedAt": "2026-10-24T07:56:40.737Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

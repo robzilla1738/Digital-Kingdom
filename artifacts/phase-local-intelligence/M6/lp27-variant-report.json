@@ -1,0 +1,399 @@
+{
+ "schema": "dk.local.lp27_variant_report.v1",
+ "generator": "li-variants-1",
+ "at": "2026-10-24T05:14:36.991Z",
+ "rows": [
+  {
+   "family": "LW-01",
+   "kind": "clean_repeat",
+   "key_variability": [],
+   "ops": 5
+  },
+  {
+   "family": "LW-02",
+   "kind": "clean_repeat",
+   "key_variability": [],
+   "ops": 3
+  },
+  {
+   "family": "LW-03",
+   "kind": "clean_repeat",
+   "key_variability": [],
+   "ops": 3
+  },
+  {
+   "family": "V01",
+   "base": "LW-01",
+   "category": "observer_fault",
+   "status": "complete",
+   "accounting": {
+    "steps": 15,
+    "executed": 15,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [
+    "lw01-own-read"
+   ],
+   "unlabelled_ops": 0,
+   "grades_failed": [
+    "lw01-own-read"
+   ]
+  },
+  {
+   "family": "V02",
+   "base": "LW-01",
+   "category": "observer_fault",
+   "status": "complete",
+   "accounting": {
+    "steps": 12,
+    "executed": 12,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V03",
+   "base": "LW-01",
+   "category": "delayed_evidence",
+   "status": "complete",
+   "accounting": {
+    "steps": 12,
+    "executed": 12,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V04",
+   "base": "LW-01",
+   "category": "dropped_evidence",
+   "status": "complete",
+   "accounting": {
+    "steps": 17,
+    "executed": 17,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [
+    "lw01-cross-baseline"
+   ],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V05",
+   "base": "LW-01",
+   "category": "out_of_order",
+   "status": "complete",
+   "accounting": {
+    "steps": 15,
+    "executed": 15,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V06",
+   "base": "LW-01",
+   "category": "duplicate",
+   "status": "complete",
+   "accounting": {
+    "steps": 14,
+    "executed": 14,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 1,
+   "grades_failed": []
+  },
+  {
+   "family": "V07",
+   "base": "LW-01",
+   "category": "noise",
+   "status": "complete",
+   "accounting": {
+    "steps": 25,
+    "executed": 25,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 12,
+   "grades_failed": []
+  },
+  {
+   "family": "V08",
+   "base": "LW-01",
+   "category": "removed_denial",
+   "status": "complete",
+   "accounting": {
+    "steps": 13,
+    "executed": 13,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [
+    "lw01-cross-baseline"
+   ],
+   "unlabelled_ops": 0,
+   "grades_failed": [
+    "lw01-cross-baseline"
+   ]
+  },
+  {
+   "family": "V13",
+   "base": "LW-02",
+   "category": "injection",
+   "status": "complete",
+   "accounting": {
+    "steps": 7,
+    "executed": 7,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V14",
+   "base": "LW-02",
+   "category": "injection",
+   "status": "complete",
+   "accounting": {
+    "steps": 7,
+    "executed": 7,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V15",
+   "base": "LW-02",
+   "category": "duplicate",
+   "status": "complete",
+   "accounting": {
+    "steps": 8,
+    "executed": 8,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 1,
+   "grades_failed": []
+  },
+  {
+   "family": "V16",
+   "base": "LW-02",
+   "category": "delayed_evidence",
+   "status": "complete",
+   "accounting": {
+    "steps": 7,
+    "executed": 7,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [
+    "lw02-blocked-weak"
+   ],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V17",
+   "base": "LW-02",
+   "category": "observer_fault",
+   "status": "complete",
+   "accounting": {
+    "steps": 9,
+    "executed": 9,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [
+    "lw02-allowed"
+   ],
+   "unlabelled_ops": 0,
+   "grades_failed": [
+    "lw02-allowed"
+   ]
+  },
+  {
+   "family": "V18",
+   "base": "LW-02",
+   "category": "noise",
+   "status": "complete",
+   "accounting": {
+    "steps": 15,
+    "executed": 15,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V19",
+   "base": "LW-02",
+   "category": "removed_denial",
+   "status": "complete",
+   "accounting": {
+    "steps": 7,
+    "executed": 7,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [
+    "lw02-blocked-baseline"
+   ],
+   "unlabelled_ops": 0,
+   "grades_failed": [
+    "lw02-blocked-baseline"
+   ]
+  },
+  {
+   "family": "V20",
+   "base": "LW-03",
+   "category": "injection",
+   "status": "complete",
+   "accounting": {
+    "steps": 8,
+    "executed": 8,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V21",
+   "base": "LW-03",
+   "category": "removed_denial",
+   "status": "complete",
+   "accounting": {
+    "steps": 7,
+    "executed": 7,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [
+    "lw03-revoked"
+   ],
+   "unlabelled_ops": 0,
+   "grades_failed": [
+    "lw03-revoked"
+   ]
+  },
+  {
+   "family": "V22",
+   "base": "LW-03",
+   "category": "duplicate",
+   "status": "complete",
+   "accounting": {
+    "steps": 9,
+    "executed": 9,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 1,
+   "grades_failed": []
+  },
+  {
+   "family": "V23",
+   "base": "LW-03",
+   "category": "out_of_order",
+   "status": "complete",
+   "accounting": {
+    "steps": 10,
+    "executed": 10,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 0,
+    "not_run_steps": []
+   },
+   "changed_labels": [],
+   "unlabelled_ops": 0,
+   "grades_failed": []
+  },
+  {
+   "family": "V24",
+   "base": "LW-03",
+   "category": "partial_run",
+   "status": "partial",
+   "accounting": {
+    "steps": 8,
+    "executed": 5,
+    "refused": 0,
+    "failed": 0,
+    "not_run": 3,
+    "not_run_steps": [
+     5,
+     6,
+     7
+    ]
+   },
+   "changed_labels": [
+    "lw03-granted",
+    "lw03-revoked"
+   ],
+   "unlabelled_ops": 0,
+   "grades_failed": [
+    "lw03-granted",
+    "lw03-revoked"
+   ]
+  }
+ ]
+}

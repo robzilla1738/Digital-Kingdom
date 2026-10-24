@@ -3,6 +3,15 @@ import { CHANGE_MIGRATION } from "./change-review.ts";
 import { NOTIFY_MIGRATION } from "./notify.ts";
 import { REGRESSION_MIGRATION } from "./regression.ts";
 import { DECEPTION_MIGRATION, BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION, IDENTITY_MIGRATION, AWS_SCOPE_MIGRATION, ACCESS_SNAPSHOT_MIGRATION, APPROVALS_MIGRATION } from "./schema-r01.ts";
+import { INVESTIGATION_CONTRACTS_MIGRATION, INVESTIGATION_JOBS_MIGRATION, INVESTIGATION_CONCLUSIONS_MIGRATION } from "./investigation/schema.ts";
+import { ANALYSIS_MIGRATION } from "./exploration.ts";
+import { REPAIR_MIGRATION } from "./repair.ts";
+import { ATTENTION_MIGRATION } from "./attention.ts";
+import { WORLD_LAYOUT_MIGRATION } from "./world-layout.ts";
+import { LOCAL_REPAIR_MIGRATION } from "./local-repairs.ts";
+import { CAPSULE_MIGRATION } from "./capsule.ts";
+import { MISSIONS_MIGRATION } from "./missions.ts";
+import { LOCAL_CONFIG_MIGRATION } from "./local-config.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -108,6 +117,27 @@ export const MIGRATIONS: string[] = [
   // R08.4: containment verification records.
   // (kept inline: verification.ts imports the store, and importing it here would be circular)
   `CREATE TABLE containment_verifications (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, containment_id TEXT NOT NULL, state TEXT NOT NULL, result TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL);`,
+  // Local Intelligence Phase LP08: investigation contracts, append-only revisions and obligation ledger.
+  INVESTIGATION_CONTRACTS_MIGRATION,
+  // Local Intelligence Phase LP09: bounded investigation plan jobs, committed step state and the delivery log.
+  INVESTIGATION_JOBS_MIGRATION,
+  // Local Intelligence Phase LP10: conclusion proposals with their deterministic claim checks.
+  INVESTIGATION_CONCLUSIONS_MIGRATION,
+  // Local Intelligence Phase LP13: model-only analysis comparisons (append-only candidate branches and receipts).
+  ANALYSIS_MIGRATION,
+  // Local Intelligence Phase LP14: reviewable repair candidate sets (plan-only, append-only).
+  REPAIR_MIGRATION,
+  // Local Intelligence Phase LP15: local attention queue (durable cursor, deduplicated items, append-only change log).
+  ATTENTION_MIGRATION,
+  // Local Intelligence Phase LP16: append-only versioned layout history (previewed reflows, per-version room diffs).
+  WORLD_LAYOUT_MIGRATION,
+  // Local Intelligence Phase LP23/LP28: executed local repair links; imported case capsules (separate namespaces).
+  LOCAL_REPAIR_MIGRATION,
+  CAPSULE_MIGRATION,
+  // Local Intelligence Phase LP29: local missions (brief + truth commitment only) and runner-reported run lifecycle.
+  MISSIONS_MIGRATION,
+  // Local Intelligence Phase (final pass): declared configuration snapshots of a local run's enforcement points (append-only).
+  LOCAL_CONFIG_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

@@ -1,0 +1,22 @@
+{
+  "name": "lp15-attention-queue",
+  "file": "lp15-attention-queue.png",
+  "sha256": "a6ea96a26dcfbcdc67bfed43cbfdba936cca3ac2c897dc2fecaf7d331508fb36",
+  "bytes": 303392,
+  "capturedAt": "2026-10-24T03:11:11.462Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

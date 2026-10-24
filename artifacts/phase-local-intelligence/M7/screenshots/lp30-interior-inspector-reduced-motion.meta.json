@@ -1,0 +1,22 @@
+{
+  "name": "lp30-interior-inspector-reduced-motion",
+  "file": "lp30-interior-inspector-reduced-motion.png",
+  "sha256": "51a778fffb1c59cf2aef7244bce632762ffb4c6f4a43a8cdc75124402d75cfb8",
+  "bytes": 368004,
+  "capturedAt": "2026-10-24T07:56:55.555Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": true,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "lp16-earlier-incarnation-record",
+  "file": "lp16-earlier-incarnation-record.png",
+  "sha256": "2ea45865a07aae7feb63308aff9a65d99e4c7ea1a39a76537a7999b63feaeb03",
+  "bytes": 384768,
+  "capturedAt": "2026-10-24T06:07:43.328Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -6,7 +6,9 @@ export type ZoneId = (typeof ZONE_IDS)[number];
 export const ASSET_KINDS = ["edge", "auth", "service", "worker", "database", "storage", "agent", "tool_server", "pipeline", "third_party"] as const;
 export type AssetKind = (typeof ASSET_KINDS)[number];
 
-export const MODULE_IDS = ["gatehouse", "guardhouse", "hall", "great_hall", "workshop", "vault", "observatory", "tool_annex", "forge", "portal"] as const;
+/** The ten original modules (kit 2.0.0) plus the six LP17 families (kit 2.1.0). Older scenes use only the first ten. */
+export const MODULE_IDS = ["gatehouse", "guardhouse", "hall", "great_hall", "workshop", "vault", "observatory", "tool_annex", "forge", "portal", "dns_registry", "dispatch_house", "key_registry", "supply_depot", "archive", "outpost"] as const;
+export const ORIGINAL_MODULE_IDS = ["gatehouse", "guardhouse", "hall", "great_hall", "workshop", "vault", "observatory", "tool_annex", "forge", "portal"] as const;
 export type ModuleId = (typeof MODULE_IDS)[number];
 
 export const RELATIONSHIP_KINDS = ["calls", "reads_from", "writes_to", "deploys", "invokes_tool", "runs_as", "may_assume", "protected_by", "belongs_to"] as const;
@@ -257,6 +259,15 @@ export interface ScenePath {
   points: Vec3[];
 }
 
+export interface SceneIncarnation {
+  /** `<asset_id>~<n>`: stable for the life of one incarnation, never reused. */
+  id: string;
+  /** `<scope>/<provider id>` of the declared provider identity, or null when the asset declares none. */
+  provider_id: string | null;
+  /** Graph revision in which this incarnation first appeared (or `legacy` for scenes stored before LP16). */
+  since_revision: string;
+}
+
 export interface CompiledScene {
   scene_schema_version: "0.2";
   compiler_version: string;
@@ -279,7 +290,13 @@ export interface CompiledScene {
   /** R06.1: increments on approved reflow or capacity growth. Absent on scenes stored before it existed. */
   layout_version?: number;
   /** R06.1: last positions of assets no longer in the graph, for historical lookup only (never rendered as live). */
-  historical_rooms?: (SceneRoom & { retired_in_revision: string })[];
+  historical_rooms?: (SceneRoom & { retired_in_revision: string; incarnation_id?: string })[];
+  /**
+   * LP16: the incarnation of each current room's asset. A removed-and-recreated asset id, or one whose provider
+   * identity changed, is a new incarnation; the earlier one keeps its own historical location. Outside the digest.
+   * Absent on scenes stored before LP16 (every current asset is then treated as incarnation 1).
+   */
+  incarnations?: Record<string, SceneIncarnation>;
   digest: string;
 }
 

@@ -1,0 +1,152 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "urn:dk:local:world-plan:v1",
+ "title": "Local world plan (blueprint instance) v1: a finite composition of reviewed catalog templates. Endpoints, ports, images and commands are never part of a plan; the supervisor allocates them.",
+ "type": "object",
+ "properties": {
+  "schema": {
+   "const": "dk.local.world_plan.v1"
+  },
+  "plan_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "project_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "data_origin": {
+   "const": "synthetic_local"
+  },
+  "seed_commitment": {
+   "type": "string",
+   "pattern": "^[a-f0-9]{64}$"
+  },
+  "catalog_version": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "resources": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+     },
+     "template": {
+      "enum": [
+       "gateway",
+       "auth",
+       "api",
+       "tenant_store",
+       "queue",
+       "worker",
+       "artifact_depot",
+       "agent_gateway",
+       "receiver",
+       "observer",
+       "local_issuer"
+      ]
+     },
+     "depends_on": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "minItems": 0,
+      "maxItems": 12
+     },
+     "settings": {
+      "type": "object",
+      "properties": {
+       "audit_enabled": {
+        "type": "boolean"
+       },
+       "policy_variant": {
+        "enum": [
+         "baseline",
+         "candidate",
+         "deliberately_weak"
+        ]
+       },
+       "tenant_mode": {
+        "enum": [
+         "single",
+         "isolated"
+        ]
+       }
+      },
+      "required": [],
+      "additionalProperties": false
+     }
+    },
+    "required": [
+     "id",
+     "template",
+     "depends_on",
+     "settings"
+    ],
+    "additionalProperties": false
+   },
+   "minItems": 1,
+   "maxItems": 32
+  },
+  "budget": {
+   "type": "object",
+   "properties": {
+    "max_requests": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 2000
+    },
+    "max_seconds": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 600
+    },
+    "max_parallel_operations": {
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 8
+    },
+    "max_evidence_bytes": {
+     "type": "integer",
+     "minimum": 1024,
+     "maximum": 50000000
+    }
+   },
+   "required": [
+    "max_requests",
+    "max_seconds",
+    "max_parallel_operations",
+    "max_evidence_bytes"
+   ],
+   "additionalProperties": false
+  },
+  "runtime_mode": {
+   "enum": [
+    "trusted_builtin_processes",
+    "operator_isolated_containers"
+   ]
+  },
+  "external_network": {
+   "const": false
+  }
+ },
+ "required": [
+  "schema",
+  "plan_id",
+  "project_id",
+  "data_origin",
+  "seed_commitment",
+  "catalog_version",
+  "resources",
+  "budget",
+  "runtime_mode",
+  "external_network"
+ ],
+ "additionalProperties": false
+}

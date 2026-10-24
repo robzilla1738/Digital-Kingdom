@@ -1,0 +1,15 @@
+{
+  "schema": "dk.local.eval_preregistration_amendment.v1",
+  "id": "amendment-1",
+  "preregistration": "li-m6-c2c34916",
+  "created_at": "2026-10-24T03:08:09.304000+00:00",
+  "preregistration_sha256": "1a117bfa2e5090f666251a1d233dfa5053a982f076cef3c40ebf42f3d7f9e5e1",
+  "slots_recorded_at_amendment": 0,
+  "limits": {
+    "maxCompletionTokens": 16000
+  },
+  "reason": "Development smoke (LP24 declared real route, dev LW-01 / C3, not a preregistered slot) ended as schema_failure: two consecutive replies stopped at finish_reason=length with empty content because the provider's reasoning tokens consumed the whole 6000-token completion cap. The cap counts hidden reasoning, so 6000 measures the cap rather than the loop. Raised to 16000 for every condition before any comparison slot ran; nothing else changed (prompt, tools, order, metrics unchanged).",
+  "evidence": [
+    "lp24-smoke/lp24-smoke-1792811085539.json"
+  ]
+}

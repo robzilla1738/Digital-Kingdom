@@ -1,0 +1,58 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "urn:dk:local:run-provenance:v1",
+ "title": "Local run provenance v1: orthogonal to dataset_kind. Says that records came from a locally running synthetic world (or fixture delivery into one), never from production.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "run_id",
+  "world_plan_id",
+  "catalog_version",
+  "execution_mode",
+  "data_origin",
+  "scope",
+  "external_validation"
+ ],
+ "properties": {
+  "schema": {
+   "const": "dk.local.run_provenance.v1"
+  },
+  "run_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "world_plan_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "catalog_version": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "execution_mode": {
+   "enum": [
+    "local_runtime",
+    "fixture_delivery",
+    "scripted_replay"
+   ]
+  },
+  "data_origin": {
+   "const": "synthetic_local"
+  },
+  "scope": {
+   "const": "local_run_only"
+  },
+  "external_validation": {
+   "const": "not_performed"
+  },
+  "started_at": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "label": {
+   "type": "string",
+   "maxLength": 120
+  }
+ }
+}

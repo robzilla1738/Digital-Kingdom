@@ -1,0 +1,22 @@
+{
+  "name": "lp17-f15-families-district-roofs-off",
+  "file": "lp17-f15-families-district-roofs-off.png",
+  "sha256": "38d6d17b0c8579468c3accbfdce48c3f5c2f50ca86fa8fd198ce83b5e91ad46e",
+  "bytes": 291885,
+  "capturedAt": "2026-10-24T06:04:10.924Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F15"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,0 +1,238 @@
+[
+  {
+    "contract": "world-plan",
+    "name": "dependency references absent resource",
+    "data": {
+      "schema": "dk.local.world_plan.proposed.v1",
+      "plan_id": "plan-example",
+      "project_id": "local-lab-example",
+      "data_origin": "synthetic_local",
+      "seed_commitment": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "catalog_version": "catalog-v1",
+      "resources": [
+        {
+          "id": "auth",
+          "template": "auth",
+          "depends_on": [
+            "does-not-exist"
+          ],
+          "settings": {
+            "audit_enabled": true
+          }
+        },
+        {
+          "id": "api",
+          "template": "api",
+          "depends_on": [
+            "auth"
+          ],
+          "settings": {
+            "tenant_mode": "isolated"
+          }
+        },
+        {
+          "id": "receiver",
+          "template": "receiver",
+          "depends_on": [],
+          "settings": {}
+        },
+        {
+          "id": "observer",
+          "template": "observer",
+          "depends_on": [
+            "receiver"
+          ],
+          "settings": {}
+        }
+      ],
+      "budget": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_parallel_operations": 2,
+        "max_evidence_bytes": 5000000
+      },
+      "runtime_mode": "trusted_builtin_processes",
+      "external_network": false
+    }
+  },
+  {
+    "contract": "world-plan",
+    "name": "cycle between resources",
+    "data": {
+      "schema": "dk.local.world_plan.proposed.v1",
+      "plan_id": "plan-example",
+      "project_id": "local-lab-example",
+      "data_origin": "synthetic_local",
+      "seed_commitment": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "catalog_version": "catalog-v1",
+      "resources": [
+        {
+          "id": "auth",
+          "template": "auth",
+          "depends_on": [
+            "api"
+          ],
+          "settings": {
+            "audit_enabled": true
+          }
+        },
+        {
+          "id": "api",
+          "template": "api",
+          "depends_on": [
+            "auth"
+          ],
+          "settings": {
+            "tenant_mode": "isolated"
+          }
+        },
+        {
+          "id": "receiver",
+          "template": "receiver",
+          "depends_on": [],
+          "settings": {}
+        },
+        {
+          "id": "observer",
+          "template": "observer",
+          "depends_on": [
+            "receiver"
+          ],
+          "settings": {}
+        }
+      ],
+      "budget": {
+        "max_requests": 400,
+        "max_seconds": 120,
+        "max_parallel_operations": 2,
+        "max_evidence_bytes": 5000000
+      },
+      "runtime_mode": "trusted_builtin_processes",
+      "external_network": false
+    }
+  },
+  {
+    "contract": "investigation-contract",
+    "name": "ready despite unstarted obligation",
+    "data": {
+      "schema": "dk.local.investigation_contract.proposed.v1",
+      "id": "contract-example",
+      "case_id": "case-example",
+      "project_id": "local-lab-example",
+      "run_id": "run-example",
+      "revision": 1,
+      "question": "What supports the observed effect and what remains unknown?",
+      "scope": {
+        "asset_ids": [
+          "api",
+          "receiver"
+        ],
+        "after": "2026-10-23T10:00:00Z",
+        "before": "2026-10-23T10:10:00Z"
+      },
+      "obligations": [
+        {
+          "id": "resolve-origin",
+          "question": "Resolve operation identity using source authority.",
+          "status": "not_started",
+          "evidence_refs": [],
+          "query_refs": [],
+          "reason": ""
+        },
+        {
+          "id": "effect-coverage",
+          "question": "Establish relevant independent observer capability.",
+          "status": "unavailable",
+          "evidence_refs": [],
+          "query_refs": [
+            "query-coverage"
+          ],
+          "reason": "Observer unavailable during a portion of the interval."
+        }
+      ],
+      "readiness": "bounded_answer_ready",
+      "snapshot_refs": [
+        "snapshot-example"
+      ],
+      "private_truth_access": false
+    }
+  },
+  {
+    "contract": "repair-plan",
+    "name": "wrong parameters for action type",
+    "data": {
+      "schema": "dk.local.repair_plan.proposed.v1",
+      "plan_id": "repair-example",
+      "run_id": "run-example",
+      "case_id": "case-example",
+      "baseline_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "candidate_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "actions": [
+        {
+          "id": "action-1",
+          "target_resource_id": "gateway",
+          "type": "set_gateway_policy",
+          "parameters": {
+            "token_ref": "token-example"
+          },
+          "expected_target_revision": "revision-1"
+        }
+      ],
+      "verification_test_ids": [
+        "test-prohibited"
+      ],
+      "positive_control_ids": [
+        "test-permitted"
+      ],
+      "residual_unknowns": [
+        "Other tool servers are outside this example scope."
+      ],
+      "authority": "plan_only",
+      "expires_at": "2026-10-23T10:30:00Z"
+    }
+  },
+  {
+    "contract": "verification-receipt",
+    "name": "whole run passed despite failed cleanup",
+    "data": {
+      "schema": "dk.local.verification_receipt.proposed.v1",
+      "run_id": "run-example",
+      "plan_id": "repair-example",
+      "tested_target_revision": "revision-2",
+      "probes": [
+        {
+          "operation_id": "op-denied",
+          "expectation": "prohibited",
+          "actual_effect": "not_observed",
+          "observer_scope": "sufficient",
+          "evidence_refs": [
+            "ev-denial",
+            "ev-observer-window"
+          ],
+          "result": "as_expected"
+        },
+        {
+          "operation_id": "op-allowed",
+          "expectation": "permitted",
+          "actual_effect": "observed",
+          "observer_scope": "sufficient",
+          "evidence_refs": [
+            "ev-allowed",
+            "ev-observed"
+          ],
+          "result": "as_expected"
+        }
+      ],
+      "security_verdict": "pass",
+      "cleanup": {
+        "outcome": "failed",
+        "notes": "Illustrative schema example only; no test was run."
+      },
+      "overall_outcome": "pass",
+      "scope": "local_run_only",
+      "unassessed_paths": [
+        "External providers were not assessed."
+      ]
+    }
+  }
+]

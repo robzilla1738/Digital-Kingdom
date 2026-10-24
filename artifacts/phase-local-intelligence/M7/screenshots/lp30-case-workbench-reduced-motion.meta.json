@@ -1,0 +1,22 @@
+{
+  "name": "lp30-case-workbench-reduced-motion",
+  "file": "lp30-case-workbench-reduced-motion.png",
+  "sha256": "8a76a22613b2f90021d3faebf3a0c25453a4d7f6a3c0542824139eb62c5923f6",
+  "bytes": 296009,
+  "capturedAt": "2026-10-24T07:59:38.523Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": true,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

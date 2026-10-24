@@ -7,6 +7,7 @@ import { Icon } from "../lib/icons.tsx";
 import { EdgeChooser, type EdgeChoice } from "../castle/EdgeChooser.tsx";
 import { overlappingEdges, pointerWasDrag, type ScreenPoint } from "../castle/edgePicking.ts";
 import { ASSET_COVERAGE_LABEL } from "../lib/presentation.ts";
+import { districtGroupKey, focusMembers, worldHierarchy } from "../lib/world.ts";
 import { presentationGroups, presentationMembers, selectionDistrictKey, presentationTopologyKey, groupMembershipKey, presentationScene, groupSummary, selectionAssets, SEVERITY_COLOR } from "../castle/scenePresentation.ts";
 
 const MONO: Record<AssetKind, string> = {
@@ -53,6 +54,14 @@ export function Graph2D() {
   const [membersExpanded, setMembersExpanded] = useState(() => savedPose?.membersExpanded ?? true);
   const [controlsExpanded, setControlsExpanded] = useState(() => savedPose?.controlsExpanded ?? false), [compactFocus, setCompactFocus] = useState<string[] | null>(() => savedPose?.compactFocus ?? null);
   const grouped = fullScene.rooms.length > 50;
+  // LP16: the same stable world focus as the castle and the navigator. Grouped maps open the focused district;
+  // ungrouped maps keep every card and mark focus membership (no camera, no hidden assets).
+  const worldFocus = useMemo(() => focusMembers(worldHierarchy(graph, vm.data.scene), ui.focus), [graph, vm.data.scene, ui.focus]);
+  useEffect(() => {
+    if (!grouped || !worldFocus) return;
+    const key = districtGroupKey(worldFocus.node.id) ?? (worldFocus.node.kind === "structure" ? selectionDistrictKey(groups, worldFocus.assetIds) : null);
+    if (key) setDistrict(key);
+  }, [grouped, worldFocus, groups]);
   const focusIds = useMemo(() => selectionAssets(ui.selection, vm), [ui.selection, vm.findings, vm.data, vm.latestData, vm.selectedEventAssets]);
   const membership = useMemo(() => presentationMembers(groups, district, focusIds), [groups, district, focusIds]);
   const members = membership.members;
@@ -348,14 +357,15 @@ export function Graph2D() {
           if (!a || !rect) return null;
           const st = vm.assetStatus.get(r.asset_id);
           const isSel = focusIds.has(r.asset_id);
-          const dim = (q.length > 1 && !(a.name.toLowerCase().includes(q) || a.id.toLowerCase().includes(q)));
+          const outOfFocus = !!worldFocus && worldFocus.node.kind !== "realm" && !worldFocus.assetIds.has(r.asset_id);
+          const dim = outOfFocus || (q.length > 1 && !(a.name.toLowerCase().includes(q) || a.id.toLowerCase().includes(q)));
           const style = st?.worst ? OUTCOME_STYLE[st.worst] : null;
           const gap = !!st && st.coverage !== "reporting";
           const nameFit = a.name.length > 19 ? a.name.slice(0, 18) + "…" : a.name;
           const sub = st ? ASSET_COVERAGE_LABEL[st.coverage] : "Coverage not assessed";
           const nF = st?.findingIds.length ?? 0;
           return (
-            <g key={r.asset_id} data-node data-asset-id={r.asset_id} transform={`translate(${rect.x},${rect.y})`} tabIndex={0} role="button" opacity={dim ? 0.28 : 1}
+            <g key={r.asset_id} data-node data-asset-id={r.asset_id} data-world-focus={worldFocus && worldFocus.node.kind !== "realm" ? (outOfFocus ? "outside" : "member") : undefined} transform={`translate(${rect.x},${rect.y})`} tabIndex={0} role="button" opacity={dim ? 0.28 : 1}
               aria-label={`${a.name}, ${KIND_LABEL[a.kind]}${style ? `, ${style.label}` : ""}${nF ? `, ${nF} open findings` : ""}${st?.severity ? `, ${st.severity} severity` : ""}, ${sub}`}
               aria-pressed={isSel} className={`node${isSel ? " selected" : ""}${gap ? " gap" : ""}`}
               onClick={() => select(a.id, a.name)} onKeyDown={(e) => key(e, a.id, a.name)}

@@ -1,0 +1,58 @@
+{
+  "a3": {
+    "fixture": "F13 (200 synthetic assets)",
+    "districts": {
+      "env:demo/district:application": 6,
+      "env:demo/district:automation": 2,
+      "env:demo/district:data": 2,
+      "env:demo/district:delivery": 1,
+      "env:demo/district:external": 1,
+      "env:demo/district:public": 1,
+      "env:synthetic-design/district:application": 40,
+      "env:synthetic-design/district:automation": 42,
+      "env:synthetic-design/district:data": 21,
+      "env:synthetic-design/district:delivery": 21,
+      "env:synthetic-design/district:external": 21,
+      "env:synthetic-design/district:public": 42
+    },
+    "total": 200,
+    "focused": "env:synthetic-design/district:automation",
+    "searchSelected": "redesign-asset-017",
+    "framedCameraChanged": true,
+    "semanticLevels": [
+      "realm",
+      "district"
+    ]
+  },
+  "a2": {
+    "incarnations": [
+      {
+        "incarnation_id": "blob~2",
+        "state": "current",
+        "provider_id": null,
+        "since_revision": "demo-r3-lp16-again"
+      },
+      {
+        "incarnation_id": "blob~1",
+        "state": "historical",
+        "retired_in_revision": "demo-r3-lp16-minus"
+      }
+    ],
+    "archivedLabel": "blob~1",
+    "current": {
+      "id": "blob~2",
+      "provider_id": null,
+      "since_revision": "demo-r3-lp16-again"
+    }
+  },
+  "a4": {
+    "case": "case_f5328bfd57d45618",
+    "contextLoss": "real WEBGL_lose_context",
+    "afterLoss": "db",
+    "afterBack": "api",
+    "resized": [
+      "820x900",
+      "1440x900"
+    ]
+  }
+}

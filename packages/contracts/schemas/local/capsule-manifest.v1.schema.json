@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dk:local:capsule-manifest:v1",
+  "title": "Local case capsule manifest (LP28): a minimized, portable package of one case's supported evidence references, scene revision, synthetic regression descriptors and, for training/evaluation capsules only, a separately sealed oracle attachment. Digests are integrity/origin checks, not proof of truth, completeness or approval.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "dk.local.capsule.v1"
+    },
+    "kind": {
+      "enum": [
+        "evidence_only",
+        "training"
+      ]
+    },
+    "capsule_id": {
+      "type": "string",
+      "pattern": "^cap-[a-f0-9]{16}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "project_ref": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{16}$"
+        },
+        "case_id": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "case_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "data_origin": {
+          "enum": [
+            "synthetic_local",
+            "synthetic",
+            "live",
+            "demo",
+            "mixed",
+            "unknown"
+          ]
+        }
+      },
+      "required": [
+        "project_ref",
+        "case_id",
+        "case_version",
+        "data_origin"
+      ],
+      "additionalProperties": false
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(manifest\\.json|signature\\.json|(evidence|scene|regressions|verifications|missions|sealed)/[A-Za-z0-9][A-Za-z0-9_.-]{0,120}\\.(json|dkseal))$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8388608
+          },
+          "role": {
+            "enum": [
+              "evidence",
+              "scene",
+              "regression",
+              "verification",
+              "mission",
+              "sealed_oracle"
+            ]
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "bytes",
+          "role"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "maxItems": 20000,
+      "items": {
+        "type": "string",
+        "maxLength": 400
+      }
+    },
+    "absent_records": {
+      "type": "array",
+      "maxItems": 20000,
+      "items": {
+        "type": "object",
+        "properties": {
+          "item": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "ref": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 400
+          }
+        },
+        "required": [
+          "item",
+          "ref",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "scene_revision": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "digest": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "layout_version": {
+              "type": [
+                "integer",
+                "string",
+                "null"
+              ]
+            },
+            "graph_revision": {
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "digest",
+            "layout_version",
+            "graph_revision"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "regressions": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "pattern": "^lrg-[a-f0-9]{16}$"
+      }
+    },
+    "sealed": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "path": {
+              "const": "sealed/oracle.dkseal"
+            },
+            "cipher": {
+              "const": "aes-256-gcm"
+            },
+            "kdf": {
+              "const": "scrypt-N32768-r8-p1"
+            },
+            "ciphertext_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "plaintext_commitment": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "separated": {
+              "const": true
+            },
+            "use": {
+              "const": "training_and_evaluation_only"
+            }
+          },
+          "required": [
+            "path",
+            "cipher",
+            "kdf",
+            "ciphertext_sha256",
+            "plaintext_commitment",
+            "separated",
+            "use"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "maxItems": 50
+    },
+    "integrity": {
+      "type": "string",
+      "minLength": 40,
+      "maxLength": 600
+    },
+    "scope": {
+      "const": "local_only_no_third_party_storage"
+    }
+  },
+  "required": [
+    "schema",
+    "kind",
+    "capsule_id",
+    "created_at",
+    "source",
+    "entries",
+    "evidence_refs",
+    "absent_records",
+    "scene_revision",
+    "regressions",
+    "sealed",
+    "excluded",
+    "integrity",
+    "scope"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,314 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dk:local:repair-execution:v1",
+  "title": "Local repair execution receipt (LP21): what a leased controller actually applied to run-owned resources. Not a security verdict.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "dk.local.repair_execution.v1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "plan_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "lease_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "controller_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "state": {
+      "enum": [
+        "completed",
+        "partially_applied",
+        "failed",
+        "cancelled",
+        "refused"
+      ]
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "type": {
+            "enum": [
+              "set_gateway_policy",
+              "deactivate_test_token",
+              "remove_test_grant",
+              "select_test_artifact",
+              "restart_test_observer"
+            ]
+          },
+          "target_resource_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "state": {
+            "enum": [
+              "applied",
+              "already_applied",
+              "reconciled",
+              "not_run",
+              "refused",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "from_revision": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to_revision": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "operation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "idempotency_key": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "apply_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "action_id",
+          "type",
+          "target_resource_id",
+          "state",
+          "from_revision",
+          "to_revision",
+          "operation_id",
+          "idempotency_key",
+          "apply_count",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 12
+    },
+    "compensation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "outcome": {
+            "enum": [
+              "restored_previous",
+              "not_restored",
+              "not_needed",
+              "failed"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "action_id",
+          "outcome",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 12
+    },
+    "revisions_before": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "maxProperties": 64
+    },
+    "revisions_after": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "maxProperties": 64
+    },
+    "untargeted_changes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "quota": {
+      "type": "object",
+      "properties": {
+        "max_operations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "used": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "exhausted": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "max_operations",
+        "used",
+        "exhausted"
+      ],
+      "additionalProperties": false
+    },
+    "cancellation": {
+      "type": "object",
+      "properties": {
+        "requested": {
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 300
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "requested",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "recovery": {
+      "type": "object",
+      "properties": {
+        "reconciled_actions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "journal_entries": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "reconciled_actions",
+        "journal_entries"
+      ],
+      "additionalProperties": false
+    },
+    "cleanup": {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "enum": [
+            "not_needed",
+            "completed",
+            "failed",
+            "pending"
+          ]
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "outcome",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "counts_as_human_approval": {
+      "const": false
+    },
+    "scope": {
+      "const": "local_run_only"
+    }
+  },
+  "required": [
+    "schema",
+    "run_id",
+    "plan_id",
+    "plan_digest",
+    "lease_id",
+    "controller_id",
+    "state",
+    "actions",
+    "compensation",
+    "revisions_before",
+    "revisions_after",
+    "untargeted_changes",
+    "quota",
+    "cancellation",
+    "recovery",
+    "cleanup",
+    "counts_as_human_approval",
+    "scope"
+  ],
+  "additionalProperties": false
+}

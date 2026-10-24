@@ -84,3 +84,18 @@
 .node-mono { fill: #aab2be; font-size: 9.5px; font-weight: 600; font-family: var(--mono); letter-spacing: .02em; }
 .node-count { fill: #c7ccd4; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
+
+/* LP16 world navigation */
+.semantic-level { display: block; text-align: center; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); padding: 2px 4px; }
+.archived-label { border-style: dashed !important; opacity: .92; }
+.world-nav { display: flex; flex-direction: column; gap: 8px; padding: 4px 2px; }
+.world-trail { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: var(--fs-12, 12px); }
+.world-row { display: flex; align-items: center; gap: 6px; }
+.world-row .link-row { flex: 1; }
+.world-node > ul { margin-left: 10px; }
+.world-members { margin-left: 12px; border-left: 1px solid var(--border); padding-left: 6px; }
+.link-row.active { outline: 1px solid var(--accent, #c3cbf5); border-radius: 6px; }
+.world-result { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; white-space: normal; text-align: left; }
+.world-result .grow { display: flex; flex-direction: column; min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.world-result small { overflow-wrap: anywhere; }
+.world-result-state { color: var(--text-3); }

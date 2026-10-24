@@ -1,3 +1,4 @@
+import { provenanceOf } from "./provenance.ts";
 import { canonicalJson } from "@dk/contracts";
 import { hmac, sha256 } from "./security.ts";
 import { HttpError, type Store } from "./store.ts";
@@ -29,6 +30,8 @@ const str = (v: unknown, k: string, max: number, required = true) => {
 };
 
 export class Cases {
+  /** LP23: extra closure blockers (failed/inconclusive local verifications, stale regressions) that need an accepted unknown. */
+  closureGate: ((projectId: string, caseId: string) => { ref: string; reason: string }[]) | null = null;
   constructor(private readonly store: Store) {}
   private get db() { return this.store.db; }
   private now() { return this.store.now().toISOString(); }
@@ -179,8 +182,10 @@ export class Cases {
   }
 
   /** Answer, reopen or accept-as-unresolved a question or hypothesis. */
-  setQuestion(projectId: string, id: string, itemId: string, body: Record<string, unknown>, actor: string) {
+  setQuestion(projectId: string, id: string, itemId: string, body: Record<string, unknown>, actor: string, principalType: "human" | "service" = "human") {
     return this.store.transaction(() => {
+      // LP12: an agent (service principal) may propose, never settle. A question or hypothesis is resolved only by a person.
+      if (principalType === "service" && body.status !== "open") throw new HttpError(403, "agents cannot answer or settle a case question; store a conclusion proposal instead and let a person record the answer");
       const r = this.row(projectId, id);
       this.checkVersion(r, body.expected_version);
       if (r.status === "closed") throw new HttpError(409, "the case is closed; reopen it first");
@@ -198,11 +203,16 @@ export class Cases {
     });
   }
 
-  removeItem(projectId: string, id: string, itemId: string, body: Record<string, unknown>, actor: string) {
+  removeItem(projectId: string, id: string, itemId: string, body: Record<string, unknown>, actor: string, principalType: "human" | "service" = "human") {
     return this.store.transaction(() => {
       const r = this.row(projectId, id);
       this.checkVersion(r, body.expected_version);
       if (r.status === "closed") throw new HttpError(409, "the case is closed; reopen it first");
+      if (principalType === "service") {
+        // LP12: an agent may withdraw only what it added itself; it can never remove a person's note, question or link.
+        const owner = this.db.prepare("SELECT added_by FROM case_items WHERE case_id = ? AND item_id = ? AND removed_at IS NULL").get(id, itemId) as { added_by: string } | undefined;
+        if (owner && owner.added_by !== actor) throw new HttpError(403, "agents cannot remove an item someone else added");
+      }
       const reason = str(body.reason, "reason", 500)!;
       const res = this.db.prepare("UPDATE case_items SET removed_at = ?, removed_by = ?, removal_reason = ? WHERE case_id = ? AND item_id = ? AND removed_at IS NULL").run(this.now(), actor, reason, id, itemId);
       if (!Number(res.changes)) throw new HttpError(404, "item not found");
@@ -212,8 +222,9 @@ export class Cases {
   }
 
   /** open -> resolved -> closed, or back to open. Closing checks questions and needs a closure statement. */
-  setStatus(projectId: string, id: string, body: Record<string, unknown>, actor: string, role: string) {
+  setStatus(projectId: string, id: string, body: Record<string, unknown>, actor: string, role: string, principalType: "human" | "service" = "human") {
     return this.store.transaction(() => {
+      if (principalType === "service" && (body.status === "closed" || body.status === "resolved")) throw new HttpError(403, "agents cannot resolve or close a case; a person decides closure");
       const r = this.row(projectId, id);
       this.checkVersion(r, body.expected_version);
       const status = body.status as Status;
@@ -224,7 +235,12 @@ export class Cases {
         if (status === "closed" && r.owner !== actor && role !== "admin") throw new HttpError(403, "only the case owner or an administrator can close a case");
         const open = (this.db.prepare("SELECT item_id, body FROM case_items WHERE case_id = ? AND kind IN ('question','hypothesis') AND removed_at IS NULL").all(id) as { item_id: string; body: string }[]).filter((q) => (JSON.parse(q.body) as { status: string }).status === "open");
         if (open.length) throw new HttpError(409, `${open.length} question(s) are still open; answer them or accept them as unresolved with a reason`, open.map((q) => q.item_id));
-        closure = { statement: str(body.statement, "statement (how the closure criteria were met)", 4000), criteria: r.closure_criteria, by: actor, at: this.now() };
+        const blockers = this.closureGate ? this.closureGate(projectId, id) : [];
+        const accepted = Array.isArray(body.accepted_unknowns) ? (body.accepted_unknowns as unknown[]).filter((a): a is { ref: string; reason: string } => !!a && typeof a === "object" && typeof (a as { ref?: unknown }).ref === "string" && typeof (a as { reason?: unknown }).reason === "string" && !!(a as { reason: string }).reason.trim()) : [];
+        const unaccepted = blockers.filter((x) => !accepted.some((a) => a.ref === x.ref));
+        if (unaccepted.length) throw new HttpError(409, `${unaccepted.length} linked local result(s) are not verified or no longer current; a failed verification cannot silently close a case. Accept each as an explicit unknown with a reason (accepted_unknowns) or link a passing replay`, unaccepted.map((x) => `${x.ref}: ${x.reason}`));
+        const acceptedUnknowns = blockers.map((x) => ({ ...x, accepted_reason: accepted.find((a) => a.ref === x.ref)!.reason.trim().slice(0, 1000) }));
+        closure = { statement: str(body.statement, "statement (how the closure criteria were met)", 4000), criteria: r.closure_criteria, by: actor, at: this.now(), ...(acceptedUnknowns.length ? { accepted_unknowns: acceptedUnknowns } : {}) };
       }
       this.db.prepare("UPDATE cases SET status = ?, closure = ? WHERE id = ?").run(status, closure ? canonicalJson(closure) : null, id);
       this.bump(r, actor, { status: r.status }, { status, ...(closure ? { closure } : {}) }, `status ${status}`);
@@ -266,7 +282,7 @@ export class Cases {
     });
     const sections = { case: { ...c, history: undefined }, history: c.history, bundles, independent_events: events, unavailable };
     const manifest = {
-      format: "digital-kingdom-case/2", kind: "case", project_id: projectId, case_id: id, case_version: c.version,
+      format: "digital-kingdom-case/2", kind: "case", project_id: projectId, provenance: provenanceOf(this.store.getProject(projectId)!), case_id: id, case_version: c.version,
       exported_at: this.now(), exported_by: actor, complete: unavailable.length === 0,
       bundle_digests: Object.fromEntries(bundles.map((b) => [b.bundle_id as string, b.bundle_digest as string])),
       section_sha256: Object.fromEntries(Object.entries(sections).map(([k, v]) => [k, sha256(canonicalJson(v))])),

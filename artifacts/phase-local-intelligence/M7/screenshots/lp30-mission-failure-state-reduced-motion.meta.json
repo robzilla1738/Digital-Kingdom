@@ -1,0 +1,22 @@
+{
+  "name": "lp30-mission-failure-state-reduced-motion",
+  "file": "lp30-mission-failure-state-reduced-motion.png",
+  "sha256": "37c2c868a94673251e61fbe6e644d4e3751d8b2ab6dde9d772262f3c2267bf7e",
+  "bytes": 273495,
+  "capturedAt": "2026-10-24T07:52:14.524Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": true,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

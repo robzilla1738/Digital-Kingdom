@@ -1,0 +1,22 @@
+{
+  "name": "lp12-workbench-reduced-motion",
+  "file": "lp12-workbench-reduced-motion.png",
+  "sha256": "b86610e6158c3d5d9b34035abd6d26b4b09b88d0e4583bf3e158807d734140bd",
+  "bytes": 335053,
+  "capturedAt": "2026-10-24T02:31:11.867Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": true,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

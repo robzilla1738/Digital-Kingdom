@@ -11,9 +11,10 @@ import { seedDemo } from '../apps/server/src/seed.ts';
 
 export const REDESIGN_ROOT = resolve(import.meta.dirname, '..');
 export const REDESIGN_ARTIFACTS = resolve(REDESIGN_ROOT, process.env.DK_RED_ARTIFACTS ?? 'artifacts/redesign/final');
-export async function captureRedesign(page: Page, name: string) {
+export async function captureRedesign(page: Page, name: string, options: { timeout?: number } = {}) {
   mkdirSync(join(REDESIGN_ARTIFACTS, 'screenshots'), { recursive: true });
-  const bytes = await page.screenshot({ path: join(REDESIGN_ARTIFACTS, 'screenshots', `${name}.png`) });
+  // LP30: optional longer capture budget for SwiftShader 3D views under load (default unchanged).
+  const bytes = await page.screenshot({ path: join(REDESIGN_ARTIFACTS, 'screenshots', `${name}.png`), ...(options.timeout ? { timeout: options.timeout } : {}) });
   const url = new URL(page.url()); const query: Record<string,string> = {};
   for (const key of ['fixture','moduleSheet','components','project']) { const value=url.searchParams.get(key); if(value) query[key]=value; }
   const pageInfo = await page.evaluate(() => ({ dpr:devicePixelRatio, build:document.querySelector('meta[name="dk-build"]')?.getAttribute('content'), reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,forcedColors:matchMedia('(forced-colors: active)').matches,cssZoom:getComputedStyle(document.documentElement).zoom }));

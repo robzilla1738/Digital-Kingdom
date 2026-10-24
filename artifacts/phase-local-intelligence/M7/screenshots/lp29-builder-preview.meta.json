@@ -1,0 +1,22 @@
+{
+  "name": "lp29-builder-preview",
+  "file": "lp29-builder-preview.png",
+  "sha256": "81fc5e1d09de7c9f3aab33687d3bff64ffe9579289fefd25af7b7495a2ce587b",
+  "bytes": 277011,
+  "capturedAt": "2026-10-24T07:42:01.062Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

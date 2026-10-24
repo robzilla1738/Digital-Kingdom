@@ -1,0 +1,22 @@
+{
+  "name": "lp17-families-contact-sheet",
+  "file": "lp17-families-contact-sheet.png",
+  "sha256": "33d1a7f06b182edc56f8396a6b1756e8935a70fb3fadbff4719b536c0c8b912c",
+  "bytes": 203158,
+  "capturedAt": "2026-10-24T06:03:25.999Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "moduleSheet": "families"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

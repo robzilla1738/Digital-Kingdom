@@ -1,0 +1,50 @@
+{
+  "schema": "dk.local.world_plan.proposed.v1",
+  "plan_id": "plan-example",
+  "project_id": "local-lab-example",
+  "data_origin": "synthetic_local",
+  "seed_commitment": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "catalog_version": "catalog-v1",
+  "resources": [
+    {
+      "id": "auth",
+      "template": "auth",
+      "depends_on": [],
+      "settings": {
+        "audit_enabled": true
+      }
+    },
+    {
+      "id": "api",
+      "template": "api",
+      "depends_on": [
+        "auth"
+      ],
+      "settings": {
+        "tenant_mode": "isolated"
+      }
+    },
+    {
+      "id": "receiver",
+      "template": "receiver",
+      "depends_on": [],
+      "settings": {}
+    },
+    {
+      "id": "observer",
+      "template": "observer",
+      "depends_on": [
+        "receiver"
+      ],
+      "settings": {}
+    }
+  ],
+  "budget": {
+    "max_requests": 400,
+    "max_seconds": 120,
+    "max_parallel_operations": 2,
+    "max_evidence_bytes": 5000000
+  },
+  "runtime_mode": "trusted_builtin_processes",
+  "external_network": false
+}

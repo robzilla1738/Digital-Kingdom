@@ -1,0 +1,74 @@
+import { useContext, useEffect, useState, type ReactNode } from "react";
+import { ActionsCtx, type WorldComparisonView } from "../inspector/actions.tsx";
+import { useApp } from "../lib/state.tsx";
+
+/** Comparison panel and loader without any three.js import, so the narrow shell can render it without pulling the lazy castle bundle. */
+export const OP_TEXT = { added: "Added in repair", removed: "Removed in repair", changed: "Changed in repair" } as const;
+export const OP_GLYPH = { added: "+", removed: "−", changed: "Δ" } as const;
+
+/** LP19: `?cmp=<comparison id>` loads the read-only world comparison for the castle. Nothing is stored or recompiled. */
+export function useWorldComparison(): { view: WorldComparisonView | null; error: string | null; id: string | null } {
+  const actions = useContext(ActionsCtx);
+  const id = new URLSearchParams(location.search).get("cmp");
+  const [state, setState] = useState<{ view: WorldComparisonView | null; error: string | null }>({ view: null, error: null });
+  useEffect(() => {
+    if (!id) return;
+    if (!actions?.worldComparison) { setState({ view: null, error: "World comparison needs the server; this view has no comparison records." }); return; }
+    const ctl = new AbortController();
+    actions.worldComparison(id, ctl.signal).then((view) => setState({ view, error: null }), (e: unknown) => { if (!ctl.signal.aborted) setState({ view: null, error: e instanceof Error ? e.message : "comparison unavailable" }); });
+    return () => ctl.abort();
+  }, [id, actions]);
+  return { ...state, id };
+}
+
+/** LP30 finding fix: below 1024px the stage is too small for a floating panel (it covered the camera toolbar and was hidden
+ * in the list view), so the comparison is rendered in normal document flow above the list/map instead. */
+export const NARROW_LAYOUT_QUERY = "(max-width: 1023px)";
+export function useNarrowLayout(): boolean {
+  const [narrow, setNarrow] = useState(() => typeof matchMedia === "function" && matchMedia(NARROW_LAYOUT_QUERY).matches);
+  useEffect(() => { if (typeof matchMedia !== "function") return; const m = matchMedia(NARROW_LAYOUT_QUERY); const change = () => setNarrow(m.matches); m.addEventListener("change", change); return () => m.removeEventListener("change", change); }, []);
+  return narrow;
+}
+
+/** Narrow layouts: the open comparison in flow, visible in both the list and the map view, collapsed to one summary line. */
+export function NarrowComparison() {
+  const comparison = useWorldComparison();
+  if (!comparison.id) return null;
+  return <ComparisonPanel {...comparison} inline />;
+}
+
+const PANEL_COLORS = { background: "#121C29", color: "#EEF3FA", border: "1px solid #70849B", borderRadius: 10, padding: 12, fontSize: 12 } as const;
+export function ComparisonPanel({ view, error, id, inline = false }: { view: WorldComparisonView | null; error: string | null; id: string | null; inline?: boolean }) {
+  const { dispatch } = useApp();
+  if (!id) return null;
+  const download = () => { if (!view) return; const url = URL.createObjectURL(new Blob([JSON.stringify(view, null, 2)], { type: "application/json" })); const a = document.createElement("a"); a.href = url; a.download = `world-comparison-${view.comparison_id}.json`; a.click(); URL.revokeObjectURL(url); };
+  const frame = (body: ReactNode) => inline
+    ? <section data-testid="world-comparison" data-variant="inline" aria-label="Baseline versus repair comparison" style={{ ...PANEL_COLORS, position: "relative", flex: "none", margin: "8px 12px", maxHeight: "45vh", overflow: "auto" }}>
+      <details data-testid="world-comparison-details"><summary style={{ cursor: "pointer", minHeight: 44, display: "flex", alignItems: "center", fontWeight: 600 }}>Comparison open · baseline vs repair · {view ? `${view.changes.length} change${view.changes.length === 1 ? "" : "s"}` : error ? "unavailable" : "loading"} · model only · details</summary>{body}</details>
+    </section>
+    : <section data-testid="world-comparison" data-variant="overlay" aria-label="Baseline versus repair comparison" style={{ ...PANEL_COLORS, position: "absolute", right: 16, top: 16, zIndex: 31, width: 360, maxHeight: "calc(100% - 120px)", overflow: "auto" }}>
+      <h3 style={{ margin: "0 0 6px" }}>Baseline vs repair · model only</h3>{body}
+    </section>;
+  return frame(<>
+    {error && <p role="alert">{error}</p>}
+    {view && <>
+      <p className="small">Drawn on the baseline layout and camera; no room moved. Castle geometry is presentation, never a security fact.</p>
+      <dl data-testid="comparison-revisions" style={{ margin: "4px 0" }}><dt>Baseline</dt><dd>graph {view.revisions.baseline.graph_revision} · state {view.revisions.baseline.state_hash.slice(0, 12)}{view.revisions.baseline.current ? " (current)" : " (no longer current)"}</dd>
+        <dt>Repair candidate</dt><dd>{view.revisions.candidate.namespace} · state {view.revisions.candidate.state_hash.slice(0, 12)} · receipt {view.revisions.candidate.receipt_digest.slice(0, 12)}</dd></dl>
+      {view.warnings.map((w) => <p key={w} data-testid="comparison-warning" role="note">⚠ {w}</p>)}
+      <h4 style={{ margin: "6px 0 2px" }}>Changes ({view.changes.length})</h4>
+      <ul style={{ paddingLeft: 16, margin: 0 }}>{view.changes.map((c) => <li key={c.key} data-change-key={c.key} data-op={c.op}>
+        <strong>{OP_GLYPH[c.op]} {c.op}</strong> <code>{c.key}</code>
+        {c.asset_ids.map((a) => <button key={a} className="btn sm" onClick={() => dispatch({ type: "select", selection: { kind: "asset", id: a } })}>{a}</button>)}
+        {!c.resolved_to_asset && <span> · not placed in the castle</span>}
+        {c.unresolved.map((u) => <div key={u} className="small faint">Unresolved: {u}</div>)}
+      </li>)}</ul>
+      <h4 style={{ margin: "6px 0 2px" }}>Model-only access (configured permission)</h4>
+      <ul style={{ paddingLeft: 16, margin: 0 }} data-testid="comparison-access">{view.model_only.access.map((a, i) => <li key={i} data-executed={String(a.executed)} data-verified={String(a.verified)}>{a.probe.principal} {a.probe.action} {a.probe.resource}: {a.base} → {a.candidate} · not executed · not verified</li>)}</ul>
+      <h4 style={{ margin: "6px 0 2px" }}>Executed local results</h4>
+      <p data-testid="comparison-executed-local">{view.executed_local.note}</p>
+      {view.executed_local.results.length > 0 && <ul data-testid="comparison-executed-local-list">{view.executed_local.results.map((r) => <li key={r.link_id}>{`${r.verified ? "verified locally" : "not verified"} · ${r.security_verdict} · ${r.whole_run} · ${r.tested_target_revision}${r.residual_access.length ? ` · residual: ${r.residual_access.join(", ")}` : ""}${r.disruption.length ? ` · disrupted: ${r.disruption.join(", ")}` : ""} · local run only`}</li>)}</ul>}
+      <button className="btn sm" onClick={download}>Export comparison (JSON)</button>
+    </>}
+  </>);
+}

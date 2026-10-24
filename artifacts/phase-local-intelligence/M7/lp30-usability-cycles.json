@@ -1,0 +1,36 @@
+{
+  "scope": "API-backed isolated synthetic server; Chromium headless with SwiftShader (software WebGL). Automated checks only.",
+  "conditions": "one browser context, 4 full reloads alternating demo-castle/second-project, selection change and Investigate→Cases→Kingdom each cycle",
+  "cycles": [
+    {
+      "cycle": 0,
+      "project": "demo-castle",
+      "ready_ms": 6550,
+      "canvases": 1,
+      "heap": 16100000
+    },
+    {
+      "cycle": 1,
+      "project": "second-project",
+      "ready_ms": 3162,
+      "canvases": 1,
+      "heap": 16100000
+    },
+    {
+      "cycle": 2,
+      "project": "demo-castle",
+      "ready_ms": 10813,
+      "canvases": 1,
+      "heap": 16100000
+    },
+    {
+      "cycle": 3,
+      "project": "second-project",
+      "ready_ms": 2265,
+      "canvases": 1,
+      "heap": 16100000
+    }
+  ],
+  "page_errors": [],
+  "heap_growth_bytes": 0
+}

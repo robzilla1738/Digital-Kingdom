@@ -7,6 +7,10 @@
  * An independent effect observer (not the target's own response) decides whether a blocked probe had an effect,
  * and a permitted-operation positive control must succeed, otherwise the run is inconclusive: an unavailable
  * target is never counted as successful enforcement. Partial results and failed cleanup stay in the receipt.
+ *
+ * LP05: a loopback allowlist does NOT establish ownership (any local listener passes it) and the observer here is an
+ * aggregate counter, not per-operation. Receipts therefore carry target_ownership: "unverified_url_allowlist". Runs
+ * against owned local worlds use @dk/local-world's Supervisor (registered resource ids + nonce handshake) instead.
  */
 export interface Probe { name: string; method: "GET" | "POST" | "HEAD"; path: string; body?: unknown; headers?: Record<string, string>; expect: "blocked" | "allowed"; positive_control?: boolean }
 export interface LabTest {
@@ -26,6 +30,8 @@ export interface LabReceipt {
   probes: ProbeResult[]; requests_used: number; elapsed_ms: number; aborted: boolean;
   cleanup: { ran: boolean; ok: boolean | null; detail: string };
   conditions: string; observer: string; observer_available: boolean;
+  /** LP05: a URL allowlist does not prove the lab created the target; run-owned targets go through the supervisor. */
+  target_ownership: "unverified_url_allowlist";
 }
 
 const LOOPBACK = new Set(["127.0.0.1", "::1", "localhost", "[::1]"]);
@@ -42,7 +48,7 @@ export function refuseTarget(t: Pick<LabTest, "target" | "approved_environments"
 
 export async function runLabTest(t: LabTest): Promise<LabReceipt> {
   const started = Date.now();
-  const receipt: LabReceipt = { schema: "dk.lab_receipt.v1", test_id: t.test_id, control_id: t.control_id ?? null, outcome: "inconclusive", reasons: [], probes: [], requests_used: 0, elapsed_ms: 0, aborted: false, cleanup: { ran: false, ok: null, detail: "" }, conditions: "", observer: t.observer.name, observer_available: true };
+  const receipt: LabReceipt = { schema: "dk.lab_receipt.v1", test_id: t.test_id, control_id: t.control_id ?? null, outcome: "inconclusive", reasons: [], probes: [], requests_used: 0, elapsed_ms: 0, aborted: false, cleanup: { ran: false, ok: null, detail: "" }, conditions: "", observer: t.observer.name, observer_available: true, target_ownership: "unverified_url_allowlist" };
   const refused = refuseTarget(t);
   if (refused) { receipt.outcome = "refused"; receipt.reasons.push(refused); receipt.conditions = `refused before any request: ${refused}`; return receipt; }
   for (const p of t.probes) if (!p.path.startsWith("/") || p.path.startsWith("//") || /^[a-z]+:/i.test(p.path)) { receipt.outcome = "refused"; receipt.reasons.push(`probe ${p.name} path must be relative to the target`); return receipt; }
@@ -86,7 +92,7 @@ export async function runLabTest(t: LabTest): Promise<LabReceipt> {
   else if (!complete || receipt.probes.some((r) => r.verdict === "inconclusive") || !receipt.observer_available) { receipt.outcome = "inconclusive"; if (!complete) receipt.reasons.push("partial run: not every probe executed"); }
   else receipt.outcome = "pass";
   if (receipt.cleanup.ok === false) receipt.reasons.push(`cleanup failed: ${receipt.cleanup.detail}`);
-  receipt.conditions = `${receipt.probes.length}/${t.probes.length} probes (${t.probes.map((p) => `${p.name}:${p.expect}`).join(", ")}) against ${new URL(t.target.url).host} in ${t.target.environment}; observer ${t.observer.name}`;
+  receipt.conditions = `${receipt.probes.length}/${t.probes.length} probes (${t.probes.map((p) => `${p.name}:${p.expect}`).join(", ")}) against ${new URL(t.target.url).host} in ${t.target.environment}; observer ${t.observer.name}; target ownership not verified (URL allowlist, not a supervisor-registered endpoint)`;
   return receipt;
 }
 

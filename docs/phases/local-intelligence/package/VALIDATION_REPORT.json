@@ -1,0 +1,26 @@
+{
+  "scope": "handoff package only; no Digital Kingdom runtime, model, provider or browser test executed",
+  "status": "pass",
+  "counts": {
+    "work_packages": 32,
+    "milestones": 8,
+    "acceptance_requirements": 128,
+    "scenario_families": 24,
+    "schemas": 5,
+    "valid_contract_examples": 5,
+    "rejected_schema_examples": 10,
+    "rejected_semantic_examples": 5,
+    "deferred_external_categories": 9
+  },
+  "checks": [
+    "dependency DAG",
+    "requirement and milestone mapping",
+    "local scenario references",
+    "JSON Schema metaschema",
+    "illustrative example shapes",
+    "negative shape and semantic cases",
+    "local Markdown links",
+    "SHA-256 file manifest"
+  ],
+  "failures": []
+}

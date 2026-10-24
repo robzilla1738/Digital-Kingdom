@@ -1,0 +1,22 @@
+{
+  "name": "lp30-mission-failure-state-narrow-390",
+  "file": "lp30-mission-failure-state-narrow-390.png",
+  "sha256": "4e7450b84009a0a9a96d00af2190ce5e41a30b59bdf8e35da4925e14c102b88e",
+  "bytes": 110895,
+  "capturedAt": "2026-10-24T07:52:17.705Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

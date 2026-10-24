@@ -1,0 +1,22 @@
+{
+  "name": "lp18-interior-narrow",
+  "file": "lp18-interior-narrow.png",
+  "sha256": "a0dd7e75536f8aee24236c3f53a1dc1da3ea4457eac6d270bea6fab9853d2ea8",
+  "bytes": 78182,
+  "capturedAt": "2026-10-24T06:05:33.655Z",
+  "viewport": {
+    "width": 420,
+    "height": 860
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

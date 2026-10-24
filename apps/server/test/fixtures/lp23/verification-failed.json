@@ -1,0 +1,152 @@
+{
+ "schema": "dk.local.repair_verification.v1",
+ "run_id": "run-ec6c1ccd1fb3",
+ "plan_id": "plan-m5-1",
+ "plan_digest": "7e7da1fd0d063c5e21e81702eb876146d9c8d3839e388dd8f0c92c6a8bfddcfb",
+ "execution": {
+  "state": "completed",
+  "receipt_digest": "5af5b067efb8e5a226e5fd4164e2eb22a418db253205145bee4cb977c2391522"
+ },
+ "verifier_id": "vrf-8e54d4797d8ef45b",
+ "independence": {
+  "verifier_is_executor": false,
+  "observers": [
+   "audit"
+  ],
+  "basis": "effects read only from registered observer resources of this run, correlated by supervisor-signed operation id; not from target self-reports, response bodies or the execution receipt"
+ },
+ "observations": [
+  {
+   "probe_id": "cross-tenant-read",
+   "repeat": 0,
+   "operation_id": "op-ec6c1ccd1fb3-5",
+   "nonce_digest": "16959d3ff0c99cbefedd02a866d6bb7433505b910fd051a87990ac7fd5075081",
+   "observation_digest": "1fabd8d89774a2ae08c827eedceb7e0c44ebf972c32c84d5299f58ca1534eee8",
+   "status": 200,
+   "actual_effect": "observed",
+   "observer": "audit",
+   "settled_ms": 1,
+   "reason": "1 effect(s) recorded for operation op-ec6c1ccd1fb3-5"
+  },
+  {
+   "probe_id": "own-tenant-read",
+   "repeat": 0,
+   "operation_id": "op-ec6c1ccd1fb3-6",
+   "nonce_digest": "3b03ae214c9cd7c94e679a05ae4dfb0da7bca4b56364b469a7280fe9482af7e1",
+   "observation_digest": "601e2b2eed5a8b42a094d9e473eed9521f4427322062035790c4155a6170bde5",
+   "status": 200,
+   "actual_effect": "observed",
+   "observer": "audit",
+   "settled_ms": 0,
+   "reason": "1 effect(s) recorded for operation op-ec6c1ccd1fb3-6"
+  },
+  {
+   "probe_id": "cross-tenant-read",
+   "repeat": 1,
+   "operation_id": "op-ec6c1ccd1fb3-7",
+   "nonce_digest": "bc5d3ba6ac22cd7db205e634e28e006a181a7fb0e25bf20cc1d96178f899c171",
+   "observation_digest": "3c3cfad034e714ec788958eb7f7f9b99639bb676ea5945d2d12a67105a60ffa0",
+   "status": 200,
+   "actual_effect": "observed",
+   "observer": "audit",
+   "settled_ms": 0,
+   "reason": "1 effect(s) recorded for operation op-ec6c1ccd1fb3-7"
+  },
+  {
+   "probe_id": "own-tenant-read",
+   "repeat": 1,
+   "operation_id": "op-ec6c1ccd1fb3-8",
+   "nonce_digest": "6349a1b19ee815730c40b5bfdb57e3853974ded915be9dfc928f80cd6095ed7b",
+   "observation_digest": "7ee2694d63205f0423938a654359b18a10d8e09fa123bd7c4a70d56ab54fc94b",
+   "status": 200,
+   "actual_effect": "observed",
+   "observer": "audit",
+   "settled_ms": 0,
+   "reason": "1 effect(s) recorded for operation op-ec6c1ccd1fb3-8"
+  }
+ ],
+ "before": [
+  {
+   "probe_id": "cross-tenant-read",
+   "actual_effect": "observed"
+  },
+  {
+   "probe_id": "own-tenant-read",
+   "actual_effect": "observed"
+  }
+ ],
+ "residual_access": [
+  "cross-tenant-read"
+ ],
+ "disruption": [],
+ "security_verdict": "fail",
+ "verification_receipt": {
+  "schema": "dk.local.verification_receipt.v1",
+  "run_id": "run-ec6c1ccd1fb3",
+  "plan_id": "plan-m5-1",
+  "tested_target_revision": "ingress:policy-candidate-r2",
+  "probes": [
+   {
+    "operation_id": "op-ec6c1ccd1fb3-5",
+    "expectation": "prohibited",
+    "actual_effect": "observed",
+    "observer_scope": "sufficient",
+    "evidence_refs": [
+     "obs-1fabd8d89774a2ae"
+    ],
+    "result": "unexpected"
+   },
+   {
+    "operation_id": "op-ec6c1ccd1fb3-6",
+    "expectation": "permitted",
+    "actual_effect": "observed",
+    "observer_scope": "sufficient",
+    "evidence_refs": [
+     "obs-601e2b2eed5a8b42"
+    ],
+    "result": "as_expected"
+   },
+   {
+    "operation_id": "op-ec6c1ccd1fb3-7",
+    "expectation": "prohibited",
+    "actual_effect": "observed",
+    "observer_scope": "sufficient",
+    "evidence_refs": [
+     "obs-3c3cfad034e714ec"
+    ],
+    "result": "unexpected"
+   },
+   {
+    "operation_id": "op-ec6c1ccd1fb3-8",
+    "expectation": "permitted",
+    "actual_effect": "observed",
+    "observer_scope": "sufficient",
+    "evidence_refs": [
+     "obs-7ee2694d63205f04"
+    ],
+    "result": "as_expected"
+   }
+  ],
+  "security_verdict": "fail",
+  "cleanup": {
+   "outcome": "completed",
+   "notes": "removed 3 owned path(s)"
+  },
+  "overall_outcome": "fail",
+  "scope": "local_run_only",
+  "unassessed_paths": []
+ },
+ "cleanup": {
+  "outcome": "completed",
+  "notes": "removed 3 owned path(s)"
+ },
+ "whole_run": {
+  "outcome": "security_failed",
+  "success": false,
+  "reasons": [
+   "target behavior unchanged for cross-tenant-read: the prohibited effect is observed before and after the accepted action",
+   "residual access: prohibited effect still observed for cross-tenant-read"
+  ]
+ },
+ "scope": "local_run_only"
+}

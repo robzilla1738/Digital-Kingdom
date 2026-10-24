@@ -8,6 +8,7 @@ import { BrandMark } from "./panels/TopBar.tsx";
 import { eventSearchParams, type FindingDetailResult } from "./lib/investigation.ts";
 import { loadFindingEvidence, loadBundleEvidence } from "./lib/evidence-loader.ts";
 import { ConnectionCtx, deriveConnection, type Connection, type SyncState, type Transport } from "./lib/connection.ts";
+import { caseDrafts } from "./lib/caseDrafts.ts";
 
 /** Set at build time for the public static demo: never contact a backend, always use bundled fixtures. */
 const STATIC_DEMO = (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.VITE_DK_STATIC_DEMO === "1";
@@ -36,6 +37,7 @@ export function App() {
     request.current.sequence++; request.current.controller?.abort(); clearTimers();
     setData(null); currentData.current = null; setConnection(null); lastSync.current = null; serverMode.current = false;
     transport.current = "connecting"; sync.current = "synced";
+    caseDrafts.clearAll();
   }, [clearTimers]);
   const publish = useCallback(() => setConnection({ state: deriveConnection(transport.current, sync.current, reachable.current), since: lastSync.current }), []);
   const load = useCallback(async () => {
@@ -136,6 +138,7 @@ export function App() {
       coverageHistory: (q, signal) => { check(); return api.get(`${prefix}/coverage/history?${new URLSearchParams(q as Record<string, string>)}`, signal); },
       controls: (signal) => { check(); return api.get(`${prefix}/controls`, signal); },
       control: async (id) => { check(); return api.get(`${prefix}/controls/${encodeURIComponent(id)}`); },
+      worldComparison: (id, signal) => { check(); return api.get(`${prefix}/analysis/comparisons/${encodeURIComponent(id)}/world`, signal); },
       githubPreview: async (owner, repo) => { check(); return api.send("POST", `${prefix}/discovery/github/preview`, { owner, repo }); },
       githubApply: async (previewId, expected) => { check(); await api.send("POST", `${prefix}/discovery/github/apply`, { preview_id: previewId, expected_graph_revision: expected }); check(); await reload.current(); },
       recipes: (signal) => { check(); return api.get(`/api/recipes`, signal); },
@@ -143,9 +146,25 @@ export function App() {
       connectors: (signal) => { check(); return api.get(`/api/connectors`, signal); },
       notifications: (signal) => { check(); return api.get(`${prefix}/notifications/status`, signal); },
       acknowledgeNotification: async (id) => { check(); return api.send("POST", `${prefix}/notifications/${encodeURIComponent(id)}/ack`); },
+      localWorldPreview: async (input) => { check(); return api.send("POST", `/api/local-world/preview`, input); },
+      localWorldReporting: (signal) => { check(); return api.get(`${prefix}/local-world/reporting`, signal); },
+      missions: {
+        templates: (signal) => { check(); return api.get(`/api/local-missions/templates`, signal); },
+        preview: async (body) => { check(); return api.send("POST", `/api/local-missions/preview`, body); },
+        create: async (draft) => { check(); return api.send("POST", `/api/local-missions`, { draft }); },
+        list: (signal) => { check(); return api.get(`/api/local-missions`, signal); },
+        get: (id, signal) => { check(); return api.get(`/api/local-missions/${encodeURIComponent(id)}`, signal); },
+        openTruth: async (id, reason) => { check(); return api.send("POST", `/api/local-missions/${encodeURIComponent(id)}/open-truth`, { reason }); },
+        cancel: async (id) => { check(); return api.send("POST", `/api/local-missions/${encodeURIComponent(id)}/cancel`); },
+      },
       listCases: (signal) => { check(); return api.get(`${prefix}/cases`, signal); },
       getCase: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}`, signal); },
       createCase: async (body) => { check(); return api.send("POST", `${prefix}/cases`, body); },
+      caseWorkbench: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}/workbench`, signal); },
+      analysisPaths: (q, signal) => { check(); return api.get(`${prefix}/analysis/paths?${new URLSearchParams(Object.entries(q).filter(([, v]) => v !== undefined && v !== "") as [string, string][])}`, signal); },
+      attention: (signal) => { check(); return api.get(`${prefix}/attention`, signal); },
+      acknowledgeAttention: async (id, expectedSeq) => { check(); return api.send("POST", `${prefix}/attention/${encodeURIComponent(id)}/ack`, { expected_seq: expectedSeq }); },
+      openContract: async (id) => { check(); return api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}/contract`, {}); },
       caseAction: async (id, path, body) => { check(); return api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}${path}`, body); },
       exportDurableCase: async (id) => {
         check(); const bundle = await api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}/export`); check();
