@@ -612,9 +612,9 @@
     "LP04",
     "LP12"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "c2a439f",
-   "ci_run": null,
+   "ci_run": 40069056700,
    "receipt": "docs/phases/local-intelligence/receipts/LP16.md",
    "branch": "phase/li-m4",
    "local_checks": {
@@ -632,9 +632,9 @@
    "depends_on": [
     "LP16"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "39484e9 + 978b273 + 1af0907",
-   "ci_run": null,
+   "ci_run": 40069056700,
    "receipt": "docs/phases/local-intelligence/receipts/LP17.md",
    "branch": "phase/li-m4",
    "local_checks": {
@@ -653,9 +653,9 @@
     "LP16",
     "LP17"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "3f692cf + 232a328 + 417d8a8",
-   "ci_run": null,
+   "ci_run": 40069056700,
    "receipt": "docs/phases/local-intelligence/receipts/LP18.md",
    "branch": "phase/li-m4",
    "local_checks": {
@@ -675,9 +675,9 @@
     "LP14",
     "LP18"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "4267ca7 + d7e59e6",
-   "ci_run": null,
+   "ci_run": 40069056700,
    "receipt": "docs/phases/local-intelligence/receipts/LP19.md",
    "branch": "phase/li-m4",
    "local_checks": {
@@ -2356,7 +2356,7 @@
  },
  "next_action": {
   "package": "LP23",
-  "why": "M4 LP16-LP19 implemented and locally verified, rebased onto phase/local-intelligence; CI pending. LP23 (needs LP19) is next, then LP28 (needs LP23), LP29 (needs LP18+LP28).",
+  "why": "M4 LP16-LP19 CI-verified on 1d9d7d8 (run 40069056700). LP23 (needs LP19) is next, then LP28 (needs LP23), LP29 (needs LP18+LP28).",
   "eligible_now": [
    "LP23"
   ],
@@ -2531,7 +2531,7 @@
     "LP18",
     "LP19"
    ],
-   "status": "implemented_locally_verified",
+   "status": "complete_for_engineering",
    "done": [
     "LP16",
     "LP17",
@@ -2544,9 +2544,10 @@
     "LP18": "3f692cf 232a328 417d8a8",
     "LP19": "4267ca7 d7e59e6"
    },
-   "note": "Rebased onto phase/local-intelligence ab5ae29 and retested: typecheck exit 0; 4 vitest shards 941 passed, 1 skipped; validate:fixtures exit 0; e2e families 3/3, interior 2/2, comparison 1/1, world (LP16) redesign specs (Chromium headless SwiftShader, no GPU claim). No model calls, $0 spend. CI recorded after push.",
-   "ci_run": null,
-   "ci_result": "pending"
+   "note": "Rebased onto phase/local-intelligence ab5ae29 and retested: typecheck exit 0; 4 vitest shards 941 passed, 1 skipped; validate:fixtures exit 0; e2e families 3/3, interior 2/2, comparison 1/1, world 3/3 (Chromium headless SwiftShader, no GPU claim). No model calls, $0 spend. LP19 limitations: castle overlay only, no comparison replay scope, LP22 verifications not yet linked into executed_local.",
+   "head": "1d9d7d8",
+   "ci_run": 40069056700,
+   "ci_result": "success (check + browser-pilot incl. pilot:redesign) on 1d9d7d8"
   }
  }
 }
