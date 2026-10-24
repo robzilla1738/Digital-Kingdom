@@ -123,14 +123,15 @@
    "milestone": "M0",
    "title": "Recover baseline and phase boundaries",
    "depends_on": [],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "9c0aec5",
-   "ci_run": null,
+   "ci_run": 40039948906,
    "receipt": "docs/phases/local-intelligence/receipts/LP00.md",
    "local_checks": {
     "typecheck": "exit 0",
     "test": "90 files passed, 1 skipped; 626 passed, 1 skipped"
-   }
+   },
+   "ci_result": "success (check + browser-pilot jobs)"
   },
   {
    "id": "LP01",
@@ -139,9 +140,9 @@
    "depends_on": [
     "LP00"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "21b0f46",
-   "ci_run": null,
+   "ci_run": 40040722901,
    "receipt": "docs/phases/local-intelligence/receipts/LP01.md",
    "before": {
     "commit": "9c0aec5 (evaluator source identical to 9fec7ed)",
@@ -166,7 +167,8 @@
     "typecheck": "exit 0",
     "test": "91 files passed, 1 skipped; 642 passed, 1 skipped",
     "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)"
-   }
+   },
+   "ci_result": "success (check + browser-pilot jobs)"
   },
   {
    "id": "LP02",
@@ -175,9 +177,9 @@
    "depends_on": [
     "LP00"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "01de8b9",
-   "ci_run": null,
+   "ci_run": 40041433027,
    "receipt": "docs/phases/local-intelligence/receipts/LP02.md",
    "before": {
     "commit": "21b0f46 (recipes@1)",
@@ -190,7 +192,8 @@
     "test": "92 files passed, 1 skipped; 653 passed, 1 skipped",
     "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
     "build": "exit 0"
-   }
+   },
+   "ci_result": "success (check + browser-pilot jobs)"
   },
   {
    "id": "LP03",
@@ -199,9 +202,9 @@
    "depends_on": [
     "LP00"
    ],
-   "status": "implemented_locally_verified",
-   "commit": null,
-   "ci_run": null,
+   "status": "ci_verified",
+   "commit": "936f558",
+   "ci_run": 40042276966,
    "receipt": "docs/phases/local-intelligence/receipts/LP03.md",
    "local_checks": {
     "typecheck": "exit 0",
@@ -210,7 +213,8 @@
     "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
     "build": "exit 0",
     "frozen_digests": "12/12 same"
-   }
+   },
+   "ci_result": "success (check + browser-pilot jobs)"
   },
   {
    "id": "LP04",
@@ -1357,5 +1361,26 @@
   "spent": 0.0,
   "runs": []
  },
- "next_action": null
+ "next_action": {
+  "package": "LP04",
+  "why": "LP04 (Compile local application blueprints, M1, depends on LP03) is the first unfinished package in DAG order; LP08 (investigation contracts and obligations, M2, depends on LP01-LP03) is also eligible and independent. Read prompts/M1.md and the LP04 backlog entry first.",
+  "eligible_now": [
+   "LP04",
+   "LP08"
+  ]
+ },
+ "milestones": {
+  "M0": {
+   "packages": [
+    "LP00",
+    "LP01",
+    "LP02",
+    "LP03"
+   ],
+   "status": "ci_verified",
+   "head": "936f558",
+   "ci_run": 40042276966,
+   "note": "Engineering-verified locally and in CI for the executed tests only. No model runs; AI execution not exercised (not needed for M0)."
+  }
+ }
 }
