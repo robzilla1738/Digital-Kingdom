@@ -754,10 +754,30 @@
     "LP11",
     "LP07"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "ci_verified",
+   "commit": "2de0fbf",
+   "ci_run": 40056632819,
+   "receipt": "docs/phases/local-intelligence/receipts/LP24.md",
+   "branch": "phase/li-m6",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "110 files passed, 1 skipped; 795 passed, 1 skipped (working tree incl. LP25/LP26 tests)",
+    "lp24": "5 passed (eval/test/li-lp24-bring-your-agent.test.ts)"
+   },
+   "reuses": [
+    "LP07 scenario engine + private truth store",
+    "LP05/LP06 supervisor, services, ingestion",
+    "LP08-LP11 case/contract/job/packet routes and the LP11 investigation-read MCP profile",
+    "existing 22-tool read-only investigation allowlist",
+    "documented stdio MCP launch path + SDK client re-export",
+    "eval/src/agent.ts bounded tool loop pattern and chat() budget reservation (chat/Msg now exported)"
+   ],
+   "decisions": [
+    "D-LP24-1",
+    "D-LP24-2"
+   ],
+   "pre_rebase_commit": "3b327db",
+   "ci_result_li_m6": "success on 3b327db (run 40056632819, check + browser-pilot)"
   },
   {
    "id": "LP25",
@@ -766,10 +786,31 @@
    "depends_on": [
     "LP24"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "ci_verified",
+   "commit": "3e330e4",
+   "ci_run": 40056712935,
+   "receipt": "docs/phases/local-intelligence/receipts/LP25.md",
+   "branch": "phase/li-m6",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "lp25": "8 passed (eval/test/li-lp25-private-truth.test.ts)",
+    "lp24": "5 passed"
+   },
+   "reuses": [
+    "LP07 PrivateTruth (executed ops + effect tap log, 0600 run file)",
+    "scenario DSL validators + seedCommitment",
+    "LP04 compiled-world observation table and blueprint accounts/resources"
+   ],
+   "decisions": [
+    "D-LP25-1",
+    "D-LP25-2",
+    "D-LP25-3"
+   ],
+   "pre_rebase_commit": "b82d3a3",
+   "fix_commits": [
+    "5b2b6db"
+   ],
+   "ci_result_li_m6": "success on b82d3a3 (run 40056712935) and on the li-referee-2 fix 6af3ed1 (run 40057428775)"
   },
   {
    "id": "LP26",
@@ -779,10 +820,114 @@
     "LP25",
     "LP10"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "b4afa9c",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP26.md",
+   "branch": "phase/li-m6",
+   "commits": [
+    "925de91",
+    "6bfe7c7",
+    "e05a354",
+    "93f469c",
+    "e6b03b6",
+    "1b19ec6",
+    "2e49c00",
+    "8e5b9b2",
+    "b4afa9c"
+   ],
+   "pre_rebase_commits": [
+    "b95ff3e",
+    "dbedf84",
+    "73a13de",
+    "8c5f6b2",
+    "a159fe0",
+    "38acd29",
+    "798d8e2",
+    "fb8f94f",
+    "9085868"
+   ],
+   "ci_runs_li_m6": {
+    "dbedf84": "40056817647 success",
+    "73a13de": "40057111092 success",
+    "6af3ed1": "40057428775 success",
+    "8c5f6b2": "40060309968 failure: pnpm scenarios LW-01 (unchanged product code; passes locally and on every later run - flaky)",
+    "a159fe0": "40060841243 failure: new LP26.1 eval test hit a ms created_at/effective_at race (fixed in 798d8e2)",
+    "38acd29": "40060858305 success",
+    "798d8e2": "40061292021 check success; browser-pilot failure e2e/pilot.spec.ts F snapshot (live-source freshness; flaky, unrelated)"
+   },
+   "sub_packages": [
+    {
+     "id": "LP26.1",
+     "title": "Local-run coverage reflects live observers (defect found by the LP26 comparison)",
+     "commits": [
+      "e6b03b6",
+      "2e49c00"
+     ],
+     "tests": [
+      "apps/server/test/phase-lp26-1-coverage.test.ts (5)",
+      "eval/test/li-lp26-1-coverage.test.ts (3)"
+     ],
+     "negative_tests_first": "3 of 5 product tests and the eval satisfied-obligation test failed before the fix; the eval test also fails with either fix alone",
+     "decision": "D-LP26-4"
+    }
+   ],
+   "evaluations": {
+    "li-m6-c2c34916": {
+     "label": "v1, sealed as is, records-lost incident",
+     "report": "artifacts/local-intelligence/m6-eval/REPORT.md",
+     "model_records": "26/54 (dev 18/18, held-out 8/36; 28 lost, not re-run, outside every denominator)",
+     "scripted": "54/54, 100%",
+     "e2e": {
+      "dev/C1": "6/6",
+      "dev/C2": "6/6",
+      "dev/C3": "0/6",
+      "heldout/C1": "4/5",
+      "heldout/C2": "1/1",
+      "heldout/C3": "0/2"
+     },
+     "predicates": {
+      "dev/C1": "66/66",
+      "dev/C2": "66/66",
+      "dev/C3": "58/66",
+      "heldout/C1": "52/54",
+      "heldout/C2": "12/12",
+      "heldout/C3": "22/24"
+     },
+     "critique": "incomplete: no record survived"
+    },
+    "li-m6-e61d01f7": {
+     "label": "follow-up after LP26.1 on the same documents (held-out burned), 1 repetition",
+     "report": "artifacts/local-intelligence/m6-eval-followup/REPORT.md",
+     "model_records": "27/27",
+     "scripted": "27/27, 100%",
+     "e2e": {
+      "dev/C1": "2/3",
+      "dev/C2": "3/3",
+      "dev/C3": "3/3",
+      "heldout/C1": "5/6",
+      "heldout/C2": "6/6",
+      "heldout/C3": "4/6"
+     },
+     "predicates": {
+      "dev/C1": "32/33",
+      "dev/C2": "33/33",
+      "dev/C3": "33/33",
+      "heldout/C1": "59/60",
+      "heldout/C2": "60/60",
+      "heldout/C3": "57/60"
+     },
+     "unsupported_affirmatives": 0,
+     "critique": "not run (budget)"
+    }
+   },
+   "decisions": [
+    "D-LP26-1",
+    "D-LP26-2",
+    "D-LP26-3",
+    "D-LP26-4",
+    "D-LP26-5"
+   ]
   },
   {
    "id": "LP27",
@@ -1520,63 +1665,94 @@
   },
   "LP24-A1": {
    "package": "LP24",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A1 (2 tests: scripted C1/C2/C3 investigators over real stdio subprocesses with a project-scoped service viewer token answer the 5 executed in-scope LW-01 requests; token revocation refuses the live session's next call; the native-agent kit's mcp.json launches the recording proxy in front of the real investigation-read server)",
+    "docs/phases/local-intelligence/receipts/LP24.md"
+   ]
   },
   "LP24-A2": {
    "package": "LP24",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A2 (mode must be explicit; incomplete approved_provider/local_model configurations incl. the historical DK_EVAL_V2_APPROVED resolve to not_exercised with ai_checks not_exercised; unknown route / remote local_model throw)"
+   ]
   },
   "LP24-A3": {
    "package": "LP24",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A3 (native_agent is always development_assisted and cannot be declared blinded; repo access relabels a model run development_assisted; kit TASK.md carries the label)"
+   ]
   },
   "LP24-A4": {
    "package": "LP24",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A4 (loopback stand-in provider whose replies carry reasoning payloads: trace/turns contain no reasoning field or payload and no token; payload not replayed; trace entries are tool list/tool calls only; MCP env is the public handle only)"
+   ]
   },
   "LP25-A1": {
    "package": "LP25",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A1 (oracle/truth/score/seed tools refused as unknown_tool and recorded; inspect of oracle/scenario/seed/canary refs found:false recorded; HTTP truth/oracle/score/scenario/seed/referee/traversal probes 404/403 with no marker; no unprompted response contains a private marker; canary positive control)",
+    "docs/phases/local-intelligence/receipts/LP25.md"
+   ]
   },
   "LP25-A2": {
    "package": "LP25",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A2 (3 tests: referee imports no product detector/claims/packets/coverage/findings code; deleting product evidence leaves the key unchanged and fails the investigator that trusted it; a changed controlled schedule changes the key)"
+   ]
   },
   "LP25-A3": {
    "package": "LP25",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A3 (2 tests: outage admits only unknown, silent loss admits not_observed/unknown with world divergence reported, observable facts and missing operations still fail; 6 generated held-out variants: stopped-observer ops admit unknown and the delivered-evidence-only scripted baseline reaches the full score)"
+   ]
   },
   "LP25-A4": {
    "package": "LP25",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A4 (2 tests: renamed resources/sources/observers/labels + timing jitter give the same logical key, task and full score with no leak; held-out docs random-id, label/expectation-free, private 0600/0700 outside the repo, commitment-bound, never overwritten)"
+   ]
   },
   "LP26-A1": {
    "package": "LP26",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp26-loop-comparison.test.ts > LP26-A1 (2 tests: equal reach/digests/tools for C1/C2/C3 before the investigator starts; an unreachable required record makes the attempt invalid_preflight with zero model requests and outside the model denominator)",
+    "docs/phases/local-intelligence/receipts/LP26.md"
+   ]
   },
   "LP26-A2": {
    "package": "LP26",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp26-loop-comparison.test.ts > LP26-A2 (right answer without required records exposed is not end-to-end success; errors/timeouts/limits/schema failures stay in the denominator)",
+    "docs/phases/local-intelligence/receipts/LP26.md"
+   ]
   },
   "LP26-A3": {
    "package": "LP26",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp26-loop-comparison.test.ts > LP26-A3 (structured predicates, ai_reviewed_advisory critique and coverage limitations reported with separate denominators)",
+    "docs/phases/local-intelligence/receipts/LP26.md"
+   ]
   },
   "LP26-A4": {
    "package": "LP26",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp26-loop-comparison.test.ts > LP26-A4 (historical v2 $5 ledger refused; paid mode needs explicit route/model/cap/approval; worst-case pre-reservation; failed requests keep the reserved maximum)",
+    "artifacts/local-intelligence/m6-eval/model-spend-ledger.json",
+    "docs/phases/local-intelligence/receipts/LP26.md"
+   ]
   },
   "LP27-A1": {
    "package": "LP27",
@@ -1941,19 +2117,95 @@
    "id": "D-M5-CI-1",
    "date": "2026-10-23",
    "decision": "CI run 40061416252 (e18c095) failed LP21-A4 intermittently: lease.controller_id carried the raw base64url token id, which may start with '-' or '_' and then violates the plain-id pattern. Fixed in b2b90b8 by recording non-secret identity references (ctl-/vrf- + 16 hex of sha256) instead of token ids."
+  },
+  {
+   "id": "D-LP24-1",
+   "date": "2026-10-23",
+   "decision": "M6 is implemented in worktree DK-m6 on branch phase/li-m6 (from origin/phase/local-intelligence 7aa9975) while M3 runs concurrently in DK-m3; M6 touches only eval/, its tests, receipts and this ledger (no console/workbench/UI files)."
+  },
+  {
+   "id": "D-LP24-2",
+   "date": "2026-10-23",
+   "decision": "The bring-your-agent harness lives in eval/local/ as a new track (li-m6), separate from v1/v2 eval code and artifacts, which stay untouched (only chat/Msg are exported from eval/src/agent.ts). Every investigator reaches DK only through stdio MCP with a project-scoped service viewer token; the controller keeps the private handle in-process and writes the oracle (with a canary) 0600 under the OS temp root. Native coding agents are development_assisted by construction."
+  },
+  {
+   "id": "D-LP25-1",
+   "date": "2026-10-23",
+   "decision": "The referee derives world truth from the executed schedule and the supervisor's effect tap log, and admissibility from the compiled world's observer attachment plus schedule faults: observer stopped -> only unknown; observer records silently dropped/held -> not_observed or unknown (world truth kept as divergence); otherwise the world value. It imports no product detector/claim/packet/contract code (static test)."
+  },
+  {
+   "id": "D-LP25-2",
+   "date": "2026-10-23",
+   "decision": "Held-out scenarios are generated from a private master seed into a 0700 directory under the OS temp root, never committed before seal; the preregistration holds only SHA-256 commitments. Dev scenarios (LW-01..03) stay repository-resident and are labelled as such."
+  },
+  {
+   "id": "D-LP25-3",
+   "date": "2026-10-23",
+   "decision": "li-referee-2 (6af3ed1, negative test first, preregistration amendment-2 before any comparison slot): saas boundary admits {truth, unknown} unless the operation's own delivered denial records the tenant-isolation reason; li-referee-1 demanded an own-tenant fact no source delivered. Underclaims (unknown where delivered evidence established the fact) reported separately; still failed predicates."
+  },
+  {
+   "id": "D-LP26-1",
+   "date": "2026-10-23",
+   "decision": "LP26 uses a new phase ledger (artifacts/local-intelligence/m6-eval/model-spend-ledger.json, M6 allowance $2.00 of the $3.00 phase cap, run stop $1.80) that refuses the historical v2 $5 ledger; every request reserves its worst case; failed requests keep the reserved maximum."
+  },
+  {
+   "id": "D-LP26-2",
+   "date": "2026-10-23",
+   "decision": "Preregistration amendment-1 (before any comparison slot): completion cap 6000 -> 16000 for every condition, because the provider counts hidden reasoning tokens against the cap and the dev smoke ended in reasoning-only length stops. Nothing else changed."
+  },
+  {
+   "id": "D-LP26-3",
+   "date": "2026-10-23",
+   "decision": "Records-lost incident (v1 li-m6-c2c34916): a sandbox reset lost 28 held-out model records and every critique record. Missing slots are never re-run (one attempt per slot per mode; outcomes had been seen) and are outside every denominator; the previous session's summary is quoted as unverifiable, not data. Spend for the lost work is charged as a conservative estimate: $0.653297 (each lost attempt at the largest surviving held-out charge) + $0.324000 (critique bound: 54 x (28k prompt + 16k completion tokens) at live pricing). v1 is sealed as is (26/54 model records)."
+  },
+  {
+   "id": "D-LP26-4",
+   "date": "2026-10-23",
+   "decision": "LP26.1 coverage defect: v1 C3 reported every coverage obligation unavailable while observers were live. (1) coverage-history called a source 'silent for more than 600s' between registration and a first receipt milliseconds later; now a first receipt within the freshness threshold of registration makes [registration, first receipt) live - never-reporting, late-first-report, pre-registration, future, outage, disabled, incapable, sampled and retention-limited time stays unknown. (2) The harness case interval [start-60s, setup+120s] contained time before any observer existed and in the future; it is now [later of every source's created_at and first-revision effective_at, last stored record], and the controller refuses records outside it. Failing tests first; truly uncovered time still makes obligations unavailable (negative controls)."
+  },
+  {
+   "id": "D-LP26-5",
+   "date": "2026-10-23",
+   "decision": "Follow-up li-m6-e61d01f7 (preregistered before any attempt, after LP26.1): same dev and revealed (burned) held-out documents, C1/C2/C3 x 1 repetition, v1 limits and referee, no critique, shared M6 ledger. Result: dev e2e C1 2/3, C2 3/3, C3 3/3; held-out C1 5/6, C2 6/6, C3 4/6; 0 unsupported affirmatives. Remaining C3 failures are effect=unknown on the two delivery-identity documents with a real observer outage (whole-interval obligation truthfully unavailable). No superiority claim. Candidate follow-on: per-operation coverage questions in the contract."
   }
  ],
  "model_spend_usd": {
   "phase_cap": 3.0,
-  "spent": 0.0,
-  "runs": []
+  "spent": 1.725762,
+  "runs": [
+   {
+    "id": "lp24-smoke",
+    "usd": 0.024962
+   },
+   {
+    "id": "li-m6-c2c34916",
+    "usd": 1.361433,
+    "of_which_estimates": 0.977297
+   },
+   {
+    "id": "li-m6-e61d01f7",
+    "usd": 0.339367
+   }
+  ],
+  "m6_allowance": 2.0,
+  "m6_ledger": "artifacts/local-intelligence/m6-eval/model-spend-ledger.json",
+  "m6_breakdown": {
+   "smokes_and_connectivity": 0.024962,
+   "v1_surviving_attempts_settled": 0.384136,
+   "v1_lost_attempts_estimate": 0.653297,
+   "v1_lost_critique_bound": 0.324,
+   "followup_attempts_settled": 0.339367
+  },
+  "settled_on_surviving_records": 0.748466,
+  "gateway_reported_on_surviving_records": 0.392134,
+  "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (reserved for LP27/LP30)."
  },
  "next_action": {
-  "package": "LP23",
-  "why": "M5 LP20-LP22 are implemented and verified locally and in CI. LP23 (replayable regression) depends on LP22 (done) and LP19 (M4, baseline-versus-repair world comparison), which is not yet verified; LP23 waits for LP19. Other eligible work is per the DAG (M4 LP16-LP19 in DK-m4, M6 in DK-m6); LP27 needs LP25 and LP22.",
+  "package": "LP27",
+  "why": "M6: LP24 and LP25 CI-verified; LP26 (+ LP26.1 coverage fix) implemented, evaluated (v1 li-m6-c2c34916 sealed as is with a records-lost incident; follow-up li-m6-e61d01f7 after the fix) and on phase/local-intelligence. LP27 (exercise adversarial and fault variants) is now eligible: its dependencies LP25 (CI-verified) and LP22 (M5, on phase/local-intelligence) are in place. LP23 still waits for LP19 (M4). Remaining phase model budget: $1.274238 of $3.00 (LP27/LP30).",
   "eligible_now": [
-   "LP16-LP19 (M4, in progress elsewhere)",
-   "LP25/LP26 (M6, in progress elsewhere)"
+   "LP27",
+   "LP16-LP19 (M4, in progress elsewhere)"
   ],
   "blocked": {
    "LP23": "needs LP19"
@@ -2092,6 +2344,24 @@
     "LP21": "40061416252 failure on e18c095 (D-M5-CI-1)",
     "LP22": "40061825278 success (check + browser-pilot) on b2b90b8"
    }
+  },
+  "M6": {
+   "packages": [
+    "LP24",
+    "LP25",
+    "LP26",
+    "LP27"
+   ],
+   "status": "in_progress",
+   "done": [
+    "LP24",
+    "LP25",
+    "LP26 (+LP26.1)"
+   ],
+   "remaining": [
+    "LP27 (deps LP25, LP22)"
+   ],
+   "note": "AI execution exercised for LP24/LP26 via the approved AI Gateway route (meta/muse-spark-1.3-contributor); human review deferred (EXT05)."
   }
  }
 }
