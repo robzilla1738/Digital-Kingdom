@@ -373,7 +373,17 @@ export class InvestigationContracts {
   private scopeMismatch(body: InvestigationContract, o: ContractObligation, r: ObligationResult): string | null {
     const s = r.scope;
     if (s.project_id !== body.project_id) return `result produced in project ${s.project_id}, not ${body.project_id}`;
-    if (s.contract_revision !== body.revision) return `result produced under contract revision ${s.contract_revision}; the current revision is ${body.revision} (re-run under the current scope)`;
+    if (s.contract_revision > body.revision) return `result claims contract revision ${s.contract_revision}, newer than the current revision ${body.revision}`;
+    if (s.contract_revision !== body.revision) {
+      // Decisions bump the revision; a result planned under an earlier revision still counts when nothing that
+      // defines THIS obligation's scope changed since (same obligation target and, if interval-bound, same interval).
+      let then: InvestigationContract;
+      try { then = this.revisionBody(body.id, s.contract_revision); } catch { return `result produced under unknown contract revision ${s.contract_revision}`; }
+      const was = then.obligations.find((x) => x.id === o.id);
+      if (!was) return `result produced under contract revision ${s.contract_revision}, which did not require ${o.id}; the current revision is ${body.revision} (re-run under the current scope)`;
+      const intervalBound = o.kind === "retrieve_activity" || o.kind === "coverage";
+      if (canonicalJson(was.target) !== canonicalJson(o.target) || (intervalBound && (then.scope.after !== body.scope.after || then.scope.before !== body.scope.before))) return `result produced under contract revision ${s.contract_revision}, whose scope for ${o.id} differs from the current revision ${body.revision} (re-run under the current scope)`;
+    }
     const t = o.target;
     if (t.asset_id !== undefined && s.asset_id !== t.asset_id) return `result scoped to asset ${s.asset_id ?? "(none)"}, obligation requires ${t.asset_id}`;
     if (t.action !== undefined && s.action !== t.action) return `result scoped to action ${s.action ?? "(none)"}, obligation requires ${t.action}`;

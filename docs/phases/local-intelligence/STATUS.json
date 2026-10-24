@@ -275,7 +275,7 @@
     "LP03"
    ],
    "status": "implemented_locally_verified",
-   "commit": "PENDING",
+   "commit": "e12ef0a",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP08.md",
    "branch": "phase/li-m2 (worktree; rebased onto phase/local-intelligence when M2 completes)",
@@ -293,10 +293,16 @@
    "depends_on": [
     "LP08"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "PENDING",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP09.md",
+   "branch": "phase/li-m2 (worktree)",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "97 files passed, 1 skipped; 698 passed, 1 skipped",
+    "validate:fixtures": "exit 0"
+   }
   },
   {
    "id": "LP10",
@@ -813,23 +819,32 @@
   },
   "LP09-A1": {
    "package": "LP09",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp09-jobs.test.ts > LP09-A1 (40 tied timestamps, page size 5, late arrivals mid-search: exact snapshot, key event beyond page one)"
+   ]
   },
   "LP09-A2": {
    "package": "LP09",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp09-jobs.test.ts > LP09-A2 (2 tests: typed plans refuse SQL/path/URL/graph/credential/unknown fields; scope-safe pivots)",
+    "apps/mcp/test/phase-lp09-tool-params.test.ts > LP09-A2 (every MCP tool input schema audited)"
+   ]
   },
   "LP09-A3": {
    "package": "LP09",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp09-jobs.test.ts > LP09-A3 (4 tests: crash-before-commit + new process resume, cursor-expiry restart, cancellation, creator-token revocation)"
+   ]
   },
   "LP09-A4": {
    "package": "LP09",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp09-jobs.test.ts > LP09-A4 (5 tests: budget exhaustion/extension, purge mid-pagination, failed page, explicit counters and read-only preview, quota)"
+   ]
   },
   "LP10-A1": {
    "package": "LP10",
@@ -1384,6 +1399,16 @@
    "id": "D-LP08-3",
    "date": "2026-10-23",
    "decision": "M2 is implemented on branch phase/li-m2 in a separate worktree while M1 runs on phase/local-intelligence; it is rebased and fast-forwarded onto phase/local-intelligence after all four packages are green (never force-pushed)."
+  },
+  {
+   "id": "D-LP09-1",
+   "date": "2026-10-23",
+   "decision": "Jobs advance only on explicit analyst calls (no background worker, no model). Each unit commits deliveries, cursor and budget in one transaction; deliveries are unique per (channel, job, step, ref). Budget-cut steps are partial_budget (resumable) and keep the contract collecting."
+  },
+  {
+   "id": "D-LP09-2",
+   "date": "2026-10-23",
+   "decision": "A result planned under an earlier contract revision counts only when that obligation's target and (if interval-bound) the interval are unchanged since; decisions bump the revision without invalidating unrelated in-flight work."
   }
  ],
  "model_spend_usd": {
@@ -1392,10 +1417,10 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP09",
-  "why": "LP09 (Execute bounded investigation plans) depends on LP08, now implemented on phase/li-m2.",
+  "package": "LP10",
+  "why": "LP10 (Deliver compact evidence and check claims) depends on LP09, now implemented on phase/li-m2.",
   "eligible_now": [
-   "LP09"
+   "LP10"
   ]
  },
  "milestones": {

@@ -2,6 +2,8 @@ import { expect } from "vitest";
 import { setup, liveGraph } from "./helpers.ts";
 import { Cases } from "../src/cases.ts";
 import { InvestigationContracts } from "../src/investigation/contracts.ts";
+import { InvestigationJobs, type JobsOptions } from "../src/investigation/jobs.ts";
+import type { Store } from "../src/store.ts";
 
 /**
  * Shared public world for the Local Intelligence Phase M2 tests (LP08-LP11). Everything here is PUBLIC product
@@ -25,11 +27,13 @@ export interface WorldOpts {
   project?: string;
   /** case scope assets */
   assets?: string[];
+  /** file-backed database (restart tests) */
+  dbPath?: string;
 }
 
 export async function world(o: WorldOpts = {}) {
   const clock = { t: T0 - 3600_000 };
-  const ctx = await setup({ store: { now: () => new Date(clock.t) } });
+  const ctx = await setup({ store: { now: () => new Date(clock.t) }, ...(o.dbPath ? { dbPath: o.dbPath } : {}) });
   const { app, admin, analyst, h } = ctx;
   const project = o.project ?? "shop";
   expect((await app.inject({ method: "POST", url: "/api/projects", headers: h(admin), payload: { id: project, name: "Shop", dataset_kind: "live" } })).statusCode).toBe(200);
@@ -64,5 +68,10 @@ export async function world(o: WorldOpts = {}) {
   expect(link.statusCode).toBe(200);
   kase = link.json();
   const contracts = new InvestigationContracts(ctx.store, (p, id) => cases.get(p, id) as never);
-  return { ctx, clock, project, finding, caseId: kase.id, cases, contracts, send, drain, base: `/api/projects/${project}/cases/${kase.id}` };
+  const services = (store: Store = ctx.store, opts: JobsOptions = {}, secret = "test-secret") => {
+    const cs = new Cases(store);
+    const ct = new InvestigationContracts(store, (p, id) => cs.get(p, id) as never);
+    return { contracts: ct, jobs: new InvestigationJobs(store, secret, ct, opts) };
+  };
+  return { ctx, clock, project, finding, caseId: kase.id, cases, contracts, services, send, drain, base: `/api/projects/${project}/cases/${kase.id}` };
 }
