@@ -390,8 +390,20 @@
       "completion_tokens": 7330,
       "model_calls": 5,
       "at": "2026-10-24T09:44:42.795Z"
+    },
+    {
+      "id": "li-m7-7f4a12cd-approved_provider-033",
+      "run": "li-m7-7f4a12cd",
+      "kind": "attempt",
+      "reserved_max_usd": 0.011896010000000012,
+      "charged_usd": 0.011896010000000012,
+      "gateway_cost_usd": 0.002895094,
+      "prompt_tokens": 29077,
+      "completion_tokens": 7065,
+      "model_calls": 4,
+      "at": "2026-10-24T09:45:36.663Z"
     }
   ],
-  "charged_total_usd": 0.358386754,
-  "updated_at": "2026-10-24T09:44:42.795Z"
+  "charged_total_usd": 0.370282764,
+  "updated_at": "2026-10-24T09:45:36.663Z"
 }
