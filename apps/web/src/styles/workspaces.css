@@ -337,3 +337,15 @@
 .attention-list .attention-actions { display:flex; gap:12px; align-items:center; }
 .attention-list .small { overflow-wrap:anywhere; }
 .pill.attention-high { color:var(--warning); border-color:#776342; }
+/* next-C: compact attention groups and the current-case focus strip */
+.attention-list li.attention-group { padding:6px 10px; }
+.attention-list .attention-subjects { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:52ch; }
+.attention-list .attention-expand { margin-left:auto; }
+.attention-list.attention-nested { max-height:none; overflow:visible; margin-top:4px; }
+.attention-grouping-note { margin:6px 0 0; }
+.case-focus { margin-bottom:16px; display:grid; gap:6px; border-color:#56708C; }
+.case-focus .case-focus-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-width:0; }
+.case-focus .case-focus-head strong { font-size:16px; overflow-wrap:anywhere; }
+.case-focus .eyebrow { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint, #9AA6B5); }
+.case-focus p { margin:0; overflow-wrap:anywhere; }
+.case-focus-question { font-size:15px; }
