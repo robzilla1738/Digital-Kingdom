@@ -174,8 +174,32 @@
       "completion_tokens": 5541,
       "model_calls": 3,
       "at": "2026-10-24T09:36:23.959Z"
+    },
+    {
+      "id": "li-m7-7f4a12cd-approved_provider-014",
+      "run": "li-m7-7f4a12cd",
+      "kind": "attempt",
+      "reserved_max_usd": 0.011308650000000017,
+      "charged_usd": 0.011308650000000017,
+      "gateway_cost_usd": 0.006116112,
+      "prompt_tokens": 67993,
+      "completion_tokens": 6387,
+      "model_calls": 6,
+      "at": "2026-10-24T09:37:10.393Z"
+    },
+    {
+      "id": "li-m7-7f4a12cd-approved_provider-015",
+      "run": "li-m7-7f4a12cd",
+      "kind": "attempt",
+      "reserved_max_usd": 0.010759566000000012,
+      "charged_usd": 0.010759566000000012,
+      "gateway_cost_usd": 0.004965454,
+      "prompt_tokens": 76168,
+      "completion_tokens": 6087,
+      "model_calls": 6,
+      "at": "2026-10-24T09:37:15.375Z"
     }
   ],
-  "charged_total_usd": 0.15367561999999999,
-  "updated_at": "2026-10-24T09:36:23.959Z"
+  "charged_total_usd": 0.175743836,
+  "updated_at": "2026-10-24T09:37:15.375Z"
 }
