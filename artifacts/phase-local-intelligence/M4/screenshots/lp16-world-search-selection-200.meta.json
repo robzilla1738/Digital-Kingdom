@@ -1,0 +1,22 @@
+{
+  "name": "lp16-world-search-selection-200",
+  "file": "lp16-world-search-selection-200.png",
+  "sha256": "adbc1a3ab79d08c4845afb00bb433dc47e66f995440f83214edde746de017950",
+  "bytes": 459790,
+  "capturedAt": "2026-10-24T04:29:28.122Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F13"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

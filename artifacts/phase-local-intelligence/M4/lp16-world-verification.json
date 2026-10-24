@@ -1,0 +1,23 @@
+{
+  "a2": {
+    "incarnations": [
+      {
+        "incarnation_id": "blob~2",
+        "state": "current",
+        "provider_id": null,
+        "since_revision": "demo-r3-lp16-again"
+      },
+      {
+        "incarnation_id": "blob~1",
+        "state": "historical",
+        "retired_in_revision": "demo-r3-lp16-minus"
+      }
+    ],
+    "archivedLabel": "blob~1",
+    "current": {
+      "id": "blob~2",
+      "provider_id": null,
+      "since_revision": "demo-r3-lp16-again"
+    }
+  }
+}

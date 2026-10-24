@@ -4,7 +4,8 @@ import {
   type CompiledScene, type DatasetKind, type Finding, type Graph, type SceneProposal, type SecurityEvent,
 } from "@dk/contracts";
 import { GraphIndex, validateGraph } from "@dk/graph-core";
-import { compileScene, defaultProposal, validateProposal } from "@dk/scene-compiler";
+import { compileScene, defaultProposal, layoutDiff, validateProposal } from "@dk/scene-compiler";
+import type { LayoutReason } from "./world-layout.ts";
 import { checkCapability, deriveCoverage, evaluate, RULESET_VERSION, redactString, type SourceState, validateNamespace, minimizeIngest, normalizeIngest, sanitizeStoredRedaction, sourceCapabilities, toStoredRedaction, type StoredRedaction, SOURCE_KINDS, type SourceConfig } from "@dk/detections";
 import { tx, type DB } from "./db.ts";
 import { Facts } from "./facts.ts";
@@ -92,7 +93,7 @@ export class Store {
       const proposal = defaultProposal(graph, previous?.seed ?? 1);
       if (previous) proposal.style_profile = previous.style_profile;
       const scene = compileScene(graph, proposal, { previous, source: "default" });
-      this.saveScene(projectId, scene, proposal);
+      this.saveScene(projectId, scene, proposal, previous, "graph", actor);
       this.facts.recordGraph(projectId, graph, actor, this.iso());
       this.audit(actor, "graph.put", projectId, graph.graph_revision, { assets: graph.assets.length, relationships: graph.relationships.length, reflow: scene.reflow_zones });
       this.emit(projectId, "graph", { graph_revision: graph.graph_revision });
@@ -135,15 +136,25 @@ export class Store {
     const previous = this.getScene(projectId);
     const scene = compileScene(graph, proposal as SceneProposal, { previous, reflow, source });
     tx(this.db, () => {
-      this.saveScene(projectId, scene, proposal as SceneProposal);
+      this.saveScene(projectId, scene, proposal as SceneProposal, previous, reflow ? "reflow" : "proposal", actor);
       this.audit(actor, reflow ? "scene.reflow" : "scene.apply", projectId, scene.digest, { source });
       this.emit(projectId, "scene", { digest: scene.digest });
     });
     return scene;
   }
 
-  private saveScene(projectId: string, scene: CompiledScene, proposal: SceneProposal) {
+  private saveScene(projectId: string, scene: CompiledScene, proposal: SceneProposal, previous: CompiledScene | undefined, reason: LayoutReason, actor: string) {
     this.db.prepare("INSERT OR REPLACE INTO scenes (project_id, graph_revision, scene, proposal, created_at) VALUES (?, ?, ?, ?, ?)").run(projectId, scene.graph_revision, JSON.stringify(scene), JSON.stringify(proposal), this.iso());
+    // LP16-A1: append the layout version with its room-by-room diff (positions only).
+    const diff = layoutDiff(previous ?? null, scene);
+    if (!previous || previous.digest !== scene.digest || previous.layout_version !== scene.layout_version)
+      this.db.prepare("INSERT INTO scene_layouts (project_id, layout_version, graph_revision, scene_digest, reason, diff, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").run(projectId, scene.layout_version ?? 1, scene.graph_revision, scene.digest, reason, JSON.stringify(diff), actor, this.iso());
+  }
+
+  /** LP16-A1: the append-only layout history, newest first. */
+  layoutHistory(projectId: string, limit = 50) {
+    return (this.db.prepare("SELECT layout_version, graph_revision, scene_digest, reason, diff, created_by, created_at FROM scene_layouts WHERE project_id = ? ORDER BY id DESC LIMIT ?").all(projectId, Math.max(1, Math.min(200, limit))) as { layout_version: number; graph_revision: string; scene_digest: string; reason: string; diff: string; created_by: string; created_at: string }[])
+      .map((r) => { const d = JSON.parse(r.diff) as ReturnType<typeof layoutDiff>; return { ...r, diff: { ...d, moved_count: d.moved.length } }; });
   }
 
   // ---------------- sources ----------------

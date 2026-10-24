@@ -266,6 +266,14 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     inputSchema: { project }, annotations: RO,
   }, async ({ project: p }) => out(await client.req("GET", client.p("/scene/hierarchy", p))));
 
+  server.registerTool("dk_world_locate", {
+    title: "Search the world and locate incarnations",
+    description: "LP16: search every asset and archived placement (name, id, alias, owner, provider identity, path) with an honest total, or locate one asset id: its current incarnation and every retired incarnation at its own last position. Archived placements are layout history, never live structures. Read-only.",
+    inputSchema: { text: z.string().max(200).optional().describe("Words to match in names, ids, aliases, owners, provider identities and paths"), asset_id: z.string().max(200).optional(), incarnation: z.string().max(220).optional(), limit: z.number().int().min(1).max(500).optional(), project }, annotations: RO,
+  }, async ({ text, asset_id, incarnation, limit, project: p }) => out(asset_id
+    ? await client.req("GET", client.p(`/scene/locate/${encodeURIComponent(asset_id)}${incarnation ? `?incarnation=${encodeURIComponent(incarnation)}` : ""}`, p))
+    : await client.req("GET", client.p(`/scene/search?${new URLSearchParams({ q: text ?? "", ...(limit ? { limit: String(limit) } : {}) })}`, p))));
+
   server.registerTool("dk_capabilities", {
     title: "Server capabilities and contract versions",
     description: "Contract versions, recipe versions, query budgets and how incremental delivery works (polling; no push).",

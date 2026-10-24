@@ -17,7 +17,7 @@ import { assessChange, securityContext, summarize } from "./context.ts";
 import { coverageHistory, parseCoverageQuestion } from "./coverage-history.ts";
 import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } from "./bundles.ts";
 import { Cases } from "./cases.ts";
-import { buildHierarchy, footprintCollisions } from "@dk/scene-compiler";
+import { buildHierarchy, compileScene, footprintCollisions, layoutDiff, locateAsset, searchWorld } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
@@ -407,18 +407,57 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const scene = store.getScene(proj.id);
     if (!scene) throw new HttpError(404, "project has no scene");
     const id = (req.params as { asset: string }).asset;
-    const live = scene.rooms.find((r) => r.asset_id === id);
-    if (live) return { asset_id: id, state: "current", room: live };
-    const hist = scene.historical_rooms?.find((r) => r.asset_id === id);
-    if (hist) return { asset_id: id, state: "historical", room: hist, note: `Last position before it left the graph in revision ${hist.retired_in_revision}; not a live structure.` };
+    const wanted = (req.query as { incarnation?: string }).incarnation;
+    // LP16-A2: each incarnation of an asset id resolves to its own location; a recreated asset never inherits the
+    // earlier incarnation's record, and a retired incarnation is never presented as a live structure.
+    const loc = locateAsset(scene, id);
+    const incarnations = [...(loc.current ? [{ incarnation_id: loc.current.incarnation.id, state: "current" as const, provider_id: loc.current.incarnation.provider_id, since_revision: loc.current.incarnation.since_revision }] : []),
+      ...loc.history.map((h) => ({ incarnation_id: h.incarnation_id, state: "historical" as const, retired_in_revision: h.retired_in_revision }))];
+    if (wanted) {
+      if (loc.current?.incarnation.id === wanted) return { asset_id: id, state: "current", incarnation: loc.current.incarnation, room: loc.current.room, incarnations };
+      const h = loc.history.find((x) => x.incarnation_id === wanted);
+      if (h) return { asset_id: id, state: "historical", incarnation_id: wanted, room: h.room, incarnations, note: `Last position of incarnation ${wanted} before it left the graph in revision ${h.retired_in_revision}; not a live structure.` };
+      throw new HttpError(404, "no such incarnation of this asset");
+    }
+    if (loc.current) return { asset_id: id, state: "current", incarnation: loc.current.incarnation, room: loc.current.room, incarnations };
+    const hist = loc.history[0];
+    if (hist) return { asset_id: id, state: "historical", incarnation_id: hist.incarnation_id, room: hist.room, incarnations, note: `Last position before it left the graph in revision ${hist.retired_in_revision}; not a live structure.` };
     throw new HttpError(404, "asset has no current or historical position");
+  });
+  // LP16-A3: complete asset search over the hierarchy index (current structures first, archived incarnations labelled).
+  app.get("/api/projects/:p/scene/search", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const scene = store.getScene(proj.id), graph = store.getGraph(proj.id);
+    if (!scene || !graph) throw new HttpError(404, "project has no scene");
+    const q = String((req.query as { q?: unknown }).q ?? "").slice(0, 200);
+    const limit = Math.max(1, Math.min(500, Number((req.query as { limit?: unknown }).limit ?? 100) || 100));
+    const r = searchWorld(buildHierarchy(graph, scene), q, limit);
+    return { query: r.query, total: r.total, truncated: r.total > r.results.length, results: r.results.map(({ search: _s, ...e }) => e), scene_digest: scene.digest };
+  });
+  // LP16-A1: intentional reflow is previewed (nothing is stored) and the apply may be bound to that preview.
+  const reflowPreview = (projectId: string) => {
+    const scene = store.getScene(projectId), graph = store.getGraph(projectId);
+    const row = store.db.prepare("SELECT proposal FROM scenes WHERE project_id = ? AND graph_revision = ?").get(projectId, scene?.graph_revision ?? "") as { proposal: string } | undefined;
+    if (!row || !scene || !graph) throw new HttpError(404, "no scene");
+    const next = compileScene(graph, JSON.parse(row.proposal), { previous: scene, reflow: true, source: scene.proposal_source });
+    const diff = layoutDiff(scene, next);
+    return { proposal: JSON.parse(row.proposal), diff, preview_digest: sha256(canonicalJson({ base: scene.digest, base_layout: scene.layout_version ?? 1, next: next.digest, next_layout: next.layout_version })), applied: false as const,
+      note: "Preview only: nothing was stored. Applying starts layout version " + String(next.layout_version) + "; every moved room is listed. Layout is presentation, never a security fact." };
+  };
+  app.get("/api/projects/:p/scene/reflow/preview", { preHandler: authed("analyst") }, async (req) => {
+    const { proposal: _p, ...preview } = reflowPreview(store.require(req.principal!, P(req), "analyst").id);
+    return preview;
+  });
+  app.get("/api/projects/:p/scene/layouts", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    return { project_id: proj.id, current_layout_version: store.getScene(proj.id)?.layout_version ?? null, layouts: store.layoutHistory(proj.id, Number((req.query as { limit?: unknown }).limit ?? 50) || 50) };
   });
   app.post("/api/projects/:p/scene/reflow", { preHandler: authed("admin") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "admin");
-    const scene = store.getScene(proj.id);
-    const row = store.db.prepare("SELECT proposal FROM scenes WHERE project_id = ? AND graph_revision = ?").get(proj.id, scene?.graph_revision ?? "") as { proposal: string } | undefined;
-    if (!row) throw new HttpError(404, "no scene");
-    return store.applyProposal(proj.id, JSON.parse(row.proposal), scene!.proposal_source, who(req), true);
+    const preview = reflowPreview(proj.id);
+    const bound = (req.body as { preview_digest?: unknown } | undefined)?.preview_digest;
+    if (bound !== undefined && bound !== preview.preview_digest) throw new HttpError(409, "the layout changed since this reflow was previewed; preview again", [], { current: { preview_digest: preview.preview_digest } });
+    return store.applyProposal(proj.id, preview.proposal, store.getScene(proj.id)!.proposal_source, who(req), true);
   });
   app.post("/api/projects/:p/scene/plan", { preHandler: authed("analyst") }, async (req) => {
     const proj = store.require(req.principal!, P(req), "analyst");

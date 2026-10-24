@@ -1,0 +1,22 @@
+{
+  "name": "lp16-case-scope-after-webgl-loss",
+  "file": "lp16-case-scope-after-webgl-loss.png",
+  "sha256": "b66db13bfdfc7c0701bcecfad5fc5ca01441add49fe0a74b8ab569eeb8312a17",
+  "bytes": 259665,
+  "capturedAt": "2026-10-24T04:31:12.716Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -14,11 +14,15 @@ import { AttentionPanel } from "./AttentionPanel.tsx";
  * to an immutable bundle), independent events, notes and closure criteria. Its status never follows findings.
  */
 export function CasesWorkspace() {
-  const { vm } = useApp();
+  const { vm, ui, dispatch } = useApp();
   const actions = useContext(ActionsCtx);
   const project = vm.data.project.id;
-  const [list, setList] = useState<CaseSummary[] | null>(null), [selected, setSelected] = useState<string | null>(null);
+  // LP16-A4: the open case is navigation state, so it survives view switches, WebGL loss, resize and Back.
+  const [list, setList] = useState<CaseSummary[] | null>(null), [selected, setSelected] = useState<string | null>(() => ui.caseId ?? null);
   const [detail, setDetail] = useState<CaseDetail | null>(null), [message, setMessage] = useState(""), [busy, setBusy] = useState(false);
+  useEffect(() => { if ((ui.caseId ?? null) !== selected) { setDetail(null); setSelected(ui.caseId ?? null); } }, [ui.caseId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const scopeKey = detail ? `${detail.id}|${detail.title}|${detail.scope.asset_ids.join(",")}` : "";
+  useEffect(() => { if (detail) dispatch({ type: "caseScope", scope: { id: detail.id, title: detail.title, assetIds: [...detail.scope.asset_ids] } }); }, [scopeKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const [wb, setWb] = useState<Workbench | null>(null), [wbLoading, setWbLoading] = useState(false), [wbError, setWbError] = useState("");
   const seq = useRef(0);
   // LP12: one controller per selected case. Changing cases aborts every read issued for the previous one, so a slow

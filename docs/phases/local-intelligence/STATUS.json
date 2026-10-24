@@ -612,10 +612,18 @@
     "LP04",
     "LP12"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP16.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "4 vitest shards: shard 2 212/212, shard 3 201/201, shard 4 211 passed 1 skipped; shard 1 186/187 with examples/reference-app/lp06-world.test.ts LP06-A3 (wall-clock timing) failing under concurrent load from other worktrees, 11/11 on isolated rerun; no LP16 code involved. validate:fixtures exit 0",
+    "e2e": "e2e/world-redesign.spec.ts A2/A3/A4 passed (real Chromium, SwiftShader; no GPU claim)"
+   },
+   "progress_note": "Committed on phase/li-m4; CI recorded once merged into phase/local-intelligence."
   },
   {
    "id": "LP17",
@@ -1296,23 +1304,37 @@
   },
   "LP16-A1": {
    "package": "LP16",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A1",
+    "docs/phases/local-intelligence/receipts/LP16.md"
+   ]
   },
   "LP16-A2": {
    "package": "LP16",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-red.test.ts",
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A2",
+    "e2e/world-redesign.spec.ts > LP16-A2"
+   ]
   },
   "LP16-A3": {
    "package": "LP16",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A3",
+    "apps/mcp/test/phase-m4-world.test.ts",
+    "e2e/world-redesign.spec.ts > LP16-A3"
+   ]
   },
   "LP16-A4": {
    "package": "LP16",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A4",
+    "e2e/world-redesign.spec.ts > LP16-A4"
+   ]
   },
   "LP17-A1": {
    "package": "LP17",
@@ -1865,10 +1887,10 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP16",
-  "why": "M0-M3 are CI-verified on phase/local-intelligence (M3 head c27402e, run 40058755915). Eligible now: LP16 (M4; deps LP04, LP12), LP20 (M5; deps LP05, LP14) and LP24 (M6; deps LP11, LP07; being worked in DK-m6 / phase/li-m6). LP16 is first in DAG order and unblocks LP17-LP19 (executed-local repair verification).",
+  "package": "LP17",
+  "why": "LP16 implemented_locally_verified on phase/li-m4. LP17 partial work kept outside the repo in work/m4-lp17-stash/.",
   "eligible_now": [
-   "LP16",
+   "LP17",
    "LP20",
    "LP24"
   ]

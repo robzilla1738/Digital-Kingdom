@@ -1,0 +1,22 @@
+{
+  "name": "lp16-archived-placement",
+  "file": "lp16-archived-placement.png",
+  "sha256": "0e090e17b67937843e194703a4a1804640b5c374f300b4d875fa5695b3a2afff",
+  "bytes": 320070,
+  "capturedAt": "2026-10-24T04:32:36.365Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}
