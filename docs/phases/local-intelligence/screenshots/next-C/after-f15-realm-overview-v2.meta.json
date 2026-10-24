@@ -1,0 +1,23 @@
+{
+  "name": "after-f15-realm-overview-v2",
+  "file": "after-f15-realm-overview-v2.png",
+  "phase": "after",
+  "sha256": "907a8e9d9d2eb6d35c3519cfd3a69eada493d3a374b7cf8c655ab0d1481b75cc",
+  "bytes": 261100,
+  "commit": "932d0fb79c8fd53afcc7cace43cd7ad3cde99136",
+  "worktreeDirty": false,
+  "capturedAt": "2026-10-24T21:44:00.445Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "browser": "141.0.7390.37",
+  "renderer": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "rendererNote": "Chromium headless, SwiftShader software WebGL requested; no real-GPU claim.",
+  "url": "http://127.0.0.1:5173/?fixture=F15#v=2&workspace=kingdom&view=castle&wf=realm%3Ademo-castle",
+  "note": "Explicit Realm overview with presentation-only environment packing (gap <= 14 m); stored layout and digest unchanged."
+}
