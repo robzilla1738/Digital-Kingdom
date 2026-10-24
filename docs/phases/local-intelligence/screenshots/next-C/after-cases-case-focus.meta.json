@@ -1,0 +1,23 @@
+{
+  "name": "after-cases-case-focus",
+  "file": "after-cases-case-focus.png",
+  "phase": "after",
+  "sha256": "fcf28074c20d86a9639bd1dc68e6d015363948286196df480a014b1a79ab2076",
+  "bytes": 311353,
+  "commit": "db1ea8ad078dba8f491a344951c822cc44b3450c",
+  "worktreeDirty": false,
+  "capturedAt": "2026-10-24T20:56:51.622Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "browser": "141.0.7390.37",
+  "renderer": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "rendererNote": "Chromium headless, SwiftShader software WebGL requested; no real-GPU claim.",
+  "url": "http://127.0.0.1:38777/?project=demo-castle#v=2&workspace=investigate&view=castle&tab=cases&case=case_8f78fd136d43f958",
+  "note": "Case open: question and next evidence obligation first; attention compacted below."
+}

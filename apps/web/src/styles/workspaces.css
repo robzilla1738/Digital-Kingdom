@@ -353,3 +353,9 @@
 .framing-control .chip { cursor:pointer; min-height:28px; white-space:nowrap; max-width:220px; overflow:hidden; text-overflow:ellipsis; }
 .framing-control .chip.on { color:var(--text-1, #EEF3FA); border-color:#70849B; background:#192637; }
 @media(max-width:1023px) { .framing-control { display:none; } }
+/* next-C: one compact card per item; actions sit beside the text instead of on their own line */
+.attention-list li[data-kind] { grid-template-columns:minmax(0,1fr) auto; column-gap:12px; row-gap:2px; padding:6px 10px; }
+.attention-list li[data-kind] > :not(.attention-actions) { grid-column:1; }
+.attention-list li[data-kind] > .attention-actions { grid-column:2; grid-row:1 / span 3; align-self:center; }
+.attention-list li[data-kind] > .attention-actions .btn { min-height:30px; padding:4px 10px; }
+@media(max-width:600px) { .attention-list li[data-kind] { grid-template-columns:minmax(0,1fr); } .attention-list li[data-kind] > .attention-actions { grid-column:1; grid-row:auto; } }
