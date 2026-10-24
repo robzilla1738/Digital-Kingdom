@@ -7,7 +7,7 @@
  *   TASK.md     the public task and answer shape (no scenario, seed, truth or answer hints)
  *   mcp.json    an mcpServers entry that launches the recording proxy -> investigation-read profile, with a
  *               project-scoped service viewer token (file mode 0600; the token dies with this process)
- * and waits for <dir>/answer.json (recorded with its exposure; objective grading arrives with the LP25 referee). The run is labelled development_assisted: a coding agent may read the repository,
+ * and waits for <dir>/answer.json. The run is labelled development_assisted: a coding agent may read the repository,
  * where dev scenario documents live, so it is never a blinded or held-out result. The trace (trace.jsonl) holds the
  * observable tool I/O captured by the proxy; the agent's own reasoning is not visible to, or recorded by, Digital Kingdom.
  */
@@ -17,6 +17,7 @@ import { ROOT } from "../src/instance.ts";
 import { startLocalCase, type LocalCase } from "./controller.ts";
 import { ANSWER_SHAPE, parseAnswer } from "./answer.ts";
 import { declareMode } from "./modes.ts";
+import { answerKey, gradeAnswer } from "./referee.ts";
 import { exposure } from "./recorder.ts";
 
 export function nativeAgentKit(c: LocalCase, dir: string) {
@@ -57,9 +58,10 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
   const deadline = Date.now() + 30 * 60_000;
   while (!existsSync(join(dir, "answer.json")) && Date.now() < deadline) await new Promise((r) => setTimeout(r, 2000));
   const parsed = parseAnswer(existsSync(join(dir, "answer.json")) ? readFileSync(join(dir, "answer.json"), "utf8") : null);
+  const key = answerKey(doc.blueprint, doc, c.private.truth, c.private.world.world);
   const responses = existsSync(kit.trace) ? readFileSync(kit.trace, "utf8").trim().split("\n").map((l) => JSON.parse(l)).filter((e) => e.kind === "tool_call").map((e) => e.response) : [];
   const ex = exposure(await c.storedEvents(), responses);
-  writeFileSync(join(dir, "result.json"), JSON.stringify({ label: kit.mode.label, blinded: false, parse: parsed.ok ? "ok" : parsed.error, answer: parsed.ok ? parsed.answer : null, exposed_records: ex.any.length }, null, 2));
+  writeFileSync(join(dir, "result.json"), JSON.stringify({ label: kit.mode.label, blinded: false, parse: parsed.ok ? "ok" : parsed.error, objective: parsed.ok ? gradeAnswer(key, parsed.answer) : null, exposed_records: ex.any.length }, null, 2));
   console.log(`graded -> ${dir}/result.json`);
   await c.stop();
 }
