@@ -1,5 +1,7 @@
 # Local Intelligence Phase — final phase report
 
+> **Current-main addendum (2026-10-24):** this report was written on the branch before merge. PR #4 has since been merged to `main` as `b0b4a20` with CI 40120502170 and Pages 40120502164 green. See `receipts/MAIN-MERGE.md`. The branch-stage text below is kept unchanged as the historical record.
+
 Branch `phase/local-intelligence` (not merged; no PR opened; `main` untouched at the phase baseline `9fec7ed`).
 Ledger: `docs/phases/local-intelligence/STATUS.json` (packages, all 128 ACCEPTANCE requirement ids, deferrals, decisions,
 model spend). Per-package receipts: `docs/phases/local-intelligence/receipts/LP00.md` … `LP31.md`. Final candidate,
