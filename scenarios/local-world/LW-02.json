@@ -1,0 +1,29 @@
+{
+ "schema": "dk.scenario.v1",
+ "id": "LW-02",
+ "version": 1,
+ "title": "Agent delivery to a blocked receiver under a weakened tool policy with dropped observer evidence",
+ "execution": "local",
+ "data_policy": "synthetic_only",
+ "dsl": "scenarios/local-world/dsl/LW-02.scenario.json",
+ "expected_observations": [
+  "Allowed delivery observed; blocked delivery denied by the gateway policy and not observed",
+  "After the policy is weakened the blocked receiver's delivery is observed by the independent observer, but its records are dropped before Digital Kingdom"
+ ],
+ "disallowed_claims": [
+  "The gateway's own allowed/success reports prove the delivery effect",
+  "Absence of an effect record in Digital Kingdom means nothing was delivered"
+ ],
+ "missing_evidence_variant": "effects observer records dropped on the evidence path; private truth unchanged",
+ "benign_alternative": "retrieval search by the same agent run (distractor)",
+ "tests": [
+  {
+   "file": "examples/reference-app/lp07-scenarios.test.ts",
+   "name": "dropped observer evidence"
+  },
+  {
+   "file": "examples/reference-app/lp07-scenarios.test.ts",
+   "name": "the viewer-token view of Digital Kingdom leaks nothing from private truth"
+  }
+ ]
+}

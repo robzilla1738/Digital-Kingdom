@@ -1,0 +1,23 @@
+{
+ "schema": "dk.local.scenario.v1",
+ "id": "LW-02",
+ "version": 1,
+ "blueprint": "agent-workspace",
+ "blueprint_version": 1,
+ "seed": "lw02-seed-91d0",
+ "start": "2026-10-19T15:00:00Z",
+ "steps": [
+  { "at_ms": 0, "action": "agent_send", "run": "lw02-run-a", "to": "allowed-receiver", "label": "lw02-allowed" },
+  { "at_ms": 10, "action": "agent_send", "run": "lw02-run-b", "to": "blocked-receiver", "label": "lw02-blocked-baseline" },
+  { "at_ms": 20, "action": "agent_search", "run": "lw02-run-a", "role": "distractor" },
+  { "at_ms": 30, "action": "set_policy", "resource": "tool-gateway", "policy_variant": "deliberately_weak" },
+  { "at_ms": 40, "action": "evidence", "source": "effects", "fault": "drop" },
+  { "at_ms": 50, "action": "agent_send", "run": "lw02-run-c", "to": "blocked-receiver", "label": "lw02-blocked-weak" },
+  { "at_ms": 60, "action": "evidence", "source": "effects", "fault": "restore" }
+ ],
+ "expect": [
+  { "label": "lw02-allowed", "status_class": "2xx", "effect": "observed", "resource": "allowed-receiver" },
+  { "label": "lw02-blocked-baseline", "status_class": "4xx", "effect": "not_observed", "resource": "blocked-receiver" },
+  { "label": "lw02-blocked-weak", "status_class": "2xx", "effect": "observed", "resource": "blocked-receiver" }
+ ]
+}

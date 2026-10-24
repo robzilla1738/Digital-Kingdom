@@ -321,8 +321,19 @@ test('explicit camera focus and context loss preserve stable selection and graph
     const [width, height] = (canvas.dataset.cameraViewport ?? '').split('x').map(Number), bounds = canvas.getBoundingClientRect();
     return Math.abs(width - bounds.width) < 1 && Math.abs(height - bounds.height) < 1;
   })).toBe(true);
-  const initial=await page.locator('canvas').getAttribute('data-camera-pose');
-  await page.getByRole('button',{name:'Focus asset',exact:true}).click();
+  // A late layout pass (an inspector scrollbar appearing once its content settles, ~15 px) can refit
+  // the unmanipulated overview once more after the first viewport match (CI runs 40047042997,
+  // 40048249657: zoom 20.184 -> 19.683, so Back correctly restored the refitted view, not the stale
+  // baseline). Wait for pose and drawing surface to be stable across a quiet interval, then read the
+  // baseline and press Focus in the same task so no refit can fall between the two.
+  const settledPose = () => page.locator('canvas').evaluate(canvas => {
+    const [width, height] = (canvas.dataset.cameraViewport ?? '').split('x').map(Number), bounds = canvas.getBoundingClientRect();
+    return Math.abs(width - bounds.width) < 1 && Math.abs(height - bounds.height) < 1 && canvas.dataset.cameraActive !== 'true' ? canvas.dataset.cameraPose ?? null : null;
+  });
+  await expect.poll(async () => { const a = await settledPose(); await page.waitForTimeout(500); const b = await settledPose(); return a !== null && a === b; }, {timeout: 10_000}).toBe(true);
+  const focusButton = page.getByRole('button',{name:'Focus asset',exact:true});await expect(focusButton).toBeEnabled();
+  const initial = await focusButton.evaluate(button => { const pose = document.querySelector('canvas')?.dataset.cameraPose ?? null; (button as HTMLButtonElement).click(); return pose; });
+  expect(initial).not.toBeNull();
   await expect.poll(()=>page.locator('canvas').getAttribute('data-camera-pose')).not.toBe(initial);
   await page.waitForTimeout(600);const focused=await page.locator('canvas').getAttribute('data-camera-pose');
   const selection=await page.locator('aside.evidence').getAttribute('data-selection-id');

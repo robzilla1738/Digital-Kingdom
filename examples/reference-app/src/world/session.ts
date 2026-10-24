@@ -26,10 +26,11 @@ export class ReporterHub {
   }
   reporter(id: string): Reporter {
     return {
-      emit: (e) => this.deliver(id, { ...e }),
+      // occurrence time is fixed when the source observes the event, so a held (delayed) record keeps its real time
+      emit: (e) => this.deliver(id, { ...e, at: e.at ?? new Date() }),
       flush: async () => { await this.sdks.get(id)?.flush(); },
-      sensorDown: (asset, note) => this.deliver(id, { asset, action: "sensor_unavailable", outcome: "unknown", coverageNote: note }),
-      sensorUp: (asset) => this.deliver(id, { asset, action: "sensor_restored", outcome: "unknown" }),
+      sensorDown: (asset, note) => this.deliver(id, { asset, action: "sensor_unavailable", outcome: "unknown", coverageNote: note, at: new Date() }),
+      sensorUp: (asset) => this.deliver(id, { asset, action: "sensor_restored", outcome: "unknown", at: new Date() }),
     };
   }
   bind(id: string, sdk: DigitalKingdom) { this.sdks.set(id, sdk); for (const e of this.pending.get(id) ?? []) this.deliver(id, e); this.pending.delete(id); }

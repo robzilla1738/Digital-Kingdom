@@ -1,0 +1,32 @@
+{
+ "schema": "dk.local.scenario.v1",
+ "id": "LW-01",
+ "version": 1,
+ "blueprint": "saas-storefront",
+ "blueprint_version": 1,
+ "seed": "lw01-seed-5c1e",
+ "start": "2026-10-19T14:00:00Z",
+ "steps": [
+  { "at_ms": 0, "action": "sign_in", "actor": "acct:tenant-a:user", "as": "sa" },
+  { "at_ms": 10, "action": "sign_in", "actor": "acct:tenant-b:user", "as": "sb", "role": "distractor" },
+  { "at_ms": 20, "action": "request_route", "resource": "ingress", "route": "GET /tenants/{tenant}/records", "params": { "tenant": "tenant-a" }, "session": "sa", "label": "lw01-own-read" },
+  { "at_ms": 30, "action": "request_route", "resource": "ingress", "route": "GET /tenants/{tenant}/records", "params": { "tenant": "tenant-b" }, "session": "sa", "label": "lw01-cross-baseline" },
+  { "at_ms": 40, "action": "request_route", "resource": "ingress", "route": "GET /tenants/{tenant}/records", "params": { "tenant": "tenant-b" }, "session": "sb", "role": "distractor", "label": "lw01-benign-b" },
+  { "at_ms": 50, "action": "set_policy", "resource": "api", "policy_variant": "deliberately_weak" },
+  { "at_ms": 60, "action": "evidence", "source": "api-sdk", "fault": "delay" },
+  { "at_ms": 70, "action": "request_route", "resource": "ingress", "route": "GET /tenants/{tenant}/records", "params": { "tenant": "tenant-b" }, "session": "sa", "label": "lw01-cross-weak" },
+  { "at_ms": 80, "action": "observer", "observer": "audit", "state": "stop" },
+  { "at_ms": 90, "action": "request_route", "resource": "ingress", "route": "GET /tenants/{tenant}/records", "params": { "tenant": "tenant-b" }, "session": "sa", "label": "lw01-cross-unobserved" },
+  { "at_ms": 100, "action": "observer", "observer": "audit", "state": "restart" },
+  { "at_ms": 110, "action": "evidence", "source": "api-sdk", "fault": "release" },
+  { "at_ms": 120, "action": "enqueue_job", "params": { "tenant": "tenant-a" }, "session": "sa", "label": "lw01-job" }
+ ],
+ "expect": [
+  { "label": "lw01-own-read", "status_class": "2xx", "effect": "observed", "resource": "tenant-db" },
+  { "label": "lw01-cross-baseline", "status_class": "4xx", "effect": "not_observed", "resource": "tenant-db" },
+  { "label": "lw01-benign-b", "status_class": "2xx", "effect": "observed", "resource": "tenant-db" },
+  { "label": "lw01-cross-weak", "status_class": "2xx", "effect": "observed", "resource": "tenant-db" },
+  { "label": "lw01-cross-unobserved", "status_class": "2xx", "effect": "unknown", "resource": "tenant-db" },
+  { "label": "lw01-job", "status_class": "2xx" }
+ ]
+}

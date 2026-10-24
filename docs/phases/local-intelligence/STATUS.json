@@ -223,9 +223,9 @@
    "depends_on": [
     "LP03"
    ],
-   "status": "implemented_locally_verified",
-   "commit": null,
-   "ci_run": null,
+   "status": "ci_verified",
+   "commit": "f0a8d56",
+   "ci_run": 40045896413,
    "receipt": "docs/phases/local-intelligence/receipts/LP04.md",
    "local_checks": {
     "typecheck": "exit 0",
@@ -241,10 +241,11 @@
     "scene-compiler compileScene/defaultProposal (pins)"
    ],
    "decisions": [
-    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec §22; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
+    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec \u00a722; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
     "D-LP04-2: world_plan.v1 template enum unchanged; observers compile to declared sources (not assets); asset id = logical resource id; revision = lw-sha256(catalog digest, plan digest).",
     "D-LP04-3: LP00-A2 test hashes frozen trees once with a 90 s timeout (timed out under concurrent load on a 2-CPU sandbox); assertions unchanged."
-   ]
+   ],
+   "ci_result": "success (check + browser-pilot)"
   },
   {
    "id": "LP05",
@@ -255,8 +256,8 @@
     "LP04"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
-   "ci_run": null,
+   "commit": "09cdeb3",
+   "ci_run": 40047042997,
    "receipt": "docs/phases/local-intelligence/receipts/LP05.md",
    "local_checks": {
     "typecheck": "exit 0",
@@ -272,7 +273,8 @@
     "D-LP05-1: run control is a library (Supervisor/Run in @dk/local-world); the server exposes no run-control endpoint and runtime_policy.local_actions stays plan_only.",
     "D-LP05-2: trusted_builtin_processes is the only executable mode and is reported restricted; operator_isolated_containers is refused (launcher handshake not implemented), with a generated reviewable profile only.",
     "D-LP05-3: R07.2 runner kept for existing control tests; its receipts now say target_ownership unverified_url_allowlist (negative test reproduced the unowned-listener acceptance)."
-   ]
+   ],
+   "ci_result": "failure: browser-pilot e2e/redesign.spec.ts camera-baseline timing race (test captured a stale baseline; LP05 touches no web code). check job passed. Repaired in the LP07 commit."
   },
   {
    "id": "LP06",
@@ -282,8 +284,8 @@
     "LP05"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
-   "ci_run": null,
+   "commit": "798f653",
+   "ci_run": 40048249657,
    "receipt": "docs/phases/local-intelligence/receipts/LP06.md",
    "local_checks": {
     "typecheck": "exit 0",
@@ -304,7 +306,8 @@
     "D-LP06-1: catalog bumped to dk-local-catalog-2 (local_issuer /credentials/verify, artifact_depot /deployed); catalog-1 only compiled previews.",
     "D-LP06-2: evidence reaches DK only through ordinary per-source ingestion with supervisor-assigned operation ids as trusted request ids; corroboration is decided by registered source kind and independence group, never payload origin.",
     "D-LP06-3: GET /api/projects/:p/local-world/reporting lists declared capabilities with reporting/silent/unavailable; the console tab is read-only and never launches processes."
-   ]
+   ],
+   "ci_result": "failure: same browser-pilot camera-baseline race as LP05 (identical zoom 20.184 vs 19.683). check job passed. Repaired in the LP07 commit."
   },
   {
    "id": "LP07",
@@ -313,10 +316,30 @@
    "depends_on": [
     "LP06"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP07.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "106 files passed, 1 skipped; 776 passed, 1 skipped (rebased onto M2 49286ae/4917204)",
+    "lp07": "13 passed",
+    "scenarios": "DK-T unchanged (12 passed, 1 partial_passed, 3 unavailable); LW-01..03 passed",
+    "validate:fixtures": "exit 0"
+   },
+   "reuses": [
+    "scenarios/dk-t manifest format + scripts/run-scenarios.ts",
+    "LP05 supervisor (tokens, budgets, configure, snapshot/reset, ScenarioClock, RunRefusal)",
+    "LP06 services, effect observers, ReporterHub faults, ordinary ingestion",
+    "LP04 compiled worlds + templateMatches",
+    "server/MCP read surfaces unchanged as the investigator view"
+   ],
+   "decisions": [
+    "D-LP07-1",
+    "D-LP07-2",
+    "D-LP07-3",
+    "D-M1-CI-1"
+   ]
   },
   {
    "id": "LP08",
@@ -924,23 +947,35 @@
   },
   "LP07-A1": {
    "package": "LP07",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp07-scenarios.test.ts > LP07-A1 (3 tests: finite vocabulary, executable/network fields and traversal rejected; every reference resolves in the compiled world; no process/eval/dynamic-code path in engine, DSL, services, supervisor)",
+    "docs/phases/local-intelligence/receipts/LP07.md"
+   ]
   },
   "LP07-A2": {
    "package": "LP07",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp07-scenarios.test.ts > LP07-A2 (3 tests: identical intended-state digest across two fresh LW-01 runs with different run/op ids and recorded per-step timing; different seed differs and mismatched seed refused; snapshot/reset; partial accounting for stopped schedules and budget refusals)",
+    "docs/phases/local-intelligence/receipts/LP07.md"
+   ]
   },
   "LP07-A3": {
    "package": "LP07",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp07-scenarios.test.ts > LP07-A3 (2 tests: LW-02 dropped observer evidence leaves truth identical to the unfaulted run but absent from DK; LW-01 delayed records keep occurrence time with receipt lag; outage effect in truth graded unknown)",
+    "docs/phases/local-intelligence/receipts/LP07.md"
+   ]
   },
   "LP07-A4": {
    "package": "LP07",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp07-scenarios.test.ts > LP07-A4 (4 tests: viewer-token API view of LW-01..03 has no seed/commitment/scenario id/labels/expectations/role markers/tokens/keys/passwords, checker mutation-tested; truth file 0600 in run dir; no MCP tool or API route exposes truth; API/MCP/web sources never reference DSL documents or the engine; static serving cannot traverse to a DSL document beside the bundle)",
+    "docs/phases/local-intelligence/receipts/LP07.md"
+   ]
   },
   "LP08-A1": {
    "package": "LP08",
@@ -1604,6 +1639,26 @@
    "id": "D-M2-CI",
    "date": "2026-10-23",
    "decision": "M2 recorded ci_verified on head 49286ae (CI run 40049323638: check + browser-pilot success). Package entries keep their own rebased commits and cite the containing head's run; receipts gained a commits/CI section. No M2 code changed after review."
+  },
+  {
+   "id": "D-LP07-1",
+   "date": "2026-10-23",
+   "decision": "dk.local.scenario.v1 is a closed data format (14 typed actions, plain ids, declared route templates, single-segment params, unknown keys rejected at every level) validated twice: shape, then every reference against the compiled world. The engine executes only typed supervisor operations and hub faults."
+  },
+  {
+   "id": "D-LP07-2",
+   "date": "2026-10-23",
+   "decision": "Private truth (seed, labels, expectations, step records, tap-log effects) is a run-owned 0600 file in the run directory; the referee grades from truth + independent observers only; the investigator view is built solely from the DK API with a viewer token and leak-checked."
+  },
+  {
+   "id": "D-LP07-3",
+   "date": "2026-10-23",
+   "decision": "Scenario DSL documents stay in the repository for now; DK API/MCP/web are tested to have no path to them (source scan + static traversal test). Investigators with repo access are not blinded: such runs are development feedback, not held-out evaluation."
+  },
+  {
+   "id": "D-M1-CI-1",
+   "date": "2026-10-23",
+   "decision": "Browser-pilot failures on LP05/LP06 (and li-m2 run 40046522740) were a test timing race in e2e/redesign.spec.ts (baseline camera pose captured before a late overview refit). Fixed in the test by waiting for a stable pose and reading the baseline atomically with the Focus click; assertion unchanged."
   }
  ],
  "model_spend_usd": {

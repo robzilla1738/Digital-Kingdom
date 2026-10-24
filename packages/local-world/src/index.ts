@@ -9,3 +9,5 @@ export * from "./runtime/supervisor.ts";
 export { templateMatches } from "@dk/graph-core";
 export * from "./runtime/verify.ts";
 export type { WorldPlan, VerificationReceipt } from "@dk/contracts";
+export * from "./scenario/dsl.ts";
+export { canonicalJson } from "@dk/contracts";
