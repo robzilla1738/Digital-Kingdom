@@ -500,8 +500,8 @@
     "LP11"
    ],
    "status": "implemented_locally_verified",
-   "commit": "ca87929",
-   "ci_run": "40054523494 success (ci)",
+   "commit": "bf2685c",
+   "ci_run": "40054523494 success (pre-rebase ca87929 on phase/li-m3)",
    "receipt": "docs/phases/local-intelligence/receipts/LP12.md",
    "branch": "phase/li-m3",
    "local_checks": {
@@ -529,8 +529,8 @@
     "LP08"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
-   "ci_run": null,
+   "commit": "d630485",
+   "ci_run": "40055538817 failure (pre-rebase b8b21a2 on phase/li-m3: browser-pilot CASTLE-11 late demand frame, D-M3-CI-1; check job success)",
    "receipt": "docs/phases/local-intelligence/receipts/LP13.md",
    "branch": "phase/li-m3",
    "local_checks": {
@@ -556,8 +556,8 @@
     "LP13"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
-   "ci_run": null,
+   "commit": "82cea39",
+   "ci_run": "40056591089 success (pre-rebase 8789032 on phase/li-m3)",
    "receipt": "docs/phases/local-intelligence/receipts/LP14.md",
    "branch": "phase/li-m3",
    "local_checks": {
@@ -583,7 +583,7 @@
     "LP12"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
+   "commit": "14a0c13",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP15.md",
    "branch": "phase/li-m3",
@@ -1847,6 +1847,16 @@
    "id": "D-M1-CI-2",
    "date": "2026-10-23",
    "decision": "Browser-pilot on the docs-only ledger commit 5a8f410 (run 40051696346) failed A11Y-05: one late demand frame (render count 7 -> 8) inside the 700 ms reduced-motion idle window after an immediate focus; the identical code passed on fa8de4a. Fixed in the test by first requiring a bounded 300 ms quiet interval (continuous motion never settles, so it still fails) before the unchanged 700 ms no-frame assertion."
+  },
+  {
+   "id": "D-M3-CI-1",
+   "date": "2026-10-23",
+   "decision": "Browser-pilot on b8b21a2 (run 40055538817) failed CASTLE-11 (e2e/camera-redesign.spec.ts): one late demand frame (render count 6 -> 7) inside the 700 ms no-frame window after selecting an unlinked event in the offline F06 fixture; no LP13 code is on that path and the same spec passed on 8789032 (run 40056591089). Fixed in the test like D-M1-CI-2: first wait (bounded, 10 s) for one full quiet 700 ms window, which a continuously animated trail never produces, then the unchanged 700 ms no-frame and camera assertions. Locally under heavy machine load (a concurrent model-eval run) the spec still failed 1 of 3 repeats; CI is the gate."
+  },
+  {
+   "id": "D-M3-REBASE-1",
+   "date": "2026-10-23",
+   "decision": "M3 (LP12-LP15) rebased from phase/li-m3 onto origin/phase/local-intelligence 7aa9975 (M1 final ledger + A11Y-05 race fix). Only STATUS.json conflicted; resolved by keeping each M3 commit's entries and re-applying upstream D-M1-CI-2 and the M1 final_head. No db.ts/validators conflict at this point (the M6 branch had not pushed). Rebased hashes: LP12 bf2685c, LP13 d630485, LP14 82cea39, LP15 14a0c13."
   }
  ],
  "model_spend_usd": {
