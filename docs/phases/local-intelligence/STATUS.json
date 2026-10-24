@@ -499,9 +499,9 @@
     "LP10",
     "LP11"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "bf2685c",
-   "ci_run": "40054523494 success (pre-rebase ca87929 on phase/li-m3)",
+   "ci_run": "40058755915 success (check + browser-pilot) on c27402e; pre-rebase 40054523494 success on ca87929",
    "receipt": "docs/phases/local-intelligence/receipts/LP12.md",
    "branch": "phase/li-m3",
    "local_checks": {
@@ -528,9 +528,9 @@
     "LP01",
     "LP08"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "d630485",
-   "ci_run": "40055538817 failure (pre-rebase b8b21a2 on phase/li-m3: browser-pilot CASTLE-11 late demand frame, D-M3-CI-1; check job success)",
+   "ci_run": "40058755915 success (check + browser-pilot) on c27402e; pre-rebase 40055538817 failure (CASTLE-11 late frame, D-M3-CI-1)",
    "receipt": "docs/phases/local-intelligence/receipts/LP13.md",
    "branch": "phase/li-m3",
    "local_checks": {
@@ -555,9 +555,9 @@
    "depends_on": [
     "LP13"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "82cea39",
-   "ci_run": "40056591089 success (pre-rebase 8789032 on phase/li-m3)",
+   "ci_run": "40058755915 success (check + browser-pilot) on c27402e; pre-rebase 40056591089 success on 8789032",
    "receipt": "docs/phases/local-intelligence/receipts/LP14.md",
    "branch": "phase/li-m3",
    "local_checks": {
@@ -582,9 +582,9 @@
    "depends_on": [
     "LP12"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "14a0c13",
-   "ci_run": null,
+   "ci_run": "40058755915 success (check + browser-pilot) on c27402e; pre-rebase 40058039470 success on 73e5be6",
    "receipt": "docs/phases/local-intelligence/receipts/LP15.md",
    "branch": "phase/li-m3",
    "local_checks": {
@@ -1865,11 +1865,11 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP12",
-  "why": "M0, M1 (LP04-LP07) and M2 (LP08-LP11) are CI-verified on phase/local-intelligence. Eligible now: LP12 (investigation workbench, M3; deps LP08/LP10/LP11), LP13 (bounded path and change exploration, M3; deps LP01/LP08) and LP24 (bring-your-agent local investigation, M6; deps LP11/LP07). LP12 is first in DAG order.",
+  "package": "LP16",
+  "why": "M0-M3 are CI-verified on phase/local-intelligence (M3 head c27402e, run 40058755915). Eligible now: LP16 (M4; deps LP04, LP12), LP20 (M5; deps LP05, LP14) and LP24 (M6; deps LP11, LP07; being worked in DK-m6 / phase/li-m6). LP16 is first in DAG order and unblocks LP17-LP19 (executed-local repair verification).",
   "eligible_now": [
-   "LP12",
-   "LP13",
+   "LP16",
+   "LP20",
    "LP24"
   ]
  },
@@ -1936,6 +1936,48 @@
     "result": "success (check + browser-pilot)",
     "note": "Last code change of M1 (A11Y-05 e2e race fix, D-M1-CI-2). Later commits that only edit this ledger are not separately recorded here."
    }
+  },
+  "M3": {
+   "packages": [
+    "LP12",
+    "LP13",
+    "LP14",
+    "LP15"
+   ],
+   "status": "ci_verified",
+   "head": "c27402e",
+   "rebased_onto": "7aa9975",
+   "ci_run": 40058755915,
+   "ci_result": "success (check + browser-pilot)",
+   "commits": {
+    "LP12": "bf2685c",
+    "LP13": "d630485",
+    "LP14": "82cea39",
+    "LP15": "14a0c13",
+    "CASTLE-11 race fix + ledger": "c27402e"
+   },
+   "pre_rebase": {
+    "branch": "phase/li-m3",
+    "commits": {
+     "LP12": "ca87929",
+     "LP13": "b8b21a2",
+     "LP14": "8789032",
+     "LP15": "73e5be6"
+    },
+    "ci_runs": {
+     "LP12": "40054523494 success",
+     "LP13": "40055538817 failure (browser-pilot CASTLE-11 late demand frame, D-M3-CI-1)",
+     "LP14": "40056591089 success",
+     "LP15": "40058039470 success"
+    }
+   },
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "post-rebase 4 vitest shards: 115 files (114 passed, 1 skipped); 804 passed, 1 skipped, after an isolated rerun of examples/reference-app/lp07-scenarios.test.ts (13/13) whose wall-clock lag assertion failed in the shard run while a concurrent model-eval run loaded the machine",
+    "build": "exit 0",
+    "e2e": "attention-redesign 1, repairs-redesign 1, exploration-redesign 1, cases-redesign 5, workbench-redesign 3 (LP12-A4 needed a rerun under load) passed locally; full redesign + pilot suites green in CI run 40058755915"
+   },
+   "note": "Engineering-verified locally and in CI for the executed tests only. Scripted/protocol checks; no model call, AI execution not exercised, $0 model spend for M3. Repair plans are plan-only (no executor; lab leases are LP16; human approval EXT05 deferred); the attention queue makes no remote delivery (R03.5 destinations remain gated)."
   }
  }
 }
