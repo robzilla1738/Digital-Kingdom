@@ -119,3 +119,12 @@ Grouped scenes open on the LP16 district overview, where no buildings are drawn 
 active-environment frame there would have to auto-open a district (changing which buildings render and the grouped
 panel's "Choose a district" state that LP16 tests and users rely on), i.e. a behavior change, not a camera change. Packing
 does apply to grouped scenes (it is geometry-level), and explicit focus/Realm overview already work there.
+
+### CI (follow-up)
+- 40135310528 (932d0fb, code + tests): check failed only in `examples/reference-app/e2e.test.ts` ("expected 4 to be 10",
+  the same SDK flush-count timing flake as 40132161201; reference-app path untouched); browser-pilot skipped.
+- **40136395212 (70ba7d6, follow-up code + receipt + screenshot): success.** check passed; browser-pilot: original pilot
+  11 passed; redesign suite 114 passed / 1 skipped (was 113 — +1 new realm-packing e2e), including LP17 F15
+  (families-redesign:47) with the realm-coordinate harness and all next-C tests.
+- Local full `pnpm test` at 932d0fb: 143 files passed / 1 skipped, 988 passed / 1 skipped (+4 realm-packing unit tests).
+- The commit adding this CI section is docs-only (this receipt file); its own CI run is recorded in the agent report, not here.
