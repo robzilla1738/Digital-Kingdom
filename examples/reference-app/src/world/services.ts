@@ -184,8 +184,18 @@ const api = (ctx: ServiceContext): BuiltinService => {
       // Tenant isolation is the reviewed policy; the deliberately weak variant skips it (a lab defect to find).
       const isolated = s.tenant_mode === "isolated" && policy(ctx, s) !== "deliberately_weak";
       const crossTenant = who.role !== "admin" && who.role !== "service" && who.tenant !== tenant;
+      // li-next D BENCHMARK DISTRACTOR variants (reachable only through a supervisor started with
+      // benchmarkDistractorVariants): bench_overbroad refuses every user request, own tenant included (breaks permitted
+      // behaviour); bench_residual protects tenant-b records only (cross-tenant reads of tenant-a stay open);
+      // bench_misbound (MISLEADING-prediction distractor) applies the isolation rule to the WRONG ROUTE — cross-tenant
+      // writes and job submissions are refused, cross-tenant READS stay open — although its declared purpose is tenant isolation.
+      const user = who.role !== "admin" && who.role !== "service";
+      if ((s.variant === "bench_overbroad" && user) || (s.variant === "bench_residual" && crossTenant && tenant === "tenant-b") || (s.variant === "bench_misbound" && crossTenant && req.method !== "GET")) {
+        ctx.report?.emit({ asset: ctx.resource_id, action: "request_received", outcome: "denied", route: routeTpl, actor: who.account, requestId: req.op_id, rule: "tenant-isolation", details: { policy_revision: st.revision() } });
+        return json(403, { error: "forbidden" });
+      }
       const grantOk = who.role !== "service" || (who.grants ?? []).includes(`read:${store ?? "data"}`) || (who.grants ?? []).includes(`write:${store ?? "data"}`);
-      if ((isolated && crossTenant) || !grantOk) {
+      if ((isolated && crossTenant && s.variant !== "bench_residual" && s.variant !== "bench_misbound") || !grantOk) {
         ctx.report?.emit({ asset: ctx.resource_id, action: "request_received", outcome: "denied", route: routeTpl, actor: who.account, requestId: req.op_id, rule: grantOk ? "tenant-isolation" : "missing-grant", details: { policy_revision: st.revision() } });
         return json(403, { error: "forbidden" });
       }
