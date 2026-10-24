@@ -44,8 +44,16 @@ export function buildReport(out: string, reg: Rec) {
     const vals = rows.flatMap((x) => (x.critique?.operations ?? []).flatMap((o: Rec) => [o.outcome, o.independent_effect, o.boundary_violation]));
     return [`${b}/${c}`, { label: "ai_reviewed_advisory", critiqued_attempts: rows.length, errors: rows.filter((x) => x.error).length, judgments: vals.length, supported: vals.filter((v) => v === "supported").length, unsupported: vals.filter((v) => v === "unsupported").length, unclear: vals.filter((v) => v === "unclear").length }];
   })));
+  // EXPLORATORY (not preregistered): where do failed predicates come from?
+  const explore = Object.fromEntries(["dev", "heldout"].flatMap((b) => ["C1", "C2", "C3"].map((c) => {
+    const rows = model.filter((r) => r.split === b && r.condition === c && r.metrics);
+    const fails = rows.flatMap((r) => r.metrics.failures.map((f: Rec) => ({ ...f, sawUnavailable: (r.trace?.entries ?? []).some((e: Rec) => e.kind === "tool_call" && /"status":"unavailable"/.test(e.response)) })));
+    const by = (pred: (f: Rec) => boolean) => fails.filter(pred).length;
+    return [`${b}/${c}`, { failed_predicates: fails.length, by_field: { outcome: by((f) => f.field === "outcome"), independent_effect: by((f) => f.field === "independent_effect"), boundary_violation: by((f) => f.field === "boundary_violation") }, answered_unknown: by((f) => f.answered === "unknown"), answered_unknown_after_seeing_unavailable_coverage: by((f) => f.answered === "unknown" && f.sawUnavailable), wrong_affirmative: by((f) => f.answered !== null && f.answered !== "unknown"), missing_operation: by((f) => f.answered === null) }];
+  })));
   const ledger = existsSync(join(out, "model-spend-ledger.json")) ? JSON.parse(readFileSync(join(out, "model-spend-ledger.json"), "utf8")) : null;
   const planned = reg.order.length;
+  const incident = existsSync(join(out, "incident-records-lost.json")) ? JSON.parse(readFileSync(join(out, "incident-records-lost.json"), "utf8")) : null;
   const amendments = readdirSync(out).filter((f) => /^preregistration-amendment-\d+\.json$/.test(f)).sort().map((f) => JSON.parse(readFileSync(join(out, f), "utf8")));
   const report = {
     schema: "dk.local.eval_report.v1", preregistration: reg.id, model: reg.model.id, planned_slots_per_mode: planned,
@@ -53,6 +61,8 @@ export function buildReport(out: string, reg: Rec) {
     scripted_runs: { label: "scripted (no model): protocol baseline, not model skill", started: scripted.length, by_block_condition: groups(scripted) },
     ai_semantic_critique: { label: "ai_reviewed_advisory: same model family, separate conversation, no tools, no truth; never an objective score or an approval", by_block_condition: crit },
     human_review: "deferred (EXT05); no record is approved",
+    incident: incident ? { file: "incident-records-lost.json", kind: incident.kind, surviving_model_records: incident.surviving_model_records, planned_slots: incident.planned_slots, missing_model_slots: incident.missing_model_slots.length, missing_by_block_condition: Object.fromEntries(["dev", "heldout"].flatMap((b) => ["C1", "C2", "C3"].map((c) => [`${b}/${c}`, incident.missing_model_slots.filter((m: Rec) => m.block === b && m.condition === c).length]))), not_re_attempted: incident.not_re_attempted, reported_by_previous_session_unverifiable: incident.reported_by_previous_session_unverifiable, spend_estimate: incident.spend_estimate, critique: incident.critique } : null,
+    exploratory_failure_breakdown: { label: "exploratory, not preregistered: failed predicates by field and answer kind; 'after seeing unavailable coverage' = the attempt's tool results contained a coverage state/obligation with status unavailable", by_block_condition: explore },
     amendments: amendments.map((a) => ({ id: a.id, created_at: a.created_at, slots_recorded_at_amendment: a.slots_recorded_at_amendment, limits: a.limits, reason: a.reason })),
     spend: ledger ? { ledger: "model-spend-ledger.json", charged_total_usd: ledger.charged_total_usd, entries: ledger.entries.length, allowance_usd: ledger.allowance_usd, phase_cap_usd: ledger.phase_cap_usd } : null,
     limitations: [
@@ -62,6 +72,7 @@ export function buildReport(out: string, reg: Rec) {
       "Exposure means the record reached the model, not that it was attended to; packet records count as exposure only when their digest equals the stored record.",
       "The referee's admissibility rules are this phase's specification (observer attachment + schedule faults); a silently dropped observer record admits not_observed or unknown.",
       "AI critique is advisory and from the same model family; human review is deferred.",
+      ...(incident ? [`Records lost: ${incident.missing_model_slots.length} of ${incident.planned_slots} preregistered model slots have no surviving record (sandbox reset); they are missing, outside every denominator, and were not re-run. Held-out model counts cover only the surviving slots.`] : []),
     ],
   };
   const pct = (a: number, b: number) => b ? `${a}/${b} (${Math.round((100 * a) / b)}%)` : "0/0";
@@ -72,7 +83,7 @@ export function buildReport(out: string, reg: Rec) {
 Model ${reg.model.id} via the AI Gateway (restricted_model: MCP tools only). Conditions: C1 ${reg.conditions[0].label}; C2 ${reg.conditions[1].label}; C3 ${reg.conditions[2].label}.
 Preregistered ${planned} slots per mode (dev + held-out, 2 repetitions, fresh world and conversation per attempt). Spend (new phase ledger): $${(ledger?.charged_total_usd ?? 0).toFixed(4)} of the $${ledger?.allowance_usd ?? 2} M6 allowance.
 
-${amendments.length ? `Preregistration amendments (made before any comparison slot ran): ${amendments.map((a) => `${a.id} — ${JSON.stringify(a.limits)}: ${a.reason}`).join(" ")}\n\n` : ""}## Model runs — objective metrics (deterministic referee)
+${incident ? `> **Incident: records lost.** ${incident.summary} ${incident.missing_model_slots.length} of ${incident.planned_slots} model slots have no record and are excluded from every denominator (not re-run; never counted as failures or successes). Missing by block/condition: ${["dev", "heldout"].flatMap((b) => ["C1", "C2", "C3"].map((c) => `${b}/${c} ${incident.missing_model_slots.filter((m: Rec) => m.block === b && m.condition === c).length}`)).join(", ")}. Spend for the lost work is charged as a conservative estimate (attempts $${incident.spend_estimate.attempt_estimate_usd.toFixed(4)}, critique bound $${incident.spend_estimate.critique_estimate_usd.toFixed(4)}). The previous session reported e2e ${Object.entries(incident.reported_by_previous_session_unverifiable.e2e).map(([k, v]) => `${k} ${v}`).join(", ")}; those records do not exist and the figures are not data of this report. AI critique: ${incident.critique}.\n\n` : ""}${amendments.length ? `Preregistration amendments (made before any comparison slot ran): ${amendments.map((a) => `${a.id} — ${JSON.stringify(a.limits)}: ${a.reason}`).join(" ")}\n\n` : ""}## Model runs — objective metrics (deterministic referee)
 
 ${table(report.model_runs.by_block_condition)}
 
@@ -87,6 +98,12 @@ ${table(report.scripted_runs.by_block_condition)}
 ${Object.entries(crit).map(([k, c]) => `| ${k} | ${(c as Rec).critiqued_attempts} | ${(c as Rec).judgments} | ${(c as Rec).supported} | ${(c as Rec).unsupported} | ${(c as Rec).unclear} | ${(c as Rec).errors} |`).join("\n")}
 
 Human review: deferred (EXT05). No record is approved.
+
+## Exploratory failure breakdown (not preregistered)
+
+| block/condition | failed predicates | outcome | independent_effect | boundary | answered unknown | ...after seeing unavailable coverage | wrong affirmative | missing op |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+${Object.entries(explore).map(([k, e]) => `| ${k} | ${(e as Rec).failed_predicates} | ${(e as Rec).by_field.outcome} | ${(e as Rec).by_field.independent_effect} | ${(e as Rec).by_field.boundary_violation} | ${(e as Rec).answered_unknown} | ${(e as Rec).answered_unknown_after_seeing_unavailable_coverage} | ${(e as Rec).wrong_affirmative} | ${(e as Rec).missing_operation} |`).join("\n")}
 
 ## Limitations
 
