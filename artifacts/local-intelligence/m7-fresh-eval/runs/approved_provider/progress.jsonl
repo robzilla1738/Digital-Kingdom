@@ -21,3 +21,4 @@
 {"slot":20,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"3/3","retrieval":"4/4","cost":0.008268895999999998,"spent_total":0.109246866}
 {"slot":21,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":false,"structured":"7/9","retrieval":"7/7","cost":0.013410341999999964,"spent_total":0.12006419399999997}
 {"slot":22,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0.01277383999999998,"spent_total":0.12202070599999998}
+{"slot":23,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0.009015936000000016,"spent_total":0.12908013}
