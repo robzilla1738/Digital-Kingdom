@@ -3,7 +3,7 @@ import { CHANGE_MIGRATION } from "./change-review.ts";
 import { NOTIFY_MIGRATION } from "./notify.ts";
 import { REGRESSION_MIGRATION } from "./regression.ts";
 import { DECEPTION_MIGRATION, BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION, IDENTITY_MIGRATION, AWS_SCOPE_MIGRATION, ACCESS_SNAPSHOT_MIGRATION, APPROVALS_MIGRATION } from "./schema-r01.ts";
-import { INVESTIGATION_CONTRACTS_MIGRATION, INVESTIGATION_JOBS_MIGRATION } from "./investigation/schema.ts";
+import { INVESTIGATION_CONTRACTS_MIGRATION, INVESTIGATION_JOBS_MIGRATION, INVESTIGATION_CONCLUSIONS_MIGRATION } from "./investigation/schema.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -113,6 +113,8 @@ export const MIGRATIONS: string[] = [
   INVESTIGATION_CONTRACTS_MIGRATION,
   // Local Intelligence Phase LP09: bounded investigation plan jobs, committed step state and the delivery log.
   INVESTIGATION_JOBS_MIGRATION,
+  // Local Intelligence Phase LP10: conclusion proposals with their deterministic claim checks.
+  INVESTIGATION_CONCLUSIONS_MIGRATION,
 ];
 
 export function openDb(path: string): DB {
