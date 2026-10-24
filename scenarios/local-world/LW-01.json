@@ -29,6 +29,18 @@
   {
    "file": "examples/reference-app/lp07-scenarios.test.ts",
    "name": "the viewer-token view of Digital Kingdom leaks nothing from private truth"
+  },
+  {
+   "file": "examples/reference-app/next-b-observer-recovery.test.ts",
+   "name": "restart through the lease/typed op/journal, then a controlled probe must be observed"
+  },
+  {
+   "file": "examples/reference-app/next-b-observer-recovery.test.ts",
+   "name": "with the observer stopped, the still-open prohibited read is unknown/inconclusive"
+  },
+  {
+   "file": "apps/server/test/next-b-observer-candidates.test.ts",
+   "name": "a stopped supervisor-owned observer yields a reviewed, typed, plan-only restart_test_observer candidate"
   }
  ]
 }
