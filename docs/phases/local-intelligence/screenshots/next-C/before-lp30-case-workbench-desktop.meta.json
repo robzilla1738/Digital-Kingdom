@@ -1,0 +1,26 @@
+{
+  "name": "lp30-case-workbench-desktop",
+  "file": "before-lp30-case-workbench-desktop.png",
+  "sha256": "80945a3833295d8eca3e753a4f74779ce0704338f25de23411ec64d7a8b24ba6",
+  "bytes": 317880,
+  "capturedAt": "2026-10-24T18:37:03.933Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "b0b4a20913d8e341c6b33104d69f8cfdb1f665aa",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim.",
+  "phase": "before",
+  "commit": "b0b4a20913d8e341c6b33104d69f8cfdb1f665aa",
+  "renderer": "Chromium headless SwiftShader (software WebGL) requested",
+  "provenance": "Copied unchanged from the post-phase review capture (work/next/review/screenshots/lp30-case-workbench-desktop.png) at main b0b4a20; same 1440x900 viewport as the next-C after captures. Not recaptured by next-C."
+}

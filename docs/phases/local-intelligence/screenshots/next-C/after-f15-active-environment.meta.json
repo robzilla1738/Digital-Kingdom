@@ -2,11 +2,11 @@
   "name": "after-f15-active-environment",
   "file": "after-f15-active-environment.png",
   "phase": "after",
-  "sha256": "e76a3092c6ee76819a0f5158cf79d0ae029f7f017531da9820c5ab0db2c285f5",
-  "bytes": 318752,
-  "commit": "db1ea8ad078dba8f491a344951c822cc44b3450c",
+  "sha256": "853a03109876acbf5c2c0643f87b3bd6be264ef3f10d4eb430fc747d2916c12f",
+  "bytes": 309612,
+  "commit": "8fc2e72ef0ece42f2a2796131f26d36ba9181c13",
   "worktreeDirty": false,
-  "capturedAt": "2026-10-24T20:55:58.398Z",
+  "capturedAt": "2026-10-24T21:06:26.623Z",
   "viewport": {
     "width": 1440,
     "height": 900
