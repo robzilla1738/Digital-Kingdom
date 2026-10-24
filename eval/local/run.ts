@@ -6,6 +6,7 @@
  *   DK_LI_ROUTE=ai-gateway DK_LI_MODEL=meta/muse-spark-1.3-contributor DK_LI_CAP_USD=2.00 DK_LI_APPROVED=local-intelligence-phase \
  *   AI_GATEWAY_API_KEY=... tsx eval/local/run.ts run --out <dir> --mode approved_provider --block dev|heldout [--concurrency 2]
  *   tsx eval/local/run.ts critique --out <dir>                    # optional AI semantic critique, advisory only
+ *   tsx eval/local/run.ts incident --out <dir>                    # record lost records + conservative spend (never re-run)
  *   tsx eval/local/run.ts seal     --out <dir>                    # report + reveal held-out docs after verification
  *
  * Every slot of the preregistered order is attempted at most once per mode; records are written with `wx` and never
@@ -184,6 +185,44 @@ if (cmd === "critique") {
     writeFileSync(join(cdir, f), JSON.stringify({ label: "ai_reviewed_advisory", reviewer: { model: reg.model.id, separate_conversation: true, tools: "none", saw_truth: false }, attempt_id: rec.attempt_id, condition: rec.condition, split: rec.split, critique: result, error, charged_usd: charged, human_review: "deferred (EXT05)" }, null, 1), { flag: "wx" });
     console.log(JSON.stringify({ critique: f, ok: !error, charged }));
   }
+}
+
+if (cmd === "incident") {
+  // A run whose records were lost (e.g. a sandbox reset before files reached durable storage) is never re-attempted:
+  // every preregistered slot is attempted at most once per mode. The loss is recorded as an incident, and spend that
+  // may have been incurred without a surviving record is charged to the ledger as a conservative estimate.
+  const file = join(out, "incident-records-lost.json");
+  const runDir = join(out, "runs", "approved_provider");
+  const present = new Set(readdirSync(runDir).filter((f) => /^\d{3}\.json$/.test(f)).map((f) => Number(f.slice(0, 3))));
+  const missing = reg.order.filter((s: Slot) => !present.has(s.index));
+  const ledger = openLedger();
+  const recs = [...present].map((i) => JSON.parse(readFileSync(join(runDir, `${String(i).padStart(3, "0")}.json`), "utf8")));
+  const perBlockMax = (b: string) => Math.max(0, ...recs.filter((r) => r.split === b).map((r) => r.cost?.charged_usd ?? 0));
+  const attemptEstimate = missing.reduce((n: number, s: Slot) => n + perBlockMax(s.block), 0);
+  const critDir = join(out, "critique");
+  const critiquesOnDisk = existsSync(critDir) ? readdirSync(critDir).filter((f) => f.endsWith(".json")).length : 0;
+  const price = await pricing(reg.model.id);
+  const critiqueBoundEach = 28_000 * price.input + EFFECTIVE_LIMITS.maxCompletionTokens * price.output; // <=80k chars of records + task/answer/system; full completion cap
+  const critiqueCount = reg.order.length - critiquesOnDisk;
+  const critiqueEstimate = critiqueCount * critiqueBoundEach;
+  const incident = {
+    schema: "dk.local.eval_incident.v1", preregistration: reg.id, recorded_at: new Date().toISOString(),
+    kind: "records_lost",
+    summary: "The sandbox was reset while the held-out model block and the advisory AI critique were running or had just finished. Files written after about 03:29 UTC (Fri 2026-10-23 10:29 PM CDT (UTC-05:00)) did not survive: model attempt records for the slots listed below, their ledger entries and progress lines, and every critique record. The surviving records are byte-for-byte what the runner wrote.",
+    surviving_model_records: present.size, planned_slots: reg.order.length,
+    missing_model_slots: missing.map((s: Slot) => ({ index: s.index, block: s.block, condition: s.condition, repetition: s.repetition })),
+    not_re_attempted: "Missing slots are NOT re-run: each preregistered slot is attempted at most once per mode, and an attempt whose outcome was already seen (by the previous session) cannot be re-rolled. They are reported as missing, outside every denominator, never as failures or successes.",
+    reported_by_previous_session_unverifiable: { note: "The previous session's summary said all 54 slots ran with e2e C1 dev 6/6 held-out 10/12, C2 dev 6/6 held-out 11/12, C3 dev 0/6 held-out 0/12, ledger $0.522 plus a pending critique. Those held-out records do not exist; these figures are quoted for transparency and are NOT data of this report.", e2e: { "dev/C1": "6/6", "heldout/C1": "10/12", "dev/C2": "6/6", "heldout/C2": "11/12", "dev/C3": "0/6", "heldout/C3": "0/12" }, ledger_usd: 0.522 },
+    spend_estimate: {
+      method: "conservative: each missing attempt is charged the largest settled amount of any surviving attempt in its block; the critique is charged its per-request bound (28k prompt tokens + the full completion cap at live pricing) for every slot without a surviving critique record, since it is unknown how many critique requests ran",
+      pricing_per_token: price, missing_attempts: missing.length, attempt_estimate_usd: attemptEstimate, critique_requests_bound: critiqueCount, critique_bound_each_usd: critiqueBoundEach, critique_estimate_usd: critiqueEstimate,
+    },
+    critique: critiquesOnDisk ? "partial" : "incomplete: no critique record survived; the advisory critique is reported as not available for this run",
+  };
+  writeFileSync(file, JSON.stringify(incident, null, 2), { flag: "wx" });
+  ledger.record({ id: `${reg.id}-lost-attempts-estimate`, run: reg.id, kind: "unrecorded_estimate", reserved_max_usd: attemptEstimate, charged_usd: attemptEstimate, gateway_cost_usd: null, prompt_tokens: 0, completion_tokens: 0, model_calls: 0, note: `${missing.length} model attempts whose records were lost in a sandbox reset; conservative estimate (see incident-records-lost.json)` });
+  ledger.record({ id: `${reg.id}-lost-critique-estimate`, run: reg.id, kind: "unrecorded_estimate", reserved_max_usd: critiqueEstimate, charged_usd: critiqueEstimate, gateway_cost_usd: null, prompt_tokens: 0, completion_tokens: 0, model_calls: 0, note: `advisory critique requests (unknown count, at most ${critiqueCount}) whose records were lost; per-request bound (see incident-records-lost.json)` });
+  console.log(JSON.stringify({ incident: file, missing: missing.length, attempt_estimate_usd: attemptEstimate, critique_estimate_usd: critiqueEstimate, ledger_total_usd: ledger.file.charged_total_usd }));
 }
 
 if (cmd === "seal") {

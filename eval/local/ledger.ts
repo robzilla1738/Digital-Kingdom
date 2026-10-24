@@ -10,7 +10,7 @@ import { BudgetLedger } from "../src/budget.ts";
 
 export const LEDGER_SCHEMA = "dk.local.model_spend_ledger.v1";
 export const HISTORICAL_LEDGERS = ["artifacts/completion/evaluation/budget.json"];
-export interface LedgerEntry { id: string; run: string; kind: "smoke" | "attempt" | "critique"; reserved_max_usd: number; charged_usd: number; gateway_cost_usd: number | null; prompt_tokens: number; completion_tokens: number; model_calls: number; at: string; note?: string }
+export interface LedgerEntry { id: string; run: string; kind: "smoke" | "attempt" | "critique" | "unrecorded_estimate"; reserved_max_usd: number; charged_usd: number; gateway_cost_usd: number | null; prompt_tokens: number; completion_tokens: number; model_calls: number; at: string; note?: string }
 export interface LedgerFile { schema: typeof LEDGER_SCHEMA; phase: "local-intelligence"; phase_cap_usd: number; allowance_usd: number; allowance_note: string; route: string; model: string; entries: LedgerEntry[]; charged_total_usd: number; updated_at: string }
 
 export class PhaseLedger {
