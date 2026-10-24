@@ -274,6 +274,12 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     ? await client.req("GET", client.p(`/scene/locate/${encodeURIComponent(asset_id)}${incarnation ? `?incarnation=${encodeURIComponent(incarnation)}` : ""}`, p))
     : await client.req("GET", client.p(`/scene/search?${new URLSearchParams({ q: text ?? "", ...(limit ? { limit: String(limit) } : {}) })}`, p))));
 
+  server.registerTool("dk_asset_interior", {
+    title: "Evidence-linked interior of one asset",
+    description: "LP18: the typed objects inside one asset (routes, grants and credential references, data relationships and accesses, tool links, runs, decisions, executions, independently observed effects, artifacts, controls, sources), each with its exact authoritative record, provenance and basis (declared, configured, observed, tested, unknown, hypothetical). Declared and configured links are never transit; a decision is not an execution and an execution is not its effect. Read-only.",
+    inputSchema: { asset_id: z.string().max(200), project }, annotations: RO,
+  }, async ({ asset_id, project: p }) => out(await client.req("GET", client.p(`/assets/${encodeURIComponent(asset_id)}/interior`, p))));
+
   server.registerTool("dk_capabilities", {
     title: "Server capabilities and contract versions",
     description: "Contract versions, recipe versions, query budgets and how incremental delivery works (polling; no push).",

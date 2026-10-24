@@ -653,10 +653,17 @@
     "LP16",
     "LP17"
    ],
-   "status": "not_started",
+   "status": "in_progress",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP18.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "phase-lp18-interior 3/3; apps/mcp 10 files 31/31",
+    "e2e": "not run yet"
+   },
+   "progress_note": "Substage 1 committed (interior contract dk.asset_interior.v1 in @dk/scene-compiler, GET /assets/:asset/interior, MCP dk_asset_interior, server tests). Remaining: interior selection kind, inspector view, castle markers, A4 view persistence, browser tests + screenshots."
   },
   {
    "id": "LP19",
@@ -1380,18 +1387,24 @@
   },
   "LP18-A1": {
    "package": "LP18",
-   "status": "not_run",
-   "evidence": []
+   "status": "in_progress",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A1 (API/MCP; UI pending)"
+   ]
   },
   "LP18-A2": {
    "package": "LP18",
-   "status": "not_run",
-   "evidence": []
+   "status": "in_progress",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A2 (contract; rendering pending)"
+   ]
   },
   "LP18-A3": {
    "package": "LP18",
-   "status": "not_run",
-   "evidence": []
+   "status": "in_progress",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A3 (contract; UI pending)"
+   ]
   },
   "LP18-A4": {
    "package": "LP18",
@@ -1910,7 +1923,7 @@
  },
  "next_action": {
   "package": "LP18",
-  "why": "LP16, LP17 implemented and locally verified on phase/li-m4; LP18 evidence-linked interiors next (draft work/m4-lp18-draft/interior.ts), then LP19 and the M4 rebase onto phase/local-intelligence.",
+  "why": "LP18 substage 1 (contract/API/MCP) on phase/li-m4; next the interior selection kind, inspector view, castle markers and browser tests; then LP19 and the M4 rebase.",
   "eligible_now": [
    "LP18",
    "LP20",

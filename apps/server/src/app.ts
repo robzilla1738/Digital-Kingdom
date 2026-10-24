@@ -17,7 +17,7 @@ import { assessChange, securityContext, summarize } from "./context.ts";
 import { coverageHistory, parseCoverageQuestion } from "./coverage-history.ts";
 import { bundleEvents, createBundle, findingRevision, getBundle, pinBundle } from "./bundles.ts";
 import { Cases } from "./cases.ts";
-import { buildHierarchy, compileScene, footprintCollisions, layoutDiff, locateAsset, searchWorld } from "@dk/scene-compiler";
+import { buildHierarchy, buildInterior, compileScene, footprintCollisions, layoutDiff, locateAsset, searchWorld } from "@dk/scene-compiler";
 import { RECIPES, runRecipe } from "./recipes.ts";
 import { GithubDiscovery, type FetchLike } from "./github-discovery.ts";
 import { credentialAftermath } from "./aftermath.ts";
@@ -39,7 +39,7 @@ import { parseLocalRun, provenanceOf } from "./provenance.ts";
 import { deriveCapability, LOCAL_CONTRACTS, INVESTIGATION_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
 import { registerLocalWorld } from "./local-world.ts";
 import { registerInvestigationRoutes } from "./investigation/routes.ts";
-import { registerExplorationRoutes } from "./exploration.ts";
+import { registerExplorationRoutes, grantElements } from "./exploration.ts";
 import { registerRepairRoutes } from "./repair.ts";
 import { registerAttentionRoutes, type AttentionSinkConfig } from "./attention.ts";
 
@@ -950,6 +950,22 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     if (!snap) return { schema: "dk.access_paths.v1", evaluator: EVALUATOR_VERSION, snapshot: null, paths: [], result: "unresolved", reasons: ["no authorization snapshot has been stored"] };
     const paths = accessPaths(snap, q.from, q.action, q.resource, Math.min(3, Math.max(0, Number(q.max_hops ?? 2) || 0)));
     return { schema: "dk.access_paths.v1", evaluator: EVALUATOR_VERSION, snapshot: { id: snap.snapshot_id, taken_at: snap.taken_at }, result: paths[0]?.decision.result ?? "unresolved", paths: paths.slice(0, 20), note: "Configured permission only. Use event search or coverage history for what actually happened." };
+  });
+  // LP18: evidence-linked interior of one asset (dk.asset_interior.v1). Every object carries its exact authoritative
+  // record and provenance; declared/configured links are never transit; grants come from the latest authorization
+  // snapshot (null snapshot => grants unknown, never "none"). Read-only, viewer scope.
+  app.get("/api/projects/:p/assets/:asset/interior", { preHandler: authed() }, async (req) => {
+    const proj = store.require(req.principal!, P(req), "viewer");
+    const graph = store.getGraph(proj.id);
+    if (!graph) throw new HttpError(404, "project has no graph");
+    const asset = (req.params as { asset: string }).asset;
+    const snap = latestSnapshot(proj.id);
+    const evaluation = store.evaluation(proj.id);
+    const interior = buildInterior({ project_id: proj.id, graph, asset_id: asset, events: store.listEvents(proj.id, { asset, limit: 5000 }),
+      sources: store.listSources(proj.id).map(({ id, label, kind, asset_ids, disabled }) => ({ id, label, kind, asset_ids, disabled })), coverage: evaluation.coverage,
+      controls: controls.list(proj.id), grants: snap ? grantElements(snap).filter((g): g is typeof g & { kind: "grant" | "credential" } => g.kind === "grant" || g.kind === "credential") : null });
+    if (!interior) throw new HttpError(404, "no such asset");
+    return interior;
   });
   app.get("/api/projects/:p/aftermath/aws-key/:key", { preHandler: authed() }, async (req) => {
     const proj = store.require(req.principal!, P(req), "viewer");

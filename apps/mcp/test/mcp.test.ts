@@ -27,7 +27,7 @@ describe("Digital Kingdom MCP", () => {
   it("lists the agent tools", async () => {
     const c = await connect(ctx.viewer);
     const tools = (await c.listTools()).tools.map((t) => t.name).sort();
-    expect(tools).toEqual(["dk_access_paths", "dk_assess_change", "dk_capabilities", "dk_case_changes", "dk_containment_options", "dk_coverage", "dk_coverage_history", "dk_create_bundle", "dk_credential_aftermath", "dk_facts", "dk_get_bundle_events", "dk_get_case", "dk_get_event", "dk_get_finding", "dk_list_cases", "dk_list_findings", "dk_list_recipes", "dk_overview", "dk_propose_containment", "dk_run_recipe", "dk_search_events", "dk_security_context", "dk_world_hierarchy", "dk_world_locate"]);
+    expect(tools).toEqual(["dk_access_paths", "dk_assess_change", "dk_asset_interior", "dk_capabilities", "dk_case_changes", "dk_containment_options", "dk_coverage", "dk_coverage_history", "dk_create_bundle", "dk_credential_aftermath", "dk_facts", "dk_get_bundle_events", "dk_get_case", "dk_get_event", "dk_get_finding", "dk_list_cases", "dk_list_findings", "dk_list_recipes", "dk_overview", "dk_propose_containment", "dk_run_recipe", "dk_search_events", "dk_security_context", "dk_world_hierarchy", "dk_world_locate"]);
   });
   it("shares one engine with the castle: findings match the server's", async () => {
     const c = await connect(ctx.viewer);
