@@ -772,9 +772,9 @@
     "LP22",
     "LP19"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "b4c6f4e + 2c82242 + ddab371",
-   "ci_run": "pending",
+   "ci_run": "40071651385 success (check + browser-pilot) on ddab371; earlier 40070984746 (b4c6f4e, typecheck: test type error) and 40071303206 (2c82242, hardening downgrade list) failed and were fixed in ddab371",
    "receipt": "docs/phases/local-intelligence/receipts/LP23.md",
    "branch": "phase/local-intelligence",
    "local_checks": {
@@ -1023,10 +1023,23 @@
     "LP23",
     "LP25"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "implemented_locally_verified",
+   "commit": "72383a6",
+   "ci_run": "40072232517 on 72383a6: check success, browser-pilot in progress at ledger time",
+   "receipt": "docs/phases/local-intelligence/receipts/LP28.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "72383a6: 8 vitest shards, 134 files (133 passed, 1 skipped); 952 passed, 1 skipped",
+    "targeted": "apps/server/test/phase-lp28-capsules.test.ts 4 passed; hardening 12 passed"
+   },
+   "reuses": [
+    "R03.1 signed case export",
+    "R10.2 backup scrypt parameters",
+    "LP23 checkRegression + local_repair_links",
+    "LP25 oracle separation (server never holds private truth)"
+   ],
+   "progress_note": "LP28 done; no web UI button and no public-key signature (HMAC origin only)."
   },
   {
    "id": "LP29",
@@ -1927,23 +1940,32 @@
   },
   "LP28-A1": {
    "package": "LP28",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp28-capsules.test.ts > LP28-A1/A4 round trip into a fresh instance (exact refs, absent records)",
+    "docs/phases/local-intelligence/receipts/LP28.md"
+   ]
   },
   "LP28-A2": {
    "package": "LP28",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp28-capsules.test.ts > LP28-A2 (20 hostile archives refused before import)"
+   ]
   },
   "LP28-A3": {
    "package": "LP28",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp28-capsules.test.ts > LP28-A3 (oracle/tokens/secrets/credentials/fonts excluded) and training capsule leak tests"
+   ]
   },
   "LP28-A4": {
    "package": "LP28",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp28-capsules.test.ts > LP28-A1/A4 (integrity wording in manifest and import result; signature reported as origin only)"
+   ]
   },
   "LP29-A1": {
    "package": "LP29",
@@ -2381,15 +2403,14 @@
   "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (LP27 used $0.00; reserved for LP30)."
  },
  "next_action": {
-  "package": "LP28",
-  "why": "LP23 implemented (ddab371). LP28 needs LP23 + LP25.",
+  "package": "LP29",
+  "why": "LP23 CI-verified (ddab371, run 40071651385); LP28 implemented at 72383a6 (CI check green, browser-pilot pending at ledger time). LP29 needs LP07 + LP18 + LP28.",
   "eligible_now": [
-   "LP28"
+   "LP29"
   ],
   "blocked": {
-   "LP29": "needs LP28",
-   "LP30": "needs LP29",
-   "LP31": "needs LP30"
+   "LP30": "needs LP29 (+LP27)",
+   "LP31": "needs LP30 (+LP26)"
   }
  },
  "milestones": {
