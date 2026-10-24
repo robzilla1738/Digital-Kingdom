@@ -62,9 +62,9 @@ export const REPAIR_TEMPLATES = [
   { id: "restart-test-observer", version: 1, action: "restart_test_observer", applies_to: ["observer_gap"], disruption_class: "none", reversible: true,
     prerequisites: ["the observer is run-owned", "a local lab lease to apply it (LP16; none exists in this phase)"],
     explanation: "Restart (re-enable) the run-owned observer so the operation can be independently observed again." },
-  { id: "restore-reviewed-policy", version: 1, action: "set_gateway_policy", applies_to: ["tenant_access"], disruption_class: "targeted", reversible: true,
+  { id: "restore-reviewed-policy", version: 1, action: "set_gateway_policy", applies_to: ["tenant_access", "path"], disruption_class: "targeted", reversible: true,
     prerequisites: ["the enforcement point is a run-owned local resource whose declared policy variant is in the latest local configuration snapshot", "a supervisor lab lease scoped to this plan (LP20) to apply it"],
-    explanation: "Return the enforcement point from the deliberately weak policy variant to a reviewed variant, so its declared tenant isolation denies the cross-tenant operation again while own-tenant operations keep working." },
+    explanation: "Return the enforcement point from the deliberately weak policy variant to a reviewed variant, so its declared rule (tenant isolation at a tenant API; the approved destination at an agent tool gateway) denies the prohibited operation again while permitted operations keep working." },
 ] as const;
 type Template = (typeof REPAIR_TEMPLATES)[number];
 
@@ -78,6 +78,21 @@ export const LOCAL_TENANT_POLICY_MODEL = "dk.local.tenant_policy_model.v1";
 export function tenantDecision(policy: Element, tenant: string, target: string): "allows" | "denies" {
   const a = policy.attrs;
   return a.template === "api" && a.tenant_mode === "isolated" && a.variant !== "deliberately_weak" && tenant !== target ? "denies" : "allows";
+}
+/** Agent tool gateway (model): only the deliberately weak variant forwards to a receiver other than the approved one. */
+export function destinationDecision(policy: Element, target: string, graph: Graph): "allows" | "denies" {
+  const isReceiver = /^receiver@\d/.test(graph.assets.find((a) => a.id === target)?.secondary_label ?? "");
+  return policy.attrs.template === "agent_gateway" && policy.attrs.variant !== "deliberately_weak" && isReceiver && !target.startsWith("allowed") ? "denies" : "allows";
+}
+/** Declared paths of a path probe with the local agent-gateway policies applied (only when a configuration snapshot exists). */
+function destinationPaths(p: ObjectiveProbe, s: AnalysisState, graph: Graph) {
+  const pols = s.elements.filter((e) => e.kind === "policy");
+  const x = explainPath({ graph: graphFromState(graph, s), snap: null, namespace: s.namespace, from: p.from!, to: p.to! });
+  const paths = x.paths.map((path) => {
+    const gates = path.hops.map((h) => ({ hop: h, policy: pols.find((e) => e.attrs.asset_id === h.from) })).filter((g): g is { hop: typeof g.hop; policy: Element } => !!g.policy);
+    return { path, gates, deniedBy: gates.find((g) => destinationDecision(g.policy, g.hop.to, graph) === "denies")?.policy ?? null };
+  });
+  return { configured: pols.length > 0, x, paths };
 }
 function tenantPaths(p: ObjectiveProbe, s: AnalysisState, graph: Graph) {
   const pols = s.elements.filter((e) => e.kind === "policy");
@@ -119,7 +134,9 @@ export class Repairs {
       return { holds: d.result === "feasible" || d.result === "conditional" ? "holds" : d.result === "blocked" ? "does_not_hold" : "unknown", detail: `configured permission ${d.result}${d.condition_keys.length ? ` (conditions ${d.condition_keys.join(", ")})` : ""}` };
     }
     if (p.kind === "path") {
-      const x = explainPath({ graph: graphFromState(graph, s), snap: null, namespace: s.namespace, from: p.from!, to: p.to! });
+      const d = destinationPaths(p, s, graph);
+      if (d.configured && d.paths.length && d.paths.every((x) => x.deniedBy)) return { holds: "does_not_hold", detail: `every declared path is denied by a reviewed agent tool gateway policy (${[...new Set(d.paths.map((x) => `${String(x.deniedBy!.attrs.asset_id)} ${String(x.deniedBy!.attrs.variant)}`))].join(", ")}; ${LOCAL_TENANT_POLICY_MODEL})` };
+      const x = d.x;
       return { holds: x.reachable === "unresolved" ? "unknown" : x.reachable === "no_declared_path_found" ? "does_not_hold" : "holds", detail: x.reachable };
     }
     if (p.kind === "tenant_access") {
@@ -175,6 +192,18 @@ export class Repairs {
           const altRef = ref("artifact", alt.reference);
           out.push({ template: REPAIR_TEMPLATES[3], target: `${p.asset_id}@${parsed}`, covers: [p.id], changes: [{ op: "modify", kind: "artifact", authority: e.authority, id: e.id, attrs: { version: parsed, reference: alt.reference } }],
             actions: [{ target_resource_id: plainId(p.asset_id!), type: "select_test_artifact", parameters: { artifact_ref: altRef }, expected_target_revision: revisionOf(e) }] });
+        }
+      }
+      if (p.kind === "path") {
+        // local worlds: a weakened agent tool gateway on an open declared path, returned to each reviewed variant
+        const seen = new Set<string>();
+        for (const dp of destinationPaths(p, base, graph).paths.filter((x) => !x.deniedBy)) for (const g of dp.gates) {
+          const e = g.policy;
+          if (e.attrs.template !== "agent_gateway" || e.attrs.variant !== "deliberately_weak" || seen.has(keyOf(e))) continue;
+          seen.add(keyOf(e));
+          for (const variant of ["baseline", "candidate"] as const) out.push({ template: REPAIR_TEMPLATES[5], target: `${String(e.attrs.asset_id)}@policy:${variant}`, covers: [p.id],
+            changes: [{ op: "modify", kind: "policy", authority: e.authority, id: e.id, attrs: { variant } }],
+            actions: [{ target_resource_id: plainId(String(e.attrs.asset_id)), type: "set_gateway_policy", parameters: { policy_ref: `policy:${variant}` }, expected_target_revision: typeof e.attrs.revision === "string" ? e.attrs.revision : revisionOf(e) }] });
         }
       }
       if (p.kind === "tenant_access") {

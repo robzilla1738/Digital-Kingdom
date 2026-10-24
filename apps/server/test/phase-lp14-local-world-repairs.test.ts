@@ -89,3 +89,29 @@ describe("LP14 local-world candidates (gateway/API policy defects)", () => {
     expect("local_config" in st.state.base).toBe(false);
   });
 });
+
+describe("LP14 local-world candidates: agent-workspace tool gateway defect", () => {
+  it("proposes restoring the weakened agent tool gateway policy for a prohibited destination path, ranked above denying the whole tool link", async () => {
+    const aw = compileWorld(instantiateBlueprint("agent-workspace", { seed: "lp14-local-aw" }));
+    const ctx = await setup();
+    const { app, admin, analyst, h } = ctx;
+    const P = "lw-agents";
+    expect((await app.inject({ method: "POST", url: "/api/projects", headers: h(admin), payload: { id: P, name: "Local agents", dataset_kind: "live", local_run: { ...provenance, world_plan_id: aw.plan.plan_id } } })).statusCode).toBe(200);
+    expect((await app.inject({ method: "POST", url: `/api/projects/${P}/graph`, headers: h(admin), payload: { ...aw.graph, project_id: P } })).statusCode).toBe(200);
+    const kase = (await app.inject({ method: "POST", url: `/api/projects/${P}/cases`, headers: h(analyst), payload: { title: "Agent sends", scope: { question: "Can the agent reach the blocked receiver?", asset_ids: ["tool-gateway"] }, closure_criteria: "Repair verified" } })).json();
+    const objective = { prohibited: [{ id: "send-blocked", kind: "path", from: "workspace", to: "blocked-receiver" }], permitted: [{ id: "send-allowed", kind: "path", from: "workspace", to: "allowed-receiver" }] };
+    const gen = async () => { const st = (await app.inject({ url: `/api/projects/${P}/analysis/state`, headers: h(analyst) })).json(); return (await app.inject({ method: "POST", url: `/api/projects/${P}/cases/${kase.id}/repairs`, headers: h(analyst), payload: { base_state_hash: st.state_hash, objective } })).json(); };
+    // without a configuration snapshot only the existing tool-link template applies (and it breaks the permitted send)
+    const before = await gen();
+    expect(before.candidates.map((c: { template: { id: string }; valid: boolean; breaks_permitted: boolean }) => [c.template.id, c.valid, c.breaks_permitted])).toEqual([["set-gateway-policy", true, true]]);
+    const snap = { schema: "dk.local.config_snapshot.v1", run_id: RUN, resources: [{ resource_id: "tool-gateway", template: "agent_gateway", policy_variant: "deliberately_weak", revision: "tool-gateway:policy-deliberately_weak-r2" }] };
+    expect((await app.inject({ method: "POST", url: `/api/projects/${P}/local-configuration`, headers: h(admin), payload: snap })).statusCode).toBe(200);
+    const r = await gen();
+    expect(r.candidates.map((c: { template: { id: string }; target: string; valid: boolean; breaks_permitted: boolean }) => [c.template.id, c.target, c.valid, c.breaks_permitted])).toEqual([
+      ["restore-reviewed-policy", "tool-gateway@policy:baseline", true, false], ["restore-reviewed-policy", "tool-gateway@policy:candidate", true, false], ["set-gateway-policy", "workspace->tool-gateway", true, true]]);
+    expect(r.candidates[0].plan.actions[0]).toMatchObject({ target_resource_id: "tool-gateway", type: "set_gateway_policy", parameters: { policy_ref: "policy:baseline" }, expected_target_revision: "tool-gateway:policy-deliberately_weak-r2" });
+    // once the reviewed policy is back, the prohibited destination path is denied by the model
+    expect((await app.inject({ method: "POST", url: `/api/projects/${P}/local-configuration`, headers: h(admin), payload: { ...snap, resources: [{ ...snap.resources[0], policy_variant: "baseline", revision: "tool-gateway:policy-baseline-r3" }] } })).statusCode).toBe(200);
+    expect((await gen()).status).toBe("no_repair_needed");
+  });
+});
