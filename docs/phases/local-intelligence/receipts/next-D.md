@@ -182,3 +182,17 @@ Today this refuses with exit 2. It is recorded as `ai_selector: "model"` only wh
 - `34b15be` bench + selectors + distractors + `pnpm bench:repairs`
 - `4cbd172` CI step
 - this receipt
+
+### CI results (appended)
+- run **40136488488** (`34b15be`, bench + tests): **success**. Both jobs passed: `check` (typecheck, `pnpm test` with
+  Test Files 143 passed | 1 skipped and Tests **1000 passed | 1 skipped (1001)**, validate:fixtures, scenarios, build,
+  release verify) and `browser-pilot` (`pnpm pilot` + `pnpm pilot:redesign`). The full suite was 992 on next-B; the +9
+  here are this item's tests.
+- run **40136855523** (`4cbd172`, adds `pnpm bench:repairs` to `check`): `check` **success**. Tests 1000 passed |
+  1 skipped. The new step printed `positive controls caught 9/9 · model not used` and `BENCH OK` in under a minute.
+  `browser-pilot` was still running when this was appended.
+- run **40136960674** (`6c21ce1`, receipt only):
+  - First attempt: `check` failed on `examples/reference-app/e2e.test.ts` ("expected +0 to be 10" events after an SDK
+    flush; 999 passed / 1 failed). That test, its code and the SDK are untouched by this branch, and the same tree
+    passed on the two runs above, so it is treated as a load-dependent flake, not a regression.
+  - Failed job re-run: `check` **success**. `browser-pilot` was still running when this was appended.
