@@ -19,7 +19,7 @@ export const LOCAL_REPAIR_MIGRATION = `CREATE TABLE local_repair_links (id TEXT 
 interface Row { id: string; project_id: string; case_id: string; comparison_id: string | null; kind: "verification" | "regression"; ref: string | null; body: string; digest: string; status: string; stale_reasons: string | null; created_by: string; created_at: string }
 
 export function executedLocalFor(store: Store, projectId: string, comparisonId: string) {
-  const rows = store.db.prepare("SELECT * FROM local_repair_links WHERE project_id = ? AND comparison_id = ? AND kind = 'verification' ORDER BY created_at, id").all(projectId, comparisonId) as unknown as Row[];
+  const rows = store.db.prepare("SELECT * FROM local_repair_links WHERE project_id = ? AND comparison_id = ? AND kind = 'verification' ORDER BY created_at, rowid").all(projectId, comparisonId) as unknown as Row[];
   return rows.map((r) => {
     const v = JSON.parse(r.body) as RepairVerification;
     return {
@@ -74,7 +74,7 @@ export class LocalRepairs {
 
   list(projectId: string, caseId: string) {
     this.caseRow(projectId, caseId);
-    const rows = this.db.prepare("SELECT * FROM local_repair_links WHERE project_id = ? AND case_id = ? ORDER BY created_at, id").all(projectId, caseId) as unknown as Row[];
+    const rows = this.db.prepare("SELECT * FROM local_repair_links WHERE project_id = ? AND case_id = ? ORDER BY created_at, rowid").all(projectId, caseId) as unknown as Row[];
     return {
       case_id: caseId,
       verifications: rows.filter((r) => r.kind === "verification").map((r) => { const v = JSON.parse(r.body) as RepairVerification; return { link_id: r.id, digest: r.digest, comparison_id: r.comparison_id, run_id: v.run_id, plan_digest: v.plan_digest, security_verdict: v.security_verdict, whole_run: v.whole_run.outcome, verified: v.whole_run.success, residual_access: v.residual_access, disruption: v.disruption, cleanup: v.cleanup.outcome, scope: v.scope }; }),
@@ -87,7 +87,7 @@ export class LocalRepairs {
   check(projectId: string, b: Record<string, unknown>, actor: string) {
     const tools = b.tools && typeof b.tools === "object" ? b.tools as Record<string, string> : undefined;
     const artifacts = b.artifacts && typeof b.artifacts === "object" ? b.artifacts as Record<string, string> : undefined;
-    const rows = this.db.prepare("SELECT * FROM local_repair_links WHERE project_id = ? AND kind = 'regression' ORDER BY created_at, id").all(projectId) as unknown as Row[];
+    const rows = this.db.prepare("SELECT * FROM local_repair_links WHERE project_id = ? AND kind = 'regression' ORDER BY created_at, rowid").all(projectId) as unknown as Row[];
     return this.store.transaction(() => rows.map((r) => {
       const d = JSON.parse(r.body) as RepairRegression;
       const world = compileWorld(instantiateBlueprint(d.world.blueprint, { seed: d.world.seed }));
@@ -105,7 +105,7 @@ export class LocalRepairs {
 
   /** Raw linked documents for a case capsule (LP28): regressions are synthetic descriptors; verifications carry no secrets. */
   documents(projectId: string, caseId: string) {
-    const rows = this.db.prepare("SELECT kind, body FROM local_repair_links WHERE project_id = ? AND case_id = ? ORDER BY created_at, id").all(projectId, caseId) as { kind: string; body: string }[];
+    const rows = this.db.prepare("SELECT kind, body FROM local_repair_links WHERE project_id = ? AND case_id = ? ORDER BY created_at, rowid").all(projectId, caseId) as { kind: string; body: string }[];
     return { regressions: rows.filter((r) => r.kind === "regression").map((r) => JSON.parse(r.body) as unknown), verifications: rows.filter((r) => r.kind === "verification").map((r) => JSON.parse(r.body) as unknown) };
   }
 
