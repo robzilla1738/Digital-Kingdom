@@ -41,6 +41,7 @@ import { registerLocalWorld } from "./local-world.ts";
 import { registerInvestigationRoutes } from "./investigation/routes.ts";
 import { registerExplorationRoutes } from "./exploration.ts";
 import { registerRepairRoutes } from "./repair.ts";
+import { registerAttentionRoutes, type AttentionSinkConfig } from "./attention.ts";
 
 export interface AppConfig {
   store: Store;
@@ -70,6 +71,8 @@ export interface AppConfig {
   notifyAllowLoopback?: boolean;
   /** R05.4: optional case assistant model. None by default; every path works without it. */
   assistant?: AssistModel | null;
+  /** LP15: optional loopback-only sink that receives minimized attention items. Local testing only; off by default. */
+  attentionTestSink?: AttentionSinkConfig | null;
 }
 
 declare module "fastify" {
@@ -773,6 +776,8 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   const exploration = registerExplorationRoutes(app, { store, authed, who });
   // LP14 reviewable repair candidates (plan-only; no executor, no approval recording, no publication).
   registerRepairRoutes(app, { store, exploration, cases, authed, who });
+  // LP15 local attention queue (in-app only; never uses the notifier or any remote destination).
+  registerAttentionRoutes(app, { store, exploration, sink: cfg.attentionTestSink ?? null, authed, who });
 
   // ---- optional bounded case assistance (R05.4): read-only drafts; deterministic without a model ----
   app.post("/api/projects/:p/cases/:id/assist", { preHandler: authed() }, async (req) => {

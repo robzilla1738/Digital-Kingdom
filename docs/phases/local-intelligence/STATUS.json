@@ -582,10 +582,27 @@
    "depends_on": [
     "LP12"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP15.md",
+   "branch": "phase/li-m3",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "115 files (114 passed, 1 skipped); 804 passed, 1 skipped (4 vitest shards). One timing-sensitive test (examples/reference-app/lp07-scenarios.test.ts LP07-A3 delayed evidence lag) failed once while a concurrent model-eval run in another worktree loaded the machine; it passed 13/13 on an isolated rerun. No LP15 code is involved.",
+    "build": "exit 0",
+    "e2e": "attention-redesign 1 passed; cases-redesign 5 passed; exploration-redesign 1, repairs-redesign 1, workbench-redesign A1-A3 passed; workbench-redesign LP12-A4 timed out twice on the Cases tab 'stable' wait under the same machine load (before any LP15 UI renders) and passed on rerun"
+   },
+   "reuses": [
+    "outbox project change stream",
+    "Store.sourceState (R01.2)",
+    "source stale_after_seconds",
+    "R03.1 cases scope + linked findings",
+    "LP14 repair_candidate_sets (+ repair_candidates stream record)",
+    "LP13 Exploration.baseline",
+    "store.require project authorization",
+    "audit_log"
+   ]
   },
   {
    "id": "LP16",
@@ -1247,23 +1264,35 @@
   },
   "LP15-A1": {
    "package": "LP15",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp15-attention.test.ts > LP15-A1 (2 tests: retries/burst/replay/restart; five kinds + bounded urgency)",
+    "e2e/attention-redesign.spec.ts (every record delivered twice -> one item, 3 records)"
+   ]
   },
   "LP15-A2": {
    "package": "LP15",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp15-attention.test.ts > LP15-A2 (table digests unchanged, extra fields 422, reopen on new record)",
+    "e2e/attention-redesign.spec.ts (case + finding unchanged after Acknowledge)"
+   ]
   },
   "LP15-A3": {
    "package": "LP15",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp15-attention.test.ts > LP15-A3",
+    "apps/web/src/lib/attention.test.ts"
+   ]
   },
   "LP15-A4": {
    "package": "LP15",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp15-attention.test.ts > LP15-A4 (no destinations / disabled destination: 0 fetch, 0 notifier calls, 0 notify_outbox rows; loopback-only test sink)",
+    "e2e/attention-redesign.spec.ts (page requests only the local server)"
+   ]
   },
   "LP16-A1": {
    "package": "LP16",
@@ -1798,6 +1827,21 @@
    "id": "D-LP14-3",
    "date": "2026-10-23",
    "decision": "An objective needs at least one permitted operation (positive control); ranking uses only recorded criteria (validity, coverage, positive controls broken, unknowns, elements changed) and states it is not globally optimal."
+  },
+  {
+   "id": "D-LP15-1",
+   "date": "2026-10-23",
+   "decision": "The attention queue derives from the server's own project change stream (outbox) through a durable per-project cursor plus a bounded staleness scan; it never uses the R03.5 notifier or any remote destination. The only outbound path is an optional loopback-only test sink, off by default and checked at startup."
+  },
+  {
+   "id": "D-LP15-2",
+   "date": "2026-10-23",
+   "decision": "One item per (project, dedup_key); each distinct underlying record is an occurrence in the append-only attention_log, an identical record again only increments repeats. Acknowledgement accepts no fields beyond expected_seq, changes only the item, and a new distinct record reopens it."
+  },
+  {
+   "id": "D-LP15-3",
+   "date": "2026-10-23",
+   "decision": "Urgency is bounded: per-kind ceilings, never critical from local signals, repeats never raise it, and at most 5 items per project become high per hour (the rest are recorded medium with the reason). Items carry ids, counts and fixed template text only."
   },
   {
    "id": "D-M1-CI-2",

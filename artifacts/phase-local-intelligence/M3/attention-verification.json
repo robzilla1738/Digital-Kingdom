@@ -1,0 +1,11 @@
+{
+  "test": "LP15",
+  "new_evidence_records": 3,
+  "retried_deliveries_merged": true,
+  "contradiction_urgency": "high",
+  "acknowledged": "f-1ogfivz17xdjzf",
+  "case_status_after_ack": "open",
+  "finding_lifecycle_after_ack": "open",
+  "hosts": 1,
+  "replay_changes": 13
+}

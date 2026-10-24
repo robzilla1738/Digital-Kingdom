@@ -244,6 +244,8 @@ export class Repairs {
     const digest = sha256(canonicalJson(result));
     this.store.db.prepare("INSERT INTO repair_candidate_sets (id, project_id, case_id, base_state_hash, body, digest, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").run(id, projectId, c.id, baseHash, canonicalJson(result), digest, actor, this.store.now().toISOString());
     this.store.audit(actor, "repair.candidates", projectId, id, { case_id: c.id, status, candidates: ranked.length });
+    // LP15: the local attention queue reads this from the project change stream (ids and counts only)
+    this.store.emit(projectId, "repair_candidates", { id, case_id: c.id, status, valid_candidates: valid.length });
     return { id, digest, ...result };
   }
 

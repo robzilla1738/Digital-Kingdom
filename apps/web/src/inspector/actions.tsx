@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import type { EventDetailResponse, EventSearchResponse } from "@dk/contracts";
 import type { EventSearchInput, FindingDetailResult, FindingEvidenceResult } from "../lib/investigation.ts";
+import type { AttentionQueue } from "../lib/attention.ts";
 import type { Workbench } from "../lib/workbench.ts";
 import type { PathExplanation } from "../lib/pathInspector.ts";
 
@@ -29,6 +30,9 @@ export interface ServerActions {
   /** LP12 investigation workbench (read-only) and opening/refreshing the case's investigation contract. Optional: absent on older servers/mocks. */
   caseWorkbench?(id: string, signal?: AbortSignal): Promise<Workbench>;
   openContract?(id: string): Promise<unknown>;
+  /** LP15 local attention queue (in-app only) and acknowledgement (never closes a case or finding). Optional. */
+  attention?(signal?: AbortSignal): Promise<AttentionQueue>;
+  acknowledgeAttention?(id: string, expectedSeq: number): Promise<unknown>;
   /** LP13 "why can this reach that?" over the stored inventory and authorization snapshot. Optional. */
   analysisPaths?(q: { from: string; to: string; principal?: string; action?: string; resource?: string; comparison?: string }, signal?: AbortSignal): Promise<PathExplanation>;
   /** R02.1 connector manifests. */
