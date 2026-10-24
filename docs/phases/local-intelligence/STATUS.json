@@ -665,10 +665,22 @@
     "LP05",
     "LP14"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "implemented_locally_verified",
+   "commit": "18f06da",
+   "ci_run": "40060924990 success (check + browser-pilot) on phase/li-m5 18f06da",
+   "receipt": "docs/phases/local-intelligence/receipts/LP20.md",
+   "branch": "phase/li-m5",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
+    "targeted": "examples/reference-app/lp20-leases.test.ts 6 passed"
+   },
+   "reuses": [
+    "LP05 supervisor (run tokens, authorize, run-owned resources, monotonic clock, private truth, halt revocation)",
+    "LP14 dk.local.repair_plan.v1 + validateRepairPlan",
+    "R08.2 changed-digest-cannot-reuse-approval principle",
+    "existing human-admin containment decision path (unchanged)"
+   ]
   },
   {
    "id": "LP21",
@@ -678,10 +690,22 @@
     "LP20",
     "LP06"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "implemented_locally_verified",
+   "commit": "e18c095",
+   "ci_run": "40061416252 failure on e18c095 (LP21-A4 flake: base64url controller token id in lease.controller_id violated the plain-id pattern, D-M5-CI-1; fixed in b2b90b8); 40061825278 success (check + browser-pilot) on b2b90b8",
+   "receipt": "docs/phases/local-intelligence/receipts/LP21.md",
+   "branch": "phase/li-m5",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
+    "targeted": "examples/reference-app/lp21-repairs.test.ts 9 passed"
+   },
+   "reuses": [
+    "LP05 registry-resolved handshake-verified send, assertRoute, budgets, run directory/manifest/cleanup, private truth",
+    "LP06 built-in services (policy variants, local issuer credentials/grants, artifact depot), observers",
+    "LP14 five action types",
+    "LP20 leases"
+   ]
   },
   {
    "id": "LP22",
@@ -691,10 +715,23 @@
     "LP21",
     "LP07"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "implemented_locally_verified",
+   "commit": "b2b90b8",
+   "ci_run": "40061825278 success (check + browser-pilot) on phase/li-m5 b2b90b8",
+   "receipt": "docs/phases/local-intelligence/receipts/LP22.md",
+   "branch": "phase/li-m5",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "M5 head b2b90b8, 4 vitest shards: 118 files (117 passed, 1 skipped); 826 passed, 1 skipped",
+    "targeted": "examples/reference-app/lp22-verify.test.ts 7 passed"
+   },
+   "reuses": [
+    "LP06 EffectObserver per-operation answers + health intervals",
+    "LP06 probeOf / verificationReceipt (dk.local.verification_receipt.v1)",
+    "LP05 monotonic clock, tick, run tokens",
+    "LP07 fault semantics (observer outage = unknown)",
+    "LP21 execution receipts"
+   ]
   },
   {
    "id": "LP23",
@@ -1376,63 +1413,90 @@
   },
   "LP20-A1": {
    "package": "LP20",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp20-leases.test.ts > LP20-A1 (2 tests)",
+    "docs/phases/local-intelligence/receipts/LP20.md"
+   ]
   },
   "LP20-A2": {
    "package": "LP20",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp20-leases.test.ts > LP20-A2 (1 test)"
+   ]
   },
   "LP20-A3": {
    "package": "LP20",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp20-leases.test.ts > LP20-A3 (2 tests)"
+   ]
   },
   "LP20-A4": {
    "package": "LP20",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp20-leases.test.ts > LP20-A4 (1 test, real DK server via inject)"
+   ]
   },
   "LP21-A1": {
    "package": "LP21",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp21-repairs.test.ts > LP21-A1 (2 tests)",
+    "docs/phases/local-intelligence/receipts/LP21.md"
+   ]
   },
   "LP21-A2": {
    "package": "LP21",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp21-repairs.test.ts > LP21-A2 (2 tests: crash after apply, crash before apply)"
+   ]
   },
   "LP21-A3": {
    "package": "LP21",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp21-repairs.test.ts > LP21-A3 (1 test incl. static import/capability scan)"
+   ]
   },
   "LP21-A4": {
    "package": "LP21",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp21-repairs.test.ts > LP21-A4 (4 tests: cancellation, quota, partial failure + compensation, cleanup)"
+   ]
   },
   "LP22-A1": {
    "package": "LP22",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp22-verify.test.ts > LP22-A1 (2 tests)",
+    "docs/phases/local-intelligence/receipts/LP22.md"
+   ]
   },
   "LP22-A2": {
    "package": "LP22",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp22-verify.test.ts > LP22-A2 (3 tests: delayed + concurrent correlation, observer outage, verifier independence)"
+   ]
   },
   "LP22-A3": {
    "package": "LP22",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp22-verify.test.ts > LP22-A3 (1 test)"
+   ]
   },
   "LP22-A4": {
    "package": "LP22",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp22-verify.test.ts > LP22-A4 (1 test: cleanup_failed, execution_incomplete)"
+   ]
   },
   "LP23-A1": {
    "package": "LP23",
@@ -1857,6 +1921,26 @@
    "id": "D-M3-REBASE-1",
    "date": "2026-10-23",
    "decision": "M3 (LP12-LP15) rebased from phase/li-m3 onto origin/phase/local-intelligence 7aa9975 (M1 final ledger + A11Y-05 race fix). Only STATUS.json conflicted; resolved by keeping each M3 commit's entries and re-applying upstream D-M1-CI-2 and the M1 final_head. No db.ts/validators conflict at this point (the M6 branch had not pushed). Rebased hashes: LP12 bf2685c, LP13 d630485, LP14 82cea39, LP15 14a0c13."
+  },
+  {
+   "id": "D-M5-1",
+   "date": "2026-10-23",
+   "decision": "Local lab authority (LP20) lives in the supervisor library, not the server: leases are issued only with the supervisor's one-time operator credential, controllers get a separate repair_execute-only identity, the default is plan_only and the kill switch is permanent. The server keeps runtime_policy.local_actions = plan_only / executor not_available and accepts no lease anywhere; a lease is never human approval (EXT05 stays deferred)."
+  },
+  {
+   "id": "D-M5-2",
+   "date": "2026-10-23",
+   "decision": "LP21 compensation never restores compromised authority: deactivated test tokens, removed grants, previously deployed artifacts and a deliberately weak policy are recorded not_restored; only a reviewed gateway policy is restored. This narrows LP14's plan-level compensation (exact inverse changes, kept as a review description) for actual execution."
+  },
+  {
+   "id": "D-M5-3",
+   "date": "2026-10-23",
+   "decision": "LP22 whole-run success requires a completed execution, a passing independent security verdict and completed cleanup; settle windows below 200 ms are refused (they could miss delayed effects and pass falsely); a baseline that never showed the prohibited effect cannot support a pass."
+  },
+  {
+   "id": "D-M5-CI-1",
+   "date": "2026-10-23",
+   "decision": "CI run 40061416252 (e18c095) failed LP21-A4 intermittently: lease.controller_id carried the raw base64url token id, which may start with '-' or '_' and then violates the plain-id pattern. Fixed in b2b90b8 by recording non-secret identity references (ctl-/vrf- + 16 hex of sha256) instead of token ids."
   }
  ],
  "model_spend_usd": {
@@ -1865,13 +1949,15 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP16",
-  "why": "M0-M3 are CI-verified on phase/local-intelligence (M3 head c27402e, run 40058755915). Eligible now: LP16 (M4; deps LP04, LP12), LP20 (M5; deps LP05, LP14) and LP24 (M6; deps LP11, LP07; being worked in DK-m6 / phase/li-m6). LP16 is first in DAG order and unblocks LP17-LP19 (executed-local repair verification).",
+  "package": "LP23",
+  "why": "M5 LP20-LP22 are implemented and verified locally and in CI. LP23 (replayable regression) depends on LP22 (done) and LP19 (M4, baseline-versus-repair world comparison), which is not yet verified; LP23 waits for LP19. Other eligible work is per the DAG (M4 LP16-LP19 in DK-m4, M6 in DK-m6); LP27 needs LP25 and LP22.",
   "eligible_now": [
-   "LP16",
-   "LP20",
-   "LP24"
-  ]
+   "LP16-LP19 (M4, in progress elsewhere)",
+   "LP25/LP26 (M6, in progress elsewhere)"
+  ],
+  "blocked": {
+   "LP23": "needs LP19"
+  }
  },
  "milestones": {
   "M0": {
@@ -1978,6 +2064,34 @@
     "e2e": "attention-redesign 1, repairs-redesign 1, exploration-redesign 1, cases-redesign 5, workbench-redesign 3 (LP12-A4 needed a rerun under load) passed locally; full redesign + pilot suites green in CI run 40058755915"
    },
    "note": "Engineering-verified locally and in CI for the executed tests only. Scripted/protocol checks; no model call, AI execution not exercised, $0 model spend for M3. Repair plans are plan-only (no executor; lab leases are LP16; human approval EXT05 deferred); the attention queue makes no remote delivery (R03.5 destinations remain gated)."
+  },
+  "M5": {
+   "packages": [
+    "LP20",
+    "LP21",
+    "LP22",
+    "LP23"
+   ],
+   "status": "in_progress",
+   "done": [
+    "LP20",
+    "LP21",
+    "LP22"
+   ],
+   "pending": {
+    "LP23": "depends on LP19 (M4)"
+   },
+   "commits": {
+    "LP20": "18f06da",
+    "LP21": "e18c095",
+    "LP22": "b2b90b8"
+   },
+   "note": "Engineering-verified locally for the executed tests only. Scripted/protocol checks; no model call, AI execution not exercised, $0 model spend for M5. Trusted host-process mode only; the executor is a library inside disposable supervisor-owned runs, the server has no executor. External effectiveness (EXT01) and human approval (EXT05) stay deferred.",
+   "ci_runs": {
+    "LP20": "40060924990 success on 18f06da",
+    "LP21": "40061416252 failure on e18c095 (D-M5-CI-1)",
+    "LP22": "40061825278 success (check + browser-pilot) on b2b90b8"
+   }
   }
  }
 }
