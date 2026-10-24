@@ -1,5 +1,5 @@
 import {
-  MODULES_BY_KIND, DEFAULT_MODULE_BY_KIND, validateSceneProposalSchema,
+  MODULES_BY_KIND, DEFAULT_MODULE_BY_KIND, recordModuleFor, validateSceneProposalSchema,
   type Graph, type SceneProposal,
 } from "@dk/contracts";
 
@@ -44,4 +44,16 @@ export function defaultProposal(graph: Graph, seed = 1): SceneProposal {
     camera_profile: "isometric-v1",
     placements: graph.assets.map((a) => ({ asset_id: a.id, zone_id: a.allowed_zone_ids[0]!, module_id: DEFAULT_MODULE_BY_KIND[a.kind] })),
   };
+}
+
+/**
+ * LP17: the default proposal with architectural families chosen from declared/supported record fields
+ * (`recordModuleFor`). Positions, zones and seeds are identical to `defaultProposal`; only the module may differ, and
+ * only to one the asset kind allows. Used for newly compiled local worlds and explicit family fixtures; existing
+ * projects keep `defaultProposal`, so a saved scene of the original ten modules is never silently re-skinned.
+ */
+export function recordProposal(graph: Graph, seed = 1): SceneProposal {
+  const p = defaultProposal(graph, seed);
+  const byId = new Map(graph.assets.map((a) => [a.id, a]));
+  return { ...p, placements: p.placements.map((pl) => ({ ...pl, module_id: recordModuleFor(byId.get(pl.asset_id)!) ?? pl.module_id })) };
 }

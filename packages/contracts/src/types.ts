@@ -6,7 +6,9 @@ export type ZoneId = (typeof ZONE_IDS)[number];
 export const ASSET_KINDS = ["edge", "auth", "service", "worker", "database", "storage", "agent", "tool_server", "pipeline", "third_party"] as const;
 export type AssetKind = (typeof ASSET_KINDS)[number];
 
-export const MODULE_IDS = ["gatehouse", "guardhouse", "hall", "great_hall", "workshop", "vault", "observatory", "tool_annex", "forge", "portal"] as const;
+/** The ten original modules (kit 2.0.0) plus the six LP17 families (kit 2.1.0). Older scenes use only the first ten. */
+export const MODULE_IDS = ["gatehouse", "guardhouse", "hall", "great_hall", "workshop", "vault", "observatory", "tool_annex", "forge", "portal", "dns_registry", "dispatch_house", "key_registry", "supply_depot", "archive", "outpost"] as const;
+export const ORIGINAL_MODULE_IDS = ["gatehouse", "guardhouse", "hall", "great_hall", "workshop", "vault", "observatory", "tool_annex", "forge", "portal"] as const;
 export type ModuleId = (typeof MODULE_IDS)[number];
 
 export const RELATIONSHIP_KINDS = ["calls", "reads_from", "writes_to", "deploys", "invokes_tool", "runs_as", "may_assume", "protected_by", "belongs_to"] as const;

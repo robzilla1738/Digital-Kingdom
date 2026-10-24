@@ -1,6 +1,6 @@
 import { canonicalJson, validateWorldPlan, LOCAL_CONTRACTS, LOCAL_LAB_LABEL, type Asset, type CompiledScene, type EventAction, type Graph, type Relationship, type WorldPlan } from "@dk/contracts";
 import { matchDeclaredRoutes, zoneForKind } from "@dk/graph-core";
-import { compileScene, defaultProposal } from "@dk/scene-compiler";
+import { compileScene, recordProposal } from "@dk/scene-compiler";
 import { CATALOG_VERSION, TEMPLATE_CATALOG, catalogDigest, sha256, templateDigest, type WorldTemplate } from "./catalog.ts";
 import { getBlueprint, type Blueprint, type BlueprintResource } from "./blueprints.ts";
 
@@ -165,7 +165,8 @@ export function compileWorld(planInput: unknown, opts: CompileOptions = {}): Com
   const identities: WorldIdentity[] = (bp?.accounts ?? []).map((a) => ({ id: a.id, namespace: IDENTITY_NAMESPACE, tenant: a.tenant, role: a.role, display_name: a.display_pool[parseInt(sha256(`${plan.seed_commitment}:${a.id}`).slice(0, 8), 16) % a.display_pool.length]!, synthetic: true as const }));
 
   const seedInt = parseInt(plan.seed_commitment.slice(0, 8), 16) % 2_147_483_647;
-  const scene = compileScene(graph, defaultProposal(graph, seedInt), { previous: opts.previousScene ?? null, source: "default" });
+  // LP17: families come only from the declared template stamps (recordModuleFor); positions equal defaultProposal.
+  const scene = compileScene(graph, recordProposal(graph, seedInt), { previous: opts.previousScene ?? null, source: "default" });
   const templates = plan.resources.map((r) => ({ resource_id: r.id, template: r.template, version: tpl(r).version, digest: templateDigest(r.template as WorldTemplate) })).sort((a, b) => a.resource_id.localeCompare(b.resource_id));
   return {
     schema: COMPILED_WORLD_SCHEMA, revision, plan, plan_digest: planDigest, catalog: { version: CATALOG_VERSION, digest: catalogDigest() }, templates,
