@@ -255,7 +255,7 @@
     "LP03",
     "LP04"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "09cdeb3",
    "ci_run": 40047042997,
    "receipt": "docs/phases/local-intelligence/receipts/LP05.md",
@@ -274,7 +274,13 @@
     "D-LP05-2: trusted_builtin_processes is the only executable mode and is reported restricted; operator_isolated_containers is refused (launcher handshake not implemented), with a generated reviewable profile only.",
     "D-LP05-3: R07.2 runner kept for existing control tests; its receipts now say target_ownership unverified_url_allowlist (negative test reproduced the unowned-listener acceptance)."
    ],
-   "ci_result": "failure: browser-pilot e2e/redesign.spec.ts camera-baseline timing race (test captured a stale baseline; LP05 touches no web code). check job passed. Repaired in the LP07 commit."
+   "ci_result": "failure: browser-pilot e2e/redesign.spec.ts camera-baseline timing race (test captured a stale baseline; LP05 touches no web code). check job passed. Repaired in the LP07 commit.",
+   "ci_verified_on": {
+    "head": "fa8de4a",
+    "ci_run": 40050596307,
+    "result": "success (check + browser-pilot)",
+    "note": "own-commit CI run failed only on the browser-pilot camera-baseline race (D-M1-CI-1); package code unchanged and green on this head"
+   }
   },
   {
    "id": "LP06",
@@ -283,7 +289,7 @@
    "depends_on": [
     "LP05"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "798f653",
    "ci_run": 40048249657,
    "receipt": "docs/phases/local-intelligence/receipts/LP06.md",
@@ -307,7 +313,13 @@
     "D-LP06-2: evidence reaches DK only through ordinary per-source ingestion with supervisor-assigned operation ids as trusted request ids; corroboration is decided by registered source kind and independence group, never payload origin.",
     "D-LP06-3: GET /api/projects/:p/local-world/reporting lists declared capabilities with reporting/silent/unavailable; the console tab is read-only and never launches processes."
    ],
-   "ci_result": "failure: same browser-pilot camera-baseline race as LP05 (identical zoom 20.184 vs 19.683). check job passed. Repaired in the LP07 commit."
+   "ci_result": "failure: same browser-pilot camera-baseline race as LP05 (identical zoom 20.184 vs 19.683). check job passed. Repaired in the LP07 commit.",
+   "ci_verified_on": {
+    "head": "fa8de4a",
+    "ci_run": 40050596307,
+    "result": "success (check + browser-pilot)",
+    "note": "own-commit CI run failed only on the browser-pilot camera-baseline race (D-M1-CI-1); package code unchanged and green on this head"
+   }
   },
   {
    "id": "LP07",
@@ -316,9 +328,9 @@
    "depends_on": [
     "LP06"
    ],
-   "status": "implemented_locally_verified",
-   "commit": null,
-   "ci_run": null,
+   "status": "ci_verified",
+   "commit": "fa8de4a",
+   "ci_run": 40050596307,
    "receipt": "docs/phases/local-intelligence/receipts/LP07.md",
    "local_checks": {
     "typecheck": "exit 0",
@@ -339,7 +351,8 @@
     "D-LP07-2",
     "D-LP07-3",
     "D-M1-CI-1"
-   ]
+   ],
+   "ci_result": "success (check + browser-pilot)"
   },
   {
    "id": "LP08",
@@ -1668,11 +1681,11 @@
  },
  "next_action": {
   "package": "LP12",
-  "why": "M2 (LP08-LP11) is CI-verified on phase/local-intelligence. LP12 (investigation workbench, M3) depends on LP08/LP10/LP11 and LP13 (bounded path and change exploration) on LP01/LP08; both are eligible. LP07 (scenario DSL, M1) depends on LP06 and belongs to the M1 track (in progress by another agent).",
+  "why": "M0, M1 (LP04-LP07) and M2 (LP08-LP11) are CI-verified on phase/local-intelligence. Eligible now: LP12 (investigation workbench, M3; deps LP08/LP10/LP11), LP13 (bounded path and change exploration, M3; deps LP01/LP08) and LP24 (bring-your-agent local investigation, M6; deps LP11/LP07). LP12 is first in DAG order.",
   "eligible_now": [
-   "LP07",
    "LP12",
-   "LP13"
+   "LP13",
+   "LP24"
   ]
  },
  "milestones": {
@@ -1707,6 +1720,30 @@
     "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)"
    },
    "note": "Engineering-verified locally and in CI for the executed tests only. Scripted/protocol checks; AI execution not exercised (no model run, $0 spend). The pre-rebase browser-pilot failures (runs 40046522740, 40048100457) were the flaky e2e/redesign.spec.ts:314 WebGL camera spec, outside M2 code; it passed on 40049323638."
+  },
+  "M1": {
+   "packages": [
+    "LP04",
+    "LP05",
+    "LP06",
+    "LP07"
+   ],
+   "status": "ci_verified",
+   "head": "fa8de4a",
+   "ci_run": 40050596307,
+   "commits": {
+    "LP04": "f0a8d56",
+    "LP05": "09cdeb3",
+    "LP06": "798f653",
+    "LP07": "fa8de4a"
+   },
+   "ci_runs": {
+    "LP04": "40045896413 success",
+    "LP05": "40047042997 failure (browser-pilot race, D-M1-CI-1)",
+    "LP06": "40048249657 failure (same race)",
+    "LP07": "40050596307 success"
+   },
+   "note": "Engineering-verified locally and in CI for the executed tests only. No model runs; AI execution not exercised (not needed for M1). Scenario DSL documents are repository-resident: DK API/MCP/web cannot serve them (tested), but repo-reading investigators are not blinded (D-LP07-3)."
   }
  }
 }
