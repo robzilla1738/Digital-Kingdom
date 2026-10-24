@@ -56,7 +56,8 @@ export interface LocalCase {
 
 const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 
-export interface StartOptions { plan?: WorldPlan; guided?: boolean; caseQuestion?: string }
+/** legacyInterval reproduces the v1 (li-m6-c2c34916) case interval [start - 60 s, setup + 120 s] for tests only. */
+export interface StartOptions { plan?: WorldPlan; guided?: boolean; caseQuestion?: string; legacyInterval?: boolean }
 
 export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions = {}): Promise<LocalCase> {
   const family = doc.blueprint as Family;
@@ -71,8 +72,13 @@ export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions 
   const stop = async () => { await world?.stop().catch(() => undefined); await app.close(); store.db.close(); };
   try {
     world = await startLocalWorld({ blueprint: doc.blueprint, seed: doc.seed, dk: { url, adminToken }, drain, ...(o.plan ? { plan: o.plan } : {}) });
+    // LP26.1: the case interval is the run itself — from the moment every observer of this world was registered to
+    // the moment its last record was stored. (v1 used [start - 60 s, setup + 120 s]: time before any observer existed
+    // and time in the future, which coverage correctly reports as unknown, so no coverage obligation could hold.)
+    const registeredAt = Math.max(...store.listSources(world.project).map((s) => Date.parse(s.created_at)));
     const { result, truth } = await runScenario(world, doc, { timeScale: 1 });
     await world.flush(); drain();
+    const ranUntil = Date.now();
     store.evaluateProject(world.project);
     const project = world.project;
     // private oracle record with a canary that exists ONLY here (and in the controller's memory)
@@ -82,7 +88,9 @@ export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions 
       const r = await fetch(url + path, { method, headers: { authorization: `Bearer ${token}`, ...(body !== undefined ? { "content-type": "application/json" } : {}) }, ...(body !== undefined ? { body: JSON.stringify(body) } : {}), redirect: "error" });
       return { status: r.status, json: await r.json().catch(() => null) };
     };
-    const after = new Date(t0 - 60_000).toISOString(), before = new Date(Date.now() + 120_000).toISOString();
+    const after = new Date(o.legacyInterval ? t0 - 60_000 : registeredAt).toISOString(), before = new Date(o.legacyInterval ? Date.now() + 120_000 : ranUntil).toISOString();
+    const span = store.db.prepare("SELECT MIN(occurred_at) AS o, MAX(received_at) AS r FROM events WHERE project_id = ?").get(project) as { o: string | null; r: string | null };
+    if (span.o && (Date.parse(span.o) < Date.parse(after) || Date.parse(span.r!) > Date.parse(before))) throw new Error(`controller setup: stored records fall outside the case interval [${after}, ${before}]`);
     const planner = store.createToken("guided planner (deterministic, no model)", "analyst", [project], undefined, "service").token;
     const viewer = store.createToken("investigator", "viewer", [project], undefined, "service");
     const assets = world.world.graph.assets.map((a) => a.id).sort();

@@ -35,7 +35,7 @@ export function aggregate(rows: Rec[]) {
   };
 }
 
-export function buildReport(out: string, reg: Rec) {
+export function buildReport(out: string, reg: Rec, ledgerFile = join(out, "model-spend-ledger.json")) {
   const model = load(join(out, "runs", "approved_provider")), scripted = load(join(out, "runs", "scripted"));
   const groups = (rows: Rec[]) => Object.fromEntries(["dev", "heldout"].flatMap((b) => ["C1", "C2", "C3"].map((c) => [`${b}/${c}`, aggregate(rows.filter((r) => r.split === b && r.condition === c))])));
   const critiques = existsSync(join(out, "critique")) ? readdirSync(join(out, "critique")).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(join(out, "critique", f), "utf8"))) : [];
@@ -51,7 +51,9 @@ export function buildReport(out: string, reg: Rec) {
     const by = (pred: (f: Rec) => boolean) => fails.filter(pred).length;
     return [`${b}/${c}`, { failed_predicates: fails.length, by_field: { outcome: by((f) => f.field === "outcome"), independent_effect: by((f) => f.field === "independent_effect"), boundary_violation: by((f) => f.field === "boundary_violation") }, answered_unknown: by((f) => f.answered === "unknown"), answered_unknown_after_seeing_unavailable_coverage: by((f) => f.answered === "unknown" && f.sawUnavailable), wrong_affirmative: by((f) => f.answered !== null && f.answered !== "unknown"), missing_operation: by((f) => f.answered === null) }];
   })));
-  const ledger = existsSync(join(out, "model-spend-ledger.json")) ? JSON.parse(readFileSync(join(out, "model-spend-ledger.json"), "utf8")) : null;
+  const ledger = existsSync(ledgerFile) ? JSON.parse(readFileSync(ledgerFile, "utf8")) : null;
+  const runSpend = ledger ? ledger.entries.filter((e: Rec) => e.run === reg.id).reduce((n: number, e: Rec) => n + e.charged_usd, 0) : 0;
+  const followed = reg.follows ? (() => { const dir = join(out, "..", String(reg.follows.dir ?? "m6-eval").split("/").pop()!); const f = join(dir, "report.json"); return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : null; })() : null;
   const planned = reg.order.length;
   const incident = existsSync(join(out, "incident-records-lost.json")) ? JSON.parse(readFileSync(join(out, "incident-records-lost.json"), "utf8")) : null;
   const amendments = readdirSync(out).filter((f) => /^preregistration-amendment-\d+\.json$/.test(f)).sort().map((f) => JSON.parse(readFileSync(join(out, f), "utf8")));
@@ -64,7 +66,9 @@ export function buildReport(out: string, reg: Rec) {
     incident: incident ? { file: "incident-records-lost.json", kind: incident.kind, surviving_model_records: incident.surviving_model_records, planned_slots: incident.planned_slots, missing_model_slots: incident.missing_model_slots.length, missing_by_block_condition: Object.fromEntries(["dev", "heldout"].flatMap((b) => ["C1", "C2", "C3"].map((c) => [`${b}/${c}`, incident.missing_model_slots.filter((m: Rec) => m.block === b && m.condition === c).length]))), not_re_attempted: incident.not_re_attempted, reported_by_previous_session_unverifiable: incident.reported_by_previous_session_unverifiable, spend_estimate: incident.spend_estimate, critique: incident.critique } : null,
     exploratory_failure_breakdown: { label: "exploratory, not preregistered: failed predicates by field and answer kind; 'after seeing unavailable coverage' = the attempt's tool results contained a coverage state/obligation with status unavailable", by_block_condition: explore },
     amendments: amendments.map((a) => ({ id: a.id, created_at: a.created_at, slots_recorded_at_amendment: a.slots_recorded_at_amendment, limits: a.limits, reason: a.reason })),
-    spend: ledger ? { ledger: "model-spend-ledger.json", charged_total_usd: ledger.charged_total_usd, entries: ledger.entries.length, allowance_usd: ledger.allowance_usd, phase_cap_usd: ledger.phase_cap_usd } : null,
+    follows: reg.follows ?? null, changes_from_followed: reg.changes_from_followed ?? null,
+    followed_run_model_by_block_condition: followed ? followed.model_runs.by_block_condition : null,
+    spend: ledger ? { ledger: ledgerFile.split("/").slice(-3).join("/"), this_run_usd: runSpend, charged_total_usd: ledger.charged_total_usd, entries: ledger.entries.length, allowance_usd: ledger.allowance_usd, phase_cap_usd: ledger.phase_cap_usd } : null,
     limitations: [
       "Synthetic local laboratory only (three blueprints, trusted built-in services); no production, provider or real-identity claim.",
       "Dev documents are repository-resident; held-out documents were private until seal. The model had MCP tools only (restricted_model), but the operator who wrote the generator, referee and tasks also wrote the product: not an operator-blinded study.",
@@ -81,13 +85,14 @@ export function buildReport(out: string, reg: Rec) {
   const md = `# Local Intelligence M6 evaluation (LP26) — ${reg.id}
 
 Model ${reg.model.id} via the AI Gateway (restricted_model: MCP tools only). Conditions: C1 ${reg.conditions[0].label}; C2 ${reg.conditions[1].label}; C3 ${reg.conditions[2].label}.
-Preregistered ${planned} slots per mode (dev + held-out, 2 repetitions, fresh world and conversation per attempt). Spend (new phase ledger): $${(ledger?.charged_total_usd ?? 0).toFixed(4)} of the $${ledger?.allowance_usd ?? 2} M6 allowance.
+Preregistered ${planned} slots per mode (dev + held-out, ${reg.repetitions} repetition(s), fresh world and conversation per attempt). Spend: this run $${runSpend.toFixed(4)}; M6 ledger total $${(ledger?.charged_total_usd ?? 0).toFixed(4)} of the $${ledger?.allowance_usd ?? 2} M6 allowance.
+${reg.follows ? `\nFollows ${reg.follows.preregistration} (records unchanged). ${reg.follows.why}\n\nChanges from the followed run: ${(reg.changes_from_followed as string[]).join("; ")}.\n` : ""}
 
 ${incident ? `> **Incident: records lost.** ${incident.summary} ${incident.missing_model_slots.length} of ${incident.planned_slots} model slots have no record and are excluded from every denominator (not re-run; never counted as failures or successes). Missing by block/condition: ${["dev", "heldout"].flatMap((b) => ["C1", "C2", "C3"].map((c) => `${b}/${c} ${incident.missing_model_slots.filter((m: Rec) => m.block === b && m.condition === c).length}`)).join(", ")}. Spend for the lost work is charged as a conservative estimate (attempts $${incident.spend_estimate.attempt_estimate_usd.toFixed(4)}, critique bound $${incident.spend_estimate.critique_estimate_usd.toFixed(4)}). The previous session reported e2e ${Object.entries(incident.reported_by_previous_session_unverifiable.e2e).map(([k, v]) => `${k} ${v}`).join(", ")}; those records do not exist and the figures are not data of this report. AI critique: ${incident.critique}.\n\n` : ""}${amendments.length ? `Preregistration amendments (made before any comparison slot ran): ${amendments.map((a) => `${a.id} — ${JSON.stringify(a.limits)}: ${a.reason}`).join(" ")}\n\n` : ""}## Model runs — objective metrics (deterministic referee)
 
 ${table(report.model_runs.by_block_condition)}
 
-## Scripted runs (no model; protocol baseline)
+${followed ? `## Side by side with ${reg.follows.preregistration} (v1, surviving records only)\n\n| block/condition | v1 end-to-end | v1 predicates | this run end-to-end | this run predicates |\n|---|---:|---:|---:|---:|\n${Object.keys(report.model_runs.by_block_condition).map((k) => { const a = followed.model_runs.by_block_condition[k], b = (report.model_runs.by_block_condition as Rec)[k]; return `| ${k} | ${pct(a.end_to_end_success.successful, a.end_to_end_success.denominator)} | ${pct(a.structured.passed, a.structured.eligible)} | ${pct(b.end_to_end_success.successful, b.end_to_end_success.denominator)} | ${pct(b.structured.passed, b.structured.eligible)} |`; }).join("\n")}\n\n${followed.incident ? `v1 counts cover only its surviving records (${followed.incident.surviving_model_records} of ${followed.incident.planned_slots} slots; see its records-lost incident). ` : ""}This run's held-out documents are the same documents, revealed at the v1 seal (burned, not fresh).\n\n` : ""}## Scripted runs (no model; protocol baseline)
 
 ${table(report.scripted_runs.by_block_condition)}
 
