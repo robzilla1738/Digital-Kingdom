@@ -2,11 +2,11 @@
   "name": "after-cases-case-focus",
   "file": "after-cases-case-focus.png",
   "phase": "after",
-  "sha256": "fcf28074c20d86a9639bd1dc68e6d015363948286196df480a014b1a79ab2076",
-  "bytes": 311353,
-  "commit": "db1ea8ad078dba8f491a344951c822cc44b3450c",
+  "sha256": "3d6b0ef4d8d7d1269df12e2e43073f1ea85fe39996e16a58cb79580bce0199ce",
+  "bytes": 321735,
+  "commit": "9080c2011a8347bb5d1a5df081933be417f1fcf6",
   "worktreeDirty": false,
-  "capturedAt": "2026-10-24T20:56:51.622Z",
+  "capturedAt": "2026-10-24T21:16:05.954Z",
   "viewport": {
     "width": 1440,
     "height": 900
@@ -18,6 +18,6 @@
     "vendor": "Google Inc. (Google)"
   },
   "rendererNote": "Chromium headless, SwiftShader software WebGL requested; no real-GPU claim.",
-  "url": "http://127.0.0.1:38777/?project=demo-castle#v=2&workspace=investigate&view=castle&tab=cases&case=case_8f78fd136d43f958",
+  "url": "http://127.0.0.1:41363/?project=demo-castle#v=2&workspace=investigate&view=castle&tab=cases&case=case_d215f07999bb93ed",
   "note": "Case open: question and next evidence obligation first; attention compacted below."
 }

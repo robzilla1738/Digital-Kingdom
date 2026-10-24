@@ -2,11 +2,11 @@
   "name": "after-cases-attention-compact-no-case",
   "file": "after-cases-attention-compact-no-case.png",
   "phase": "after",
-  "sha256": "048a0966b17d8cf3a86edcc5f259eb4464e01ddc9debf63726b0135c9bcbbc97",
-  "bytes": 299483,
-  "commit": "db1ea8ad078dba8f491a344951c822cc44b3450c",
+  "sha256": "29e3cff21dc160142a8e9f3df10115daab2382b6b40e95c8a43291159723cb37",
+  "bytes": 329667,
+  "commit": "9080c2011a8347bb5d1a5df081933be417f1fcf6",
   "worktreeDirty": false,
-  "capturedAt": "2026-10-24T20:56:48.322Z",
+  "capturedAt": "2026-10-24T21:16:00.067Z",
   "viewport": {
     "width": 1440,
     "height": 900
@@ -18,6 +18,6 @@
     "vendor": "Google Inc. (Google)"
   },
   "rendererNote": "Chromium headless, SwiftShader software WebGL requested; no real-GPU claim.",
-  "url": "http://127.0.0.1:38777/?project=demo-castle#v=2&workspace=investigate&view=castle&tab=cases",
+  "url": "http://127.0.0.1:41363/?project=demo-castle#v=2&workspace=investigate&view=castle&tab=cases",
   "note": "Cases with no case open: repeated low-priority stale checks compacted into one counted row."
 }

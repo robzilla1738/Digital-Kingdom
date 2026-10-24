@@ -41,8 +41,10 @@ STATUS.json intentionally not edited. No model/provider calls. Web UI only (apps
 - before-lp17-f15-mixed-world.png, before-lp30-case-workbench-desktop.png — copied unchanged from the review captures at b0b4a20 (hashes match review meta).
 - after-f15-active-environment.png (commit 8fc2e72 build) — default frame on env `demo`; populated region fills the stage.
 - after-f15-realm-overview.png (8fc2e72) — explicit overview; the compiled environment gap is still visible here.
-- after-cases-attention-compact-no-case.png, after-cases-case-focus.png (db1ea8a build, i.e. before the denser-card CSS
-  of 8fc2e72) — the stale-check group row sits below three medium cards inside the scrolling queue in these captures.
+- after-cases-attention-compact-no-case.png, after-cases-case-focus.png (9080c20 build, recaptured once load dropped;
+  the e2e test passed on that run) — 9 open items: 3 medium cards (2 contradictions, 1 observer gap) stay individual;
+  6 low stale checks collapse to one row "6 stale checks … Show all 6"; with a case open, its question and next action
+  sit at the top of the first viewport. Viewed: no text overflow or clipping.
 
 ## CI
 - 40132161201 (8fc2e72): check failed in `examples/reference-app/e2e.test.ts` ("expected +0 to be 10" — SDK flush
@@ -54,4 +56,4 @@ STATUS.json intentionally not edited. No model/provider calls. Web UI only (apps
   (packages/scene-compiler compile.ts `environmentStride`); compacting it would move pinned layouts and digests, so the
   explicit Realm overview still shows the empty gap. A presentation-only realm layout (or a reviewed reflow) is the next step.
 - Implicit framing is not applied to grouped (>50 room) scenes.
-- Case screenshots predate the denser card CSS; recapture when the machine is idle.
+- Before-case capture (review) had no case open; the after pair shows both states. The review's LP30 view itself is not re-captured by the LP30 suite here.
