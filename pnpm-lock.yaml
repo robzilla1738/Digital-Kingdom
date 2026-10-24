@@ -136,6 +136,9 @@ importers:
 
   examples/reference-app:
     dependencies:
+      '@dk/local-world':
+        specifier: workspace:*
+        version: link:../../packages/local-world
       '@dk/sdk-node':
         specifier: workspace:*
         version: link:../../packages/sdk-node

@@ -11,6 +11,7 @@
     "quickstart": "tsx src/quickstart.ts"
   },
   "dependencies": {
+    "@dk/local-world": "workspace:*",
     "@dk/sdk-node": "workspace:*"
   },
   "devDependencies": {

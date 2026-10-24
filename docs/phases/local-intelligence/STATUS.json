@@ -254,10 +254,25 @@
     "LP03",
     "LP04"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP05.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "98 files passed, 1 skipped; 709 passed, 1 skipped"
+   },
+   "reuses": [
+    "R07.2 lab runner semantics (budgets, abort, positive control, inconclusive on unavailability)",
+    "reference pack loopback-only binding",
+    "LP04 compiled worlds",
+    "R00.3 templateMatches"
+   ],
+   "decisions": [
+    "D-LP05-1: run control is a library (Supervisor/Run in @dk/local-world); the server exposes no run-control endpoint and runtime_policy.local_actions stays plan_only.",
+    "D-LP05-2: trusted_builtin_processes is the only executable mode and is reported restricted; operator_isolated_containers is refused (launcher handshake not implemented), with a generated reviewable profile only.",
+    "D-LP05-3: R07.2 runner kept for existing control tests; its receipts now say target_ownership unverified_url_allowlist (negative test reproduced the unowned-listener acceptance)."
+   ]
   },
   {
    "id": "LP06",
@@ -746,23 +761,32 @@
   },
   "LP05-A1": {
    "package": "LP05",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp05-supervisor.test.ts > LP05-A1 (7 tests: registered peer; URL/metadata/LAN/unregistered/route refusals with zero hits; 20-address destination table; redirects refused, never followed; port-rebind impostor fails handshake; ambient HTTP_PROXY unused; unsigned direct request 403)",
+    "examples/reference-app/lp05-legacy-runner.test.ts (negative reproduction: URL allowlist admits an unowned loopback listener; receipts now target_ownership unverified)"
+   ]
   },
   "LP05-A2": {
    "package": "LP05",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp05-supervisor.test.ts > LP05-A2 (4 tests: cross-run token refused; forged signature; env/header labels grant nothing; non-lab project refused; least-authority scope; clone has new ids/nonces/tokens)"
+   ]
   },
   "LP05-A3": {
    "package": "LP05",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp05-supervisor.test.ts > LP05-A3 (3 tests: owned cleanup idempotent; symlink swap, hard link, user file and same-named user dir survive with recorded failure and cleanup_failed outcome; cleanup refused while active)"
+   ]
   },
   "LP05-A4": {
    "package": "LP05",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp05-supervisor.test.ts > LP05-A4 (5 tests: frozen Date + frozen scenario clock + paused run still abort on monotonic deadline; pause; budgets; preflight control states, container mode refused, profile constraints; tampered world ignored)"
+   ]
   },
   "LP06-A1": {
    "package": "LP06",
