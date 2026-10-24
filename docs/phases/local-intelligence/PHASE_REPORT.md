@@ -10,7 +10,7 @@ CI run and test counts: `receipts/LP31.md`.
 | Dimension | State | Basis |
 |---|---|---|
 | Engineering | **Verified for the executed gates only.** LP00–LP30 are `ci_verified`; LP31 is verified locally and in CI on the final head recorded in `receipts/LP31.md`. | Typecheck, the vitest suite (8 shards), `validate:fixtures`, `pnpm scenarios`, `pnpm build`, `release:manifest`/`release:verify`, Playwright pilot + redesign suites (CI `browser-pilot`), and the integrated loop test. |
-| AI loop | **Verified only for the LP26 runs that actually ran** (numbers below). The LP31 integrated loop is scripted and records `ai_loop: not_exercised_in_this_run`. | `receipts/LP26.md`, `artifacts/local-intelligence/m6-eval/REPORT.md`, `artifacts/local-intelligence/m6-eval-followup/REPORT.md`. |
+| AI loop | **Verified only for the model runs that actually ran** (LP26 runs and the final-pass fresh-document run; numbers below). The LP31 integrated loop is scripted and records `ai_loop: not_exercised_in_this_run`. | `receipts/LP26.md`, `artifacts/local-intelligence/m6-eval/REPORT.md`, `artifacts/local-intelligence/m6-eval-followup/REPORT.md`, `artifacts/local-intelligence/m7-fresh-eval/REPORT.md`. |
 | External validation | **Not done; deferred** (EXT01–EXT09 remain `deferred_by_owner`). | `package/DEFERRALS.json`, `STATUS.json.deferrals`. |
 | Production authority | **None.** Local actions exist only as typed operations under a supervisor-owned lease on disposable run-owned resources. No production action, connector, provider enrolment, merge or deploy was performed. | LP20–LP23 receipts; `06_SECURITY_AND_AUTHORITY.md`. |
 
@@ -69,7 +69,7 @@ redesign harness; the earlier `eval/` harness and budget reservation (LP24–LP2
 - **Engineering:** only what the executed tests assert, on the hardware/software recorded in each receipt
   (aarch64 sandbox, 2 vCPU; CI ubuntu-latest). Browser checks use Chromium with SwiftShader (software WebGL); automated
   axe/keyboard/reduced-motion/390px checks do not certify accessibility conformance.
-- **AI loop (LP26), model `meta/muse-spark-1.3-contributor` via the AI Gateway:**
+- **AI loop (LP26 + final pass), model `meta/muse-spark-1.3-contributor` via the AI Gateway:**
   - `li-m6-c2c34916` (v1, sealed as is): **28 of 54 model records were lost in a sandbox reset** and were not re-run;
     they are outside every denominator. Surviving model records 26/54 (dev 18/18, held-out 8/36). End-to-end:
     dev C1 6/6, C2 6/6, C3 0/6; held-out C1 4/5, C2 1/1, C3 0/2. Predicates: dev C1 66/66, C2 66/66, C3 58/66;
@@ -78,9 +78,22 @@ redesign harness; the earlier `eval/` harness and budget reservation (LP24–LP2
     1 repetition): model records 27/27. End-to-end: dev C1 2/3, C2 3/3, C3 3/3; held-out C1 5/6, C2 6/6, C3 4/6.
     Predicates: dev C1 32/33, C2 33/33, C3 33/33; held-out C1 59/60, C2 60/60, C3 57/60. Unsupported affirmatives 0.
     Critique not run (budget).
+  - **`li-m7-7f4a12cd` (final pass, fresh documents)**: preregistered and committed (`7f1d615`) before any attempt;
+    12 **newly generated** held-out documents (4 per family, fresh master seed, never seen by any run, private until
+    seal), C1/C2/C3, 1 repetition, model records **36/36** (committed as produced; none lost), scripted baseline 36/36.
+    Held-out end-to-end: **C1 11/12, C2 11/12, C3 8/12**. Predicates: C1 96/99, C2 98/99, C3 89/99. Retrieval 108/108 in
+    every condition; claim validity 100%; unsupported affirmatives 0 everywhere. Underclaims (unknown where the
+    evidence established an answer): C1 3, C2 1, C3 10 — all 10 C3 misses answered `unknown` after seeing coverage
+    reported unavailable (6 independent-effect, 4 boundary). Scripted: 12/12 and 99/99 in every condition.
+    Report: `artifacts/local-intelligence/m7-fresh-eval/REPORT.md`.
   - These are small, partly non-independent samples; they do not establish that the guided loop is better in general.
-- **Model spend:** **$1.725762** of the $3.00 phase cap, **including $0.977297 of estimates** for work whose records
-  were lost (real cost unknown, at most that). M7 (LP28–LP31) spent $0.00.
+    On fresh documents the guided contract (C3) was **not** better: it used the fewest tool calls (59 vs 180 C1 / 121 C2)
+    but was more conservative, answering unknown where the evidence was sufficient.
+- **Model spend:** **$2.138016** of the $3.00 phase cap on the conservative ledger basis: M6 $1.725762 (including
+  $0.977297 of estimates for lost records) + final-pass `li-m7` $0.412254 attributed. The final pass's true spend is
+  **$0.208718** (gateway-reported, equal to the budget ledger's incurred total; phase total $1.934480 on that basis):
+  the runner's per-attempt attribution over-counted overlapping attempts under `--concurrency 2` (the M6 runs show the
+  same pattern); fixed for future runs, records not rewritten (`m7-fresh-eval/spend-reconciliation.json`).
 
 ## Limitations
 

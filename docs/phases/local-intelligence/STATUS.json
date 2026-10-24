@@ -1134,7 +1134,7 @@
     "eval/test/li-lp31-ledger.test.ts",
     "docs/phases/local-intelligence/PHASE_REPORT.md"
    ],
-   "model_spend_usd": 0,
+   "model_spend_usd": 0.41225387,
    "progress_note": "Final excellence pass in progress: gaps (1)-(3) closed and pushed; optional fresh-document AI comparison and final verification next (see receipts/LP31.md 'Final excellence pass').",
    "local_checks": {
     "head": "dca446d",
@@ -1159,7 +1159,34 @@
      "second disposable run -> one leased world (startLocalCase {lab:'leased'}; default plan-only, tested)",
      "placeholder castle comparison -> the executed candidate's own LP13 change list (api room changed)"
     ],
-    "loop_receipt_stages": "world_and_scenario complete; case_and_guided_contract completed; investigation_focused_mcp complete; evidence_and_claim_checks passed; repair_candidates 2 valid of 2; lease issued; typed_local_repair executed (set_gateway_policy@api policy:baseline, LP14 rank 1 unmodified); independent_verification success; regression_capture_and_replay replayed; case_link_and_castle_comparison linked (api:changed, success/verified/local_run_only); post_repair_model_check no_repair_needed; capsule_export_import imported; single_run true"
+    "loop_receipt_stages": "world_and_scenario complete; case_and_guided_contract completed; investigation_focused_mcp complete; evidence_and_claim_checks passed; repair_candidates 2 valid of 2; lease issued; typed_local_repair executed (set_gateway_policy@api policy:baseline, LP14 rank 1 unmodified); independent_verification success; regression_capture_and_replay replayed; case_link_and_castle_comparison linked (api:changed, success/verified/local_run_only); post_repair_model_check no_repair_needed; capsule_export_import imported; single_run true",
+    "ai_comparison": {
+     "preregistration": "li-m7-7f4a12cd (committed 7f1d615 before any attempt)",
+     "dir": "artifacts/local-intelligence/m7-fresh-eval",
+     "documents": "12 newly generated held-out (4 per family), fresh master seed, revealed at seal",
+     "model": "meta/muse-spark-1.3-contributor",
+     "records": "36/36 model, 36/36 scripted, none lost (committed as produced)",
+     "heldout_e2e": {
+      "C1": "11/12",
+      "C2": "11/12",
+      "C3": "8/12"
+     },
+     "heldout_predicates": {
+      "C1": "96/99",
+      "C2": "98/99",
+      "C3": "89/99"
+     },
+     "retrieval": "108/108 each",
+     "unsupported_affirmatives": 0,
+     "underclaims": {
+      "C1": 3,
+      "C2": 1,
+      "C3": 10
+     },
+     "scripted": "12/12 e2e, 99/99 predicates each condition",
+     "spend_true_usd": 0.208718,
+     "spend_attributed_usd": 0.412254
+    }
    }
   }
  ],
@@ -2491,7 +2518,7 @@
  ],
  "model_spend_usd": {
   "phase_cap": 3.0,
-  "spent": 1.725762,
+  "spent": 2.138016,
   "runs": [
    {
     "id": "lp24-smoke",
@@ -2513,6 +2540,12 @@
    {
     "id": "li-m7 (LP29 + LP30 + LP31)",
     "usd": 0.0
+   },
+   {
+    "id": "li-m7-7f4a12cd (final-pass fresh-document comparison)",
+    "usd": 0.41225387,
+    "gateway_reported_usd": 0.208717694,
+    "note": "attributed ledger sum (over-counts overlapping attempts under --concurrency 2); true spend = gateway-reported = BudgetLedger incurred $0.208718; see artifacts/local-intelligence/m7-fresh-eval/spend-reconciliation.json"
    }
   ],
   "m6_allowance": 2.0,
@@ -2526,7 +2559,15 @@
   },
   "settled_on_surviving_records": 0.748466,
   "gateway_reported_on_surviving_records": 0.392134,
-  "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (LP27 used $0.00; reserved for LP30)."
+  "note": "spent = sum of conservative ledger totals: M6 ledger $1.725762 (incl. $0.977297 estimates for lost records) + li-m7 attributed $0.412254 = $2.138016 of the $3.00 cap. True li-m7 spend $0.208718 (phase total $1.934480 on that basis).",
+  "spent_true_gateway_reported_note": "Conservative 'spent' sums attributed ledger amounts and the v1 lost-records estimates. The attribution over-counts overlapping attempts (found in li-m7; the M6 runs show the same pattern: follow-up attributed $0.339367 vs gateway $0.173074; v1 surviving $0.384136 vs $0.194108). Gateway-reported: M6 surviving records $0.392134 (as recorded above) + li-m7 $0.208718 = $0.600852, plus at most $0.977297 for lost v1 work.",
+  "final_pass_allowance": {
+   "approved_by": "owner instruction 2026-10-24 (max $0.90 new spend; phase total under $3.00)",
+   "ledger": "artifacts/local-intelligence/m7-fresh-eval/model-spend-ledger.json",
+   "allowance_usd": 0.9,
+   "used_true_usd": 0.208718,
+   "used_attributed_usd": 0.412254
+  }
  },
  "next_action": {
   "package": null,
@@ -2538,9 +2579,9 @@
   },
   "precise_next_work": [
    "Owner review of PHASE_REPORT.md, then decide whether to merge phase/local-intelligence to main (EXT09; not done by agents).",
-   "Re-run the LP26 model comparison with preregistered fresh held-out documents and surviving records (v1 lost 28/54 model records) once the owner approves spend (remaining cap $1.274238).",
    "EXT05/EXT06: human semantic review, manual screen-reader and physical-GPU acceptance.",
-   "Local-world observer gaps (audit observer stopped) are not in the analysis state; restart-test-observer candidates for local worlds would need the observer health in the configuration snapshot."
+   "Local-world observer gaps (audit observer stopped) are not in the analysis state; restart-test-observer candidates for local worlds would need the observer health in the configuration snapshot.",
+   "AI loop: on fresh documents C3 underclaimed (10 answers 'unknown' after seeing coverage unavailable where the evidence was sufficient); investigate whether the guided contract's coverage obligations make the investigator over-conservative before any further model run (remaining cap $0.861984 on the conservative basis)."
   ]
  },
  "milestones": {
