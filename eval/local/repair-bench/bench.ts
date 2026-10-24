@@ -14,6 +14,11 @@
  *   3. abstention is scored on the selection world without any change (prohibited operations re-observed).
  * Scores are reported separately per (case, selector): selection correctness (against the benchmark's private key),
  * observed prohibited effect, legitimate-behaviour preservation, regression retention, abstention outcome.
+ * The `rehearsal` selector additionally receives a `rehearse(option_id)` capability (`rehearseOption`): each call starts
+ * its OWN fresh disposable leased world (own supervisor, controller identity, exact lease, typed op, repair journal),
+ * re-lists the option there, executes it, reads back only the independent verifier's observed effect per case probe,
+ * revokes the lease, stops and cleans the world, and records the teardown state and wall time. Rehearsal happens
+ * during selection; the chosen option is then executed in the scored world exactly like every other selector's choice.
  * The run is `ok` only when every positive control (fake-model / always-abstain bad choice) is caught by the observed
  * effects, the reasoning selector is correct on every case whose predictions are truthful, every wrong executed choice
  * (any selector) is exposed by the observed effects, every correct execution verifies, and no bad choice ever scores as
@@ -30,7 +35,7 @@ import type { RepairPlan } from "../../../packages/contracts/src/index.ts";
 import { replayRegression } from "../../../examples/reference-app/src/lab/regression-replay.ts";
 import { startLocalCase, type LocalCase } from "../controller.ts";
 import { actionsOf, distractorOptions, optionKey, type BenchOption, type OptionClass, type StateElement } from "./distractors.ts";
-import { ABSTAIN, FAKE_MODEL_SELECTORS, SCRIPTED_SELECTORS, type Selector, type SelectorView, type VisibleProbe } from "./selectors.ts";
+import { ABSTAIN, FAKE_MODEL_SELECTORS, SCRIPTED_SELECTORS, type Holds, type RehearsalRecord, type RehearsalResult, type Selector, type SelectorView, type VisibleProbe } from "./selectors.ts";
 
 const ROOT = join(import.meta.dirname, "../../..");
 const sha = (v: unknown) => createHash("sha256").update(typeof v === "string" ? v : canonicalJson(v)).digest("hex");
@@ -62,6 +67,7 @@ interface Prepared {
   c: LocalCase; options: BenchOption[]; elements: StateElement[]; stateHash: string; ranked: { status: string; observation_prerequisites?: { observer_id: string; state: string; probes: string[] }[] };
   sessions: Record<"a" | "b", Record<string, string>>; verifierToken: string; generatorHttp: number;
 }
+export const prepareSelection = (bc: BenchCase) => prepare(bc);
 async function prepare(bc: BenchCase): Promise<Prepared> {
   const doc = JSON.parse(readFileSync(join(ROOT, "scenarios/local-world/dsl/LW-01.scenario.json"), "utf8"));
   const c = await startLocalCase(doc, { lab: "leased", guided: false, benchmarkDistractors: true });
@@ -149,6 +155,60 @@ async function abstainEffect(bc: BenchCase, p: Prepared): Promise<Effect> {
   return { ...base, prohibited: gap, prohibited_detail: { [bc.objective.prohibited[0]!.id]: bc.kind === "observer_gap" ? "audit observer still stopped" : "no independent observer of the queue exists in this world" }, legitimate: legit(per), legitimate_detail: Object.fromEntries(per.map((x) => [x.probe.id, `${x.status} ${x.answer.status}`])) };
 }
 
+/** Operator-observable effect of one probe: the independent observer's answer. A stopped/absent observer is UNKNOWN,
+ *  never "blocked"; a refusal the operator's own permitted request receives counts as not holding for that request. */
+function observedProbe(role: "prohibited" | "permitted", o: { status: number; answer: { status: string } }): Holds {
+  if (role === "permitted" && o.status >= 400) return "does_not_hold";
+  return o.answer.status === "observed" ? "holds" : o.answer.status === "not_observed" ? "does_not_hold" : "unknown";
+}
+/**
+ * REHEARSAL: run one option in its OWN fresh disposable leased world and return only operator-observable effects.
+ * Never returns the option's class, key, origin, scenario truth, oracle or a verdict. The lease is revoked and the
+ * world stopped and cleaned before returning; the teardown state is recorded. `stopObserver` stops an observer in the
+ * rehearsal world after the option is re-listed (tests the observer-gap path: effects become unknown).
+ */
+export async function rehearseOption(bc: BenchCase, key: string, o: { stopObserver?: string } = {}): Promise<RehearsalResult> {
+  const t0 = Date.now();
+  const p = await prepare(bc);
+  const w = p.c.private.world, run = w.run, lab = p.c.private.lab!, sup = w.supervisor;
+  let leaseId = "not issued", leaseToken: string | null = null, ctl: string | null = null, journal = 0, execution_state = "not_executed";
+  const probes: RehearsalResult["probes"] = [];
+  let stopped = false;
+  const stopOnce = async () => { if (!stopped) { stopped = true; await p.c.stop(); } };
+  try {
+    const opt = p.options.find((x) => x.key === key);
+    if (!opt) { execution_state = "not_reproduced"; return await done(); }
+    if (o.stopObserver) run.observer(w.operatorToken, o.stopObserver).stop("rehearsal: observer outage");
+    ctl = sup.issueControllerToken(lab.operator, run.run_id);
+    try { const l = sup.issueLease(lab.operator, { run_id: run.run_id, plan: opt.plan, controller_token: ctl }); leaseId = l.lease.lease_id; leaseToken = l.token; }
+    catch { execution_state = "lease_refused"; return await done(); }
+    const execution = await new RepairController(run, ctl).execute(leaseToken, opt.plan);
+    execution_state = execution.state;
+    const v = new EffectVerifier(run, p.verifierToken);
+    if (bc.kind === "tenant") {
+      for (const x of await v.observe(tenantProbes(p), { repeats: 1 })) { const role = x.probe.expectation as "prohibited" | "permitted"; probes.push({ probe: x.probe.id, role, observed: observedProbe(role, x), detail: `${x.status} ${x.answer.status}` }); }
+    } else {
+      let hs: { outcome: string };
+      try { hs = await verifyObserverRecovery(run, p.verifierToken, { plan: opt.plan, execution, handshake: [ownRead(p)] }); } catch { hs = { outcome: "not_applicable" }; }
+      // the gap probe: does_not_hold only when the independent handshake verified restored observation; otherwise unknown
+      probes.push({ probe: bc.objective.prohibited[0]!.id, role: "prohibited", observed: hs.outcome === "verified" ? "does_not_hold" : "unknown", detail: `observation handshake ${hs.outcome}` });
+      const own = (await v.observe([ownRead(p)], { repeats: 1 }))[0]!;
+      probes.push({ probe: own.probe.id, role: "permitted", observed: observedProbe("permitted", own), detail: `${own.status} ${own.answer.status}` });
+    }
+    try { journal = run.readJournal(ctl).length; } catch { journal = 0; }
+    return await done();
+  } finally { await stopOnce(); }
+  async function done(): Promise<RehearsalResult> {
+    if (leaseToken) { try { sup.revokeLease(lab.operator, leaseId, "rehearsal finished"); } catch { /* recorded below */ } }
+    await stopOnce();
+    let lease_state = "none";
+    if (leaseToken) { try { lease_state = sup.leases.view(leaseToken).state; } catch (e) { lease_state = `unreadable: ${String((e as Error).message).slice(0, 80)}`; } }
+    let tokens_revoked = true;
+    try { sup.authorize(p.verifierToken, { run_id: run.run_id, action: "read_effects" }); tokens_revoked = false; } catch { /* revoked */ }
+    return { run_id: run.run_id, lease: leaseToken ? `${leaseId} (exact plan)` : leaseId, execution_state, wall_ms: Date.now() - t0, probes, teardown: { run_state: run.state, lease_state, tokens_revoked, journal_entries: journal } };
+  }
+}
+
 /** Execute one chosen option in a FRESH leased world under an exact lease, then verify independently. */
 async function executeOption(bc: BenchCase, key: string): Promise<Effect> {
   const p = await prepare(bc);
@@ -209,6 +269,8 @@ export interface Score {
   prediction_check: "consistent" | "contradicted" | "not_applicable"; prediction_contradicted: string[];
   /** For a wrong, executed choice: whether the observed effects (independent verifier / handshake) exposed it. */
   verification_caught: boolean | null; outcome: string;
+  /** Only for the rehearsal selector: shortlist, per-option rehearsal verdicts and cost (worlds started, wall time). */
+  rehearsal?: RehearsalRecord;
 }
 /** Observed state of one probe after execution, from the verifier's grouped effects ("observed", "not_observed", "200 observed", "403 not_observed", "observation handshake verified" …). */
 function observedHolds(detail: string | undefined, role: "prohibited" | "permitted", kind: CaseKind, e: Effect): "holds" | "does_not_hold" | "unknown" {
@@ -230,7 +292,7 @@ function predictionCheck(bc: BenchCase, opt: BenchOption | null, e: Effect): { c
   }
   return { check: contradicted.length ? "contradicted" : "consistent", contradicted };
 }
-function score(bc: BenchCase, sel: Selector, choice: string, rationale: string, opt: BenchOption | null, e: Effect): Score {
+function score(bc: BenchCase, sel: Selector, choice: string, rationale: string, opt: BenchOption | null, e: Effect, rehearsal?: RehearsalRecord): Score {
   const abstained = choice === ABSTAIN;
   const cls: Score["option_class"] = abstained ? "abstain" : opt!.class;
   const correct = bc.expect_abstain ? abstained : cls === "correct";
@@ -255,6 +317,7 @@ function score(bc: BenchCase, sel: Selector, choice: string, rationale: string, 
     run_id: e.run_id, lease: e.lease, verification: e.verification, positive_control: positive, caught: positive ? (!correct && harmShown) : null, consistent, notes,
     prediction_check: pc.check, prediction_contradicted: pc.contradicted, verification_caught: verificationCaught,
     outcome: correct ? (abstained ? "correct abstention" : "correct, verified") : abstained ? `wrong abstention (prohibited ${e.prohibited})` : verificationCaught ? "wrong, caught by independent verification" : "WRONG, NOT CAUGHT",
+    ...(rehearsal ? { rehearsal } : {}),
   };
 }
 
@@ -272,11 +335,15 @@ export async function runRepairBench(o: { cases?: BenchCase[]; selectors?: Selec
   const cases: BenchReceipt["cases"] = []; const scores: Score[] = []; const failures: string[] = [];
   for (const bc of o.cases ?? BENCH_CASES) {
     const p0 = await prepare(bc);
-    let view: SelectorView, idToKey: Map<string, string>, choices: { sel: Selector; s: { choice: string; rationale: string } }[], abstain: Effect;
+    let view: SelectorView, idToKey: Map<string, string>, choices: { sel: Selector; s: { choice: string; rationale: string; rehearsal?: RehearsalRecord } }[], abstain: Effect;
     try {
       ({ view, idToKey } = buildView(bc, p0, p0.c.public.case_id));
       choices = [];
-      for (const sel of selectors) choices.push({ sel, s: await sel.select(structuredClone(view)) }); // nothing has been executed or verified yet
+      // nothing has been executed or verified in the scored worlds yet; the rehearsal selector's capability starts its own
+      // disposable worlds and returns observed effects only (no key, class or truth: the option id is resolved here)
+      const ids = idToKey;
+      const rehearse = (option_id: string) => { const k = ids.get(option_id); if (!k) throw new Error(`unknown option ${option_id.slice(0, 40)}`); return rehearseOption(bc, k); };
+      for (const sel of selectors) choices.push({ sel, s: await sel.select(structuredClone(view), sel.id === "rehearsal" ? { rehearse } : undefined) });
       abstain = await abstainEffect(bc, p0);
     } finally { await p0.c.stop(); }
     const effects = new Map<string, Effect>([[ABSTAIN, abstain]]);
@@ -287,7 +354,7 @@ export async function runRepairBench(o: { cases?: BenchCase[]; selectors?: Selec
     const byKey = new Map(p0.options.map((x) => [x.key, x]));
     for (const { sel, s } of choices) {
       const key = s.choice === ABSTAIN ? ABSTAIN : idToKey.get(s.choice)!;
-      scores.push(score(bc, sel, s.choice, s.rationale, key === ABSTAIN ? null : byKey.get(key)!, effects.get(key)!));
+      scores.push(score(bc, sel, s.choice, s.rationale, key === ABSTAIN ? null : byKey.get(key)!, effects.get(key)!, s.rehearsal));
     }
     cases.push({ id: bc.id, kind: bc.kind, expect_abstain: bc.expect_abstain, misleading_prediction: bc.misleading_prediction === true, generator_status: p0.ranked.status, view_digest: sha(view),
       options: view.options.map((v) => { const x = byKey.get(idToKey.get(v.option_id)!)!; return { option_id: v.option_id, rank: v.rank, key: x.key, origin: x.origin, class: x.class, generator_rank: x.generator_rank, predicted_safe: v.predicted.valid && v.predicted.blocked === v.predicted.of && !v.predicted.permitted_broken.length && !v.predicted.still_possible.length && !v.predicted.unknown.length }; }),
@@ -311,6 +378,12 @@ export async function runRepairBench(o: { cases?: BenchCase[]; selectors?: Selec
   // case it may be fooled (reported honestly), but then independent verification must catch it
   const misleadingCase = new Set((o.cases ?? BENCH_CASES).filter((c) => c.misleading_prediction).map((c) => c.id));
   for (const s of scores.filter((x) => x.selector === "reasoning" && !x.selection_correct && !(misleadingCase.has(x.case) && x.verification_caught === true))) failures.push(`reasoning selector incorrect on ${s.case}`);
+  // the rehearsal selector must be correct on every case (it rehearses before trusting a prediction), and every
+  // rehearsal world must have been torn down with its lease revoked and its tokens dead
+  for (const s of scores.filter((x) => x.selector === "rehearsal")) {
+    if (!s.selection_correct) failures.push(`rehearsal selector incorrect on ${s.case}`);
+    for (const v of s.rehearsal?.verdicts ?? []) if (v.teardown.lease_state === "active" || !v.teardown.tokens_revoked || v.teardown.run_state === "running" || v.teardown.run_state === "paused") failures.push(`${s.case}/rehearsal: rehearsal world ${v.run_id} not torn down (${JSON.stringify(v.teardown)})`);
+  }
   const status = git("status", "--porcelain");
   return {
     schema: "dk.bench.repair_selection_receipt.v1", candidate: { commit: git("rev-parse", "HEAD"), dirty: status === null ? null : status.length > 0, node: process.version, platform: `${process.platform}-${process.arch}` },
@@ -322,7 +395,8 @@ export async function runRepairBench(o: { cases?: BenchCase[]; selectors?: Selec
       "Distractor predictions come from the benchmark's declared distractor semantics (dk.bench.distractor_model.v1). They are accurate by construction for every distractor except the labelled misleading one (tenant-records-isolation-rule / policy:bench_misbound), whose prediction claims full isolation while its runtime guards the non-read (write/job) routes only. That case measures whether a visible-data selector is fooled and whether verification catches it; it is one synthetic misprediction, not a model of real misprediction rates.",
       "Selection correctness is scored against the benchmark's private answer key; the observed effects are scored independently and must agree with it (a disagreement fails the run).",
       "Host-process mode: trusted built-in services and typed operations only; not an OS isolation boundary. Overbroad/residual variants exist only on a supervisor started with benchmarkDistractorVariants.",
-      "One world family (saas-storefront, LW-01) and three cases; this is a harness check, not a statistical measure of any selector.",
+      "One world family (saas-storefront, LW-01) and four cases; this is a harness check, not a statistical measure of any selector.",
+      "The rehearsal selector is scripted. It rehearses in disposable copies of the SAME synthetic scenario, so rehearsal and scored worlds behave alike by construction; real environments can differ between a rehearsal copy and production, and rehearsal costs extra worlds (recorded per case).",
     ],
   };
 }

@@ -16,6 +16,13 @@
  *                          transports that prefer overbroad / residual / irrelevant options. They are positive controls:
  *                          the scorer must catch their choices from observed effects.
  *  - `always_abstain`      scripted control: abstains even when a safe option exists.
+ *  - `rehearsal`           scripted: shortlists the top-k (k ≤ 3) predicted-safe options by rank and REHEARSES each
+ *                          through a bench-provided capability: its own fresh disposable leased world (separate
+ *                          supervisor, lease, typed op, journal), torn down afterwards. It reads back only what an
+ *                          operator can observe there — the independent verifier's observed effect per case probe
+ *                          (holds / does_not_hold / unknown) — never truth, oracle, answer key or class. Options whose
+ *                          prediction is contradicted are discarded; UNKNOWN is never read as blocked; the first
+ *                          CONFIRMED option by rank is chosen, otherwise it abstains with `no_applicable_candidate`.
  *  - real model            `createModelSelector` — DISABLED. It refuses without an explicit authorization (budget +
  *                          approver), and even with one this batch ships no provider transport: no network code exists here.
  */
@@ -38,9 +45,19 @@ export interface SelectorView {
   abstain_choice: "no_applicable_candidate";
 }
 export const ABSTAIN = "no_applicable_candidate" as const;
-export interface Selection { choice: string; rationale: string }
+export interface Selection { choice: string; rationale: string; rehearsal?: RehearsalRecord }
 export type SelectorKind = "scripted" | "fake_model" | "model";
-export interface Selector { id: string; kind: SelectorKind; select(view: SelectorView): Promise<Selection> }
+/** What a rehearsal returns: operator-observable effects only (no class, key, truth, oracle or verdict). */
+export interface RehearsalResult {
+  run_id: string; lease: string; execution_state: string; wall_ms: number;
+  probes: { probe: string; role: "prohibited" | "permitted"; observed: Holds; detail: string }[];
+  teardown: { run_state: string; lease_state: string; tokens_revoked: boolean; journal_entries: number };
+}
+export interface RehearsalVerdict { option_id: string; rank: number; verdict: "confirmed" | "contradicted" | "unknown"; contradicted: string[]; unknown: string[]; run_id: string; lease: string; execution_state: string; wall_ms: number; teardown: RehearsalResult["teardown"] }
+export interface RehearsalRecord { k: number; shortlisted: string[]; verdicts: RehearsalVerdict[]; worlds_started: number; wall_ms: number }
+/** Optional capabilities the bench hands a selector. `rehearse` runs one option in its own disposable leased world. */
+export interface SelectorContext { rehearse?: (option_id: string) => Promise<RehearsalResult> }
+export interface Selector { id: string; kind: SelectorKind; select(view: SelectorView, ctx?: SelectorContext): Promise<Selection> }
 
 const byRank = (v: SelectorView) => v.options.slice().sort((a, b) => a.rank - b.rank);
 /** Predicted safe: blocks every prohibited operation, keeps every positive control, nothing prohibited left unknown. */
@@ -62,6 +79,39 @@ export const reasoningSelector: Selector = {
     }
     const o = safe[0]!;
     return { choice: o.option_id, rationale: `${o.option_id} (rank ${o.rank}) is predicted to block ${o.predicted.blocked}/${o.predicted.of} prohibited and keep every positive control; ${safe.length - 1} other safe option(s)` };
+  },
+};
+/** Compare an option's visible prediction with a rehearsal's observed effects. Unknown stays unknown (never blocked). */
+export function classifyRehearsal(o: VisibleOption, r: RehearsalResult): Pick<RehearsalVerdict, "verdict" | "contradicted" | "unknown"> {
+  const contradicted: string[] = [], unknown: string[] = [];
+  if (r.execution_state !== "completed") return { verdict: "unknown", contradicted, unknown: [`execution ${r.execution_state}: nothing was observed for this option`] };
+  for (const x of o.expected_impact) {
+    if (x.after === "unknown") { unknown.push(`${x.probe}: no prediction`); continue; }
+    const got = r.probes.find((p) => p.probe === x.probe);
+    if (!got || got.observed === "unknown") { unknown.push(`${x.probe}: rehearsal observed unknown${got ? ` (${got.detail})` : " (not probed)"}`); continue; }
+    if (got.observed !== x.after) contradicted.push(`${x.probe}: predicted ${x.after}, rehearsal observed ${got.observed} (${got.detail})`);
+  }
+  return { verdict: contradicted.length ? "contradicted" : unknown.length || !o.expected_impact.length ? "unknown" : "confirmed", contradicted, unknown };
+}
+export const REHEARSAL_K = 3;
+export const rehearsalSelector: Selector = {
+  id: "rehearsal", kind: "scripted",
+  async select(v, ctx) {
+    const t0 = Date.now();
+    const shortlist = byRank(v).filter(predictedSafe).slice(0, REHEARSAL_K);
+    const record: RehearsalRecord = { k: REHEARSAL_K, shortlisted: shortlist.map((o) => o.option_id), verdicts: [], worlds_started: 0, wall_ms: 0 };
+    if (!shortlist.length) return { choice: ABSTAIN, rationale: "no option is predicted safe; nothing to rehearse", rehearsal: record };
+    if (!ctx?.rehearse) return { choice: ABSTAIN, rationale: "no rehearsal capability was provided; an unrehearsed prediction is not trusted", rehearsal: record };
+    for (const o of shortlist) {
+      record.worlds_started++;
+      const r = await ctx.rehearse(o.option_id);
+      record.verdicts.push({ option_id: o.option_id, rank: o.rank, ...classifyRehearsal(o, r), run_id: r.run_id, lease: r.lease, execution_state: r.execution_state, wall_ms: r.wall_ms, teardown: r.teardown });
+    }
+    record.wall_ms = Date.now() - t0;
+    const sum = record.verdicts.map((x) => `${x.option_id}: ${x.verdict}${x.contradicted.length ? ` (${x.contradicted.join("; ")})` : x.unknown.length ? ` (${x.unknown.join("; ")})` : ""}`).join(" | ");
+    const pick = record.verdicts.find((x) => x.verdict === "confirmed");
+    if (!pick) return { choice: ABSTAIN, rationale: `every shortlisted option was contradicted or unknown in rehearsal: ${sum}`.slice(0, 1500), rehearsal: record };
+    return { choice: pick.option_id, rationale: `${pick.option_id} (rank ${pick.rank}) confirmed in its own rehearsal world; ${sum}`.slice(0, 1500), rehearsal: record };
   },
 };
 export const alwaysAbstainSelector: Selector = { id: "always_abstain", kind: "scripted", async select() { return { choice: ABSTAIN, rationale: "control: always abstains" }; } };
@@ -108,7 +158,7 @@ export const FAKE_MODEL_SELECTORS: Selector[] = [
   // prefers an option that blocks nothing (irrelevant change; for an observer gap: a policy change that does not restore observation)
   modelSelector("fake_model_irrelevant", fakeTransport((v) => ranked(v).find((o) => o.predicted.blocked === 0), "prefers an irrelevant change")),
 ];
-export const SCRIPTED_SELECTORS: Selector[] = [rank1Selector, reasoningSelector, alwaysAbstainSelector];
+export const SCRIPTED_SELECTORS: Selector[] = [rank1Selector, reasoningSelector, rehearsalSelector, alwaysAbstainSelector];
 
 /** The real-LLM selector. DISABLED: refuses without explicit authorization; this batch has no provider transport. */
 export interface ModelAuthorization { flag: "--allow-model-selector"; budget_usd: number; approved_by: string }
