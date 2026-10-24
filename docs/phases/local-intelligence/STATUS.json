@@ -1078,8 +1078,8 @@
     "LP27"
    ],
    "status": "implemented_locally_verified",
-   "commit": "b10de50",
-   "ci_run": "pending at ledger time",
+   "commit": "b10de50 + 10e66e9",
+   "ci_run": "40076513358 on b10de50 failed (check: release:verify dirty tree from the robustness report write); fixed in 10e66e9, CI pending at ledger time",
    "receipt": "docs/phases/local-intelligence/receipts/LP30.md",
    "branch": "phase/local-intelligence",
    "local_checks": {
@@ -1088,7 +1088,7 @@
     "test": "no product code changed; candidate d3eb304 full suite 962 passed, 1 skipped"
    },
    "model_spend_usd": 0,
-   "progress_note": "LP30 done; findings: comparison at 390px hidden behind Show map and overlapping the camera bar (recorded, not fixed)."
+   "progress_note": "LP30 implemented; confirm CI on 10e66e9 (check + browser-pilot) then mark ci_verified. Findings: comparison at 390px hidden behind Show map and overlapping the camera bar (recorded, not fixed)."
   },
   {
    "id": "LP31",
@@ -2456,9 +2456,9 @@
  },
  "next_action": {
   "package": "LP31",
-  "why": "LP29 CI-verified (d3eb304, run 40075197316); LP30 implemented at b10de50 (CI pending at ledger time); LP26 CI-verified. LP31 needs LP30 + LP26.",
+  "why": "LP29 CI-verified (d3eb304, run 40075197316). LP30 implemented (b10de50 + CI fix 10e66e9); confirm its CI first. LP31 needs LP30 + LP26.",
   "eligible_now": [
-   "LP31"
+   "LP31 (after LP30 CI on 10e66e9 is green)"
   ],
   "blocked": {}
  },
