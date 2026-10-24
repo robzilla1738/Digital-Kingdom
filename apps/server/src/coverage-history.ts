@@ -126,7 +126,15 @@ export function coverageHistory(store: Store, projectId: string, q: CoverageQues
       const prior = store.db.prepare("SELECT MAX(received_at) AS r FROM events WHERE project_id = ? AND source_id = ? AND received_at < ?").get(projectId, src.id, iso(a - ms)) as { r: string | null };
       let lastSeen = receipts.length && receipts[0]! <= a ? receipts[0]! : prior.r ? Date.parse(prior.r) : null;
       const silent = (from: number, to: number) => { if (to > from) spans = overlay(spans, { from, to, state: "unknown", reason: `silent for more than ${stale}s (no receipts)` }); };
-      if (lastSeen === null) silent(a, receipts.length ? receipts[0]! : Math.min(b, now));
+      if (lastSeen === null) {
+        // LP26.1: before its first receipt a source is judged from its registration, like any other gap between two
+        // signs of life: a first receipt within the freshness threshold of registration makes [registration, first
+        // receipt) live (time before registration stays "not yet registered"). A source that never reported, or whose
+        // first report came later than the threshold, gets nothing: that time stays unknown.
+        const registered = Date.parse(revs[0]!.effective_at), first = receipts.length ? receipts[0]! : null;
+        if (first !== null && first >= registered && first - registered <= ms) lastSeen = registered;
+        else silent(a, first ?? Math.min(b, now));
+      }
       for (const r of receipts) { if (lastSeen !== null && r - lastSeen > ms) silent(lastSeen + ms, r); lastSeen = Math.max(lastSeen ?? r, r); }
       if (lastSeen !== null && Math.min(b, now) - lastSeen > ms) silent(lastSeen + ms, Math.min(b, now));
     }

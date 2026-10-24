@@ -5,6 +5,7 @@
  *   tsx eval/local/run.ts run      --out <dir> --mode scripted     # no model
  *   DK_LI_ROUTE=ai-gateway DK_LI_MODEL=meta/muse-spark-1.3-contributor DK_LI_CAP_USD=2.00 DK_LI_APPROVED=local-intelligence-phase \
  *   AI_GATEWAY_API_KEY=... tsx eval/local/run.ts run --out <dir> --mode approved_provider --block dev|heldout [--concurrency 2]
+ *   tsx eval/local/run.ts prepare-followup --out <dir> --from <sealed dir> [--repetitions 1]   # same documents, new id
  *   tsx eval/local/run.ts critique --out <dir>                    # optional AI semantic critique, advisory only
  *   tsx eval/local/run.ts incident --out <dir>                    # record lost records + conservative spend (never re-run)
  *   tsx eval/local/run.ts seal     --out <dir>                    # report + reveal held-out docs after verification
@@ -76,11 +77,52 @@ if (cmd === "prepare") {
   process.exit(0);
 }
 
+if (cmd === "prepare-followup") {
+  // LP26.1 follow-up: same documents as an earlier sealed preregistration (dev + its revealed held-out documents, each
+  // re-verified against the earlier commitments), a new id and order, committed before any attempt. The spend stays on
+  // the earlier run's phase ledger (one M6 allowance).
+  if (existsSync(PREREG)) throw new Error(`${PREREG} exists; a preregistration is never overwritten`);
+  const from = arg("from"); if (!from) throw new Error("--from <sealed preregistration dir> is required");
+  const base = JSON.parse(readFileSync(join(from, "preregistration.json"), "utf8"));
+  const revealed = JSON.parse(readFileSync(join(from, "heldout-documents-revealed-at-seal.json"), "utf8"));
+  for (const c of base.heldout_documents) { const d = revealed.documents.find((x: { id: string }) => x.id === c.slot_doc); if (!d || docCommitment(d) !== c.doc_sha256) throw new Error(`revealed held-out ${c.slot_doc} does not match its commitment`); }
+  for (const c of base.dev_documents) { const d = JSON.parse(readFileSync(join(ROOT, `scenarios/local-world/dsl/${c.slot_doc}.scenario.json`), "utf8")); if (docCommitment(d) !== c.doc_sha256) throw new Error(`dev document ${c.slot_doc} changed`); }
+  const baseLimits = (readdirSync(from).filter((f) => /^preregistration-amendment-\d+\.json$/.test(f)).sort().map((f) => JSON.parse(readFileSync(join(from, f), "utf8")))).reduce((l, a) => ({ ...l, ...(a.limits ?? {}) }), { ...base.model.limits });
+  mkdirSync(out, { recursive: true });
+  const prereg = `li-m6-${randomBytes(4).toString("hex")}`;
+  const orderSeed = randomBytes(8).toString("hex");
+  const reps = Number(arg("repetitions", "1"));
+  // per document the three conditions are adjacent (shuffled), so a spend stop never leaves a document half compared
+  const block = (b: "dev" | "heldout", docs: string[]) => Array.from({ length: reps }, (_, r) => shuffle(docs, `${orderSeed}:${b}:${r}:docs`).flatMap((d) => shuffle(["C1", "C2", "C3"] as const, `${orderSeed}:${b}:${r}:${d}`).map((c) => ({ block: b, doc: d, condition: c, repetition: r + 1 })))).flat();
+  const order: Slot[] = [...block("dev", base.dev_documents.map((c: { slot_doc: string }) => c.slot_doc)), ...block("heldout", base.heldout_documents.map((c: { slot_doc: string }) => c.slot_doc))].map((x, index) => ({ index, ...x }));
+  const ledgerRel = arg("ledger", join(from, "model-spend-ledger.json"))!;
+  writeFileSync(PREREG, JSON.stringify({
+    schema: "dk.local.eval_preregistration.v1", id: prereg, created_at: new Date().toISOString(), repository_commit: git("rev-parse", "HEAD"), working_tree_dirty: git("status", "--porcelain", "--untracked-files=no").length > 0,
+    follows: { preregistration: base.id, dir: from.replace(`${ROOT}/`, ""), why: "LP26.1: v1 C3 could never satisfy a coverage obligation (case interval began before the world's observers existed and ended in the future; coverage history called a source silent between registration and its first receipt). Both fixed with failing tests first; this run asks the v1 question again on the same documents.", v1_records_unchanged: true },
+    question: "After the LP26.1 coverage fix, does the guided investigation-contract loop (C3) still differ from the full tool set (C1) and the event tools (C2) in end-to-end success, structured correctness, retrieval and unsupported claims on the same documents, without expanding authority?",
+    conditions: Object.values(LI_CONDITIONS).map((c) => ({ id: c.id, label: c.label, mcp_env: c.env, description: c.description })),
+    model: { route: "ai-gateway (https://ai-gateway.vercel.sh/v1)", id: base.model.id, decoding: "provider defaults (temperature not set); reasoning not requested and not stored", limits: baseLimits },
+    prompt: { version: LI_PROMPT_VERSION, system_sha256: promptSha(), public_task_version: PUBLIC_TASK_VERSION, public_task_sha256: Object.fromEntries(Object.entries(PUBLIC_TASKS).map(([k, v]) => [k, sha(v)])) },
+    changes_from_followed: ["controller case interval: [last observer registration, last record stored] instead of [start - 60 s, setup + 120 s] (eval/local/controller.ts)", "coverage history: a first receipt within the freshness threshold of registration makes [registration, first receipt) live; never-reporting or late sources stay unknown (apps/server/src/coverage-history.ts)", `limits: the followed run's effective limits (${JSON.stringify(baseLimits)})`, `repetitions: ${reps} (budget)`, "AI critique: not run (budget); human review deferred"],
+    referee: REFEREE_VERSION, generator: base.generator, master_seed_sha256: base.master_seed_sha256, order_seed: orderSeed,
+    dev_documents: base.dev_documents,
+    heldout_documents: base.heldout_documents.map((c: Record<string, unknown>) => ({ ...c, note: `revealed at the seal of ${base.id} and present in the repository: burned held-out (not fresh). The investigator is restricted_model (MCP tools only, no repository or filesystem), so it still cannot read them; the operator could.` })),
+    heldout_source: { kind: "revealed", file: join(from, "heldout-documents-revealed-at-seal.json").replace(`${ROOT}/`, "") },
+    repetitions: reps, order, fresh_conversation_per_attempt: true, fresh_world_per_attempt: true,
+    budget: { ledger_path: ledgerRel.replace(`${ROOT}/`, ""), phase_cap_usd: 3.0, m6_allowance_usd: 2.0, run_stop_usd: RUN_STOP_USD, reservation: "worst-case cost reserved before every request; failed requests keep the reserved maximum; the stop applies to the whole M6 ledger (all prior charges and estimates included)" },
+    metrics: base.metrics,
+    analysis: "Counts per block (dev, burned held-out) x condition, reported separately and side by side with the followed run; repetitions are not independent cases; no significance test, no pooled superiority claim.",
+  }, null, 2), { flag: "wx" });
+  console.log(JSON.stringify({ preregistration: PREREG, id: prereg, slots: order.length }));
+  process.exit(0);
+}
+
 const PREREG_MODEL = "meta/muse-spark-1.3-contributor";
 /** Documented amendments (made before any preregistered slot ran) override preregistered limits; both are recorded. */
 const AMENDMENTS = existsSync(out) ? readdirSync(out).filter((f) => /^preregistration-amendment-\d+\.json$/.test(f)).sort().map((f) => JSON.parse(readFileSync(join(out, f), "utf8"))) : [];
-const EFFECTIVE_LIMITS = AMENDMENTS.reduce((l, a) => ({ ...l, ...(a.limits ?? {}) }), { ...LIMITS } as typeof LIMITS);
-const ledgerPath = join(out, "model-spend-ledger.json");
+const REG_LIMITS: typeof LIMITS = existsSync(PREREG) ? (JSON.parse(readFileSync(PREREG, "utf8")).model?.limits ?? LIMITS) : LIMITS;
+const EFFECTIVE_LIMITS = AMENDMENTS.reduce((l, a) => ({ ...l, ...(a.limits ?? {}) }), { ...REG_LIMITS } as typeof LIMITS);
+const ledgerPath = (() => { const r = existsSync(PREREG) ? JSON.parse(readFileSync(PREREG, "utf8")) : null; return r?.budget?.ledger_path ? join(ROOT, r.budget.ledger_path) : join(out, "model-spend-ledger.json"); })();
 const openLedger = () => new PhaseLedger(ledgerPath, { phase_cap_usd: 3.0, allowance_usd: 2.0, allowance_note: "M6 (LP24-LP26) may spend at most $2.00 of the $3.00 phase cap; the rest is reserved for LP27/LP30", route: "ai-gateway", model: PREREG_MODEL });
 
 if (cmd === "smoke") {
@@ -107,7 +149,9 @@ if (cmd === "smoke") {
 const reg = JSON.parse(readFileSync(PREREG, "utf8"));
 const docFor = (slot: Slot) => {
   if (slot.block === "dev") { const d = JSON.parse(readFileSync(join(ROOT, `scenarios/local-world/dsl/${slot.doc}.scenario.json`), "utf8")); if (docCommitment(d) !== reg.dev_documents.find((x: { slot_doc: string }) => x.slot_doc === slot.doc).doc_sha256) throw new Error(`dev document ${slot.doc} changed since preregistration`); return d; }
-  return loadHeldout(reg.id, reg.heldout_documents.find((x: { slot_doc: string }) => x.slot_doc === slot.doc));
+  const c = reg.heldout_documents.find((x: { slot_doc: string }) => x.slot_doc === slot.doc);
+  if (reg.heldout_source?.kind === "revealed") { const d = JSON.parse(readFileSync(join(ROOT, reg.heldout_source.file), "utf8")).documents.find((x: { id: string }) => x.id === slot.doc); if (docCommitment(d) !== c.doc_sha256) throw new Error(`held-out ${slot.doc} does not match its commitment`); return d; }
+  return loadHeldout(reg.id, c);
 };
 
 async function pricing(model: string) {
@@ -226,7 +270,8 @@ if (cmd === "incident") {
 }
 
 if (cmd === "seal") {
-  const report = (await import("./report.ts")).buildReport(out, reg);
+  const report = (await import("./report.ts")).buildReport(out, reg, ledgerPath);
+  if (reg.heldout_source?.kind === "revealed") { console.log(JSON.stringify({ report: join(out, "REPORT.md"), heldout: "already revealed", ...report.headline })); process.exit(0); }
   // reveal held-out documents only now, after verifying each against its commitment
   const revealed = reg.heldout_documents.map((c: { slot_doc: string; doc_sha256: string }) => loadHeldout(reg.id, c));
   writeFileSync(join(out, "heldout-documents-revealed-at-seal.json"), JSON.stringify({ revealed_at: new Date().toISOString(), note: "held-out documents verified against their preregistered SHA-256 commitments; now burned for future held-out use", master_seed: readFileSync(join(PRIVATE_ROOT(), reg.id, "master-seed"), "utf8"), documents: revealed }, null, 1), { flag: "wx" });
