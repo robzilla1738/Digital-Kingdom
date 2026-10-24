@@ -492,7 +492,7 @@ export class Run {
   /** Current revision of a run resource: the service's own revision, or the observer's health state. */
   revisionOf(id: string): string {
     const svc = this.services.get(id); if (svc) return svc.revision();
-    const o = this.observers.get(id); if (o) return `${id}:observer-${o.up ? "up" : "down"}-h${o.health.length}`;
+    const o = this.observers.get(id); if (o) return `${id}:observer-${o.misconfigured ? "misconfigured" : o.up ? "up" : "down"}-h${o.health.length}${o.configChanges ? `-c${o.configChanges}` : ""}`;
     throw new RunRefusal("unregistered", `${String(id).slice(0, 80)} is not a resource of ${this.run_id}`);
   }
   /**
@@ -509,6 +509,24 @@ export class Run {
     }).sort((a, b) => a.resource_id.localeCompare(b.resource_id));
     return { schema: "dk.local.config_snapshot.v1" as const, run_id: this.run_id, resources };
   }
+  /**
+   * next-B: observer capability state (`dk.local.observer_state.v1`) — for every observer resource of the plan, its
+   * state (running / stopped / misconfigured, or absent when the compiled world has no live observer for it), what it
+   * is declared to observe, what it observes now, since when, its run revision and its capability history. Operator
+   * side only (the snapshot action), read from the supervisor's own observer objects; it carries no scenario truth,
+   * request or effect.
+   */
+  observerCapabilities(token: string) {
+    this.sup.authorize(token, { run_id: this.run_id, action: "snapshot" });
+    const started = this.manifest.created_at;
+    const observers = this.world.plan.resources.filter((r) => r.template === "observer").map((r) => {
+      const o = this.observers.get(r.id);
+      if (!o) return { observer_id: r.id, state: "absent" as const, declared: [...r.depends_on].sort(), observes: [] as string[], since: started, revision: null, reason: "no live observer in this run (disabled in the compiled world); nothing in the run can restart it", history: [] as { state: string; since: string; until: string | null; reason: string }[] };
+      const cur = o.capability[o.capability.length - 1]!;
+      return { observer_id: r.id, state: o.capabilityState, declared: [...o.declared].sort(), observes: o.up ? o.attached.sort() : [], since: cur.since, revision: this.revisionOf(r.id), reason: cur.reason, history: o.capability.map((h) => ({ ...h })) };
+    }).sort((a, b) => a.observer_id.localeCompare(b.observer_id));
+    return { schema: "dk.local.observer_state.v1" as const, run_id: this.run_id, observers };
+  }
   revisions(): Record<string, string> { return Object.fromEntries([...this.services.keys(), ...this.observers.keys()].sort().map((id) => [id, this.revisionOf(id)])); }
   // ---- LP21: leased typed repairs (the supervisor side; the journalled state machine is the RepairController) ----
   private readonly repairPre = new Map<string, Pre>();
@@ -517,7 +535,7 @@ export class Run {
     return {
       template: (id) => this.world.plan.resources.find((r) => r.id === id)?.template,
       state: (id) => { const svc = this.services.get(id); return svc ? structuredClone(svc.snapshot()) as Record<string, unknown> : null; },
-      observerUp: (id) => this.observers.get(id)?.up,
+      observerUp: (id) => this.observers.get(id)?.healthy, // up AND attached to everything it is declared to observe
       send: async (resource, path, body) => {
         const t = this.world.plan.resources.find((r) => r.id === resource);
         if (!t || !this.listeners.has(resource)) throw new RunRefusal("unregistered", `${resource} has no registered listener`);

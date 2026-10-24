@@ -21,14 +21,40 @@ export interface ObservedEffect { op_id: string; run_id: string; resource_id: st
 export interface HealthInterval { state: "up" | "down"; from_mono_ms: number; to_mono_ms: number | null; from: string; to: string | null; reason: string }
 export interface EffectAnswer { status: "observed" | "not_observed" | "unknown"; effects: ObservedEffect[]; observer: string; reason: string; health: HealthInterval[] }
 
+/** next-B: an observer's capability as the supervisor sees it (running, stopped, or running but detached from a declared resource). */
+export type ObserverCapabilityState = "running" | "stopped" | "misconfigured";
+export interface CapabilityInterval { state: ObserverCapabilityState; since: string; until: string | null; reason: string }
+
 export class EffectObserver {
   private readonly log: ObservedEffect[] = [];
   readonly health: HealthInterval[] = [];
+  /** next-B: capability history (running / stopped / misconfigured), supervisor-side facts only. */
+  readonly capability: CapabilityInterval[] = [];
+  /** next-B: number of attachment changes (detach faults, reattachment on restart); part of the revision once non-zero. */
+  configChanges = 0;
   lost = 0;
-  constructor(readonly id: string, readonly run_id: string, readonly attached: string[], private readonly reporter: Reporter | null, private readonly mono: () => number, private readonly wall: () => Date = () => new Date()) {
-    this.health.push({ state: "up", from_mono_ms: mono(), to_mono_ms: null, from: wall().toISOString(), to: null, reason: "started with the run" });
+  private current: string[];
+  /** `declared` is the plan's attachment (fixed for the run); `attached` is what the observer taps now. */
+  constructor(readonly id: string, readonly run_id: string, readonly declared: string[], private readonly reporter: Reporter | null, private readonly mono: () => number, private readonly wall: () => Date = () => new Date()) {
+    this.current = [...declared];
+    const at = wall().toISOString();
+    this.health.push({ state: "up", from_mono_ms: mono(), to_mono_ms: null, from: at, to: null, reason: "started with the run" });
+    this.capability.push({ state: "running", since: at, until: null, reason: "started with the run" });
   }
+  get attached(): string[] { return [...this.current]; }
   get up(): boolean { return this.health[this.health.length - 1]!.state === "up"; }
+  /** Running but not attached to every declared resource. */
+  get misconfigured(): boolean { return this.up && this.declared.some((d) => !this.current.includes(d)); }
+  get capabilityState(): ObserverCapabilityState { return !this.up ? "stopped" : this.misconfigured ? "misconfigured" : "running"; }
+  /** Up and attached to everything it is declared to observe. */
+  get healthy(): boolean { return this.up && !this.misconfigured; }
+  private noteCapability(reason: string) {
+    const st = this.capabilityState, cur = this.capability[this.capability.length - 1]!;
+    if (cur.state === st) return;
+    const at = this.wall().toISOString();
+    cur.until = at;
+    this.capability.push({ state: st, since: at, until: null, reason: reason.slice(0, 300) });
+  }
   private transition(state: "up" | "down", reason: string) {
     const now = this.mono(), at = this.wall().toISOString();
     const cur = this.health[this.health.length - 1]!;
@@ -39,18 +65,34 @@ export class EffectObserver {
   /** Deliberate outage. If `announce`, the outage is reported as sensor_unavailable (a crash would not be). */
   stop(reason: string, announce = true) {
     if (!this.up) return;
-    if (announce) for (const a of this.attached) this.reporter?.sensorDown?.(a, `observer ${this.id} stopped: ${reason}`.slice(0, 900));
+    if (announce) for (const a of this.current) this.reporter?.sensorDown?.(a, `observer ${this.id} stopped: ${reason}`.slice(0, 900));
     this.transition("down", reason);
+    this.noteCapability(reason);
   }
+  /**
+   * Fault (next-B): the observer keeps running but its tap on one declared resource is detached — a misconfiguration.
+   * Effects at that resource are no longer seen; questions about it are answered `unknown` (not attached).
+   */
+  detach(resource: string, reason: string) {
+    if (!this.current.includes(resource)) return;
+    this.current = this.current.filter((r) => r !== resource);
+    this.configChanges++;
+    this.reporter?.sensorDown?.(resource, `observer ${this.id} detached from ${resource}: ${reason}`.slice(0, 900));
+    this.noteCapability(reason);
+  }
+  /** Restart: back up, and re-attached to exactly its declared resources (repairs a stop or a detachment). */
   restart(reason = "restarted by the run controller") {
-    if (this.up) return;
-    this.transition("up", reason);
-    for (const a of this.attached) this.reporter?.sensorUp?.(a);
+    if (this.healthy) return;
+    const wasUp = this.up;
+    if (this.declared.some((d) => !this.current.includes(d))) { this.current = [...this.declared]; this.configChanges++; }
+    if (!wasUp) this.transition("up", reason);
+    for (const a of this.current) this.reporter?.sensorUp?.(a);
+    this.noteCapability(reason);
   }
 
   /** Called from the effect tap. While down, the effect is not seen (and not reported) by this observer. */
   record(resource_id: string, op_id: string, effect: TapEffect, revision: string): boolean {
-    if (!this.attached.includes(resource_id)) return false;
+    if (!this.current.includes(resource_id)) return false;
     if (!this.up) { this.lost++; return false; }
     const e: ObservedEffect = { op_id, run_id: this.run_id, resource_id, resource_revision: revision, action: effect.action, detail: { ...effect.detail }, at_mono_ms: this.mono(), at: this.wall().toISOString() };
     this.log.push(e);
@@ -78,7 +120,7 @@ export class EffectObserver {
   answer(op_id: string, interval: { from_mono_ms: number; to_mono_ms: number }, resource_id: string, settleMs = 0): EffectAnswer {
     const effects = this.log.filter((e) => e.op_id === op_id && e.resource_id === resource_id);
     const health = this.health.map((h) => ({ ...h }));
-    if (!this.attached.includes(resource_id)) return { status: "unknown", effects: [], observer: this.id, reason: `${this.id} is not attached to ${resource_id}`, health };
+    if (!this.current.includes(resource_id)) return { status: "unknown", effects: [], observer: this.id, reason: `${this.id} is not attached to ${resource_id}`, health };
     if (effects.length) return { status: "observed", effects, observer: this.id, reason: `${effects.length} effect(s) recorded for operation ${op_id}`, health };
     const c = this.coveredThroughout(interval.from_mono_ms, interval.to_mono_ms + settleMs);
     if (!c.covered) return { status: "unknown", effects: [], observer: this.id, reason: `observer ${this.id} was down for part of the operation interval (${c.down.map((d) => d.reason).join("; ")}); absence of an effect is not evidence of no effect`, health };
