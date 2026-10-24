@@ -1,0 +1,62 @@
+{
+  "scope": "API-backed isolated synthetic server; Chromium headless with SwiftShader (software WebGL). Automated checks only.",
+  "renderer": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "findings": [
+    "comparison-branch at 390px: the open comparison is only reachable after \"Show map\"; the list view gives no indication a comparison is open"
+  ],
+  "view": "comparison-branch",
+  "open_ms": 4765,
+  "axe_region": {
+    "violations": [],
+    "incomplete": 1,
+    "passes": 16
+  },
+  "keyboard": {
+    "presses": 12,
+    "focused": 12,
+    "with_visible_indicator": 12,
+    "sample": [
+      {
+        "tag": "A",
+        "text": "Skip to workspace",
+        "outline": "solid 2px",
+        "boxShadow": "none"
+      },
+      {
+        "tag": "SELECT",
+        "text": "Project",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(0, 0, 0, 0.133) 0px 1px 3px 0px inset"
+      },
+      {
+        "tag": "INPUT",
+        "text": "Search assets and findings",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(0, 0, 0, 0.133) 0px 1px 3px 0px inset"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "3 assets with visibility gaps",
+        "outline": "solid 2px",
+        "boxShadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "outline": "solid 2px",
+        "boxShadow": "none"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Kingdom",
+        "outline": "solid 2px",
+        "boxShadow": "rgba(255, 255, 255, 0.03) 0px 1px 0px 0px inset"
+      }
+    ]
+  },
+  "reduced_motion_media": true,
+  "overflow_390_px": 0
+}

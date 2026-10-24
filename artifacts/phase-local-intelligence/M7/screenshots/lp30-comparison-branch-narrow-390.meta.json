@@ -1,0 +1,22 @@
+{
+  "name": "lp30-comparison-branch-narrow-390",
+  "file": "lp30-comparison-branch-narrow-390.png",
+  "sha256": "7f5ec8137240ee86d39bde3cef9f8fe78aabe8d461ef6079a8727939df775b07",
+  "bytes": 73126,
+  "capturedAt": "2026-10-24T08:00:41.704Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

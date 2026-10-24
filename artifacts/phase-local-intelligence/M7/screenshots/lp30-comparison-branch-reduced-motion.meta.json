@@ -1,0 +1,22 @@
+{
+  "name": "lp30-comparison-branch-reduced-motion",
+  "file": "lp30-comparison-branch-reduced-motion.png",
+  "sha256": "3d7d3000e03e1ce097f4ef6e81f8169588af063ee0a75d24c671b97b8dee3136",
+  "bytes": 170991,
+  "capturedAt": "2026-10-24T08:00:28.216Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": true,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "lp30-case-workbench-narrow-390",
+  "file": "lp30-case-workbench-narrow-390.png",
+  "sha256": "4e9b181cccceab42d1f2c2423fab233ac342997f492ffe58d9177a64bb161485",
+  "bytes": 134777,
+  "capturedAt": "2026-10-24T07:59:40.851Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

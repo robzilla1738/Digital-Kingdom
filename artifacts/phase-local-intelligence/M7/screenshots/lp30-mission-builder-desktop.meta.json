@@ -1,0 +1,22 @@
+{
+  "name": "lp30-mission-builder-desktop",
+  "file": "lp30-mission-builder-desktop.png",
+  "sha256": "c74b3cf06b9fc2db1572394d601e4893299b0dcda1682cc7f875ae44e0cf597c",
+  "bytes": 285100,
+  "capturedAt": "2026-10-24T07:58:04.618Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

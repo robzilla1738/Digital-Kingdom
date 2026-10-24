@@ -1,0 +1,22 @@
+{
+  "name": "lp30-castle-world-reduced-motion",
+  "file": "lp30-castle-world-reduced-motion.png",
+  "sha256": "5571bcfd11e03a92e2628368c071b1b1caa3cc7bcca0befaafb5418001fe1a07",
+  "bytes": 344034,
+  "capturedAt": "2026-10-24T07:57:53.927Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": true,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

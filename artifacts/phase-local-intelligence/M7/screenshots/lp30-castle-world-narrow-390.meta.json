@@ -1,0 +1,22 @@
+{
+  "name": "lp30-castle-world-narrow-390",
+  "file": "lp30-castle-world-narrow-390.png",
+  "sha256": "bbe6cdebb620dea55bbd6b1bd5a385293e46b53de06b4bff7e65ccce515c20e5",
+  "bytes": 74236,
+  "capturedAt": "2026-10-24T07:57:59.807Z",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}
