@@ -25,6 +25,7 @@ import { Controls } from "./controls.ts";
 import { ChangeReviews, type ChangePlanInput } from "./change-review.ts";
 import { Notifier, type FetchLike as NotifyFetch } from "./notify.ts";
 import { Regressions } from "./regression.ts";
+import { LocalRepairs } from "./local-repairs.ts";
 import { Verifications } from "./verification.ts";
 import { assistCase, type AssistModel } from "./assistant.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
@@ -774,6 +775,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
 
   // ---- durable cases (R03.1) ----
   const cases = new Cases(store);
+  // LP23: executed local repairs (LP22 verifications + LP23 regressions) linked to cases; closure gate; staleness.
+  const localRepairs = new LocalRepairs(store);
+  cases.closureGate = (p, c) => localRepairs.closureBlockers(p, c);
   const notifier = new Notifier(store.db, () => store.now(), cfg.notifyFetch ?? ((u, i) => fetch(u, i)), cfg.publicUrl ?? null, cfg.notifyAllowLoopback ?? false);
   app.decorate("notifier", notifier);
   const body = (req: FastifyRequest) => ((req.body && typeof req.body === "object" && !Array.isArray(req.body)) ? req.body : {}) as Record<string, unknown>;
@@ -825,6 +829,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     return assistCase(store, pid, cases.get(pid, CP(req)) as never, cfg.assistant ?? null, { max_queries: typeof b.max_queries === "number" ? b.max_queries : undefined });
   });
 
+  app.post("/api/projects/:p/cases/:id/local-repairs", { preHandler: authed("analyst"), bodyLimit: 1_048_576 }, async (req) => localRepairs.link(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
+  app.get("/api/projects/:p/cases/:id/local-repairs", { preHandler: authed() }, async (req) => localRepairs.list(store.require(req.principal!, P(req), "viewer").id, CP(req)));
+  app.post("/api/projects/:p/local-regressions/check", { preHandler: authed("analyst") }, async (req) => ({ regressions: localRepairs.check(store.require(req.principal!, P(req), "analyst").id, body(req), who(req)) }));
   // ---- regression proposals from closed cases (R07.4) ----
   const regressions = new Regressions(store);
   app.post("/api/projects/:p/cases/:id/regression-proposal", { preHandler: authed("analyst") }, async (req) => { const pid = store.require(req.principal!, P(req), "analyst").id; return regressions.propose(pid, CP(req), body(req), who(req), cases.get(pid, CP(req)) as never); });

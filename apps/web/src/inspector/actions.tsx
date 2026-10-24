@@ -101,6 +101,6 @@ export interface WorldComparisonView {
   rooms: { asset_id: string; change: "added" | "removed" | "changed"; refs: string[]; baseline_position: { x: number; z: number } | null; placement: string }[];
   changes: { key: string; op: "added" | "removed" | "changed"; kind: string; asset_ids: string[]; resolved_to_asset: boolean; unresolved: string[]; note?: string }[];
   model_only: { access: { probe: { principal: string; action: string; resource: string }; base: string; candidate: string; executed: false; verified: false; basis: string; reason?: string }[]; condition_keys: string[]; unassessed_paths: string[] };
-  executed_local: { results: unknown[]; note: string };
+  executed_local: { results: { link_id: string; run_id: string; security_verdict: string; whole_run: string; verified: boolean; executed: true; residual_access: string[]; disruption: string[]; tested_target_revision: string; scope: string }[]; note: string };
   warnings: string[]; not_claimed: string[];
 }

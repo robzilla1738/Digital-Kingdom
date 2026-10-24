@@ -1,6 +1,7 @@
 import type { Graph } from "@dk/contracts";
 import { HttpError, type Store } from "./store.ts";
 import { keyOf, type Exploration } from "./exploration.ts";
+import { executedLocalFor } from "./local-repairs.ts";
 
 /**
  * LP19 baseline-versus-repair world comparison (`dk.world_comparison.v1`). A stored, append-only LP13 comparison is
@@ -8,7 +9,7 @@ import { keyOf, type Exploration } from "./exploration.ts";
  * that asset's baseline room is marked added / removed / changed with the exact element references. Nothing is
  * recompiled, re-placed or stored: the baseline scene, graph, coverage and facts are read, never written. Geometry and
  * placement are presentation; the change list and its unresolved conditions are the facts. A model-only comparison is
- * never an executed or verified control: executed-local results are a separate list (empty unless a run is linked).
+ * never an executed or verified control: executed-local results are a separate list (empty unless an LP22 verification is linked to the comparison, LP23).
  */
 export const WORLD_COMPARISON = "dk.world_comparison.v1";
 type Change = "added" | "removed" | "changed";
@@ -70,7 +71,7 @@ export function worldComparison(store: Store, x: Exploration, projectId: string,
     rooms, changes,
     model_only: { access: cmp.access.map((a) => ({ probe: a.probe, supported: a.supported, base: a.base?.result ?? "unresolved", candidate: a.candidate?.result ?? "unresolved", ...(a.reason ? { reason: a.reason } : {}), basis: "configured_permission", executed: false, verified: false })),
       condition_keys: cmp.condition_keys, unassessed_paths: cmp.unassessed_paths },
-    executed_local: { results: [] as unknown[], note: "No executed local result is linked to this model-only comparison. A simulated blocked path is not a verified executed control." },
+    executed_local: (() => { const results = executedLocalFor(store, projectId, id); return { results, note: results.length ? `${results.length} executed local verification(s) linked (LP22, local run only); only a whole-run success counts as verified. The model-only results above are still not executed.` : "No executed local result is linked to this model-only comparison. A simulated blocked path is not a verified executed control." }; })(),
     warnings,
     not_claimed: [...cmp.not_claimed, "Castle geometry, placement and colour are presentation, never a security fact.", "Viewing or exporting this comparison changes no baseline state, source coverage, finding or scene."],
   };

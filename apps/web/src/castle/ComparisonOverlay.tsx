@@ -52,7 +52,8 @@ export function ComparisonPanel({ view, error, id }: { view: WorldComparisonView
       <h4 style={{ margin: "6px 0 2px" }}>Model-only access (configured permission)</h4>
       <ul style={{ paddingLeft: 16, margin: 0 }} data-testid="comparison-access">{view.model_only.access.map((a, i) => <li key={i} data-executed={String(a.executed)} data-verified={String(a.verified)}>{a.probe.principal} {a.probe.action} {a.probe.resource}: {a.base} → {a.candidate} · not executed · not verified</li>)}</ul>
       <h4 style={{ margin: "6px 0 2px" }}>Executed local results</h4>
-      <p data-testid="comparison-executed-local">{view.executed_local.results.length ? `${view.executed_local.results.length} linked run(s)` : view.executed_local.note}</p>
+      <p data-testid="comparison-executed-local">{view.executed_local.note}</p>
+      {view.executed_local.results.length > 0 && <ul data-testid="comparison-executed-local-list">{view.executed_local.results.map((r) => <li key={r.link_id}>{`${r.verified ? "verified locally" : "not verified"} · ${r.security_verdict} · ${r.whole_run} · ${r.tested_target_revision}${r.residual_access.length ? ` · residual: ${r.residual_access.join(", ")}` : ""}${r.disruption.length ? ` · disrupted: ${r.disruption.join(", ")}` : ""} · local run only`}</li>)}</ul>}
       <button className="btn sm" onClick={download}>Export comparison (JSON)</button>
     </>}
   </section>;

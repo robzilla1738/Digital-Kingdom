@@ -1,6 +1,6 @@
 {
  "schema": "dk.local.repair_regression.v1",
- "regression_id": "lrg-0620122bdcfde0db",
+ "regression_id": "lrg-e553caa0a560a91e",
  "lesson": "The tenant API must refuse a tenant-a session reading tenant-b records while tenant-a reads keep working (repair: tenant API policy back to baseline).",
  "world": {
   "blueprint": "saas-storefront",
@@ -114,9 +114,9 @@
   "control_ids": [
    "ctl-tenant-isolation"
   ],
-  "plan_digest": "53da5a2d6635b6c4db181aca9e56434bb25f5f3c15c3d4589dd9cbb524481c47",
-  "execution_receipt_digest": "bd6d3d5ae2d7e94bb7438c190312a1e90cc007d24c9e22d98f2848da203e7785",
-  "verification_digest": "1b462237831551f6722b7b8e46fe10d607bb6a1af6a005af6ac2cdae56a7a04e",
+  "plan_digest": "d0590a026e240d0dd9b757fd464b80717d9ac766f7f92021c88b1e8d91685257",
+  "execution_receipt_digest": "c908fd7b661b146fb25f3b5bffc333564d94f0016a9d525e1b9ad8adb5c58f91",
+  "verification_digest": "60f92b808440d9e5117294ae39c2767fceb2e1bba393e575dc7a4c051aeaa71f",
   "verification_outcome": "success"
  },
  "residual_uncertainty": [
@@ -130,5 +130,5 @@
   "data_origin": "synthetic_local",
   "private_truth": "not_included"
  },
- "descriptor_digest": "1a09c0d38fbb8e3c529b1f0c35d65ada4ca41c0a9c052b870f1e2fb031b966ac"
+ "descriptor_digest": "7f12e53c6c3a8354c5a1e4b9b3a9f97867701dc8638fbf539c1486252c6c0bae"
 }

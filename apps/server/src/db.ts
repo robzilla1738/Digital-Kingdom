@@ -8,6 +8,7 @@ import { ANALYSIS_MIGRATION } from "./exploration.ts";
 import { REPAIR_MIGRATION } from "./repair.ts";
 import { ATTENTION_MIGRATION } from "./attention.ts";
 import { WORLD_LAYOUT_MIGRATION } from "./world-layout.ts";
+import { LOCAL_REPAIR_MIGRATION } from "./local-repairs.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -127,6 +128,7 @@ export const MIGRATIONS: string[] = [
   ATTENTION_MIGRATION,
   // Local Intelligence Phase LP16: append-only versioned layout history (previewed reflows, per-version room diffs).
   WORLD_LAYOUT_MIGRATION,
+  LOCAL_REPAIR_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

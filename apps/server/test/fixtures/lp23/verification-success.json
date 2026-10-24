@@ -1,0 +1,147 @@
+{
+ "schema": "dk.local.repair_verification.v1",
+ "run_id": "run-4aee5ff460eb",
+ "plan_id": "plan-m5-1",
+ "plan_digest": "d0590a026e240d0dd9b757fd464b80717d9ac766f7f92021c88b1e8d91685257",
+ "execution": {
+  "state": "completed",
+  "receipt_digest": "c908fd7b661b146fb25f3b5bffc333564d94f0016a9d525e1b9ad8adb5c58f91"
+ },
+ "verifier_id": "vrf-165f34298aac4785",
+ "independence": {
+  "verifier_is_executor": false,
+  "observers": [
+   "audit"
+  ],
+  "basis": "effects read only from registered observer resources of this run, correlated by supervisor-signed operation id; not from target self-reports, response bodies or the execution receipt"
+ },
+ "observations": [
+  {
+   "probe_id": "cross-tenant-read",
+   "repeat": 0,
+   "operation_id": "op-4aee5ff460eb-5",
+   "nonce_digest": "1508badbe8518b1009428897ea7f6e5d503318f28731494425d1d909b136baf0",
+   "observation_digest": "1b25114b78d54b969e2568ad39a1fdf24bac0235cbfcfa837a196f7340edac0f",
+   "status": 403,
+   "actual_effect": "not_observed",
+   "observer": "audit",
+   "settled_ms": 604,
+   "reason": "observer audit was up throughout and recorded no effect for operation op-4aee5ff460eb-5"
+  },
+  {
+   "probe_id": "own-tenant-read",
+   "repeat": 0,
+   "operation_id": "op-4aee5ff460eb-6",
+   "nonce_digest": "9f029600bef665e101a1dd8609c2db4a60e2f120e8c742334f262d826e5bb8ed",
+   "observation_digest": "0db1d66c55d3c5fbcbaa661bd6df7df784aeb85a2d1cf2c0a7a4d79719990b2b",
+   "status": 200,
+   "actual_effect": "observed",
+   "observer": "audit",
+   "settled_ms": 0,
+   "reason": "1 effect(s) recorded for operation op-4aee5ff460eb-6"
+  },
+  {
+   "probe_id": "cross-tenant-read",
+   "repeat": 1,
+   "operation_id": "op-4aee5ff460eb-7",
+   "nonce_digest": "494b64943a9959942a80cb5fb9d219d665c9fddb59f2c5e6bedac3fc97d99429",
+   "observation_digest": "3087d67eb2b2fc0ef2e3a69273f1bbe5d5afd079665761896dc5a50ff303cdb6",
+   "status": 403,
+   "actual_effect": "not_observed",
+   "observer": "audit",
+   "settled_ms": 604,
+   "reason": "observer audit was up throughout and recorded no effect for operation op-4aee5ff460eb-7"
+  },
+  {
+   "probe_id": "own-tenant-read",
+   "repeat": 1,
+   "operation_id": "op-4aee5ff460eb-8",
+   "nonce_digest": "6b29e911a08a7aba9a8058821ae61b68c74d8259313c9aded9b2412645116090",
+   "observation_digest": "e489d8ca5ba70f0621642f024d4cf0543da439e63807797d195f5983d46c0382",
+   "status": 200,
+   "actual_effect": "observed",
+   "observer": "audit",
+   "settled_ms": 0,
+   "reason": "1 effect(s) recorded for operation op-4aee5ff460eb-8"
+  }
+ ],
+ "before": [
+  {
+   "probe_id": "cross-tenant-read",
+   "actual_effect": "observed"
+  },
+  {
+   "probe_id": "own-tenant-read",
+   "actual_effect": "observed"
+  }
+ ],
+ "residual_access": [],
+ "disruption": [],
+ "security_verdict": "pass",
+ "verification_receipt": {
+  "schema": "dk.local.verification_receipt.v1",
+  "run_id": "run-4aee5ff460eb",
+  "plan_id": "plan-m5-1",
+  "tested_target_revision": "api:policy-baseline-r3",
+  "probes": [
+   {
+    "operation_id": "op-4aee5ff460eb-5",
+    "expectation": "prohibited",
+    "actual_effect": "not_observed",
+    "observer_scope": "sufficient",
+    "evidence_refs": [
+     "health-1b25114b78d54b96"
+    ],
+    "result": "as_expected"
+   },
+   {
+    "operation_id": "op-4aee5ff460eb-6",
+    "expectation": "permitted",
+    "actual_effect": "observed",
+    "observer_scope": "sufficient",
+    "evidence_refs": [
+     "obs-0db1d66c55d3c5fb"
+    ],
+    "result": "as_expected"
+   },
+   {
+    "operation_id": "op-4aee5ff460eb-7",
+    "expectation": "prohibited",
+    "actual_effect": "not_observed",
+    "observer_scope": "sufficient",
+    "evidence_refs": [
+     "health-3087d67eb2b2fc0e"
+    ],
+    "result": "as_expected"
+   },
+   {
+    "operation_id": "op-4aee5ff460eb-8",
+    "expectation": "permitted",
+    "actual_effect": "observed",
+    "observer_scope": "sufficient",
+    "evidence_refs": [
+     "obs-e489d8ca5ba70f06"
+    ],
+    "result": "as_expected"
+   }
+  ],
+  "security_verdict": "pass",
+  "cleanup": {
+   "outcome": "completed",
+   "notes": "removed 3 owned path(s)"
+  },
+  "overall_outcome": "pass",
+  "scope": "local_run_only",
+  "unassessed_paths": []
+ },
+ "cleanup": {
+  "outcome": "completed",
+  "notes": "removed 3 owned path(s)"
+ },
+ "whole_run": {
+  "outcome": "success",
+  "success": true,
+  "reasons": []
+ },
+ "scope": "local_run_only"
+}

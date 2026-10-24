@@ -30,6 +30,8 @@ const str = (v: unknown, k: string, max: number, required = true) => {
 };
 
 export class Cases {
+  /** LP23: extra closure blockers (failed/inconclusive local verifications, stale regressions) that need an accepted unknown. */
+  closureGate: ((projectId: string, caseId: string) => { ref: string; reason: string }[]) | null = null;
   constructor(private readonly store: Store) {}
   private get db() { return this.store.db; }
   private now() { return this.store.now().toISOString(); }
@@ -233,7 +235,12 @@ export class Cases {
         if (status === "closed" && r.owner !== actor && role !== "admin") throw new HttpError(403, "only the case owner or an administrator can close a case");
         const open = (this.db.prepare("SELECT item_id, body FROM case_items WHERE case_id = ? AND kind IN ('question','hypothesis') AND removed_at IS NULL").all(id) as { item_id: string; body: string }[]).filter((q) => (JSON.parse(q.body) as { status: string }).status === "open");
         if (open.length) throw new HttpError(409, `${open.length} question(s) are still open; answer them or accept them as unresolved with a reason`, open.map((q) => q.item_id));
-        closure = { statement: str(body.statement, "statement (how the closure criteria were met)", 4000), criteria: r.closure_criteria, by: actor, at: this.now() };
+        const blockers = this.closureGate ? this.closureGate(projectId, id) : [];
+        const accepted = Array.isArray(body.accepted_unknowns) ? (body.accepted_unknowns as unknown[]).filter((a): a is { ref: string; reason: string } => !!a && typeof a === "object" && typeof (a as { ref?: unknown }).ref === "string" && typeof (a as { reason?: unknown }).reason === "string" && !!(a as { reason: string }).reason.trim()) : [];
+        const unaccepted = blockers.filter((x) => !accepted.some((a) => a.ref === x.ref));
+        if (unaccepted.length) throw new HttpError(409, `${unaccepted.length} linked local result(s) are not verified or no longer current; a failed verification cannot silently close a case. Accept each as an explicit unknown with a reason (accepted_unknowns) or link a passing replay`, unaccepted.map((x) => `${x.ref}: ${x.reason}`));
+        const acceptedUnknowns = blockers.map((x) => ({ ...x, accepted_reason: accepted.find((a) => a.ref === x.ref)!.reason.trim().slice(0, 1000) }));
+        closure = { statement: str(body.statement, "statement (how the closure criteria were met)", 4000), criteria: r.closure_criteria, by: actor, at: this.now(), ...(acceptedUnknowns.length ? { accepted_unknowns: acceptedUnknowns } : {}) };
       }
       this.db.prepare("UPDATE cases SET status = ?, closure = ? WHERE id = ?").run(status, closure ? canonicalJson(closure) : null, id);
       this.bump(r, actor, { status: r.status }, { status, ...(closure ? { closure } : {}) }, `status ${status}`);

@@ -1,4 +1,4 @@
-import { checkRegression, compileWorld, EffectVerifier, instantiateBlueprint, LOCAL_REGRESSION_TOOLS, RepairController, regressionValidity, Supervisor, type RepairRegression, type RepairVerification, type VerificationProbe } from "@dk/local-world";
+import { checkRegression, compileWorld, EffectVerifier, instantiateBlueprint, RepairController, type RegressionTools, regressionValidity, Supervisor, type RepairRegression, type RepairVerification, type VerificationProbe } from "@dk/local-world";
 import { BUILTIN_SERVICES, syntheticPassword } from "../world/services.ts";
 
 /**
@@ -25,7 +25,7 @@ export interface ReplayResult {
   reproduced: boolean; reasons: string[];
 }
 
-export async function replayRegression(descriptor: unknown, o: { tools?: Partial<typeof LOCAL_REGRESSION_TOOLS> } = {}): Promise<ReplayResult> {
+export async function replayRegression(descriptor: unknown, o: { tools?: Partial<RegressionTools> } = {}): Promise<ReplayResult> {
   const chk = checkRegression(descriptor);
   if (!chk.ok) throw new Error(`regression refused: ${chk.errors.join("; ")}`);
   const d: RepairRegression = chk.value;
