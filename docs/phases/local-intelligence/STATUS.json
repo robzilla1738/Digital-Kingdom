@@ -675,17 +675,18 @@
     "LP14",
     "LP18"
    ],
-   "status": "in_progress",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "ed6ed76 + (this commit)",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP19.md",
    "branch": "phase/li-m4",
    "local_checks": {
     "typecheck": "exit 0",
-    "test": "phase-lp19-world-comparison 1/1",
-    "e2e": "not run yet"
+    "build": "exit 0",
+    "test": "phase-lp19-world-comparison 1/1; full vitest 4 shards at 63c623d (LP18 head) all passed",
+    "e2e": "e2e/comparison-redesign.spec.ts 1/1 passed (Chromium headless, SwiftShader)"
    },
-   "progress_note": "Substage 1 committed: dk.world_comparison.v1 projection of LP13 comparisons onto the baseline scene (GET /analysis/comparisons/:id/world). Remaining: castle/2D overlay + change list UI, browser test, screenshots."
+   "progress_note": "Castle comparison overlay + server projection done. Not done: 2D graph overlay, comparison replay scope (recorded as limitations). Next: M4 rebase onto phase/local-intelligence."
   },
   {
    "id": "LP20",
@@ -1426,30 +1427,34 @@
   },
   "LP19-A1": {
    "package": "LP19",
-   "status": "in_progress",
+   "status": "passed_local",
    "evidence": [
-    "apps/server/test/phase-lp19-world-comparison.test.ts (server; UI pending)"
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (baseline unchanged after viewing)"
    ]
   },
   "LP19-A2": {
    "package": "LP19",
-   "status": "in_progress",
+   "status": "passed_local",
    "evidence": [
-    "apps/server/test/phase-lp19-world-comparison.test.ts (server; UI pending)"
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (exact keys, unresolved conditions, badges on baseline rooms)"
    ]
   },
   "LP19-A3": {
    "package": "LP19",
-   "status": "in_progress",
+   "status": "passed_local",
    "evidence": [
-    "apps/server/test/phase-lp19-world-comparison.test.ts (server; UI pending)"
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (not executed / not verified; executed-local separate)"
    ]
   },
   "LP19-A4": {
    "package": "LP19",
-   "status": "in_progress",
+   "status": "passed_local",
    "evidence": [
-    "apps/server/test/phase-lp19-world-comparison.test.ts (export JSON; UI pending)"
+    "apps/server/test/phase-lp19-world-comparison.test.ts (both revisions, export header, stale warning)",
+    "e2e/comparison-redesign.spec.ts"
    ]
   },
   "LP20-A1": {
@@ -1943,10 +1948,9 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP19",
-  "why": "LP19 substage 1 (server projection) on phase/li-m4; next the castle/2D comparison overlay and browser test, then the M4 rebase onto phase/local-intelligence.",
+  "package": "M4-rebase",
+  "why": "LP16-LP19 implemented and locally verified on phase/li-m4; rebase onto origin/phase/local-intelligence, retest, push, add M4 milestone entry, confirm CI.",
   "eligible_now": [
-   "LP19",
    "LP20",
    "LP24"
   ]

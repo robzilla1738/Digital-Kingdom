@@ -46,6 +46,8 @@ export interface ServerActions {
   /** R07.1 controls. */
   controls(signal?: AbortSignal): Promise<{ controls: { id: string; name: string; kind: string; asset_ids: string[]; state: string; state_reason: string }[] }>;
   control(id: string): Promise<any>;
+  /** LP19 baseline-versus-repair world comparison (read-only). */
+  worldComparison?(id: string, signal?: AbortSignal): Promise<WorldComparisonView>;
   /** R03.5 notification outbox status and acknowledgement. */
   notifications(signal?: AbortSignal): Promise<NotificationStatus>;
   acknowledgeNotification(id: string): Promise<{ acknowledged: number }>;
@@ -90,3 +92,15 @@ export interface CoverageHistoryResult {
 }
 export interface BundleMeta { bundle_id: string; bundle_digest: string; finding_revision: number; reference_count: number; expires_at: string | null; pinned: boolean; omissions: string[] }
 export const ActionsCtx = createContext<ServerActions | null>(null);
+
+/** LP19 `dk.world_comparison.v1` as the castle reads it. */
+export interface WorldComparisonView {
+  schema: "dk.world_comparison.v1"; comparison_id: string; namespace: string; mode: "model_only";
+  revisions: { baseline: { state_hash: string; graph_revision: string; scene_digest: string; layout_version: number | null; current: boolean }; candidate: { state_hash: string; namespace: string; receipt_digest: string } };
+  layout: string;
+  rooms: { asset_id: string; change: "added" | "removed" | "changed"; refs: string[]; baseline_position: { x: number; z: number } | null; placement: string }[];
+  changes: { key: string; op: "added" | "removed" | "changed"; kind: string; asset_ids: string[]; resolved_to_asset: boolean; unresolved: string[]; note?: string }[];
+  model_only: { access: { probe: { principal: string; action: string; resource: string }; base: string; candidate: string; executed: false; verified: false; basis: string; reason?: string }[]; condition_keys: string[]; unassessed_paths: string[] };
+  executed_local: { results: unknown[]; note: string };
+  warnings: string[]; not_claimed: string[];
+}

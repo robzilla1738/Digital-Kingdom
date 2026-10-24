@@ -1,0 +1,22 @@
+{
+  "name": "lp19-baseline-vs-repair-castle",
+  "file": "lp19-baseline-vs-repair-castle.png",
+  "sha256": "acc9d64446a8683cdb67bcf881a739acb25bc7c481c131ff3fa86c32fbdd6d8e",
+  "bytes": 331558,
+  "capturedAt": "2026-10-24T05:53:29.446Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

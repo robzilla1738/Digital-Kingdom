@@ -6,6 +6,7 @@ import * as THREE from "three";
 import type { CompiledScene, SceneRoom } from "@dk/contracts";
 import { CastleModule } from "./modules.tsx";
 import { InteriorMarkers } from "./InteriorMarkers.tsx";
+import { ComparisonBadges, ComparisonPanel, useWorldComparison } from "./ComparisonOverlay.tsx";
 import { Environment } from "./Environment.tsx";
 import { hatchTexture } from "./materials.ts";
 import { EdgeChooser, type EdgeChoice } from "./EdgeChooser.tsx";
@@ -45,6 +46,7 @@ export function Castle3D() {
   const scene = useMemo(() => presentationScene(vm.data.scene), [topologyKey]);
   const collisions = useMemo(() => presentationCollisions(scene.rooms), [scene]);
   const wrap = useRef<HTMLDivElement>(null);
+  const comparison = useWorldComparison();
   const [edgeChoice, setEdgeChoice] = useState<EdgeChoice | null>(null);
   useEffect(() => { setEdgeChoice(null); }, [ui.selection, ui.layers, ui.showHypothetical, topologyKey]);
   const groups = useMemo(() => presentationGroups(scene, vm.data.graph), [scene, membershipKey]);
@@ -101,12 +103,14 @@ export function Castle3D() {
             {visibleRooms.map(room => <Room key={room.asset_id} room={room} selected={focus.has(room.asset_id)} focused={grouped && !!district && focusedLabels.has(room.asset_id)} quality={quality} />)}
             {grouped && !district && groups.map(g => <District key={g.key} group={g} onFocus={() => { setDistrict(g.key); send("focus", g.key); }} />)}
             <Paths scene={scene} visibleIds={visibleIds} onChoice={setEdgeChoice} />
+            {comparison.view && <ComparisonBadges view={comparison.view} />}
             {archived.map(r => <ArchivedPlacement key={`${r.asset_id}:${r.incarnation_id ?? r.retired_in_revision}`} room={r} />)}
           </Suspense>
         </LabelLayer>
       </Canvas>
     </CanvasBoundary>
     {edgeChoice && <EdgeChooser choice={edgeChoice} paths={scene.paths} graph={vm.data.graph} width={wrap.current?.clientWidth ?? 800} height={wrap.current?.clientHeight ?? 600} onChoose={id => { dispatch({ type: "select", selection: { kind: "path", id } }); setEdgeChoice(null); }} onClose={() => setEdgeChoice(null)} />}
+    <ComparisonPanel view={comparison.view} error={comparison.error} id={comparison.id} />
     <div className="stage-tools" style={{ zIndex: 30 }} role="toolbar" aria-label="Castle view">
       <button className="icon-btn sm" onClick={() => send("in")} aria-label="Zoom in"><Icon name="plus" size={15} /></button>
       <button className="icon-btn sm" onClick={() => send("out")} aria-label="Zoom out"><Icon name="minus" size={15} /></button>
