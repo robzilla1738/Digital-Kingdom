@@ -327,11 +327,11 @@
     "LP02",
     "LP03"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "0ab5027",
-   "ci_run": null,
+   "ci_run": 40049323638,
    "receipt": "docs/phases/local-intelligence/receipts/LP08.md",
-   "branch": "phase/li-m2 (worktree; rebased onto phase/local-intelligence when M2 completes)",
+   "branch": "phase/local-intelligence",
    "local_checks": {
     "typecheck": "exit 0",
     "test": "95 files passed, 1 skipped; 685 passed, 1 skipped",
@@ -343,6 +343,16 @@
     "id": 40046522740,
     "check": "success",
     "browser_pilot": "failure: flaky e2e/redesign.spec.ts:314 (camera zoom timing; also failed on M1 head 09cdeb3)"
+   },
+   "ci_head": "49286ae",
+   "ci_result": "success (check + browser-pilot jobs) on head 49286ae, which contains this commit; the four M2 commits were pushed together, so no per-commit run exists on phase/local-intelligence",
+   "local_checks_rebased": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "head": "49286ae",
+    "note": "re-run in worktree DK-m2 on the rebased tree, Node v22, aarch64"
    }
   },
   {
@@ -352,11 +362,11 @@
    "depends_on": [
     "LP08"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "5b31ec0",
-   "ci_run": null,
+   "ci_run": 40049323638,
    "receipt": "docs/phases/local-intelligence/receipts/LP09.md",
-   "branch": "phase/li-m2 (worktree)",
+   "branch": "phase/local-intelligence",
    "local_checks": {
     "typecheck": "exit 0",
     "test": "97 files passed, 1 skipped; 698 passed, 1 skipped",
@@ -367,6 +377,16 @@
     "id": 40047366167,
     "check": "success",
     "browser_pilot": "success"
+   },
+   "ci_head": "49286ae",
+   "ci_result": "success (check + browser-pilot jobs) on head 49286ae, which contains this commit; the four M2 commits were pushed together, so no per-commit run exists on phase/local-intelligence",
+   "local_checks_rebased": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "head": "49286ae",
+    "note": "re-run in worktree DK-m2 on the rebased tree, Node v22, aarch64"
    }
   },
   {
@@ -376,11 +396,11 @@
    "depends_on": [
     "LP09"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "dbc9fde",
-   "ci_run": null,
+   "ci_run": 40049323638,
    "receipt": "docs/phases/local-intelligence/receipts/LP10.md",
-   "branch": "phase/li-m2 (worktree)",
+   "branch": "phase/local-intelligence",
    "local_checks": {
     "typecheck": "exit 0",
     "test": "98 files passed, 1 skipped; 708 passed, 1 skipped",
@@ -391,6 +411,16 @@
     "id": 40048100457,
     "check": "success",
     "browser_pilot": "failure: same flaky redesign.spec.ts:314"
+   },
+   "ci_head": "49286ae",
+   "ci_result": "success (check + browser-pilot jobs) on head 49286ae, which contains this commit; the four M2 commits were pushed together, so no per-commit run exists on phase/local-intelligence",
+   "local_checks_rebased": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "head": "49286ae",
+    "note": "re-run in worktree DK-m2 on the rebased tree, Node v22, aarch64"
    }
   },
   {
@@ -400,11 +430,11 @@
    "depends_on": [
     "LP10"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "8b0b0c9",
-   "ci_run": null,
+   "ci_run": 40049323638,
    "receipt": "docs/phases/local-intelligence/receipts/LP11.md",
-   "branch": "phase/li-m2 (worktree)",
+   "branch": "phase/local-intelligence",
    "local_checks": {
     "typecheck": "exit 0",
     "test": "99 files passed, 1 skipped; 713 passed, 1 skipped",
@@ -412,7 +442,17 @@
     "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
     "build": "exit 0"
    },
-   "pre_rebase_commit": "7763ba1"
+   "pre_rebase_commit": "7763ba1",
+   "ci_head": "49286ae",
+   "ci_result": "success (check + browser-pilot jobs) on head 49286ae, which contains this commit; the four M2 commits were pushed together, so no per-commit run exists on phase/local-intelligence",
+   "local_checks_rebased": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "head": "49286ae",
+    "note": "re-run in worktree DK-m2 on the rebased tree, Node v22, aarch64"
+   }
   },
   {
    "id": "LP12",
@@ -1559,6 +1599,11 @@
    "id": "D-M2-REBASE",
    "date": "2026-10-23",
    "decision": "phase/li-m2 (LP08-LP11) rebased onto origin/phase/local-intelligence at 798f653 (M1 LP04-LP06). Conflicts: app.ts imports (kept both registerLocalWorld and registerInvestigationRoutes); STATUS.json merged automatically with every upstream package, requirement and decision entry preserved (checked by script). Re-ran typecheck, full suite, fixtures and scenarios on the rebased head before the fast-forward push; no force push."
+  },
+  {
+   "id": "D-M2-CI",
+   "date": "2026-10-23",
+   "decision": "M2 recorded ci_verified on head 49286ae (CI run 40049323638: check + browser-pilot success). Package entries keep their own rebased commits and cite the containing head's run; receipts gained a commits/CI section. No M2 code changed after review."
   }
  ],
  "model_spend_usd": {
@@ -1568,7 +1613,7 @@
  },
  "next_action": {
   "package": "LP12",
-  "why": "M2 (LP08-LP11) is implemented and on phase/local-intelligence. LP12 (investigation workbench, M3) depends on LP08/LP10/LP11 and LP13 (bounded path and change exploration) on LP01/LP08; both are eligible. LP07 (scenario DSL, M1) depends on LP06 and belongs to the M1 track.",
+  "why": "M2 (LP08-LP11) is CI-verified on phase/local-intelligence. LP12 (investigation workbench, M3) depends on LP08/LP10/LP11 and LP13 (bounded path and change exploration) on LP01/LP08; both are eligible. LP07 (scenario DSL, M1) depends on LP06 and belongs to the M1 track (in progress by another agent).",
   "eligible_now": [
    "LP07",
    "LP12",
@@ -1595,16 +1640,18 @@
     "LP10",
     "LP11"
    ],
-   "status": "implemented_locally_verified",
-   "head": "8b0b0c9",
+   "status": "ci_verified",
+   "head": "49286ae",
    "rebased_onto": "798f653",
+   "ci_run": 40049323638,
+   "ci_result": "success (check + browser-pilot)",
    "local_checks": {
     "typecheck": "exit 0",
-    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped (rebased onto M1 LP04-LP06)",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped",
     "validate:fixtures": "exit 0",
     "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)"
    },
-   "note": "Scripted/protocol checks only; AI execution not exercised (no model run). CI on phase/local-intelligence is recorded after the fast-forward push."
+   "note": "Engineering-verified locally and in CI for the executed tests only. Scripted/protocol checks; AI execution not exercised (no model run, $0 spend). The pre-rebase browser-pilot failures (runs 40046522740, 40048100457) were the flaky e2e/redesign.spec.ts:314 WebGL camera spec, outside M2 code; it passed on 40049323638."
   }
  }
 }
