@@ -1102,7 +1102,8 @@
      "artifacts/phase-local-intelligence/M7/screenshots/lp30-comparison-branch-narrow-390-list-view.png",
      "artifacts/phase-local-intelligence/M7/screenshots/lp30-comparison-branch-narrow-390.png"
     ],
-    "missions_in_capsules": "LP29 mission records travel in LP28 evidence-only capsules (role 'mission'; builder-truth fields refused at build and import): apps/server/test/phase-lp31-mission-capsules.test.ts (2 tests)"
+    "missions_in_capsules": "LP29 mission records travel in LP28 evidence-only capsules (role 'mission'; builder-truth fields refused at build and import): apps/server/test/phase-lp31-mission-capsules.test.ts (2 tests)",
+    "ci": "4358bbc covered by run 40078019427; final head dca446d run 40078498692 success"
    }
   },
   {
@@ -1113,9 +1114,9 @@
     "LP30",
     "LP26"
    ],
-   "status": "implemented_locally_verified",
-   "commit": "c4174f4 (loop) + ledger/report commit",
-   "ci_run": null,
+   "status": "ci_verified",
+   "commit": "dca446d (final candidate; loop c4174f4, LP30 follow-ups 4358bbc)",
+   "ci_run": "40078498692 success (check + browser-pilot) on dca446d",
    "receipt": "docs/phases/local-intelligence/receipts/LP31.md",
    "branch": "phase/local-intelligence",
    "deliverables": [
@@ -1126,7 +1127,18 @@
     "docs/phases/local-intelligence/PHASE_REPORT.md"
    ],
    "model_spend_usd": 0,
-   "progress_note": "LP31 implemented; final candidate verification + CI recorded in receipts/LP31.md and here once green."
+   "progress_note": "Phase complete locally; CI on final head recorded. Next work is owner-gated (see next_action.precise_next_work).",
+   "local_checks": {
+    "head": "dca446d",
+    "typecheck": "exit 0",
+    "test": "8 shards: 139 files (138 passed, 1 skipped); 970 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "15 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "build": "exit 0",
+    "release:manifest + release:verify": "release matches recorded build dca446d (18 files)",
+    "key e2e": "comparison-redesign LP19, missions-redesign LP29, usability comparison-branch + mission-builder: 4 passed (SwiftShader)",
+    "integrated loop": "pnpm loop:local LOOP OK; eval/test/li-lp31-integrated-loop.test.ts passed"
+   }
   }
  ],
  "requirements": {
@@ -2690,6 +2702,19 @@
    "head": "1d9d7d8",
    "ci_run": 40069056700,
    "ci_result": "success (check + browser-pilot incl. pilot:redesign) on 1d9d7d8"
+  },
+  "M7": {
+   "packages": [
+    "LP28",
+    "LP29",
+    "LP30",
+    "LP31"
+   ],
+   "status": "ci_verified",
+   "head": "dca446d",
+   "ci_run": 40078498692,
+   "ci_result": "success (check + browser-pilot)",
+   "note": "Engineering-verified locally and in CI for the executed tests only. LP31 loop is scripted (AI not exercised in it); AI-loop evidence is LP26 only. No merge, PR, deploy or provider call."
   }
  }
 }
