@@ -316,3 +316,114 @@ Summary per selector (correct/4):
     up from 1000 (the +2 are this follow-up's new tests); validate:fixtures; scenarios; build; release verify. The
     `pnpm bench:repairs` step printed `positive controls caught 13/13 · model not used` and `BENCH OK`.
   - `browser-pilot`: success.
+
+## Follow-up 2: the `rehearsal` selector (appended 2026-10-24)
+This follow-up is the "next step" named in the misleading-prediction follow-up above: execute the top-k candidates in
+disposable worlds before choosing. No model or provider call was made. The `reasoning` selector and its recorded
+result are **unchanged**: it is still fooled on `misleading-prediction`, and independent verification still catches it.
+
+### What was added
+- **`rehearsalSelector`** (scripted) in `eval/local/repair-bench/selectors.ts`:
+  - **Shortlist:** the top k ≤ 3 options by visible rank, among those that `predictedSafe` accepts. These are the
+    options the `reasoning` selector would trust.
+  - **Rehearsal:** each shortlisted option is rehearsed through a bench-provided `rehearse(option_id)` capability.
+    That capability returns operator-observable effects only: per case probe, `holds` / `does_not_hold` / `unknown`,
+    plus a detail string and the teardown state. It carries no class, key, origin, truth, oracle or verdict, and a test
+    checks the exact result keys.
+  - **Judging:** `classifyRehearsal` compares the option's visible `expected_impact` with what was observed.
+    - **contradicted:** any probe was observed opposite to its prediction. Contradicted options are discarded.
+    - **unknown:** any predicted probe was observed `unknown`, or the plan was not executed. Unknown is **never** read
+      as blocked.
+    - **confirmed:** neither of the above.
+  - **Choice:** the first confirmed option by rank. If no option is confirmed, it abstains with
+    `no_applicable_candidate`. It also abstains when nothing is predicted safe (no worlds started), or when no
+    rehearsal capability was given.
+- **`rehearseOption`** in `bench.ts`. Each call:
+  - starts its **own** fresh LW-01 world (`prepare`), which means a new `Supervisor`, a new operator credential and a
+    new controller identity;
+  - re-lists the option and takes an **exact lease** for that plan;
+  - runs the typed action through `RepairController`, which journals it in the run-owned repair journal (the journal
+    entry count is recorded);
+  - observes the case probes with an independent `EffectVerifier`. For the observer case it also uses the
+    `verifyObserverRecovery` handshake: the gap counts as `does_not_hold` only when the handshake is `verified`, and
+    otherwise as `unknown`;
+  - then **revokes the lease** (operator), stops and cleans the world, and records `run_state`, `lease_state`,
+    `tokens_revoked` and the wall time.
+- **Bench wiring:**
+  - Only the `rehearsal` selector receives the capability. Rehearsal happens during selection, in its own worlds.
+  - The chosen option is then executed in a fresh scored world, exactly like every other selector's choice.
+  - Each score gets a `rehearsal` record: the shortlist, the per-option verdicts, `worlds_started` and `wall_ms`.
+  - New fail conditions: `rehearsal` is incorrect on any case, or any rehearsal world was not torn down (lease still
+    active, tokens alive, or run still running).
+
+### Tests (failing first, then passing)
+- Failing tests were committed first in `d7e1d48` `[skip ci]`. Output is in
+  `work/next/d-rehearsal-before-test-output.txt`: **6/6 failed** in `eval/test/next-d-rehearsal.test.ts`, because
+  `rehearsalSelector` and `prepareSelection` did not exist. The e2e assertions for `rehearsal` were added to
+  `next-d-repair-bench.test.ts` in the same commit.
+- **After:**
+  - `next-d-rehearsal.test.ts`: **6/6**. It covers:
+    - contradicted rank-1 discarded, confirmed option chosen;
+    - at most 3 rehearsals;
+    - **unknown ≠ blocked**, so the selector abstains;
+    - abstention with nothing safe or with no capability;
+    - two real rehearsals in separate worlds and leases, each `lease_state: revoked`, `tokens_revoked: true`,
+      run `cleaned`, journal > 0, the misleading option observed `holds` on both cross reads;
+    - **observer gap**: a rehearsal of the correct policy with the audit observer stopped gives every probe `unknown`.
+  - `next-d-repair-bench.test.ts`: **8/8**.
+  - `next-d-distractor-gating.test.ts`: **3/3**.
+  - Total **17 passed**, 42 s locally.
+- Also clean: `pnpm typecheck`. `pnpm bench:repairs` gives `BENCH OK`, exit 0, **31.1 s wall** (linux-arm64,
+  Node v22). Positive controls caught 13/13.
+
+### Result: all selectors × 4 cases (`pnpm bench:repairs` on `a624aeb`)
+| Selector | tenant-isolation | observer-gap | no-applicable-candidate | misleading-prediction | Correct |
+|---|---|---|---|---|---|
+| rank1 | correct, verified | correct, verified | wrong (caught) | **misleading: wrong, caught by verification** | 2/4 |
+| reasoning (unchanged) | correct, verified | correct, verified | correct abstention | **misleading: wrong, caught by verification** | 3/4 |
+| **rehearsal** | correct, verified (regression reproduced) | correct, verified | correct abstention | **correct, verified (regression reproduced)** | **4/4** |
+| always_abstain | wrong abstention (caught) | wrong abstention (caught) | correct abstention | wrong abstention (caught) | 1/4 |
+| fake_model_overbroad | overbroad: wrong (caught) | wrong abstention (caught) | correct abstention | wrong abstention (caught) | 1/4 |
+| fake_model_residual | residual: wrong (caught) | wrong abstention (caught) | correct abstention | wrong abstention (caught) | 1/4 |
+| fake_model_irrelevant | wrong (caught) | unobserved trap: wrong (caught) | wrong (caught) | wrong (caught) | 0/4 |
+
+Wrong choices NOT caught: 0 for every selector.
+
+Rehearsal cost per case (every rehearsal world: lease `revoked`, run `cleaned`):
+| Case | Shortlist (k ≤ 3) | Verdicts | Worlds started | Rehearsal wall time | Chosen |
+|---|---|---|---|---|---|
+| tenant-isolation | o8, o5, o1 | confirmed, confirmed, confirmed | 3 | 4430 ms | o8 (same as reasoning) |
+| observer-gap | o2 | confirmed (handshake verified) | 1 | 233 ms | o2 |
+| no-applicable-candidate | none (nothing predicted safe) | none | 0 | 0 ms | abstain |
+| misleading-prediction | o4 (misleading, rank 1), o5, o3 | **contradicted** (a-reads-b and b-reads-a predicted does_not_hold, observed holds), confirmed, confirmed | 3 | 3159 ms | o5 (correct) |
+
+### Honest scope
+- **What it is:** scripted, synthetic and local only, with **one misprediction type**: the wrong route binding
+  (`policy:bench_misbound`) in one world family (LW-01). It measures nothing about real misprediction rates or real
+  models.
+- **Why rehearsal works so well here:** it succeeds by construction. Rehearsal worlds are disposable copies of the
+  *same* deterministic scenario as the scored world, so what rehearsal observes is what scoring observes. Real
+  environments can differ between a rehearsal copy and production, for example in state, data, timing or traffic.
+- **Cost:** rehearsal is not free. It started up to 3 extra worlds per case (7 in total) and took about 7.8 s of
+  rehearsal wall time.
+- **What it cannot do:**
+  - On `no-applicable-candidate` it abstains without rehearsing, because nothing is predicted safe. It never rehearses
+    options that the visible prediction already rejects.
+  - It can only discard a misprediction that the case's probes can observe. A misprediction outside the probed
+    behaviour, or one hidden behind an unknown observer, gives `unknown`, and so an abstention, not a confirmation.
+
+### Commits (follow-up 2)
+- `d7e1d48` failing tests first `[skip ci]`
+- `a624aeb` rehearsal selector, rehearsal worlds, bench wiring, cost and teardown checks
+- this receipt append `[skip ci]`
+
+### CI (follow-up 2)
+- Run **40140865342** on `a624aeb` (final code commit): **success**, both jobs.
+  - `check`:
+    - typecheck;
+    - `pnpm test`: Test Files 144 passed | 1 skipped; Tests **1008 passed | 1 skipped (1009)**, up from 1002. The +6
+      are `next-d-rehearsal.test.ts`;
+    - validate:fixtures; scenarios; build; release verify;
+    - the `pnpm bench:repairs` step printed `summary rehearsal correct 4/4`, misleading-prediction
+      `o4:contradicted … → o5`, `positive controls caught 13/13 · model not used` and `BENCH OK`.
+  - `browser-pilot`: success.
