@@ -55,3 +55,34 @@ test('LP18-A1/A2/A4: interior rows equal the API interior, open the exact record
     report.push({ case: 'interior inspector', asset: 'api', uiObjects: uiIds, apiObjects: apiIds, openedRecord: record, survives2D3D: true, narrow: true, result: 'passed' });
   } finally { await context.close(); }
 });
+
+test('LP18-A1/A2: with roofs off the selected building shows interior markers that open the same exact records', async ({ browser }) => {
+  const api = (await h.api('GET', '/api/projects/demo-castle/assets/api/interior')).json;
+  const { context, page } = await loginRedesign(browser, h);
+  try {
+    await page.evaluate(() => { location.hash = 'workspace=kingdom&view=castle&sel=asset:api'; });
+    const evidence = page.locator('aside.evidence'), canvas = page.locator('canvas'), toolbar = page.getByRole('toolbar', { name: 'Castle view' });
+    await expect(evidence).toHaveAttribute('data-selection-id', 'api');
+    await expect(page.locator('[data-interior-marker]')).toHaveCount(0); // roofs on: no interior markers
+    await toolbar.getByRole('button', { name: 'Focus selection', exact: true }).click();
+    await expect(canvas).toHaveAttribute('data-camera-active', 'true'); await expect(canvas).toHaveAttribute('data-camera-active', 'false');
+    await toolbar.getByRole('button', { name: 'Show roofs' }).click();
+    const markers = page.locator('[data-interior-marker]');
+    await expect(markers.first()).toBeVisible();
+    const ids = await markers.evaluateAll(es => es.map(e => e.getAttribute('data-interior-marker')));
+    const apiIds = api.objects.map((o: { object_id: string }) => o.object_id);
+    for (const id of ids) expect(apiIds, id!).toContain(id);
+    for (const m of await markers.all()) {
+      if (await m.getAttribute('data-transit') === 'true') expect(await m.getAttribute('data-basis')).toBe('observed');
+      expect(await m.getAttribute('aria-label')).toMatch(/\. (Declared|Configured|Observed|Tested|Unknown|Hypothetical)\. /);
+    }
+    await page.waitForTimeout(400);
+    await captureRedesign(page, 'lp18-castle-interior-markers-roofs-off');
+    const rel = page.locator('[data-interior-marker][data-record^="relationship:"]').first();
+    const record = (await rel.getAttribute('data-record'))!.split(':').slice(1).join(':');
+    await rel.click();
+    await expect(evidence).toHaveAttribute('data-selection-id', record);
+    await captureRedesign(page, 'lp18-castle-interior-marker-opened-record');
+    report.push({ case: 'castle interior markers', asset: 'api', markers: ids, openedRecord: record, roofsOnHidesMarkers: true, result: 'passed' });
+  } finally { await context.close(); }
+});

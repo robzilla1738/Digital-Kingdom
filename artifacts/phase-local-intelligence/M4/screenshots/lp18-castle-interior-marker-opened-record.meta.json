@@ -1,0 +1,22 @@
+{
+  "name": "lp18-castle-interior-marker-opened-record",
+  "file": "lp18-castle-interior-marker-opened-record.png",
+  "sha256": "9b97d2fedafb39a5c1ee5129ec937483b6a8af516ee11a7efa0b6a911315c7ba",
+  "bytes": 364429,
+  "capturedAt": "2026-10-24T05:45:30.588Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

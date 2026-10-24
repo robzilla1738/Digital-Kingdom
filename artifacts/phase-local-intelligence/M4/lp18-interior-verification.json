@@ -20,6 +20,19 @@
       "survives2D3D": true,
       "narrow": true,
       "result": "passed"
+    },
+    {
+      "case": "castle interior markers",
+      "asset": "api",
+      "markers": [
+        "data:relationship:rel-api-db",
+        "source:src-app",
+        "artifact:relationship:rel-ci-api",
+        "artifact:deployment:api"
+      ],
+      "openedRecord": "rel-api-db",
+      "roofsOnHidesMarkers": true,
+      "result": "passed"
     }
   ]
 }

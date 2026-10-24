@@ -653,17 +653,18 @@
     "LP16",
     "LP17"
    ],
-   "status": "in_progress",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "2e53a7e + 997628b + (this commit)",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP18.md",
    "branch": "phase/li-m4",
    "local_checks": {
     "typecheck": "exit 0",
+    "build": "exit 0",
     "test": "phase-lp18-interior 3/3; apps/mcp 10 files 31/31",
-    "e2e": "e2e/interior-redesign.spec.ts 1/1 passed (Chromium headless, SwiftShader)"
+    "e2e": "e2e/interior-redesign.spec.ts 2/2 passed (Chromium headless, SwiftShader)"
    },
-   "progress_note": "Substage 1 (contract/API/MCP) and 2a (inspector Evidence interior view, e2e + screenshots) committed. Remaining 2b: castle interior markers (roofs off) linked to interior objects, interior selection kind, marker click e2e."
+   "progress_note": "Done: interior contract/API/MCP, inspector Evidence interior, castle interior markers (roofs off), tests + inspected screenshots. Next: LP19."
   },
   {
    "id": "LP19",
@@ -1387,32 +1388,33 @@
   },
   "LP18-A1": {
    "package": "LP18",
-   "status": "in_progress",
+   "status": "passed_local",
    "evidence": [
     "apps/server/test/phase-lp18-interior.test.ts > A1",
-    "e2e/interior-redesign.spec.ts (inspector opens exact record; castle markers pending)"
+    "apps/mcp/test/phase-m4-world.test.ts > LP18",
+    "e2e/interior-redesign.spec.ts (inspector + castle marker open exact record)"
    ]
   },
   "LP18-A2": {
    "package": "LP18",
-   "status": "in_progress",
+   "status": "passed_local",
    "evidence": [
     "apps/server/test/phase-lp18-interior.test.ts > A2",
-    "e2e/interior-redesign.spec.ts (text status, transit only observed; castle rendering pending)"
+    "e2e/interior-redesign.spec.ts (transit only observed; text status and basis in markers)"
    ]
   },
   "LP18-A3": {
    "package": "LP18",
-   "status": "in_progress",
+   "status": "passed_local",
    "evidence": [
-    "apps/server/test/phase-lp18-interior.test.ts > A3 (contract; UI pending)"
+    "apps/server/test/phase-lp18-interior.test.ts > A3"
    ]
   },
   "LP18-A4": {
    "package": "LP18",
-   "status": "in_progress",
+   "status": "passed_local",
    "evidence": [
-    "e2e/interior-redesign.spec.ts (3D/2D switch + 420px narrow; castle markers pending)"
+    "e2e/interior-redesign.spec.ts (selection survives 3D/2D; 420px narrow)"
    ]
   },
   "LP19-A1": {
@@ -1926,10 +1928,10 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP18",
-  "why": "LP18 substage 1 (contract/API/MCP) on phase/li-m4; next the interior selection kind, inspector view, castle markers and browser tests; then LP19 and the M4 rebase.",
+  "package": "LP19",
+  "why": "LP16-LP18 implemented and locally verified on phase/li-m4; LP19 baseline-versus-repair comparison next, then the M4 rebase onto phase/local-intelligence.",
   "eligible_now": [
-   "LP18",
+   "LP19",
    "LP20",
    "LP24"
   ]

@@ -13,17 +13,26 @@ const BASIS_TEXT: Record<InteriorObject["basis"], string> = { declared: "Declare
  * (event, relationship, source) or shows the copied record body and provenance inline. This is the conventional
  * equivalent of the castle's interior markers.
  */
+/** The ordinary inspector selection that opens an interior object's exact record, or null when it is shown inline. */
+export function interiorRecordSelection(o: InteriorObject): { kind: "event" | "path" | "source"; id: string } | null {
+  if (o.record.type === "event" && !o.object_id.startsWith("run:")) return { kind: "event", id: o.record.id };
+  if (o.record.type === "relationship") return { kind: "path", id: o.record.id };
+  if (o.record.type === "source") return { kind: "source", id: o.record.id };
+  return null;
+}
+export const INTERIOR_GLYPH = GLYPH_TEXT, INTERIOR_BASIS = BASIS_TEXT;
+/** One interior per asset from the loaded records; the castle markers and the inspector share it. */
+export function useAssetInterior(assetId: string | null) {
+  const { vm } = useApp();
+  return useMemo(() => assetId ? buildInterior({ project_id: vm.data.project.id, graph: vm.data.graph, asset_id: assetId, events: vm.events,
+    sources: vm.latestData.sources, coverage: vm.coverage, controls: null, grants: null }) : null, [vm.data.project.id, vm.data.graph, assetId, vm.events, vm.latestData.sources, vm.coverage]);
+}
 export function InteriorView({ assetId }: { assetId: string }) {
-  const { vm, dispatch } = useApp();
-  const interior = useMemo(() => buildInterior({ project_id: vm.data.project.id, graph: vm.data.graph, asset_id: assetId, events: vm.events,
-    sources: vm.latestData.sources, coverage: vm.coverage, controls: null, grants: null }), [vm.data.project.id, vm.data.graph, assetId, vm.events, vm.latestData.sources, vm.coverage]);
+  const { dispatch } = useApp();
+  const interior = useAssetInterior(assetId);
   if (!interior) return null;
-  const open = (o: InteriorObject) => {
-    if (o.record.type === "event" && !o.object_id.startsWith("run:")) dispatch({ type: "select", selection: { kind: "event", id: o.record.id } });
-    else if (o.record.type === "relationship") dispatch({ type: "select", selection: { kind: "path", id: o.record.id } });
-    else if (o.record.type === "source") dispatch({ type: "select", selection: { kind: "source", id: o.record.id } });
-  };
-  const opensSelection = (o: InteriorObject) => (o.record.type === "event" && !o.object_id.startsWith("run:")) || o.record.type === "relationship" || o.record.type === "source";
+  const open = (o: InteriorObject) => { const selection = interiorRecordSelection(o); if (selection) dispatch({ type: "select", selection }); };
+  const opensSelection = (o: InteriorObject) => !!interiorRecordSelection(o);
   return <Section title="Evidence interior" count={interior.objects.length} id="evidence-interior">
     <div data-testid="evidence-interior" data-schema={interior.schema}>
       <p className="small faint">Objects copied from records ({interior.schema}). Positions inside the building are presentation only; declared and configured links are not observed transit.</p>
