@@ -1,5 +1,6 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { createFocusedServer, type FocusedProfile } from "./focused.ts";
 
 /**
  * Digital Kingdom MCP server — the agent interface. It talks to the same Digital Kingdom server (and so the
@@ -51,6 +52,10 @@ export interface CreateServerOptions {
    * server enforces.
    */
   tools?: readonly string[];
+  /** LP11: a focused investigation profile (investigation-read | investigation-author) instead of the full toolset. */
+  profile?: FocusedProfile;
+  /** LP11: per-call job unit cap for the focused author profile (default 20). */
+  maxUnitsPerCall?: number;
 }
 
 /** Read-only investigation profile: every tool except dk_propose_containment. */
@@ -67,6 +72,7 @@ export function parseToolAllowlist(v: string | undefined): string[] | undefined 
 }
 
 export function createServer(client: DkClient, opts: CreateServerOptions = {}): McpServer {
+  if (opts.profile) return createFocusedServer(client, { profile: opts.profile, maxOutputBytes: opts.maxOutputBytes ?? MAX_OUTPUT_BYTES, maxUnitsPerCall: opts.maxUnitsPerCall });
   const out = (data: unknown, note?: string) => outWith(opts.maxOutputBytes ?? MAX_OUTPUT_BYTES, data, note);
   const server = new McpServer({ name: "digital-kingdom", version: "0.3.2" }, {
     instructions:
