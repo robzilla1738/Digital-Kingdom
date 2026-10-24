@@ -1,0 +1,22 @@
+{
+  "name": "lp16-case-scope-narrow",
+  "file": "lp16-case-scope-narrow.png",
+  "sha256": "ee29773f361bd30c387efabafbcc92623fa4a1a8b54f1e41afb4d07a3385d7dc",
+  "bytes": 77336,
+  "capturedAt": "2026-10-24T04:31:13.688Z",
+  "viewport": {
+    "width": 820,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "lp16-world-graph-shared-focus-200",
+  "file": "lp16-world-graph-shared-focus-200.png",
+  "sha256": "36ce46edc0df6c804dc12ad4a8945e660a00ca585c91c3e2e9ec58f2adb29353",
+  "bytes": 252629,
+  "capturedAt": "2026-10-24T04:29:31.512Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F13"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -7,6 +7,7 @@ import { INVESTIGATION_CONTRACTS_MIGRATION, INVESTIGATION_JOBS_MIGRATION, INVEST
 import { ANALYSIS_MIGRATION } from "./exploration.ts";
 import { REPAIR_MIGRATION } from "./repair.ts";
 import { ATTENTION_MIGRATION } from "./attention.ts";
+import { WORLD_LAYOUT_MIGRATION } from "./world-layout.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -124,6 +125,8 @@ export const MIGRATIONS: string[] = [
   REPAIR_MIGRATION,
   // Local Intelligence Phase LP15: local attention queue (durable cursor, deduplicated items, append-only change log).
   ATTENTION_MIGRATION,
+  // Local Intelligence Phase LP16: append-only versioned layout history (previewed reflows, per-version room diffs).
+  WORLD_LAYOUT_MIGRATION,
 ];
 
 export function openDb(path: string): DB {
