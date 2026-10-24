@@ -7,3 +7,4 @@ export * from "./surfaces.ts";
 export * from "./local.ts";
 export * from "./investigation.ts";
 export * from "./repair.ts";
+export * from "./lab.ts";

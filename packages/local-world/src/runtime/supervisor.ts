@@ -10,6 +10,8 @@ import { compileWorld, type CompiledWorld } from "../compile.ts";
 import { refuseDestination, type RegisteredEndpoint } from "./address.ts";
 import { EffectObserver, type Reporter, type TapEffect } from "./observer.ts";
 import { preflight, type Preflight } from "./isolation.ts";
+import { LeaseRegistry, type IssueLeaseRequest, type LeaseAudit } from "./lease.ts";
+import type { LabLease } from "@dk/contracts";
 
 /**
  * LP05: the local run supervisor. It owns everything a run uses and is the only thing that can act on it.
@@ -54,7 +56,8 @@ export interface BuiltinService {
 export type ServiceFactory = (ctx: ServiceContext) => BuiltinService;
 export type ServiceRegistry = Partial<Record<WorldTemplate, ServiceFactory>>;
 
-export type RunAction = "request_route" | "lifecycle" | "observer_control" | "fault" | "snapshot" | "read_effects" | "configure";
+export type RunAction = "request_route" | "lifecycle" | "observer_control" | "fault" | "snapshot" | "read_effects" | "configure" | "repair_execute";
+/** The launcher's run token gets these. `repair_execute` is NOT among them: a controller identity is minted only by the operator (LP20). */
 export const ALL_ACTIONS: RunAction[] = ["request_route", "lifecycle", "observer_control", "fault", "snapshot", "read_effects", "configure"];
 export interface TokenScope { resources: string[] | "*"; actions: RunAction[] }
 export type RunState = "running" | "paused" | "stopped" | "aborted" | "cleaned" | "cleanup_failed";
@@ -75,7 +78,11 @@ export interface RunManifest {
 interface TokenRecord { id: string; run_id: string; scope: TokenScope; revoked: boolean }
 interface Listener { server: Server; endpoint: Endpoint; nonce: Buffer; sockets: Set<import("node:net").Socket> }
 
-export interface SupervisorOptions { services: ServiceRegistry; root?: string; secret?: Buffer; maxConcurrentRuns?: number; maxRunDiskBytes?: number }
+export interface SupervisorOptions {
+  services: ServiceRegistry; root?: string; secret?: Buffer; maxConcurrentRuns?: number; maxRunDiskBytes?: number;
+  /** LP20: local lab actions. Default `plan_only`: no lease can be issued and nothing is executed. */
+  labActions?: "plan_only" | "leased";
+}
 export interface StartOptions { reporters?: (sourceId: string) => Reporter | null; scenarioClock?: ScenarioClock; clonedFrom?: { run: Run; state: Record<string, unknown> } }
 
 /** Evidence/scenario clock. It can be frozen or moved; it is NEVER consulted for enforcement. */
@@ -92,8 +99,15 @@ export class Supervisor {
   private readonly secret: Buffer;
   private readonly runs = new Map<string, Run>();
   private readonly tokens = new Map<string, TokenRecord>();
+  private labMode: "plan_only" | "leased";
+  private operatorDigest: string | null = null;
+  private operatorHanded = false;
+  /** LP20 lease registry (issuance is operator-only, through the methods below). */
+  readonly leases: LeaseRegistry;
   constructor(readonly opts: SupervisorOptions) {
     this.secret = opts.secret ?? randomBytes(32);
+    this.labMode = opts.labActions ?? "plan_only";
+    this.leases = new LeaseRegistry({ secret: this.secret, labActions: () => this.labMode, run: (id) => this.runs.get(id), controllerTokenId: (t, r) => this.controllerTokenId(t, r) });
     mkdirSync(opts.root ?? tmpdir(), { recursive: true });
     this.root = realpathSync(mkdtempSync(join(opts.root ?? tmpdir(), "dk-lab-")));
   }
@@ -118,7 +132,12 @@ export class Supervisor {
     return { run, operatorToken, preflight: pf };
   }
 
+  /** Run tokens for launchers, stimulus and verifiers. A controller (`repair_execute`) identity is never minted here. */
   issue(runId: string, scope: TokenScope): string {
+    if (scope.actions.includes("repair_execute")) throw new RunRefusal("unauthorized", "a repair controller identity is minted only by the operator (issueControllerToken)");
+    return this.mint(runId, scope);
+  }
+  private mint(runId: string, scope: TokenScope): string {
     const run = this.runs.get(runId);
     if (!run) throw new RunRefusal("wrong_run", "no such run");
     const id = randomBytes(9).toString("base64url");
@@ -127,7 +146,51 @@ export class Supervisor {
     return `dkrun_v1.${runId}.${id}.${this.mac(runId, id)}`;
   }
   private mac(runId: string, id: string) { return createHmac("sha256", this.secret).update(`${runId}|${id}`).digest("base64url"); }
-  revokeRun(runId: string) { for (const t of this.tokens.values()) if (t.run_id === runId) t.revoked = true; }
+  revokeRun(runId: string, reason = "run halted") { for (const t of this.tokens.values()) if (t.run_id === runId) t.revoked = true; this.leases.revokeRun(runId, reason); }
+
+  // ---- LP20: operator authority, controller identity and leases ---------------------------------------------
+  /** Local lab action mode. `plan_only` (default) until constructed with `leased`; the kill switch makes it permanent. */
+  get labActions(): "plan_only" | "leased" { return this.labMode; }
+  /**
+   * The one-time operator credential. It is handed out exactly once (to whoever constructed the supervisor, i.e. the
+   * launcher/operator) and is the only thing that can issue leases, mint controller identities, revoke other
+   * holders' leases or pull the kill switch. A second call throws, so code that later receives the supervisor
+   * object cannot obtain it.
+   */
+  operatorCredential(): string {
+    if (this.operatorHanded) throw new RunRefusal("unauthorized", "the operator credential was already handed out");
+    this.operatorHanded = true;
+    const id = randomBytes(12).toString("base64url");
+    const cred = `dkop_v1.${id}.${createHmac("sha256", this.secret).update(`operator|${id}`).digest("base64url")}`;
+    this.operatorDigest = createHmac("sha256", this.secret).update(cred).digest("hex");
+    return cred;
+  }
+  private assertOperator(cred: unknown, what: string) {
+    const ok = typeof cred === "string" && /^dkop_v1\.[A-Za-z0-9_-]{16}\.[A-Za-z0-9_-]{43}$/.test(cred) && this.operatorDigest !== null
+      && timingSafeEqual(Buffer.from(createHmac("sha256", this.secret).update(cred).digest("hex")), Buffer.from(this.operatorDigest));
+    if (!ok) { const kind = typeof cred !== "string" ? "no credential" : cred.startsWith("dkrun_v1.") ? "a run token" : cred.startsWith("dklease_v1.") ? "a lease" : cred.startsWith("dk_") ? "a Digital Kingdom server token" : "an unknown credential"; this.leaseRefusal(`${what} requires the supervisor operator credential; ${kind} cannot ${what}`); }
+  }
+  private leaseRefusal(msg: string): never { throw new RunRefusal("unauthorized", msg); }
+  /** A separate controller identity for one run: it can do nothing except leased typed repairs (no stimulus, no configure, no lifecycle). */
+  issueControllerToken(operatorCredential: string, runId: string): string {
+    this.assertOperator(operatorCredential, "mint a controller identity");
+    return this.mint(runId, { resources: "*", actions: ["repair_execute"] });
+  }
+  /** @internal token id of a valid controller (repair_execute) token of the run */
+  controllerTokenId(token: string, runId: string): string {
+    const rec = this.authorize(token, { run_id: runId, action: "repair_execute" });
+    if (rec.scope.actions.length !== 1) throw new RunRefusal("scope", "a controller identity carries repair_execute only");
+    return rec.id;
+  }
+  issueLease(operatorCredential: string, req: IssueLeaseRequest): { token: string; lease: LabLease } {
+    try { this.assertOperator(operatorCredential, "issue a lease"); }
+    catch (e) { this.leases.noteRefusal(typeof req?.run_id === "string" ? req.run_id : null, (e as Error).message); throw e; }
+    return this.leases.issue(req);
+  }
+  revokeLease(operatorCredential: string, leaseId: string, reason: string) { this.assertOperator(operatorCredential, "revoke a lease"); this.leases.revoke(leaseId, reason, "operator"); }
+  /** Kill switch: every outstanding lease is revoked and the supervisor is plan-only from now on. */
+  killSwitch(operatorCredential: string, reason: string) { this.assertOperator(operatorCredential, "use the kill switch"); this.labMode = "plan_only"; this.leases.kill(reason); }
+  leaseAudit(): LeaseAudit[] { return this.leases.audit(); }
 
   /** Every action goes through here. The token's own run, not any label, decides what it can reach. */
   authorize(token: string, want: { run_id: string; action: RunAction; resource?: string; project_id?: string }): TokenRecord {
@@ -419,6 +482,16 @@ export class Run {
   observer(token: string, id: string): EffectObserver { this.sup.authorize(token, { run_id: this.run_id, action: "observer_control", resource: id }); const o = this.observers.get(id); if (!o) throw new RunRefusal("unregistered", `${id} is not an observer of this run`); return o; }
   endpoint(id: string): Endpoint | undefined { return this.listeners.get(id)?.endpoint; }
 
+  /** Current revision of a run resource: the service's own revision, or the observer's health state. */
+  revisionOf(id: string): string {
+    const svc = this.services.get(id); if (svc) return svc.revision();
+    const o = this.observers.get(id); if (o) return `${id}:observer-${o.up ? "up" : "down"}-h${o.health.length}`;
+    throw new RunRefusal("unregistered", `${String(id).slice(0, 80)} is not a resource of ${this.run_id}`);
+  }
+  revisions(): Record<string, string> { return Object.fromEntries([...this.services.keys(), ...this.observers.keys()].sort().map((id) => [id, this.revisionOf(id)])); }
+  /** @internal LP20 audit transitions are also part of the run's private truth. */
+  recordLeaseTransition(e: LeaseAudit) { this.lifecycle(`lease_${e.transition}`, { lease_id: e.lease_id, by: e.by, detail: e.detail }); }
+
   /** Fault injection inside the run: the listener disappears (as if the process died). Its port may then be reused. */
   async loseListener(token: string, id: string) {
     this.sup.authorize(token, { run_id: this.run_id, action: "fault", resource: id });
@@ -454,7 +527,7 @@ export class Run {
   private async halt(to: "stopped" | "aborted", why: string) {
     if (this.state !== "running" && this.state !== "paused") return;
     this.state = to;
-    this.sup.revokeRun(this.run_id);
+    this.sup.revokeRun(this.run_id, `run ${to}: ${why}`);
     if (this.watchdog) clearInterval(this.watchdog);
     for (const l of this.listeners.values()) { for (const s of l.sockets) s.destroy(); await new Promise<void>((r) => l.server.close(() => r())); }
     this.agent.destroy();
