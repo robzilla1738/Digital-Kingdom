@@ -1,6 +1,6 @@
 {
   "scope": "API-backed isolated synthetic server (demo-castle); one LP13 model-only comparison; Chromium headless SwiftShader.",
-  "comparison": "cmp_a27d61bebdbca61d",
+  "comparison": "cmp_9cf4134bf96e7e8f",
   "revisions": {
     "baseline": {
       "state_hash": "9865f6ec3250b7df17b4cc274cf41eb4d87a0ec48e0c2936f9e8348427b3cde1",

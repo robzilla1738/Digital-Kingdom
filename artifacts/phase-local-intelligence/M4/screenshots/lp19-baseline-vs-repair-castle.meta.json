@@ -1,9 +1,9 @@
 {
   "name": "lp19-baseline-vs-repair-castle",
   "file": "lp19-baseline-vs-repair-castle.png",
-  "sha256": "acc9d64446a8683cdb67bcf881a739acb25bc7c481c131ff3fa86c32fbdd6d8e",
-  "bytes": 331558,
-  "capturedAt": "2026-10-24T05:53:29.446Z",
+  "sha256": "4c4dc077c9b61923b4e4d77ef03eaccedbf1edd88ee905f21f3f2ed964c584d5",
+  "bytes": 348613,
+  "capturedAt": "2026-10-24T06:02:56.823Z",
   "viewport": {
     "width": 1440,
     "height": 900

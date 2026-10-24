@@ -241,7 +241,7 @@
     "scene-compiler compileScene/defaultProposal (pins)"
    ],
    "decisions": [
-    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec §22; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
+    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec \u00a722; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
     "D-LP04-2: world_plan.v1 template enum unchanged; observers compile to declared sources (not assets); asset id = logical resource id; revision = lw-sha256(catalog digest, plan digest).",
     "D-LP04-3: LP00-A2 test hashes frozen trees once with a 90 s timeout (timed out under concurrent load on a 2-CPU sandbox); assertions unchanged."
    ],
@@ -612,10 +612,18 @@
     "LP04",
     "LP12"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "c2a439f",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP16.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "4 vitest shards: shard 2 212/212, shard 3 201/201, shard 4 211 passed 1 skipped; shard 1 186/187 with examples/reference-app/lp06-world.test.ts LP06-A3 (wall-clock timing) failing under concurrent load from other worktrees, 11/11 on isolated rerun; no LP16 code involved. validate:fixtures exit 0",
+    "e2e": "e2e/world-redesign.spec.ts A2/A3/A4 passed (real Chromium, SwiftShader; no GPU claim)"
+   },
+   "progress_note": "Rebased onto phase/local-intelligence ab5ae29 (was f3a2dbc on phase/li-m4)."
   },
   {
    "id": "LP17",
@@ -624,10 +632,17 @@
    "depends_on": [
     "LP16"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "39484e9 + 978b273 + 1af0907",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP17.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "8 vitest shards at 56d697a: 873 passed, 1 skipped; after sheet/offline changes: families, redesign-fixtures, groupSelection, architecture 122/122",
+    "e2e": "e2e/families-redesign.spec.ts 3/3 passed; redesign.spec.ts V09-V10 passed (Chromium headless, SwiftShader)"
+   },
+   "progress_note": "Rebased onto phase/local-intelligence ab5ae29 (was 99169a0, 56d697a, 34681ae on phase/li-m4)."
   },
   {
    "id": "LP18",
@@ -638,10 +653,18 @@
     "LP16",
     "LP17"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "3f692cf + 232a328 + 417d8a8",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP18.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "phase-lp18-interior 3/3; apps/mcp 10 files 31/31",
+    "e2e": "e2e/interior-redesign.spec.ts 2/2 passed (Chromium headless, SwiftShader)"
+   },
+   "progress_note": "Rebased onto phase/local-intelligence ab5ae29 (was 2e53a7e, 997628b, 63c623d on phase/li-m4)."
   },
   {
    "id": "LP19",
@@ -652,10 +675,18 @@
     "LP14",
     "LP18"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "4267ca7 + d7e59e6",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP19.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "phase-lp19-world-comparison 1/1; full vitest 4 shards at 63c623d (LP18 head) all passed",
+    "e2e": "e2e/comparison-redesign.spec.ts 1/1 passed (Chromium headless, SwiftShader)"
+   },
+   "progress_note": "Rebased onto phase/local-intelligence ab5ae29 (was ed6ed76, 3810406 on phase/li-m4). Limitations: castle overlay only (no 2D overlay), no comparison replay scope; LP22 verifications exist on this branch now but are not yet linked into executed_local."
   },
   {
    "id": "LP20",
@@ -1505,83 +1536,135 @@
   },
   "LP16-A1": {
    "package": "LP16",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A1",
+    "docs/phases/local-intelligence/receipts/LP16.md"
+   ]
   },
   "LP16-A2": {
    "package": "LP16",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-red.test.ts",
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A2",
+    "e2e/world-redesign.spec.ts > LP16-A2"
+   ]
   },
   "LP16-A3": {
    "package": "LP16",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A3",
+    "apps/mcp/test/phase-m4-world.test.ts",
+    "e2e/world-redesign.spec.ts > LP16-A3"
+   ]
   },
   "LP16-A4": {
    "package": "LP16",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp16-world.test.ts > LP16-A4",
+    "e2e/world-redesign.spec.ts > LP16-A4"
+   ]
   },
   "LP17-A1": {
    "package": "LP17",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A1",
+    "e2e/families-redesign.spec.ts > contact sheet + 16-module sheet",
+    "artifacts/phase-local-intelligence/M4/screenshots/lp17-families-contact-sheet.png"
+   ]
   },
   "LP17-A2": {
    "package": "LP17",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A2",
+    "e2e/families-redesign.spec.ts > F15 roofs-off click-through (environment + interior scale, clear ground)",
+    "artifacts/phase-local-intelligence/M4/lp17-families-verification.json"
+   ]
   },
   "LP17-A3": {
    "package": "LP17",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A3",
+    "apps/web/src/castle/architecture.test.ts > castle asset provenance"
+   ]
   },
   "LP17-A4": {
    "package": "LP17",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A4",
+    "work/m4-red/lp17-unknown-module-red.log",
+    "e2e/families-redesign.spec.ts > family-capability text in inspector"
+   ]
   },
   "LP18-A1": {
    "package": "LP18",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A1",
+    "apps/mcp/test/phase-m4-world.test.ts > LP18",
+    "e2e/interior-redesign.spec.ts (inspector + castle marker open exact record)"
+   ]
   },
   "LP18-A2": {
    "package": "LP18",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A2",
+    "e2e/interior-redesign.spec.ts (transit only observed; text status and basis in markers)"
+   ]
   },
   "LP18-A3": {
    "package": "LP18",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp18-interior.test.ts > A3"
+   ]
   },
   "LP18-A4": {
    "package": "LP18",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "e2e/interior-redesign.spec.ts (selection survives 3D/2D; 420px narrow)"
+   ]
   },
   "LP19-A1": {
    "package": "LP19",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (baseline unchanged after viewing)"
+   ]
   },
   "LP19-A2": {
    "package": "LP19",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (exact keys, unresolved conditions, badges on baseline rooms)"
+   ]
   },
   "LP19-A3": {
    "package": "LP19",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp19-world-comparison.test.ts",
+    "e2e/comparison-redesign.spec.ts (not executed / not verified; executed-local separate)"
+   ]
   },
   "LP19-A4": {
    "package": "LP19",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp19-world-comparison.test.ts (both revisions, export header, stale warning)",
+    "e2e/comparison-redesign.spec.ts"
+   ]
   },
   "LP20-A1": {
    "package": "LP20",
@@ -2272,15 +2355,14 @@
   "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (LP27 used $0.00; reserved for LP30)."
  },
  "next_action": {
-  "package": "LP23 (after LP19) / LP28 (after LP23)",
-  "why": "M6 complete for engineering: LP24-LP27 on phase/local-intelligence, CI green on 0dc7e74 (run 40065627734). The next packages in order are blocked: LP28 needs LP23, which needs LP19 (M4, in progress in DK-m4 by dk-m4b); LP29 needs LP18+LP28; LP30 needs LP29+LP27. Remaining phase model budget $1.274238 of $3.00 (no LP27 spend).",
+  "package": "LP23",
+  "why": "M4 LP16-LP19 implemented and locally verified, rebased onto phase/local-intelligence; CI pending. LP23 (needs LP19) is next, then LP28 (needs LP23), LP29 (needs LP18+LP28).",
   "eligible_now": [
-   "LP16-LP19 (M4, in progress elsewhere)"
+   "LP23"
   ],
   "blocked": {
-   "LP23": "needs LP19",
    "LP28": "needs LP23",
-   "LP29": "needs LP18, LP28",
+   "LP29": "needs LP28",
    "LP30": "needs LP29",
    "LP31": "needs LP30"
   }
@@ -2441,6 +2523,30 @@
    "note": "LP24/LP25/LP26/LP27 engineering-verified for executed tests; LP26 model evaluations recorded in its receipt; LP27 scripted only (model not_exercised). Human/provider gates remain deferred.",
    "head": "0dc7e74",
    "ci_run": 40065627734
+  },
+  "M4": {
+   "packages": [
+    "LP16",
+    "LP17",
+    "LP18",
+    "LP19"
+   ],
+   "status": "implemented_locally_verified",
+   "done": [
+    "LP16",
+    "LP17",
+    "LP18",
+    "LP19"
+   ],
+   "commits": {
+    "LP16": "c2a439f",
+    "LP17": "39484e9 978b273 1af0907",
+    "LP18": "3f692cf 232a328 417d8a8",
+    "LP19": "4267ca7 d7e59e6"
+   },
+   "note": "Rebased onto phase/local-intelligence ab5ae29 and retested: typecheck exit 0; 4 vitest shards 941 passed, 1 skipped; validate:fixtures exit 0; e2e families 3/3, interior 2/2, comparison 1/1, world (LP16) redesign specs (Chromium headless SwiftShader, no GPU claim). No model calls, $0 spend. CI recorded after push.",
+   "ci_run": null,
+   "ci_result": "pending"
   }
  }
 }
