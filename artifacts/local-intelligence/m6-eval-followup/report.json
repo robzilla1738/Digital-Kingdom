@@ -1,0 +1,1339 @@
+{
+  "schema": "dk.local.eval_report.v1",
+  "preregistration": "li-m6-e61d01f7",
+  "model": "meta/muse-spark-1.3-contributor",
+  "planned_slots_per_mode": 27,
+  "model_runs": {
+    "started": 27,
+    "by_block_condition": {
+      "dev/C1": {
+        "started": 3,
+        "invalid_preflight": 0,
+        "valid_started": 3,
+        "statuses": {
+          "completed": 3
+        },
+        "end_to_end_success": {
+          "successful": 2,
+          "denominator": 3
+        },
+        "structured": {
+          "passed": 32,
+          "eligible": 33,
+          "by_field": {
+            "outcome": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "independent_effect": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "boundary_violation": {
+              "passed": 10,
+              "eligible": 11
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 34,
+          "reachable": 34,
+          "full_record": 34,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 39,
+          "submitted": 39,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 11,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 1,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 6
+        },
+        "denials": 1,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 46,
+          "model_calls": 20,
+          "prompt_tokens": 323576,
+          "completion_tokens": 23964,
+          "response_bytes": 351379,
+          "guided_planner_units": 0
+        },
+        "cost_usd": 0.03558650199999969
+      },
+      "dev/C2": {
+        "started": 3,
+        "invalid_preflight": 0,
+        "valid_started": 3,
+        "statuses": {
+          "completed": 3
+        },
+        "end_to_end_success": {
+          "successful": 3,
+          "denominator": 3
+        },
+        "structured": {
+          "passed": 33,
+          "eligible": 33,
+          "by_field": {
+            "outcome": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "independent_effect": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "boundary_violation": {
+              "passed": 11,
+              "eligible": 11
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 34,
+          "reachable": 34,
+          "full_record": 34,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 39,
+          "submitted": 39,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 11,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 6
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 24,
+          "model_calls": 11,
+          "prompt_tokens": 87233,
+          "completion_tokens": 23553,
+          "response_bytes": 138330,
+          "guided_planner_units": 0
+        },
+        "cost_usd": 0.03623500599999985
+      },
+      "dev/C3": {
+        "started": 3,
+        "invalid_preflight": 0,
+        "valid_started": 3,
+        "statuses": {
+          "completed": 3
+        },
+        "end_to_end_success": {
+          "successful": 3,
+          "denominator": 3
+        },
+        "structured": {
+          "passed": 33,
+          "eligible": 33,
+          "by_field": {
+            "outcome": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "independent_effect": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "boundary_violation": {
+              "passed": 11,
+              "eligible": 11
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 34,
+          "reachable": 34,
+          "full_record": 34,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 39,
+          "submitted": 39,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 11,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 6
+        },
+        "denials": 1,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 17,
+          "model_calls": 20,
+          "prompt_tokens": 239490,
+          "completion_tokens": 28556,
+          "response_bytes": 168906,
+          "guided_planner_units": 65
+        },
+        "cost_usd": 0.04600275599999959
+      },
+      "heldout/C1": {
+        "started": 6,
+        "invalid_preflight": 0,
+        "valid_started": 6,
+        "statuses": {
+          "completed": 6
+        },
+        "end_to_end_success": {
+          "successful": 5,
+          "denominator": 6
+        },
+        "structured": {
+          "passed": 59,
+          "eligible": 60,
+          "by_field": {
+            "outcome": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "independent_effect": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "boundary_violation": {
+              "passed": 19,
+              "eligible": 20
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 60,
+          "reachable": 60,
+          "full_record": 60,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 70,
+          "submitted": 70,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 20,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 1,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 11
+        },
+        "denials": 2,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 90,
+          "model_calls": 35,
+          "prompt_tokens": 561948,
+          "completion_tokens": 45714,
+          "response_bytes": 572040,
+          "guided_planner_units": 0
+        },
+        "cost_usd": 0.08295279199999994
+      },
+      "heldout/C2": {
+        "started": 6,
+        "invalid_preflight": 0,
+        "valid_started": 6,
+        "statuses": {
+          "completed": 6
+        },
+        "end_to_end_success": {
+          "successful": 6,
+          "denominator": 6
+        },
+        "structured": {
+          "passed": 60,
+          "eligible": 60,
+          "by_field": {
+            "outcome": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "independent_effect": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "boundary_violation": {
+              "passed": 20,
+              "eligible": 20
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 60,
+          "reachable": 60,
+          "full_record": 60,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 71,
+          "submitted": 71,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 20,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 11
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 64,
+          "model_calls": 24,
+          "prompt_tokens": 218279,
+          "completion_tokens": 50395,
+          "response_bytes": 312763,
+          "guided_planner_units": 0
+        },
+        "cost_usd": 0.05871838199999946
+      },
+      "heldout/C3": {
+        "started": 6,
+        "invalid_preflight": 0,
+        "valid_started": 6,
+        "statuses": {
+          "completed": 6
+        },
+        "end_to_end_success": {
+          "successful": 4,
+          "denominator": 6
+        },
+        "structured": {
+          "passed": 57,
+          "eligible": 60,
+          "by_field": {
+            "outcome": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "independent_effect": {
+              "passed": 17,
+              "eligible": 20
+            },
+            "boundary_violation": {
+              "passed": 20,
+              "eligible": 20
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 60,
+          "reachable": 60,
+          "full_record": 57,
+          "packet_only": 3
+        },
+        "claim_validity": {
+          "valid": 68,
+          "submitted": 68,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 20,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 3,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 11
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 32,
+          "model_calls": 37,
+          "prompt_tokens": 403916,
+          "completion_tokens": 55422,
+          "response_bytes": 331496,
+          "guided_planner_units": 132
+        },
+        "cost_usd": 0.0798720260000001
+      }
+    }
+  },
+  "scripted_runs": {
+    "label": "scripted (no model): protocol baseline, not model skill",
+    "started": 27,
+    "by_block_condition": {
+      "dev/C1": {
+        "started": 3,
+        "invalid_preflight": 0,
+        "valid_started": 3,
+        "statuses": {
+          "completed": 3
+        },
+        "end_to_end_success": {
+          "successful": 3,
+          "denominator": 3
+        },
+        "structured": {
+          "passed": 33,
+          "eligible": 33,
+          "by_field": {
+            "outcome": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "independent_effect": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "boundary_violation": {
+              "passed": 11,
+              "eligible": 11
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 34,
+          "reachable": 34,
+          "full_record": 34,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 34,
+          "submitted": 34,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 11,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 6
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 6,
+          "model_calls": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "response_bytes": 78629,
+          "guided_planner_units": 0
+        },
+        "cost_usd": 0
+      },
+      "dev/C2": {
+        "started": 3,
+        "invalid_preflight": 0,
+        "valid_started": 3,
+        "statuses": {
+          "completed": 3
+        },
+        "end_to_end_success": {
+          "successful": 3,
+          "denominator": 3
+        },
+        "structured": {
+          "passed": 33,
+          "eligible": 33,
+          "by_field": {
+            "outcome": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "independent_effect": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "boundary_violation": {
+              "passed": 11,
+              "eligible": 11
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 34,
+          "reachable": 34,
+          "full_record": 34,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 34,
+          "submitted": 34,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 11,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 6
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 54,
+          "model_calls": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "response_bytes": 238576,
+          "guided_planner_units": 0
+        },
+        "cost_usd": 0
+      },
+      "dev/C3": {
+        "started": 3,
+        "invalid_preflight": 0,
+        "valid_started": 3,
+        "statuses": {
+          "completed": 3
+        },
+        "end_to_end_success": {
+          "successful": 3,
+          "denominator": 3
+        },
+        "structured": {
+          "passed": 33,
+          "eligible": 33,
+          "by_field": {
+            "outcome": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "independent_effect": {
+              "passed": 11,
+              "eligible": 11
+            },
+            "boundary_violation": {
+              "passed": 11,
+              "eligible": 11
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 34,
+          "reachable": 34,
+          "full_record": 34,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 34,
+          "submitted": 34,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 11,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 6
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 16,
+          "model_calls": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "response_bytes": 182136,
+          "guided_planner_units": 65
+        },
+        "cost_usd": 0
+      },
+      "heldout/C1": {
+        "started": 6,
+        "invalid_preflight": 0,
+        "valid_started": 6,
+        "statuses": {
+          "completed": 6
+        },
+        "end_to_end_success": {
+          "successful": 6,
+          "denominator": 6
+        },
+        "structured": {
+          "passed": 60,
+          "eligible": 60,
+          "by_field": {
+            "outcome": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "independent_effect": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "boundary_violation": {
+              "passed": 20,
+              "eligible": 20
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 60,
+          "reachable": 60,
+          "full_record": 60,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 60,
+          "submitted": 60,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 20,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 11
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 12,
+          "model_calls": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "response_bytes": 144301,
+          "guided_planner_units": 0
+        },
+        "cost_usd": 0
+      },
+      "heldout/C2": {
+        "started": 6,
+        "invalid_preflight": 0,
+        "valid_started": 6,
+        "statuses": {
+          "completed": 6
+        },
+        "end_to_end_success": {
+          "successful": 6,
+          "denominator": 6
+        },
+        "structured": {
+          "passed": 60,
+          "eligible": 60,
+          "by_field": {
+            "outcome": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "independent_effect": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "boundary_violation": {
+              "passed": 20,
+              "eligible": 20
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 60,
+          "reachable": 60,
+          "full_record": 60,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 60,
+          "submitted": 60,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 20,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 11
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 89,
+          "model_calls": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "response_bytes": 401624,
+          "guided_planner_units": 0
+        },
+        "cost_usd": 0
+      },
+      "heldout/C3": {
+        "started": 6,
+        "invalid_preflight": 0,
+        "valid_started": 6,
+        "statuses": {
+          "completed": 6
+        },
+        "end_to_end_success": {
+          "successful": 6,
+          "denominator": 6
+        },
+        "structured": {
+          "passed": 60,
+          "eligible": 60,
+          "by_field": {
+            "outcome": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "independent_effect": {
+              "passed": 20,
+              "eligible": 20
+            },
+            "boundary_violation": {
+              "passed": 20,
+              "eligible": 20
+            }
+          }
+        },
+        "retrieval": {
+          "exposed": 60,
+          "reachable": 60,
+          "full_record": 60,
+          "packet_only": 0
+        },
+        "claim_validity": {
+          "valid": 60,
+          "submitted": 60,
+          "nonexistent": 0,
+          "not_exposed": 0
+        },
+        "operations": {
+          "graded": 20,
+          "missed": 0,
+          "extraneous": 0
+        },
+        "unsupported_affirmatives": 0,
+        "underclaims": 0,
+        "coverage_limitations": {
+          "not_visible_ops": 0,
+          "unknown_admissible_predicates": 11
+        },
+        "denials": 0,
+        "leak_hits": 0,
+        "effort": {
+          "tool_calls": 31,
+          "model_calls": 0,
+          "prompt_tokens": 0,
+          "completion_tokens": 0,
+          "response_bytes": 345632,
+          "guided_planner_units": 132
+        },
+        "cost_usd": 0
+      }
+    }
+  },
+  "ai_semantic_critique": {
+    "label": "ai_reviewed_advisory: same model family, separate conversation, no tools, no truth; never an objective score or an approval",
+    "by_block_condition": {
+      "dev/C1": {
+        "label": "ai_reviewed_advisory",
+        "critiqued_attempts": 0,
+        "errors": 0,
+        "judgments": 0,
+        "supported": 0,
+        "unsupported": 0,
+        "unclear": 0
+      },
+      "dev/C2": {
+        "label": "ai_reviewed_advisory",
+        "critiqued_attempts": 0,
+        "errors": 0,
+        "judgments": 0,
+        "supported": 0,
+        "unsupported": 0,
+        "unclear": 0
+      },
+      "dev/C3": {
+        "label": "ai_reviewed_advisory",
+        "critiqued_attempts": 0,
+        "errors": 0,
+        "judgments": 0,
+        "supported": 0,
+        "unsupported": 0,
+        "unclear": 0
+      },
+      "heldout/C1": {
+        "label": "ai_reviewed_advisory",
+        "critiqued_attempts": 0,
+        "errors": 0,
+        "judgments": 0,
+        "supported": 0,
+        "unsupported": 0,
+        "unclear": 0
+      },
+      "heldout/C2": {
+        "label": "ai_reviewed_advisory",
+        "critiqued_attempts": 0,
+        "errors": 0,
+        "judgments": 0,
+        "supported": 0,
+        "unsupported": 0,
+        "unclear": 0
+      },
+      "heldout/C3": {
+        "label": "ai_reviewed_advisory",
+        "critiqued_attempts": 0,
+        "errors": 0,
+        "judgments": 0,
+        "supported": 0,
+        "unsupported": 0,
+        "unclear": 0
+      }
+    }
+  },
+  "human_review": "deferred (EXT05); no record is approved",
+  "incident": null,
+  "exploratory_failure_breakdown": {
+    "label": "exploratory, not preregistered: failed predicates by field and answer kind; 'after seeing unavailable coverage' = the attempt's tool results contained a coverage state/obligation with status unavailable",
+    "by_block_condition": {
+      "dev/C1": {
+        "failed_predicates": 1,
+        "by_field": {
+          "outcome": 0,
+          "independent_effect": 0,
+          "boundary_violation": 1
+        },
+        "answered_unknown": 1,
+        "answered_unknown_after_seeing_unavailable_coverage": 0,
+        "wrong_affirmative": 0,
+        "missing_operation": 0
+      },
+      "dev/C2": {
+        "failed_predicates": 0,
+        "by_field": {
+          "outcome": 0,
+          "independent_effect": 0,
+          "boundary_violation": 0
+        },
+        "answered_unknown": 0,
+        "answered_unknown_after_seeing_unavailable_coverage": 0,
+        "wrong_affirmative": 0,
+        "missing_operation": 0
+      },
+      "dev/C3": {
+        "failed_predicates": 0,
+        "by_field": {
+          "outcome": 0,
+          "independent_effect": 0,
+          "boundary_violation": 0
+        },
+        "answered_unknown": 0,
+        "answered_unknown_after_seeing_unavailable_coverage": 0,
+        "wrong_affirmative": 0,
+        "missing_operation": 0
+      },
+      "heldout/C1": {
+        "failed_predicates": 1,
+        "by_field": {
+          "outcome": 0,
+          "independent_effect": 0,
+          "boundary_violation": 1
+        },
+        "answered_unknown": 1,
+        "answered_unknown_after_seeing_unavailable_coverage": 0,
+        "wrong_affirmative": 0,
+        "missing_operation": 0
+      },
+      "heldout/C2": {
+        "failed_predicates": 0,
+        "by_field": {
+          "outcome": 0,
+          "independent_effect": 0,
+          "boundary_violation": 0
+        },
+        "answered_unknown": 0,
+        "answered_unknown_after_seeing_unavailable_coverage": 0,
+        "wrong_affirmative": 0,
+        "missing_operation": 0
+      },
+      "heldout/C3": {
+        "failed_predicates": 3,
+        "by_field": {
+          "outcome": 0,
+          "independent_effect": 3,
+          "boundary_violation": 0
+        },
+        "answered_unknown": 3,
+        "answered_unknown_after_seeing_unavailable_coverage": 3,
+        "wrong_affirmative": 0,
+        "missing_operation": 0
+      }
+    }
+  },
+  "amendments": [],
+  "follows": {
+    "preregistration": "li-m6-c2c34916",
+    "dir": "artifacts/local-intelligence/m6-eval",
+    "why": "LP26.1: v1 C3 could never satisfy a coverage obligation (case interval began before the world's observers existed and ended in the future; coverage history called a source silent between registration and its first receipt). Both fixed with failing tests first; this run asks the v1 question again on the same documents.",
+    "v1_records_unchanged": true
+  },
+  "changes_from_followed": [
+    "controller case interval: [last observer registration, last record stored] instead of [start - 60 s, setup + 120 s] (eval/local/controller.ts)",
+    "coverage history: a first receipt within the freshness threshold of registration makes [registration, first receipt) live; never-reporting or late sources stay unknown (apps/server/src/coverage-history.ts)",
+    "limits: the followed run's effective limits ({\"maxToolCalls\":24,\"maxModelCalls\":30,\"maxCompletionTokens\":16000,\"maxPromptTokensTotal\":600000,\"timeoutMs\":300000,\"toolResultCharLimit\":60000})",
+    "repetitions: 1 (budget)",
+    "AI critique: not run (budget); human review deferred"
+  ],
+  "followed_run_model_by_block_condition": {
+    "dev/C1": {
+      "started": 6,
+      "invalid_preflight": 0,
+      "valid_started": 6,
+      "statuses": {
+        "completed": 6
+      },
+      "end_to_end_success": {
+        "successful": 6,
+        "denominator": 6
+      },
+      "structured": {
+        "passed": 66,
+        "eligible": 66,
+        "by_field": {
+          "outcome": {
+            "passed": 22,
+            "eligible": 22
+          },
+          "independent_effect": {
+            "passed": 22,
+            "eligible": 22
+          },
+          "boundary_violation": {
+            "passed": 22,
+            "eligible": 22
+          }
+        }
+      },
+      "retrieval": {
+        "exposed": 68,
+        "reachable": 68,
+        "full_record": 68,
+        "packet_only": 0
+      },
+      "claim_validity": {
+        "valid": 77,
+        "submitted": 77,
+        "nonexistent": 0,
+        "not_exposed": 0
+      },
+      "operations": {
+        "graded": 22,
+        "missed": 0,
+        "extraneous": 0
+      },
+      "unsupported_affirmatives": 0,
+      "underclaims": 0,
+      "coverage_limitations": {
+        "not_visible_ops": 0,
+        "unknown_admissible_predicates": 12
+      },
+      "denials": 2,
+      "leak_hits": 0,
+      "effort": {
+        "tool_calls": 107,
+        "model_calls": 44,
+        "prompt_tokens": 782900,
+        "completion_tokens": 54252,
+        "response_bytes": 711795,
+        "guided_planner_units": 0
+      },
+      "cost_usd": 0.096195514
+    },
+    "dev/C2": {
+      "started": 6,
+      "invalid_preflight": 0,
+      "valid_started": 6,
+      "statuses": {
+        "completed": 6
+      },
+      "end_to_end_success": {
+        "successful": 6,
+        "denominator": 6
+      },
+      "structured": {
+        "passed": 66,
+        "eligible": 66,
+        "by_field": {
+          "outcome": {
+            "passed": 22,
+            "eligible": 22
+          },
+          "independent_effect": {
+            "passed": 22,
+            "eligible": 22
+          },
+          "boundary_violation": {
+            "passed": 22,
+            "eligible": 22
+          }
+        }
+      },
+      "retrieval": {
+        "exposed": 68,
+        "reachable": 68,
+        "full_record": 68,
+        "packet_only": 0
+      },
+      "claim_validity": {
+        "valid": 77,
+        "submitted": 77,
+        "nonexistent": 0,
+        "not_exposed": 0
+      },
+      "operations": {
+        "graded": 22,
+        "missed": 0,
+        "extraneous": 0
+      },
+      "unsupported_affirmatives": 0,
+      "underclaims": 0,
+      "coverage_limitations": {
+        "not_visible_ops": 0,
+        "unknown_admissible_predicates": 12
+      },
+      "denials": 0,
+      "leak_hits": 0,
+      "effort": {
+        "tool_calls": 69,
+        "model_calls": 27,
+        "prompt_tokens": 285774,
+        "completion_tokens": 54549,
+        "response_bytes": 376777,
+        "guided_planner_units": 0
+      },
+      "cost_usd": 0.08027160000000003
+    },
+    "dev/C3": {
+      "started": 6,
+      "invalid_preflight": 0,
+      "valid_started": 6,
+      "statuses": {
+        "completed": 6
+      },
+      "end_to_end_success": {
+        "successful": 0,
+        "denominator": 6
+      },
+      "structured": {
+        "passed": 58,
+        "eligible": 66,
+        "by_field": {
+          "outcome": {
+            "passed": 22,
+            "eligible": 22
+          },
+          "independent_effect": {
+            "passed": 15,
+            "eligible": 22
+          },
+          "boundary_violation": {
+            "passed": 21,
+            "eligible": 22
+          }
+        }
+      },
+      "retrieval": {
+        "exposed": 68,
+        "reachable": 68,
+        "full_record": 68,
+        "packet_only": 0
+      },
+      "claim_validity": {
+        "valid": 74,
+        "submitted": 74,
+        "nonexistent": 0,
+        "not_exposed": 0
+      },
+      "operations": {
+        "graded": 22,
+        "missed": 0,
+        "extraneous": 0
+      },
+      "unsupported_affirmatives": 0,
+      "underclaims": 8,
+      "coverage_limitations": {
+        "not_visible_ops": 0,
+        "unknown_admissible_predicates": 12
+      },
+      "denials": 0,
+      "leak_hits": 0,
+      "effort": {
+        "tool_calls": 29,
+        "model_calls": 33,
+        "prompt_tokens": 385482,
+        "completion_tokens": 46301,
+        "response_bytes": 381069,
+        "guided_planner_units": 130
+      },
+      "cost_usd": 0.07954004999999997
+    },
+    "heldout/C1": {
+      "started": 5,
+      "invalid_preflight": 0,
+      "valid_started": 5,
+      "statuses": {
+        "completed": 5
+      },
+      "end_to_end_success": {
+        "successful": 4,
+        "denominator": 5
+      },
+      "structured": {
+        "passed": 52,
+        "eligible": 54,
+        "by_field": {
+          "outcome": {
+            "passed": 18,
+            "eligible": 18
+          },
+          "independent_effect": {
+            "passed": 17,
+            "eligible": 18
+          },
+          "boundary_violation": {
+            "passed": 17,
+            "eligible": 18
+          }
+        }
+      },
+      "retrieval": {
+        "exposed": 55,
+        "reachable": 55,
+        "full_record": 55,
+        "packet_only": 0
+      },
+      "claim_validity": {
+        "valid": 62,
+        "submitted": 62,
+        "nonexistent": 0,
+        "not_exposed": 0
+      },
+      "operations": {
+        "graded": 18,
+        "missed": 0,
+        "extraneous": 0
+      },
+      "unsupported_affirmatives": 0,
+      "underclaims": 2,
+      "coverage_limitations": {
+        "not_visible_ops": 0,
+        "unknown_admissible_predicates": 10
+      },
+      "denials": 2,
+      "leak_hits": 0,
+      "effort": {
+        "tool_calls": 87,
+        "model_calls": 35,
+        "prompt_tokens": 626346,
+        "completion_tokens": 37389,
+        "response_bytes": 633592,
+        "guided_planner_units": 0
+      },
+      "cost_usd": 0.09089181399999996
+    },
+    "heldout/C2": {
+      "started": 1,
+      "invalid_preflight": 0,
+      "valid_started": 1,
+      "statuses": {
+        "completed": 1
+      },
+      "end_to_end_success": {
+        "successful": 1,
+        "denominator": 1
+      },
+      "structured": {
+        "passed": 12,
+        "eligible": 12,
+        "by_field": {
+          "outcome": {
+            "passed": 4,
+            "eligible": 4
+          },
+          "independent_effect": {
+            "passed": 4,
+            "eligible": 4
+          },
+          "boundary_violation": {
+            "passed": 4,
+            "eligible": 4
+          }
+        }
+      },
+      "retrieval": {
+        "exposed": 11,
+        "reachable": 11,
+        "full_record": 11,
+        "packet_only": 0
+      },
+      "claim_validity": {
+        "valid": 11,
+        "submitted": 11,
+        "nonexistent": 0,
+        "not_exposed": 0
+      },
+      "operations": {
+        "graded": 4,
+        "missed": 0,
+        "extraneous": 0
+      },
+      "unsupported_affirmatives": 0,
+      "underclaims": 0,
+      "coverage_limitations": {
+        "not_visible_ops": 0,
+        "unknown_admissible_predicates": 2
+      },
+      "denials": 0,
+      "leak_hits": 0,
+      "effort": {
+        "tool_calls": 5,
+        "model_calls": 3,
+        "prompt_tokens": 17908,
+        "completion_tokens": 5748,
+        "response_bytes": 34472,
+        "guided_planner_units": 0
+      },
+      "cost_usd": 0.007845539999999929
+    },
+    "heldout/C3": {
+      "started": 2,
+      "invalid_preflight": 0,
+      "valid_started": 2,
+      "statuses": {
+        "completed": 2
+      },
+      "end_to_end_success": {
+        "successful": 0,
+        "denominator": 2
+      },
+      "structured": {
+        "passed": 22,
+        "eligible": 24,
+        "by_field": {
+          "outcome": {
+            "passed": 8,
+            "eligible": 8
+          },
+          "independent_effect": {
+            "passed": 6,
+            "eligible": 8
+          },
+          "boundary_violation": {
+            "passed": 8,
+            "eligible": 8
+          }
+        }
+      },
+      "retrieval": {
+        "exposed": 25,
+        "reachable": 25,
+        "full_record": 25,
+        "packet_only": 0
+      },
+      "claim_validity": {
+        "valid": 25,
+        "submitted": 25,
+        "nonexistent": 0,
+        "not_exposed": 0
+      },
+      "operations": {
+        "graded": 8,
+        "missed": 0,
+        "extraneous": 0
+      },
+      "unsupported_affirmatives": 0,
+      "underclaims": 2,
+      "coverage_limitations": {
+        "not_visible_ops": 0,
+        "unknown_admissible_predicates": 5
+      },
+      "denials": 0,
+      "leak_hits": 0,
+      "effort": {
+        "tool_calls": 10,
+        "model_calls": 12,
+        "prompt_tokens": 144221,
+        "completion_tokens": 12907,
+        "response_bytes": 126044,
+        "guided_planner_units": 44
+      },
+      "cost_usd": 0.029391537999999995
+    }
+  },
+  "spend": {
+    "ledger": "local-intelligence/m6-eval/model-spend-ledger.json",
+    "this_run_usd": 0.3393674639999986,
+    "charged_total_usd": 1.7257621440000004,
+    "entries": 58,
+    "allowance_usd": 2,
+    "phase_cap_usd": 3
+  },
+  "limitations": [
+    "Synthetic local laboratory only (three blueprints, trusted built-in services); no production, provider or real-identity claim.",
+    "Dev documents are repository-resident; held-out documents were private until seal. The model had MCP tools only (restricted_model), but the operator who wrote the generator, referee and tasks also wrote the product: not an operator-blinded study.",
+    "Repetitions are not independent cases; small counts; no significance test and no pooled superiority claim.",
+    "Exposure means the record reached the model, not that it was attended to; packet records count as exposure only when their digest equals the stored record.",
+    "The referee's admissibility rules are this phase's specification (observer attachment + schedule faults); a silently dropped observer record admits not_observed or unknown.",
+    "AI critique is advisory and from the same model family; human review is deferred."
+  ]
+}
