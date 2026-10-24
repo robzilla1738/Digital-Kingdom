@@ -1,0 +1,95 @@
+{
+  "scope": "API-backed isolated synthetic server (demo-castle); one LP13 model-only comparison; Chromium headless SwiftShader.",
+  "comparison": "cmp_a27d61bebdbca61d",
+  "revisions": {
+    "baseline": {
+      "state_hash": "9865f6ec3250b7df17b4cc274cf41eb4d87a0ec48e0c2936f9e8348427b3cde1",
+      "graph_revision": "demo-r3",
+      "scene_digest": "366613684fa5c419",
+      "layout_version": 1,
+      "current": true
+    },
+    "candidate": {
+      "state_hash": "e82b93b5f21087516d2c5cbb1a6b8a6db72b57dbc24c6bb151bb367ff4209a11",
+      "namespace": "branch:bf140bc68b9ed1cd",
+      "receipt_digest": "a162b745035ad0e5e54818b7685f38da6c59a48fabcc46f2dfafd1fa7a071484"
+    }
+  },
+  "rooms": [
+    {
+      "asset_id": "api",
+      "change": "changed",
+      "refs": [
+        "source|demo-castle|src-app"
+      ],
+      "baseline_position": {
+        "x": 0,
+        "y": 0,
+        "z": 5.4
+      },
+      "placement": "baseline_room"
+    },
+    {
+      "asset_id": "edge",
+      "change": "added",
+      "refs": [
+        "route|demo-castle/demo|edge POST /admin"
+      ],
+      "baseline_position": {
+        "x": 0,
+        "y": 0,
+        "z": 13
+      },
+      "placement": "baseline_room"
+    },
+    {
+      "asset_id": "pay",
+      "change": "changed",
+      "refs": [
+        "source|demo-castle|src-app"
+      ],
+      "baseline_position": {
+        "x": -5.6,
+        "y": 0,
+        "z": -5.4
+      },
+      "placement": "baseline_room"
+    },
+    {
+      "asset_id": "web",
+      "change": "changed",
+      "refs": [
+        "source|demo-castle|src-app"
+      ],
+      "baseline_position": {
+        "x": -5.6,
+        "y": 0,
+        "z": 5.4
+      },
+      "placement": "baseline_room"
+    }
+  ],
+  "changes": [
+    {
+      "key": "route|demo-castle/demo|edge POST /admin",
+      "op": "added"
+    },
+    {
+      "key": "source|demo-castle|src-app",
+      "op": "changed"
+    }
+  ],
+  "baselineUnchanged": [
+    "graph",
+    "scene",
+    "sources",
+    "coverage",
+    "findings",
+    "analysis state hash"
+  ],
+  "executedLocal": {
+    "results": [],
+    "note": "No executed local result is linked to this model-only comparison. A simulated blocked path is not a verified executed control."
+  },
+  "result": "passed"
+}

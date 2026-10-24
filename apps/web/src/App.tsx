@@ -138,6 +138,7 @@ export function App() {
       coverageHistory: (q, signal) => { check(); return api.get(`${prefix}/coverage/history?${new URLSearchParams(q as Record<string, string>)}`, signal); },
       controls: (signal) => { check(); return api.get(`${prefix}/controls`, signal); },
       control: async (id) => { check(); return api.get(`${prefix}/controls/${encodeURIComponent(id)}`); },
+      worldComparison: (id, signal) => { check(); return api.get(`${prefix}/analysis/comparisons/${encodeURIComponent(id)}/world`, signal); },
       githubPreview: async (owner, repo) => { check(); return api.send("POST", `${prefix}/discovery/github/preview`, { owner, repo }); },
       githubApply: async (previewId, expected) => { check(); await api.send("POST", `${prefix}/discovery/github/apply`, { preview_id: previewId, expected_graph_revision: expected }); check(); await reload.current(); },
       recipes: (signal) => { check(); return api.get(`/api/recipes`, signal); },
