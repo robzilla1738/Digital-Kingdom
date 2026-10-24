@@ -241,7 +241,7 @@
     "scene-compiler compileScene/defaultProposal (pins)"
    ],
    "decisions": [
-    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec \u00a722; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
+    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec §22; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
     "D-LP04-2: world_plan.v1 template enum unchanged; observers compile to declared sources (not assets); asset id = logical resource id; revision = lw-sha256(catalog digest, plan digest).",
     "D-LP04-3: LP00-A2 test hashes frozen trees once with a 90 s timeout (timed out under concurrent load on a 2-CPU sandbox); assertions unchanged."
    ],
@@ -854,7 +854,10 @@
     "8c5f6b2": "40060309968 failure: pnpm scenarios LW-01 (unchanged product code; passes locally and on every later run - flaky)",
     "a159fe0": "40060841243 failure: new LP26.1 eval test hit a ms created_at/effective_at race (fixed in 798d8e2)",
     "38acd29": "40060858305 success",
-    "798d8e2": "40061292021 check success; browser-pilot failure e2e/pilot.spec.ts F snapshot (live-source freshness; flaky, unrelated)"
+    "798d8e2": "40061292021 check success; browser-pilot failure e2e/pilot.spec.ts F snapshot (live-source freshness; flaky, unrelated)",
+    "aef7f12": "40064260489 failure: lp06-world.test.ts:161 (1 ms covered during a deliberate outage) - pre-existing per-source health pairing race, not LP26.1; fixed in 970e278 (D-M6b-CI-1)",
+    "970e278": "40065153104 check-success,browser-pilot-in-progress (check + browser-pilot)",
+    "0dc7e74": "40065627734 in_progress (check + browser-pilot)"
    },
    "sub_packages": [
     {
@@ -927,7 +930,8 @@
     "D-LP26-3",
     "D-LP26-4",
     "D-LP26-5"
-   ]
+   ],
+   "rebased_commit_map": "pre-rebase -> phase/local-intelligence: LP24 3b327db->2de0fbf; LP25 b82d3a3->3e330e4 (fix 6af3ed1->5b2b6db); LP26 b95ff3e->925de91, dbedf84->6bfe7c7, 73a13de->e05a354, 8c5f6b2->93f469c, a159fe0->e6b03b6, 38acd29->1b19ec6, 798d8e2->2e49c00, fb8f94f->8e5b9b2, 9085868->b4afa9c; ledger bab16d8"
   },
   {
    "id": "LP27",
@@ -937,10 +941,32 @@
     "LP25",
     "LP22"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "0dc7e74",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP27.md",
+   "branch": "phase/local-intelligence (from phase/li-m6b)",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "lp27": "10 passed (eval/test/li-lp27-variants.test.ts)",
+    "eval": "11 files, 64 passed",
+    "coverage+lp06+lp07+lp26.1+m6b": "6 files, 42 passed"
+   },
+   "reuses": [
+    "LP07 scenario DSL (parseScenario, checkScenarioAgainstWorld) and runScenario",
+    "LP05/LP06 supervisor, observers, reporter hub faults",
+    "LP25 referee answerKey/gradeAnswer/logicalKey",
+    "LP24 scripted analyze, parseAnswer, scoreAttempt",
+    "LP20 request budget"
+   ],
+   "artifacts": [
+    "artifacts/phase-local-intelligence/M6/lp27-variant-report.json"
+   ],
+   "model_run": "not attempted (optional); scripted variants only; spend $0.00",
+   "decisions": [
+    "D-LP27-1",
+    "D-LP27-2"
+   ]
   },
   {
    "id": "LP28",
@@ -1756,23 +1782,38 @@
   },
   "LP27-A1": {
    "package": "LP27",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp27-variants.test.ts > LP27-A1 removed denials",
+    "eval/test/li-lp27-variants.test.ts > LP27-A1 skipped page",
+    "eval/test/li-lp27-variants.test.ts > LP27-A1 model refusal",
+    "docs/phases/local-intelligence/receipts/LP27.md"
+   ]
   },
   "LP27-A2": {
    "package": "LP27",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp27-variants.test.ts > LP27-A2 (24 pairs differ only as declared; diff catches undeclared change)",
+    "eval/test/li-lp27-variants.test.ts > LP27 execution (clean-repeat variability; keys change only as declared; injected vs clean scripted answers)",
+    "docs/phases/local-intelligence/receipts/LP27.md"
+   ]
   },
   "LP27-A3": {
    "package": "LP27",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp27-variants.test.ts > LP27-A3 (finite DSL, world resolution, safetyScan; 4 escape attempts refused)",
+    "docs/phases/local-intelligence/receipts/LP27.md"
+   ]
   },
   "LP27-A4": {
    "package": "LP27",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp27-variants.test.ts > LP27-A4 (partial run, outage, request-budget refusals, noise-budget exhaustion)",
+    "docs/phases/local-intelligence/receipts/LP27.md"
+   ]
   },
   "LP28-A1": {
    "package": "LP28",
@@ -2172,6 +2213,26 @@
    "id": "D-M5-CI-2",
    "date": "2026-10-23",
    "decision": "CI run 40062942807 attempt 1 on 3c8166d: the full vitest step passed (117 files passed, 1 skipped; 826 passed, 1 skipped) but the following `pnpm scenarios` step reran examples/reference-app/lp07-scenarios.test.ts and reported LW-01 failed (timing-sensitive LP07 delayed-evidence/lag assertions under runner load, the sensitivity noted for M3). M5 touched no LP07, scenario or saas-storefront code. Failed jobs were rerun unchanged: attempt 2 success (check + browser-pilot); 3 local reruns of lp07 13/13. Not hardened here (outside M5 scope); recorded for the LP07 owner."
+  },
+  {
+   "id": "D-M6b-CI-1",
+   "date": "2026-10-24",
+   "decision": "CI 40064260489 (aef7f12) lp06-world:161: coverage history paired sensor_unavailable/sensor_restored per source, so a multi-asset observer's restoration of another asset 1 ms earlier ended this asset's outage and 1 ms of a deliberate outage counted as covered. Pre-existing since R01 (not LP26.1; aef7f12 and bab16d8 have identical product code). Negative test apps/server/test/phase-m6b-outage-assets.test.ts (3 failing before); fix pairs health reports per asset (id/name/alias; multi-asset reports apply to each). Reproduced 3/60 locally before, 0/81 after. Commit 970e278."
+  },
+  {
+   "id": "D-M6b-CI-2",
+   "date": "2026-10-24",
+   "decision": "LW-01 delayed-evidence assertion (D-M5-CI-2) hardened without weakening: the fixed +25 ms lag margin is replaced by the run's own measured hold gap (steps[11].started - steps[8].started, -2 ms rounding) plus a timing-independent causal receipt-order check. 26/26 under 4 CPU burners. e2e/pilot.spec.ts F snapshot flake (798d8e2 run 40061292021) noted, unchanged."
+  },
+  {
+   "id": "D-LP27-1",
+   "date": "2026-10-24",
+   "decision": "LP27 delivered as scripted variants (li-variants-1, 24 families over LW-01/02/03) graded by the LP25 referee; the optional small real-model run was not attempted in this session (time budget), so nothing was preregistered and model spend is $0.00. Real-model injection resistance stays not_exercised; the injected/clean protocol is in place for a later preregistered run."
+  },
+  {
+   "id": "D-LP27-2",
+   "date": "2026-10-24",
+   "decision": "Variant/clean equivalence is proven on the document (LCS step alignment + field diff against a per-family declaration) and on outcomes (LP25 key by label: identical / superset / changed_steps), with clean-repeat variability measured by running each clean scenario twice. Lease-escape variants are DSL documents that must be refused before any run (parse or world stage); none can express a URL, shell, scan or credential collection."
   }
  ],
  "model_spend_usd": {
@@ -2190,6 +2251,10 @@
    {
     "id": "li-m6-e61d01f7",
     "usd": 0.339367
+   },
+   {
+    "id": "li-m6b (LP27 + CI stabilisation)",
+    "usd": 0.0
    }
   ],
   "m6_allowance": 2.0,
@@ -2203,17 +2268,20 @@
   },
   "settled_on_surviving_records": 0.748466,
   "gateway_reported_on_surviving_records": 0.392134,
-  "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (reserved for LP27/LP30)."
+  "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (LP27 used $0.00; reserved for LP30)."
  },
  "next_action": {
-  "package": "LP27",
-  "why": "M6: LP24 and LP25 CI-verified; LP26 (+ LP26.1 coverage fix) implemented, evaluated (v1 li-m6-c2c34916 sealed as is with a records-lost incident; follow-up li-m6-e61d01f7 after the fix) and on phase/local-intelligence. LP27 (exercise adversarial and fault variants) is now eligible: its dependencies LP25 (CI-verified) and LP22 (M5, on phase/local-intelligence) are in place. LP23 still waits for LP19 (M4). Remaining phase model budget: $1.274238 of $3.00 (LP27/LP30).",
+  "package": "LP23 (after LP19) / LP28 (after LP23)",
+  "why": "M6 complete for engineering: LP24-LP27 on phase/local-intelligence. The next packages in order are blocked: LP28 needs LP23, which needs LP19 (M4, in progress in DK-m4 by dk-m4b); LP29 needs LP18+LP28; LP30 needs LP29+LP27. Remaining phase model budget $1.274238 of $3.00 (no LP27 spend).",
   "eligible_now": [
-   "LP27",
    "LP16-LP19 (M4, in progress elsewhere)"
   ],
   "blocked": {
-   "LP23": "needs LP19"
+   "LP23": "needs LP19",
+   "LP28": "needs LP23",
+   "LP29": "needs LP18, LP28",
+   "LP30": "needs LP29",
+   "LP31": "needs LP30"
   }
  },
  "milestones": {
@@ -2360,7 +2428,7 @@
     "LP26",
     "LP27"
    ],
-   "status": "in_progress",
+   "status": "implemented_locally_verified",
    "done": [
     "LP24",
     "LP25",
@@ -2369,7 +2437,9 @@
    "remaining": [
     "LP27 (deps LP25, LP22)"
    ],
-   "note": "AI execution exercised for LP24/LP26 via the approved AI Gateway route (meta/muse-spark-1.3-contributor); human review deferred (EXT05)."
+   "note": "LP24/LP25/LP26/LP27 engineering-verified for executed tests; LP26 model evaluations recorded in its receipt; LP27 scripted only (model not_exercised). Human/provider gates remain deferred.",
+   "head": "0dc7e74",
+   "ci_run": null
   }
  }
 }
