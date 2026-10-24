@@ -1,0 +1,365 @@
+{
+  "schema": "dk.local.eval_preregistration.v1",
+  "id": "li-m6-e61d01f7",
+  "created_at": "2026-10-24T04:03:51.729Z",
+  "repository_commit": "a159fe068e11c0c69062386d7a457bcf4210044d",
+  "working_tree_dirty": false,
+  "follows": {
+    "preregistration": "li-m6-c2c34916",
+    "dir": "artifacts/local-intelligence/m6-eval",
+    "why": "LP26.1: v1 C3 could never satisfy a coverage obligation (case interval began before the world's observers existed and ended in the future; coverage history called a source silent between registration and its first receipt). Both fixed with failing tests first; this run asks the v1 question again on the same documents.",
+    "v1_records_unchanged": true
+  },
+  "question": "After the LP26.1 coverage fix, does the guided investigation-contract loop (C3) still differ from the full tool set (C1) and the event tools (C2) in end-to-end success, structured correctness, retrieval and unsupported claims on the same documents, without expanding authority?",
+  "conditions": [
+    {
+      "id": "C1",
+      "label": "existing full investigation tools",
+      "mcp_env": {
+        "DK_MCP_TOOLS": "investigation"
+      },
+      "description": "The existing 22-tool read-only investigation MCP profile (overview, findings, event search/detail, coverage, cases, recipes, bundles, ...)."
+    },
+    {
+      "id": "C2",
+      "label": "event tools with context",
+      "mcp_env": {
+        "DK_MCP_TOOLS": "dk_search_events,dk_get_event"
+      },
+      "description": "Only dk_search_events and dk_get_event; search returns query completeness and current coverage, detail returns finding references. Not a raw-only condition."
+    },
+    {
+      "id": "C3",
+      "label": "guided investigation contract",
+      "mcp_env": {
+        "DK_MCP_PROFILE": "investigation-read"
+      },
+      "description": "The LP11 focused investigation-read profile over the LP08 contract, LP09 job (run by the deterministic planner) and LP10 packets/claim checks."
+    }
+  ],
+  "model": {
+    "route": "ai-gateway (https://ai-gateway.vercel.sh/v1)",
+    "id": "meta/muse-spark-1.3-contributor",
+    "decoding": "provider defaults (temperature not set); reasoning not requested and not stored",
+    "limits": {
+      "maxToolCalls": 24,
+      "maxModelCalls": 30,
+      "maxCompletionTokens": 16000,
+      "maxPromptTokensTotal": 600000,
+      "timeoutMs": 300000,
+      "toolResultCharLimit": 60000
+    }
+  },
+  "prompt": {
+    "version": "li-p1",
+    "system_sha256": "75c85e450c2188d1af985397ed2b7613b3f1790673203764a4c30bbe0d04a7c1",
+    "public_task_version": "li-task-1",
+    "public_task_sha256": {
+      "saas-storefront": "d8d02e5304ed7a4088c5f92cc39009a5ed6b48cb3202be02f25a85c6bc99dbfd",
+      "agent-workspace": "0bf5d435c4cd0078e9b64c0d068f33e043c4ca46ebaf38ab81451823782be4fa",
+      "delivery-identity": "3426900cccfbceb7bca8160b30668c26fc10d66bd671ebc4d2237f1aa3126033"
+    }
+  },
+  "changes_from_followed": [
+    "controller case interval: [last observer registration, last record stored] instead of [start - 60 s, setup + 120 s] (eval/local/controller.ts)",
+    "coverage history: a first receipt within the freshness threshold of registration makes [registration, first receipt) live; never-reporting or late sources stay unknown (apps/server/src/coverage-history.ts)",
+    "limits: the followed run's effective limits ({\"maxToolCalls\":24,\"maxModelCalls\":30,\"maxCompletionTokens\":16000,\"maxPromptTokensTotal\":600000,\"timeoutMs\":300000,\"toolResultCharLimit\":60000})",
+    "repetitions: 1 (budget)",
+    "AI critique: not run (budget); human review deferred"
+  ],
+  "referee": "li-referee-2",
+  "generator": "li-heldout-gen-1",
+  "master_seed_sha256": "5a4e5a10d9119b9bbcb51077592a2f6691d65c45332309c34ce2958b7677c881",
+  "order_seed": "78f8c246bdbac1fe",
+  "dev_documents": [
+    {
+      "slot_doc": "LW-01",
+      "family": "saas-storefront",
+      "doc_sha256": "d801627cf462bffb3292593974a5e907eed60758430f8e54e582f2771a2192b6",
+      "seed_commitment": "aeac84a1223854a56eedfb35b7adcc8d2c4e28774bbc7eda01c4d6c22fd29cd1",
+      "note": "repository-resident (dev split): a repo-reading agent is not blinded to it"
+    },
+    {
+      "slot_doc": "LW-02",
+      "family": "agent-workspace",
+      "doc_sha256": "7b5de88b6491658be6830ab99cd9b4e248529d0bf4623104134811a3f5199f8c",
+      "seed_commitment": "bd13e10ab3e6901db3e530c488c2abe7bdf22a7ec8d164ace805507b3c998ed8",
+      "note": "repository-resident (dev split): a repo-reading agent is not blinded to it"
+    },
+    {
+      "slot_doc": "LW-03",
+      "family": "delivery-identity",
+      "doc_sha256": "e37218f36da817c71e5c55f916802fc6e2f39bc70e5992e8d098306cda7b78d1",
+      "seed_commitment": "b297cd8e8ad3588d70276c861cb612f053380cdbac28df8909c097bdc530517b",
+      "note": "repository-resident (dev split): a repo-reading agent is not blinded to it"
+    }
+  ],
+  "heldout_documents": [
+    {
+      "slot_doc": "lh-4c68a14c8c",
+      "family": "saas-storefront",
+      "doc_sha256": "aaada56eae47644add5ec6e8a7dfe1638e8337bd2a0e74bee37db1f250b58626",
+      "seed_commitment": "e5b4a7f446a50f91246744b7238424b126b922d86030a9601e67fa1f22fe5a43",
+      "note": "revealed at the seal of li-m6-c2c34916 and present in the repository: burned held-out (not fresh). The investigator is restricted_model (MCP tools only, no repository or filesystem), so it still cannot read them; the operator could."
+    },
+    {
+      "slot_doc": "lh-09ba1c2216",
+      "family": "agent-workspace",
+      "doc_sha256": "f337181ae5dd28585988ac27445a96a73445fe87857d9f49caa36caf73eeff91",
+      "seed_commitment": "7b28afad95b46598a939facf20e2ee1b70ac838d3aa0e71b40323c3b4f2aa61f",
+      "note": "revealed at the seal of li-m6-c2c34916 and present in the repository: burned held-out (not fresh). The investigator is restricted_model (MCP tools only, no repository or filesystem), so it still cannot read them; the operator could."
+    },
+    {
+      "slot_doc": "lh-e96cf153b3",
+      "family": "delivery-identity",
+      "doc_sha256": "6210169aefb2ff288e35e3cf71683ce5255ac42cbc35ac6173ada20bddbd453f",
+      "seed_commitment": "fe6a50553dbc4f6d13f49077820fb4490cfa5818fae077f1227c3bea6cf66c8d",
+      "note": "revealed at the seal of li-m6-c2c34916 and present in the repository: burned held-out (not fresh). The investigator is restricted_model (MCP tools only, no repository or filesystem), so it still cannot read them; the operator could."
+    },
+    {
+      "slot_doc": "lh-63ce4c16c9",
+      "family": "saas-storefront",
+      "doc_sha256": "8fe63a6280d312ea6e5139f64dd114fadcaf7543a0d54c6d72bd5bd8bb5f6dfb",
+      "seed_commitment": "fefffa74da49b67973fd5ebaac7020c73e3ca142ede1bff5bcf3627d7d44a001",
+      "note": "revealed at the seal of li-m6-c2c34916 and present in the repository: burned held-out (not fresh). The investigator is restricted_model (MCP tools only, no repository or filesystem), so it still cannot read them; the operator could."
+    },
+    {
+      "slot_doc": "lh-1b1629debd",
+      "family": "agent-workspace",
+      "doc_sha256": "14ddbcbca7ff50fc9020e52c81d7ea1e5a8e1e03e5cabc1648116cf5510e5f2a",
+      "seed_commitment": "92a8856d8b9a53e916a36202eb51d8ec26d03d7fa358218a57d9c5ecaf73a0d8",
+      "note": "revealed at the seal of li-m6-c2c34916 and present in the repository: burned held-out (not fresh). The investigator is restricted_model (MCP tools only, no repository or filesystem), so it still cannot read them; the operator could."
+    },
+    {
+      "slot_doc": "lh-ec4ef9709a",
+      "family": "delivery-identity",
+      "doc_sha256": "9872df21e9c2c4f18bcde3cefe3db920c5d16747b1e747a14884750ae35e6b62",
+      "seed_commitment": "84197fda9e25baec6e3fbb748c46541b92effcb7ff13ad5b63d86d2f3bfded6e",
+      "note": "revealed at the seal of li-m6-c2c34916 and present in the repository: burned held-out (not fresh). The investigator is restricted_model (MCP tools only, no repository or filesystem), so it still cannot read them; the operator could."
+    }
+  ],
+  "heldout_source": {
+    "kind": "revealed",
+    "file": "artifacts/local-intelligence/m6-eval/heldout-documents-revealed-at-seal.json"
+  },
+  "repetitions": 1,
+  "order": [
+    {
+      "index": 0,
+      "block": "dev",
+      "doc": "LW-03",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 1,
+      "block": "dev",
+      "doc": "LW-03",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 2,
+      "block": "dev",
+      "doc": "LW-03",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 3,
+      "block": "dev",
+      "doc": "LW-01",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 4,
+      "block": "dev",
+      "doc": "LW-01",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 5,
+      "block": "dev",
+      "doc": "LW-01",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 6,
+      "block": "dev",
+      "doc": "LW-02",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 7,
+      "block": "dev",
+      "doc": "LW-02",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 8,
+      "block": "dev",
+      "doc": "LW-02",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 9,
+      "block": "heldout",
+      "doc": "lh-e96cf153b3",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 10,
+      "block": "heldout",
+      "doc": "lh-e96cf153b3",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 11,
+      "block": "heldout",
+      "doc": "lh-e96cf153b3",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 12,
+      "block": "heldout",
+      "doc": "lh-ec4ef9709a",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 13,
+      "block": "heldout",
+      "doc": "lh-ec4ef9709a",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 14,
+      "block": "heldout",
+      "doc": "lh-ec4ef9709a",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 15,
+      "block": "heldout",
+      "doc": "lh-63ce4c16c9",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 16,
+      "block": "heldout",
+      "doc": "lh-63ce4c16c9",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 17,
+      "block": "heldout",
+      "doc": "lh-63ce4c16c9",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 18,
+      "block": "heldout",
+      "doc": "lh-1b1629debd",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 19,
+      "block": "heldout",
+      "doc": "lh-1b1629debd",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 20,
+      "block": "heldout",
+      "doc": "lh-1b1629debd",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 21,
+      "block": "heldout",
+      "doc": "lh-09ba1c2216",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 22,
+      "block": "heldout",
+      "doc": "lh-09ba1c2216",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 23,
+      "block": "heldout",
+      "doc": "lh-09ba1c2216",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 24,
+      "block": "heldout",
+      "doc": "lh-4c68a14c8c",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 25,
+      "block": "heldout",
+      "doc": "lh-4c68a14c8c",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 26,
+      "block": "heldout",
+      "doc": "lh-4c68a14c8c",
+      "condition": "C3",
+      "repetition": 1
+    }
+  ],
+  "fresh_conversation_per_attempt": true,
+  "fresh_world_per_attempt": true,
+  "budget": {
+    "ledger_path": "artifacts/local-intelligence/m6-eval/model-spend-ledger.json",
+    "phase_cap_usd": 3,
+    "m6_allowance_usd": 2,
+    "run_stop_usd": 1.8,
+    "reservation": "worst-case cost reserved before every request; failed requests keep the reserved maximum; the stop applies to the whole M6 ledger (all prior charges and estimates included)"
+  },
+  "metrics": {
+    "primary": [
+      "end_to_end_success: completed AND every eligible structured predicate admissible AND every required reachable record exposed AND no extraneous operations / valid started attempts",
+      "structured: admissible predicates / eligible predicates (3 per visible in-scope operation; a missed operation fails all three)",
+      "retrieval: required records exposed in this attempt / required records reachable in preflight"
+    ],
+    "secondary": [
+      "claim_validity: cited ids that exist and were exposed / cited ids",
+      "unsupported_affirmatives: non-unknown predicate values outside the admissible set",
+      "cost and effort: model calls, tool calls, tokens, response bytes, USD"
+    ],
+    "separate": [
+      "coverage limitations (not-visible operations, predicates whose admissible set includes unknown) reported with their own counts",
+      "AI semantic critique: ai_reviewed_advisory, separate denominator, never an objective score",
+      "human review: deferred (EXT05); nothing is approved"
+    ],
+    "invalid": "an invalid preflight is recorded as invalid_preflight and excluded from model denominators (reported separately); provider errors, timeouts, limits and schema failures stay in the denominator"
+  },
+  "analysis": "Counts per block (dev, burned held-out) x condition, reported separately and side by side with the followed run; repetitions are not independent cases; no significance test, no pooled superiority claim."
+}
