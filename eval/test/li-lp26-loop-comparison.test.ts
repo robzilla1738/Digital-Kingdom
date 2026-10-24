@@ -90,7 +90,8 @@ describe("LP26-A3: structured predicates, semantic critique and coverage limitat
     const { report } = buildReport(out, reg);
     const g = (report.model_runs.by_block_condition as Record<string, any>)["dev/C3"]; // eslint-disable-line @typescript-eslint/no-explicit-any
     expect(g.structured).toMatchObject({ passed: 15, eligible: 15 });
-    expect(g.coverage_limitations).toEqual({ not_visible_ops: 0, unknown_admissible_predicates: 1 });
+    expect(g.coverage_limitations).toEqual(r.metrics.coverage_limitations);
+    expect(g.coverage_limitations.unknown_admissible_predicates).toBeGreaterThan(0);
     expect(g.retrieval.reachable).toBe(r.metrics.retrieval.reachable);
     const crit = (report.ai_semantic_critique.by_block_condition as Record<string, any>)["dev/C3"]; // eslint-disable-line @typescript-eslint/no-explicit-any
     expect(crit).toMatchObject({ label: "ai_reviewed_advisory", critiqued_attempts: 1, judgments: 3, supported: 1, unsupported: 1, unclear: 1 });

@@ -27,6 +27,7 @@ export function aggregate(rows: Rec[]) {
     claim_validity: { valid: sum((r) => r.metrics.claim_validity.valid), submitted: sum((r) => r.metrics.claim_validity.submitted), nonexistent: sum((r) => r.metrics.claim_validity.nonexistent), not_exposed: sum((r) => r.metrics.claim_validity.not_exposed) },
     operations: { graded: sum((r) => r.metrics.operations.graded), missed: sum((r) => r.metrics.operations.missed.length), extraneous: sum((r) => r.metrics.operations.extraneous.length) },
     unsupported_affirmatives: sum((r) => r.metrics.unsupported_affirmatives),
+    underclaims: sum((r) => r.metrics.underclaims ?? 0),
     coverage_limitations: { not_visible_ops: sum((r) => r.metrics.coverage_limitations.not_visible_ops), unknown_admissible_predicates: sum((r) => r.metrics.coverage_limitations.unknown_admissible_predicates) },
     denials: sum((r) => (r.denials ?? []).length), leak_hits: sum((r) => r.leakage?.hits ?? 0),
     effort: { tool_calls: sum((r) => r.metrics.tool_calls), model_calls: graded.reduce((n, r) => n + (r.model?.usage?.model_calls ?? 0), 0), prompt_tokens: graded.reduce((n, r) => n + (r.model?.usage?.prompt_tokens ?? 0), 0), completion_tokens: graded.reduce((n, r) => n + (r.model?.usage?.completion_tokens ?? 0), 0), response_bytes: sum((r) => r.metrics.response_bytes), guided_planner_units: valid.reduce((n, r) => n + (r.condition === "C3" ? r.environment?.guided_system_work?.units ?? 0 : 0), 0) },
@@ -64,8 +65,8 @@ export function buildReport(out: string, reg: Rec) {
     ],
   };
   const pct = (a: number, b: number) => b ? `${a}/${b} (${Math.round((100 * a) / b)}%)` : "0/0";
-  const row = (k: string, g: Rec) => `| ${k} | ${g.started} | ${g.invalid_preflight} | ${pct(g.end_to_end_success.successful, g.end_to_end_success.denominator)} | ${pct(g.structured.passed, g.structured.eligible)} | ${pct(g.retrieval.exposed, g.retrieval.reachable)} | ${pct(g.claim_validity.valid, g.claim_validity.submitted)} | ${g.unsupported_affirmatives} | ${g.operations.missed} | ${Object.entries(g.statuses).map(([s, n]) => `${s}:${n}`).join(" ")} | ${g.effort.tool_calls} | $${g.cost_usd.toFixed(4)} |`;
-  const table = (gs: Rec) => `| block/condition | started | invalid preflight | end-to-end | structured predicates | retrieval (required exposed/reachable) | claim validity | unsupported affirmatives | missed ops | statuses | tool calls | cost |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|\n${Object.entries(gs).map(([k, g]) => row(k, g as Rec)).join("\n")}`;
+  const row = (k: string, g: Rec) => `| ${k} | ${g.started} | ${g.invalid_preflight} | ${pct(g.end_to_end_success.successful, g.end_to_end_success.denominator)} | ${pct(g.structured.passed, g.structured.eligible)} | ${pct(g.retrieval.exposed, g.retrieval.reachable)} | ${pct(g.claim_validity.valid, g.claim_validity.submitted)} | ${g.unsupported_affirmatives} | ${g.underclaims} | ${g.operations.missed} | ${Object.entries(g.statuses).map(([s, n]) => `${s}:${n}`).join(" ")} | ${g.effort.tool_calls} | $${g.cost_usd.toFixed(4)} |`;
+  const table = (gs: Rec) => `| block/condition | started | invalid preflight | end-to-end | structured predicates | retrieval (required exposed/reachable) | claim validity | unsupported affirmatives | underclaims (unknown where established) | missed ops | statuses | tool calls | cost |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|---:|\n${Object.entries(gs).map(([k, g]) => row(k, g as Rec)).join("\n")}`;
   const md = `# Local Intelligence M6 evaluation (LP26) — ${reg.id}
 
 Model ${reg.model.id} via the AI Gateway (restricted_model: MCP tools only). Conditions: C1 ${reg.conditions[0].label}; C2 ${reg.conditions[1].label}; C3 ${reg.conditions[2].label}.

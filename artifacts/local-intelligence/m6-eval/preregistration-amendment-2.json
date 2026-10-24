@@ -1,0 +1,20 @@
+{
+  "schema": "dk.local.eval_preregistration_amendment.v1",
+  "id": "amendment-2",
+  "preregistration": "li-m6-c2c34916",
+  "created_at": "2026-10-24T03:13:32.618666+00:00",
+  "preregistration_sha256": "1a117bfa2e5090f666251a1d233dfa5053a982f076cef3c40ebf42f3d7f9e5e1",
+  "slots_recorded_at_amendment": 0,
+  "referee": {
+    "from": "li-referee-1",
+    "to": "li-referee-2"
+  },
+  "metrics_added": [
+    "underclaims: answered unknown where delivered evidence established the fact (reported separately from unsupported affirmatives; still a failed predicate)"
+  ],
+  "reason": "Development smoke #2 (dev LW-01 / C3, not a preregistered slot) answered boundary_violation=unknown for every saas request, explaining that no delivered record maps a principal to its own tenant. That is correct: li-referee-1 demanded yes/no by inferring the own tenant from baseline-policy semantics that no evidence states (a referee defect: it demanded a fact no source delivered). A negative test reproducing it failed on li-referee-1 and passes on li-referee-2, which admits {truth, unknown} for saas boundary unless the operation's own delivered denial records the tenant-isolation reason. Agent-workspace destinations and delivery-identity grants/revocations are recorded directly and stay decisive. Effect admissibility is unchanged. No comparison slot had run.",
+  "evidence": [
+    "lp24-smoke/lp24-smoke-1792811085539.json",
+    "lp24-smoke/lp24-smoke-1792811343962.json"
+  ]
+}

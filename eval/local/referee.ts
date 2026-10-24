@@ -17,7 +17,8 @@ import type { PrivateTruth } from "../../examples/reference-app/src/world/scenar
 import type { Answer } from "./answer.ts";
 import type { Family } from "./controller.ts";
 
-export const REFEREE_VERSION = "li-referee-1";
+/** li-referee-2: the saas boundary no longer demands the principal's own tenant, which no delivered record states (found in the LP26 development smoke). */
+export const REFEREE_VERSION = "li-referee-2";
 type Step = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 export type Field = "outcome" | "independent_effect" | "boundary_violation";
 
@@ -87,9 +88,10 @@ export function answerKey(family: Family, doc: { steps: Step[]; blueprint: strin
     if (family === "saas-storefront") {
       const actor = sessionActor.get(s.session); const own = actor ? acctTenant(actor) : null;
       boundary = own !== s.params?.tenant ? "yes" : "no";
-      const sameSessionBaselineAllowed = scoped.some((o) => o.s.session === s.session && apiPolicyAt[o.i] === "baseline" && o.rec.status! < 300 && entry(o.s).flatMap(selfSources).some((src) => !lost(src, o.i)));
-      decisive = (outcome === "denied" && apiPolicyAt[i] === "baseline") || sameSessionBaselineAllowed;
-      bWhy = decisive ? "the principal's own tenant is established by a delivered baseline-policy decision" : "no delivered record establishes the principal's own tenant";
+      // decisive only when the operation's own delivered self-report states the reason (a baseline tenant-isolation
+      // denial); a principal's own tenant is never recorded, so an allowed read's boundary admits unknown
+      decisive = outcome === "denied" && apiPolicyAt[i] === "baseline" && entry(s).flatMap(selfSources).some((src) => !lost(src, i));
+      bWhy = decisive ? "the delivered denial records the tenant-isolation reason" : "no delivered record states the principal's own tenant; inferring it needs policy semantics the evidence does not state";
     } else if (family === "agent-workspace") {
       boundary = approvedReceivers.has(s.to) ? "no" : "yes"; decisive = true; bWhy = "the gateway's own reports record the destination; the approved destination is declared in the reviewed world";
     } else {
@@ -117,6 +119,8 @@ export interface ObjectiveScore {
   operations: { graded: number; answered: number; missed: string[]; extraneous: string[] };
   world_divergence: { op_id: string; field: Field; answered: string; world: string; note: string }[];
   unsupported_affirmatives: number;
+  /** answered unknown where the fact was established by delivered evidence (reported separately from wrong affirmatives) */
+  underclaims: number;
 }
 
 /** Deterministic objective grading of one answer against the key. A missing operation fails all its predicates. */
@@ -125,14 +129,14 @@ export function gradeAnswer(key: AnswerKey, answer: Answer | null): ObjectiveSco
   const byOp = new Map((answer?.operations ?? []).map((o) => [o.request_id, o]));
   const by_field = Object.fromEntries(fields.map((f) => [f, { passed: 0, eligible: 0 }])) as ObjectiveScore["structured"]["by_field"];
   const failures: ObjectiveScore["structured"]["failures"] = []; const divergence: ObjectiveScore["world_divergence"] = [];
-  let unsupported = 0;
+  let unsupported = 0, under = 0;
   for (const op of key.ops) {
     const a = byOp.get(op.op_id);
     for (const f of fields) {
       by_field[f].eligible++;
       const v = a ? a[f] : null;
       if (v !== null && op.admissible[f].includes(v)) by_field[f].passed++;
-      else { failures.push({ op_id: op.op_id, field: f, answered: v, admissible: op.admissible[f] }); if (v !== null && v !== "unknown") unsupported++; }
+      else { failures.push({ op_id: op.op_id, field: f, answered: v, admissible: op.admissible[f] }); if (v !== null && v !== "unknown") unsupported++; if (v === "unknown") under++; }
       if (v !== null && v !== "unknown" && v !== op.world[f] && op.admissible[f].includes(v)) divergence.push({ op_id: op.op_id, field: f, answered: v, world: op.world[f], note: op.why[f] });
     }
   }
@@ -141,7 +145,7 @@ export function gradeAnswer(key: AnswerKey, answer: Answer | null): ObjectiveSco
   return {
     structured: { passed, eligible, by_field, failures },
     operations: { graded: graded.size, answered: [...byOp.keys()].filter((k) => graded.has(k)).length, missed: [...graded].filter((k) => !byOp.has(k)), extraneous: [...byOp.keys()].filter((k) => !graded.has(k) && !key.not_visible_ops.includes(k)) },
-    world_divergence: divergence, unsupported_affirmatives: unsupported,
+    world_divergence: divergence, unsupported_affirmatives: unsupported, underclaims: under,
   };
 }
 

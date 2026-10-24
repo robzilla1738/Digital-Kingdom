@@ -45,7 +45,7 @@ export function scoreAttempt(x: { key: AnswerKey; stored: Record<string, unknown
     retrieval: { exposed: x.required.filter((r) => exposed.has(r)).length, reachable: x.required.length, full_record: x.required.filter((r) => ex.full.includes(r)).length, packet_only: x.required.filter((r) => ex.packet_only.includes(r)).length },
     structured: { passed: objective.structured.passed, eligible: objective.structured.eligible, by_field: objective.structured.by_field },
     claim_validity: { valid: cited.filter((c) => storedIds.has(c) && exposed.has(c)).length, submitted: cited.length, nonexistent: cited.filter((c) => !storedIds.has(c)).length, not_exposed: cited.filter((c) => storedIds.has(c) && !exposed.has(c)).length },
-    operations: objective.operations, unsupported_affirmatives: objective.unsupported_affirmatives, world_divergence: objective.world_divergence, failures: objective.structured.failures,
+    operations: objective.operations, unsupported_affirmatives: objective.unsupported_affirmatives, underclaims: objective.underclaims, world_divergence: objective.world_divergence, failures: objective.structured.failures,
     coverage_limitations: { not_visible_ops: x.key.not_visible_ops.length, unknown_admissible_predicates: x.key.ops.reduce((n, o) => n + Object.values(o.admissible).filter((v) => v.includes("unknown")).length, 0) },
     end_to_end_success: x.status === "completed" && objective.structured.passed === objective.structured.eligible && x.required.every((r) => exposed.has(r)) && objective.operations.extraneous.length === 0,
   };
