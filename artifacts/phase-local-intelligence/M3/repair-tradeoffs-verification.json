@@ -1,0 +1,26 @@
+{
+  "test": "LP14-A1/A2",
+  "status": "candidates",
+  "rows": [
+    {
+      "rank": "1",
+      "template": "remove-test-grant",
+      "target": "arn:aws:iam::111122223333:user/deployer",
+      "blocked": "1 of 1",
+      "permitted_broken": "0 of 1",
+      "changes": "1",
+      "unknowns": "0",
+      "plan": "rp-b01f9ee0ede2132a"
+    },
+    {
+      "rank": "2",
+      "template": "deactivate-test-token",
+      "target": "arn:aws:iam::111122223333:user/deployer",
+      "blocked": "1 of 1",
+      "permitted_broken": "1 of 1",
+      "changes": "1",
+      "unknowns": "0",
+      "plan": "rp-809173e53cb84297"
+    }
+  ]
+}

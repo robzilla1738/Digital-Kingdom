@@ -20,6 +20,8 @@ export interface Workbench {
   summary: { observed: string[]; supports: string[]; does_not_support: string[]; could_change: string[]; next: string };
   proposals: { items: { id: string; proposal_version: number; author: string; author_kind: "agent" | "person"; created_at: string; contract_revision: number; check_status: string; stale: boolean; claims: { id: string; type: string; text: string; support: string | null }[]; accepted: false; affects_case_record: false }[]; latest_version: number; note: string };
   anchors: WorkbenchAnchor[];
+  repair_candidates?: null | { set_id: string; status: string; reasons: string[]; baseline_state_hash: string; ranking_note: string;
+    candidates: { candidate_id: string; rank: number; template: string; target: string; valid: boolean; breaks_permitted: boolean; blocked: number; of: number; permitted_broken: number; permitted_of: number; elements_changed: number; unknowns: number; prerequisites: number; plan_id: string; authority: "plan_only" }[] };
 }
 
 /** A castle/2D selection as a workbench anchor id (same canonical ids; null for kinds the workbench does not anchor). */

@@ -320,3 +320,11 @@
 .path-inspector .hop-list li { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
 .path-inspector .hop-list svg { color:var(--text-3); flex:none; }
 .path-inspector .hop-list li[data-animate="true"] svg { color:var(--reporting); }
+/* LP14 repair tradeoff table */
+.wb-repairs { margin-top:20px; }
+.wb-repairs .table-scroll { overflow-x:auto; }
+.wb-tradeoffs { width:100%; border-collapse:collapse; font-size:.75rem; }
+.wb-tradeoffs caption { text-align:left; padding:0 0 8px; }
+.wb-tradeoffs th, .wb-tradeoffs td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--divider); vertical-align:top; }
+.wb-tradeoffs th { color:var(--text-3); font-weight:500; }
+.wb-tradeoffs code { overflow-wrap:anywhere; }

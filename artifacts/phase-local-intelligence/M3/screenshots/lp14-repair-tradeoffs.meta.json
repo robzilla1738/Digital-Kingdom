@@ -1,0 +1,22 @@
+{
+  "name": "lp14-repair-tradeoffs",
+  "file": "lp14-repair-tradeoffs.png",
+  "sha256": "830b4fbd43399e7784957a2a278a5d6c370c2e1c81b559dbe47e276ee67325be",
+  "bytes": 245637,
+  "capturedAt": "2026-10-24T02:59:45.304Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}
