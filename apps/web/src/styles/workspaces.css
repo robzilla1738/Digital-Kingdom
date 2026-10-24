@@ -349,3 +349,7 @@
 .case-focus .eyebrow { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint, #9AA6B5); }
 .case-focus p { margin:0; overflow-wrap:anywhere; }
 .case-focus-question { font-size:15px; }
+.framing-control { display:inline-flex; gap:4px; align-items:center; flex:0 0 auto; }
+.framing-control .chip { cursor:pointer; min-height:28px; white-space:nowrap; max-width:220px; overflow:hidden; text-overflow:ellipsis; }
+.framing-control .chip.on { color:var(--text-1, #EEF3FA); border-color:#70849B; background:#192637; }
+@media(max-width:1023px) { .framing-control { display:none; } }

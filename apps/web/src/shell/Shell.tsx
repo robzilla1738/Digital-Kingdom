@@ -11,7 +11,8 @@ import { EvidencePane } from "../panels/EvidencePane.tsx";
 import { Timeline } from "../panels/Timeline.tsx";
 import { Legend } from "../panels/Legend.tsx";
 import { Graph2D } from "../graph2d/Graph2D.tsx";
-import { worldViewLabel } from "../lib/world.ts";
+import { worldHierarchy, worldViewLabel } from "../lib/world.ts";
+import { viewFraming } from "../lib/framing.ts";
 import { NarrowComparison } from "../castle/ComparisonPanel.tsx";
 import { SplitPane } from "../components/ui/SplitPane.tsx";
 import { Tabs, SegmentedControl } from "../components/ui/Tabs.tsx";
@@ -71,6 +72,7 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
           <SegmentedControl label="View" value={ui.view} onChange={(view) => { dispatch({ type: "view", view }); setMobileView("map"); }} options={[{ value: "castle", label: <><Icon name="cube" size={15} /><span aria-label="3D castle">Castle</span></>, disabled: !!ui.webglFailed }, { value: "graph", label: <><Icon name="graph" size={15} /><span aria-label="2D graph">Graph</span></> }]} />
           <button className="btn mobile-map-switch" onClick={() => setMobileView(mobileView === "map" ? "list" : "map")}>{mobileView === "map" ? "Show list" : "Show map"}</button>
           <span className="toolbar-scope">{vm.summary.urgentFindings} high / critical · {vm.summary.reviewFindings} require review</span>
+          <WorldFraming />
           {(() => { const label = worldViewLabel({ isLatest: vm.isLatest, at: fmtTime(vm.at), basis: ui.basis, graphRevision: vm.data.graph.graph_revision, layoutVersion: vm.data.scene.layout_version }); return <span className="toolbar-scope world-view-label" data-testid="world-view-label" data-view-mode={label.mode}>{label.text}</span>; })()}
           {ui.caseId && <span className="toolbar-scope case-scope-chip" data-testid="case-scope" data-case-id={ui.caseId}>Case scope · {ui.caseScope?.title ?? ui.caseId}{ui.caseScope ? ` · ${ui.caseScope.assetIds.length} scoped asset${ui.caseScope.assetIds.length === 1 ? "" : "s"}` : ""} <button className="link" onClick={() => { dispatch({ type: "workspace", workspace: "investigate" }); dispatch({ type: "investigateTab", tab: "cases" }); }}>Open case</button></span>}
           <details className="menu display-menu"><summary className="btn"><Icon name="layers" />Layers & display</summary><div className="menu-body"><div className="menu-title">Relationship layers</div>{(Object.keys(LAYER_STYLE) as Layer[]).map((layer) => <label className="check" key={layer}><input type="checkbox" checked={ui.layers[layer]} onChange={(e) => dispatch({ type: "layer", layer, on: e.target.checked })} />{LAYER_STYLE[layer].label}<span className="swatch" style={{ background: LAYER_STYLE[layer].color }} /></label>)}<label className="check"><input type="checkbox" checked={ui.showHypothetical} onChange={(e) => dispatch({ type: "hypothetical", on: e.target.checked })} />Hypothetical relationships</label><label className="field" style={{ padding: 8 }}>Focus<select aria-label="Relationship focus" value={ui.focusMode} onChange={(e) => dispatch({ type: "focusMode", mode: e.target.value as FocusMode })}>{(Object.keys(FOCUS_LABEL) as FocusMode[]).map((m) => <option key={m} value={m}>{FOCUS_LABEL[m]}</option>)}</select></label><p className="small faint" style={{ padding: "0 8px" }}>Focus filters what is drawn; the camera only moves when you move it.</p><hr /><label className="check"><input type="checkbox" checked={ui.roofs} onChange={(e) => dispatch({ type: "roofs", roofs: e.target.checked })} />Show roofs</label><label className="check"><input type="checkbox" checked={ui.reducedMotion} onChange={(e) => dispatch({ type: "reducedMotion", on: e.target.checked })} />Reduce motion</label><label className="field" style={{ padding: 8 }}>Quality<select aria-label="Quality" value={ui.quality} onChange={(e) => dispatch({ type: "quality", quality: e.target.value as typeof ui.quality })}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label></div></details>
@@ -104,5 +106,24 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
       <SplitPane open={showInspector && ui.workspace !== "integrations"} resizable={!expanded && !narrow && (ui.workspace === "kingdom" || wideInspector)} onSizeChange={setInspectorWidth} onContainerWidth={setWorkspaceWidth}><EvidencePane expanded={expanded} findingQueue={findingQueue} onExpand={expandFinding} onReturn={returnToResults} /></SplitPane>
       </div>
     </main><div className="sr-only" data-testid="action-announcement" aria-live="polite" aria-atomic="true">{ui.announce}</div>
+  </div>;
+}
+
+/**
+ * next-C: shared framing control for the castle and the graph (one state, so 2D and 3D agree). Shown only for a
+ * world with more than one populated environment. "Realm overview" frames every environment; the environment button
+ * frames the active (or currently focused) environment. Both are explicit world focus, recorded in the URL.
+ */
+function WorldFraming() {
+  const { ui, vm, dispatch } = useApp();
+  const h = worldHierarchy(vm.data.graph, vm.data.scene);
+  const f = viewFraming(h, ui.focus, vm.assetStatus, vm.data.scene.rooms.length);
+  if (f.environments < 2) return null;
+  const env = f.environment ?? f.active;
+  const envLabel = env ? h.realm.children.find((n) => n.id === env)?.label ?? env.slice(4) : null;
+  return <div className="framing-control" role="group" aria-label="World framing" data-testid="world-framing" data-framing={f.id ?? "all"} data-implicit={f.implicit}>
+    {env && <button className={`chip${!f.realm && f.id ? " on" : ""}`} aria-pressed={!f.realm && !!f.id} title={f.implicit ? "Opened on the environment with the most urgent findings. Other environments stay in the world and in every list." : undefined}
+      onClick={() => dispatch({ type: "worldFocus", focus: env, announce: `Framing environment ${envLabel}` })}>{f.environment && !f.implicit ? "Environment" : "Active"} · {envLabel}</button>}
+    <button className={`chip${f.realm || !f.id ? " on" : ""}`} aria-pressed={f.realm || !f.id} onClick={() => dispatch({ type: "worldFocus", focus: h.realm.id, announce: `Realm overview: ${f.environments} environments` })}>Realm overview · {f.environments}</button>
   </div>;
 }

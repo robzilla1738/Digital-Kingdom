@@ -23,6 +23,7 @@ import type { ModuleFailureCode } from "./moduleRecovery.ts";
 import { watchRendererShaders } from "./shaderRecovery.ts";
 import { semanticLevelForScale, type SemanticLevel } from "@dk/scene-compiler";
 import { districtGroupKey, focusMembers, worldHierarchy } from "../lib/world.ts";
+import { viewFraming } from "../lib/framing.ts";
 
 const BG = "#0c0e12", ACCENT = "#c3cbf5", CAM_DIST = 110;
 type Command = { n: number; type: "in" | "out" | "fit" | "focus" | "back"; group?: string; ids?: string[] };
@@ -81,8 +82,11 @@ export function Castle3D() {
     if (grouped) setDistrict(key ?? (target.node.kind === "structure" ? selectionDistrictKey(groups, target.assetIds) : null));
     if (target.node.kind === "realm") send("fit"); else send("focus", undefined, [...target.assetIds]);
   }, [ui.focus, hierarchy, grouped, groups, scene.project_id]);
+  // next-C: in a mixed world the first frame is the active environment (explicit Realm overview in the toolbar).
+  const framing = viewFraming(hierarchy, ui.focus, vm.assetStatus, scene.rooms.length);
+  const initialRooms = useMemo(() => { if (!framing.implicit || !framing.id) return undefined; const ids = focusMembers(hierarchy, framing.id)?.assetIds; return ids ? scene.rooms.filter(r => ids.has(r.asset_id)) : undefined; }, [framing.implicit, framing.id, hierarchy, scene]);
   const archived = ui.showArchived ? scene.historical_rooms ?? [] : [];
-  return <div ref={wrap} className="castle-wrap" data-semantic-level={level} role="region" tabIndex={0} aria-label={`Architectural map of ${scene.rooms.length} assets. Select a building to inspect it; Focus moves the camera. Graph and lists show the same evidence.`}
+  return <div ref={wrap} className="castle-wrap" data-semantic-level={level} data-framing={framing.id ?? "all"} data-framing-implicit={framing.implicit} role="region" tabIndex={0} aria-label={`Architectural map of ${scene.rooms.length} assets. Select a building to inspect it; Focus moves the camera. Graph and lists show the same evidence.`}
     onKeyDown={e => {
       if (!ui.shortcuts || e.target !== e.currentTarget || e.ctrlKey || e.metaKey || e.altKey) return;
       if (["+", "=", "-", "0", "f"].includes(e.key)) { e.preventDefault(); if (e.key === "f") dispatch({ type: "focus" }); else send(e.key === "0" ? "fit" : e.key === "-" ? "out" : "in"); }
@@ -94,7 +98,7 @@ export function Castle3D() {
         onCreated={({ gl }) => { gl.toneMapping = THREE.NeutralToneMapping; gl.toneMappingExposure = 1.05; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
         onPointerMissed={e => { if (e.type === "click") dispatch({ type: "select", selection: null }); }}>
         <color attach="background" args={[BG]} />
-        <Rig scene={scene} command={cmd} groups={groups} onLevel={setLevel} />
+        <Rig scene={scene} command={cmd} groups={groups} onLevel={setLevel} initialRooms={initialRooms} />
         <Lights scene={scene} quality={quality} />
         <SceneLifecycle quality={quality} onSlow={() => { if (quality !== "low") { setQuality(quality === "high" ? "medium" : "low"); setReduced(true); } }} />
         <LabelLayer budget={district ? 12 : LABEL_BUDGET[level]} reservedLeft={grouped ? 320 : 0}>
@@ -166,7 +170,7 @@ function SceneLifecycle({ quality, onSlow }: { quality: DetailLevel; onSlow: () 
   });
   return null;
 }
-function Rig({ scene, command, groups, onLevel }: { scene: CompiledScene; command: Command; groups: PresentationGroup[]; onLevel: (level: SemanticLevel) => void }) {
+function Rig({ scene, command, groups, onLevel, initialRooms }: { scene: CompiledScene; command: Command; groups: PresentationGroup[]; onLevel: (level: SemanticLevel) => void; initialRooms?: SceneRoom[] }) {
   const lastLevel = useRef<SemanticLevel | null>(null);
   const { camera, size, invalidate, gl } = useThree(), { ui, vm, dispatch } = useApp();
   const ctl = useRef<React.ComponentRef<typeof OrbitControls>>(null), tween = useRef<{ t: number; from: Pose; to: Pose; focusRevision?: number } | null>(null);
@@ -207,8 +211,8 @@ function Rig({ scene, command, groups, onLevel }: { scene: CompiledScene; comman
   };
   useLayoutEffect(() => {
     if (!ctl.current) return;
-    if (!initialized.current) { const saved = cameraPoses.get(key); apply(saved ?? fit()); manual.current = !!saved; initialized.current = true; }
-    else if (!manual.current) apply(fit());
+    if (!initialized.current) { const saved = cameraPoses.get(key); apply(saved ?? fit(initialRooms)); manual.current = !!saved; initialized.current = true; }
+    else if (!manual.current) apply(fit(initialRooms));
     // React clears the ref before passive unmount cleanup. Capture the live control instance so
     // returning from Graph restores the interacted camera, rather than the last resize/overview.
     const control = ctl.current;

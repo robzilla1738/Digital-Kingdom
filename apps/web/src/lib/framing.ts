@@ -31,3 +31,16 @@ export function effectiveWorldFocus(h: WorldHierarchy, focus: string | null | un
   const active = activeEnvironment(h, statuses);
   return active ? { id: active, implicit: true, environments } : { id: null, implicit: false, environments };
 }
+
+/** Scenes above this size use the grouped district overview instead of an implicit environment frame. */
+export const GROUPED_ROOM_THRESHOLD = 50;
+/**
+ * The world framing both views use (castle camera and graph membership), so 2D and 3D always agree. Grouped scenes keep
+ * their district overview: the implicit default applies only to ungrouped scenes; explicit focus applies everywhere.
+ */
+export function viewFraming(h: WorldHierarchy, focus: string | null | undefined, statuses: ReadonlyMap<string, AssetStatus>, roomCount: number) {
+  const f = effectiveWorldFocus(h, focus, statuses);
+  const id = f.implicit && roomCount > GROUPED_ROOM_THRESHOLD ? null : f.id;
+  const env = id ? /^env:[^/]+/.exec(id)?.[0] ?? null : null;
+  return { id, implicit: f.implicit && !!id, environments: f.environments, environment: env, realm: !!id && id === h.realm.id, active: activeEnvironment(h, statuses) };
+}
