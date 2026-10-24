@@ -211,6 +211,12 @@ export class Supervisor {
     return rec;
   }
 
+  /** Verify a run token's signature and report its identity and scope (no action is authorized by this). */
+  describeToken(token: string, runId: string): { id: string; actions: RunAction[]; resources: string[] | "*" } {
+    const rec = this.authorize(token, { run_id: runId, action: "read_effects" });
+    return { id: rec.id, actions: [...rec.scope.actions], resources: rec.scope.resources === "*" ? "*" : [...rec.scope.resources] };
+  }
+
   /** Clone: a NEW run (new ids, nonces, tokens, directory) from the same plan and the source run's current state. */
   async clone(token: string, source: Run, o: Omit<StartOptions, "clonedFrom"> = {}) {
     this.authorize(token, { run_id: source.run_id, action: "lifecycle" });
@@ -575,6 +581,20 @@ export class Run {
     if (!existsSync(p)) return [];
     return readFileSync(p, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l) as Record<string, unknown>);
   }
+
+  // ---- LP22: read-only access for an independent verifier ------------------------------------------------------
+  /** An observer's per-operation answer (read_effects only; the verifier cannot stop, restart or feed an observer). */
+  observerAnswer(token: string, observerId: string, op_id: string, interval: { from_mono_ms: number; to_mono_ms: number }, resource: string, settleMs: number) {
+    this.sup.authorize(token, { run_id: this.run_id, action: "read_effects" });
+    const r = this.world.plan.resources.find((x) => x.id === observerId);
+    const o = this.observers.get(observerId);
+    if (!r || r.template !== "observer" || !o) throw new RunRefusal("unregistered", `${String(observerId).slice(0, 80)} is not an independent observer of ${this.run_id}`);
+    return o.answer(op_id, interval, resource, settleMs);
+  }
+  /** The verifier's identity and scope (requires read_effects; a controller identity has none). */
+  describeVerifier(token: string) { return this.sup.describeToken(token, this.run_id); }
+  /** Let background work (e.g. a worker draining jobs) make progress, for bounded settling (read_effects only). */
+  async settleFor(token: string, rounds = 1) { this.sup.authorize(token, { run_id: this.run_id, action: "read_effects" }); for (let i = 0; i < Math.min(rounds, 10); i++) await this.tickOnce(); }
 
   /** @internal LP20 audit transitions are also part of the run's private truth. */
   recordLeaseTransition(e: LeaseAudit) { this.lifecycle(`lease_${e.transition}`, { lease_id: e.lease_id, by: e.by, detail: e.detail }); }

@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dk:local:repair-verification:v1",
+  "title": "Local repair verification (LP22): independent effect observations, security verdict, execution state and cleanup kept separate.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "dk.local.repair_verification.v1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "plan_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "plan_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "completed",
+            "partially_applied",
+            "failed",
+            "cancelled",
+            "refused"
+          ]
+        },
+        "receipt_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "state",
+        "receipt_digest"
+      ],
+      "additionalProperties": false
+    },
+    "verifier_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    "independence": {
+      "type": "object",
+      "properties": {
+        "verifier_is_executor": {
+          "const": false
+        },
+        "observers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "basis": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      },
+      "required": [
+        "verifier_is_executor",
+        "observers",
+        "basis"
+      ],
+      "additionalProperties": false
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "probe_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "repeat": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9
+          },
+          "operation_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "nonce_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "observation_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 999
+          },
+          "actual_effect": {
+            "enum": [
+              "observed",
+              "not_observed",
+              "unknown"
+            ]
+          },
+          "observer": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+          },
+          "settled_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "probe_id",
+          "repeat",
+          "operation_id",
+          "nonce_digest",
+          "observation_digest",
+          "status",
+          "actual_effect",
+          "observer",
+          "settled_ms",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 2,
+      "maxItems": 50
+    },
+    "before": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "probe_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+              },
+              "actual_effect": {
+                "enum": [
+                  "observed",
+                  "not_observed",
+                  "unknown"
+                ]
+              }
+            },
+            "required": [
+              "probe_id",
+              "actual_effect"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 20
+        }
+      ]
+    },
+    "residual_access": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "minItems": 0,
+      "maxItems": 20
+    },
+    "disruption": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "minItems": 0,
+      "maxItems": 20
+    },
+    "security_verdict": {
+      "enum": [
+        "pass",
+        "fail",
+        "inconclusive",
+        "refused"
+      ]
+    },
+    "verification_receipt": {
+      "type": "object"
+    },
+    "cleanup": {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "enum": [
+            "not_needed",
+            "completed",
+            "failed",
+            "pending"
+          ]
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "outcome",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "whole_run": {
+      "type": "object",
+      "properties": {
+        "outcome": {
+          "enum": [
+            "success",
+            "security_failed",
+            "inconclusive",
+            "execution_incomplete",
+            "cleanup_failed",
+            "cleanup_pending",
+            "refused"
+          ]
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "minItems": 0,
+          "maxItems": 30
+        }
+      },
+      "required": [
+        "outcome",
+        "success",
+        "reasons"
+      ],
+      "additionalProperties": false
+    },
+    "scope": {
+      "const": "local_run_only"
+    }
+  },
+  "required": [
+    "schema",
+    "run_id",
+    "plan_id",
+    "plan_digest",
+    "execution",
+    "verifier_id",
+    "independence",
+    "observations",
+    "before",
+    "residual_access",
+    "disruption",
+    "security_verdict",
+    "verification_receipt",
+    "cleanup",
+    "whole_run",
+    "scope"
+  ],
+  "additionalProperties": false
+}

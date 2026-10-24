@@ -50,6 +50,8 @@ export const REPAIR_REF_PATTERN: Record<RepairActionType, RegExp> = {
 const PROVIDER_ID = /^(arn|aws|gcp|gcloud|azure|projects|subscriptions|k8s|kubernetes)[:.]|:\d{12}(:|$)|^\d{12}$|^(i|sg|vpc|subnet|ami|vol|eni|igw|nat|rtb|acl|snap)-[0-9a-f]{8,17}$/i;
 export const grantRef = (subject: string, grant: string) => `grant-${sha256(`${subject}|${grant}`).slice(0, 12)}`;
 export const planDigest = (plan: RepairPlan) => sha256(canonicalJson(plan));
+/** A plain, non-secret reference to a run token identity (token ids are base64url and never leave the supervisor). */
+export const identityRef = (prefix: "ctl" | "vrf", tokenId: string) => `${prefix}-${sha256(`identity|${tokenId}`).slice(0, 16)}`;
 const paramDigest = (a: RepairAction) => sha256(canonicalJson({ type: a.type, parameters: a.parameters }));
 
 export type LeaseState = "active" | "revoked" | "expired" | "exhausted";
@@ -122,7 +124,7 @@ export class LeaseRegistry {
     const id = `lease-${randomBytes(8).toString("hex")}`, digest = planDigest(plan), now = Date.now();
     const lease: LabLease = {
       schema: "dk.local.lab_lease.v1", namespace: LAB_AUTHORIZATION_NAMESPACE, lease_id: id, run_id: run.run_id, project_id: run.project_id, plan_id: plan.plan_id,
-      plan_digest: digest, baseline_digest: plan.baseline_digest, candidate_digest: plan.candidate_digest, controller_id: controllerId,
+      plan_digest: digest, baseline_digest: plan.baseline_digest, candidate_digest: plan.candidate_digest, controller_id: identityRef("ctl", controllerId),
       actions: plan.actions.map((a) => ({ action_id: a.id, type: a.type, target_resource_id: a.target_resource_id, parameter_digest: paramDigest(a), expected_target_revision: a.expected_target_revision })),
       issued_at: new Date(now).toISOString(), expires_at: new Date(now + ttl).toISOString(), ttl_ms: ttl, budget: { max_operations: maxOps },
       issuer: "supervisor", approval_kind: "local_lab_lease", counts_as_human_approval: false,

@@ -1,5 +1,7 @@
 import labLeaseSchema from "../schemas/local/lab-lease.v1.schema.json" with { type: "json" };
 import repairExecutionSchema from "../schemas/local/repair-execution.v1.schema.json" with { type: "json" };
+import repairVerificationSchema from "../schemas/local/repair-verification.v1.schema.json" with { type: "json" };
+import { validateVerificationReceipt, type VerificationReceipt } from "./local.ts";
 import * as generated from "./generated/validators.js";
 import { formatErrors, type ValidationResult } from "./validate.ts";
 import type { RepairActionType } from "./repair.ts";
@@ -14,7 +16,7 @@ import type { RepairActionType } from "./repair.ts";
  * budget. Its constants say what it is NOT: it never counts as human approval and never authorizes the
  * production-facing response path.
  */
-export const LAB_CONTRACTS = { lab_lease: "dk.local.lab_lease.v1", repair_execution: "dk.local.repair_execution.v1" } as const;
+export const LAB_CONTRACTS = { lab_lease: "dk.local.lab_lease.v1", repair_execution: "dk.local.repair_execution.v1", repair_verification: "dk.local.repair_verification.v1" } as const;
 export const LAB_AUTHORIZATION_NAMESPACE = "dk.local.lab_authorization" as const;
 export interface LabLeaseAction { action_id: string; type: RepairActionType; target_resource_id: string; parameter_digest: string; expected_target_revision: string }
 export interface LabLease {
@@ -70,4 +72,37 @@ export function validateRepairExecution(d: unknown): ValidationResult<RepairExec
   if (r.actions.some((a) => a.state === "cancelled") && !r.cancellation.requested) errors.push("/actions a cancelled action requires a recorded cancellation");
   return errors.length ? { ok: false, errors } : { ok: true, value: r, errors: [] };
 }
-export const labSchemas = { labLease: labLeaseSchema, repairExecution: repairExecutionSchema };
+/**
+ * LP22: independent verification of a local repair (`dk.local.repair_verification.v1`). Security verdict, execution
+ * state and cleanup outcome are separate fields; `whole_run.success` is true only when all three are good.
+ */
+export type WholeRunOutcome = "success" | "security_failed" | "inconclusive" | "execution_incomplete" | "cleanup_failed" | "cleanup_pending" | "refused";
+export interface RepairVerification {
+  schema: "dk.local.repair_verification.v1"; run_id: string; plan_id: string; plan_digest: string;
+  execution: { state: RepairExecutionState; receipt_digest: string }; verifier_id: string;
+  independence: { verifier_is_executor: false; observers: string[]; basis: string };
+  observations: { probe_id: string; repeat: number; operation_id: string; nonce_digest: string; observation_digest: string; status: number; actual_effect: "observed" | "not_observed" | "unknown"; observer: string; settled_ms: number; reason: string }[];
+  before: { probe_id: string; actual_effect: "observed" | "not_observed" | "unknown" }[] | null;
+  residual_access: string[]; disruption: string[];
+  security_verdict: "pass" | "fail" | "inconclusive" | "refused"; verification_receipt: VerificationReceipt;
+  cleanup: { outcome: "not_needed" | "completed" | "failed" | "pending"; notes: string };
+  whole_run: { outcome: WholeRunOutcome; success: boolean; reasons: string[] }; scope: "local_run_only";
+}
+export function validateRepairVerification(d: unknown): ValidationResult<RepairVerification> {
+  const fn = g.validateRepairVerification!;
+  if (!fn(d)) return { ok: false, errors: formatErrors(fn.errors as never) };
+  const v = d as RepairVerification;
+  const errors: string[] = [];
+  const inner = validateVerificationReceipt(v.verification_receipt);
+  if (!inner.ok) errors.push(...inner.errors.map((e) => `/verification_receipt${e.startsWith("/") ? "" : " "}${e}`));
+  else {
+    if (v.verification_receipt.security_verdict !== v.security_verdict) errors.push("/security_verdict must equal the verification receipt's security verdict");
+    if (v.verification_receipt.run_id !== v.run_id) errors.push("/verification_receipt run differs");
+    if (v.verification_receipt.cleanup.outcome !== v.cleanup.outcome) errors.push("/cleanup must equal the verification receipt's cleanup");
+  }
+  if (v.whole_run.success !== (v.whole_run.outcome === "success")) errors.push("/whole_run success must match its outcome");
+  if (v.whole_run.success && (v.security_verdict !== "pass" || v.execution.state !== "completed" || !(v.cleanup.outcome === "completed" || v.cleanup.outcome === "not_needed"))) errors.push("/whole_run success requires a passing security verdict, a completed execution and completed (or unneeded) cleanup");
+  if (v.security_verdict === "pass" && v.observations.some((o) => o.actual_effect === "unknown")) errors.push("/security_verdict pass is impossible with an unknown observation");
+  return errors.length ? { ok: false, errors } : { ok: true, value: v, errors: [] };
+}
+export const labSchemas = { labLease: labLeaseSchema, repairExecution: repairExecutionSchema, repairVerification: repairVerificationSchema };
