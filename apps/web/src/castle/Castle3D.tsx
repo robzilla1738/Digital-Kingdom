@@ -17,7 +17,7 @@ import { useApp } from "../lib/state.tsx";
 import { ASSET_COVERAGE_LABEL } from "../lib/presentation.ts";
 import { LAYER_STYLE, OUTCOME_STYLE, RELATIONSHIP_LAYER, SEVERITY_RANK } from "../lib/vocab.ts";
 import { Icon, StateIcon } from "../lib/icons.tsx";
-import { groupSummary, presentationMembers, selectionDistrictKey, presentationGroups, presentationTopologyKey, groupMembershipKey, presentationScene, presentationCollisions, selectionAssets, selectionProxy, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
+import { groupSummary, presentationMembers, selectionDistrictKey, presentationGroups, presentationTopologyKey, groupMembershipKey, realmPresentation, presentationScene, environmentPackingMap, presentationCollisions, selectionAssets, selectionProxy, SEVERITY_COLOR, type PresentationGroup } from "./scenePresentation.ts";
 import { cachedModuleGeometryCount, type DetailLevel } from "./geometry.ts";
 import type { ModuleFailureCode } from "./moduleRecovery.ts";
 import { watchRendererShaders } from "./shaderRecovery.ts";
@@ -44,7 +44,9 @@ class CanvasBoundary extends Component<{ onError: (msg: string) => void; childre
 export function Castle3D() {
   const { ui, dispatch, vm } = useApp();
   const topologyKey = presentationTopologyKey(vm.data.scene), membershipKey = groupMembershipKey(vm.data.graph);
-  const scene = useMemo(() => presentationScene(vm.data.scene), [topologyKey]);
+  // next-C: display-only realm packing bounds the empty lawn between environments; the stored layout/digest are unchanged.
+  const scene = useMemo(() => realmPresentation(vm.data.scene, vm.data.graph), [topologyKey, membershipKey]);
+  const packX = useMemo(() => environmentPackingMap(presentationScene(vm.data.scene), vm.data.graph) ?? undefined, [topologyKey, membershipKey]);
   const collisions = useMemo(() => presentationCollisions(scene.rooms), [scene]);
   const wrap = useRef<HTMLDivElement>(null);
   const comparison = useWorldComparison(); const narrowLayout = useNarrowLayout();
@@ -107,7 +109,7 @@ export function Castle3D() {
             {visibleRooms.map(room => <Room key={room.asset_id} room={room} selected={focus.has(room.asset_id)} focused={grouped && !!district && focusedLabels.has(room.asset_id)} quality={quality} />)}
             {grouped && !district && groups.map(g => <District key={g.key} group={g} onFocus={() => { setDistrict(g.key); send("focus", g.key); }} />)}
             <Paths scene={scene} visibleIds={visibleIds} onChoice={setEdgeChoice} />
-            {comparison.view && <ComparisonBadges view={comparison.view} />}
+            {comparison.view && <ComparisonBadges view={comparison.view} mapX={packX} />}
             {archived.map(r => <ArchivedPlacement key={`${r.asset_id}:${r.incarnation_id ?? r.retired_in_revision}`} room={r} />)}
           </Suspense>
         </LabelLayer>
