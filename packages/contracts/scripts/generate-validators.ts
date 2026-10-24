@@ -18,7 +18,9 @@ const ajv = new Ajv2020({ allErrors: true, strict: true, strictTypes: false, all
 addFormats(ajv, ["date-time"]);
 const map: Record<string, string> = { validateGraph: "graph", validateEvent: "event", validateIngestEvent: "ingest-event", validateSceneProposal: "scene-proposal",
   // Local Intelligence Phase (LP03) contracts
-  validateWorldPlan: "local/world-plan.v1", validateRunProvenance: "local/run-provenance.v1", validateVerificationReceipt: "local/verification-receipt.v1", validateCapabilityReceipt: "local/capability-receipt.v1" };
+  validateWorldPlan: "local/world-plan.v1", validateRunProvenance: "local/run-provenance.v1", validateVerificationReceipt: "local/verification-receipt.v1", validateCapabilityReceipt: "local/capability-receipt.v1",
+  // Local Intelligence Phase (LP08/LP10) investigation contracts
+  validateInvestigationContract: "local/investigation-contract.v1", validateConclusion: "local/conclusion.v1" };
 for (const [, n] of Object.entries(map)) ajv.addSchema(load(n), n);
 let code = standalone(ajv, Object.fromEntries(Object.entries(map).map(([k, v]) => [k, v])));
 // Make the output dependency-free (browser + node, no CommonJS require).

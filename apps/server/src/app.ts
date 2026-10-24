@@ -36,7 +36,8 @@ import { verifyIdToken, type OidcConfig } from "./oidc.ts";
 import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 import { runtimePolicy } from "./phase-policy.ts";
 import { parseLocalRun, provenanceOf } from "./provenance.ts";
-import { deriveCapability, LOCAL_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
+import { deriveCapability, LOCAL_CONTRACTS, INVESTIGATION_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
+import { registerInvestigationRoutes } from "./investigation/routes.ts";
 
 export interface AppConfig {
   store: Store;
@@ -741,7 +742,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   });
   app.get("/api/capabilities", { preHandler: authed() }, async () => ({
     schema: "dk.capabilities.v1", api_version: "v1", ruleset: RULESET_VERSION,
-    contracts: { recipe_run: "dk.recipe_run.v2", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2", access_decision: EVALUATOR_VERSION, local: LOCAL_CONTRACTS },
+    contracts: { recipe_run: "dk.recipe_run.v2", change_assessment: "dk.change_assessment.v2", case_export: "digital-kingdom-case/2", access_decision: EVALUATOR_VERSION, local: LOCAL_CONTRACTS, investigation: INVESTIGATION_CONTRACTS },
     recipes: RECIPES.map((r) => `${r.id}@${r.version}`),
     budgets: { search_limit_max: 100, search_window_days_max: 31, recipe_queries_max: 12, case_changes_page: 50 },
     delivery: { incremental: "poll /cases/changes with next_since every poll_after_seconds", push: "not supported" },
@@ -760,8 +761,11 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const before = cases.get(pid, CP(req)).owner;
     const c = cases.update(pid, CP(req), body(req), who(req));
     if (c.owner !== before) notifier.enqueue({ projectId: pid, kind: "case_assigned", severity: "medium", dedupKey: `case:${c.id}:owner:${c.owner}`, owner: c.owner, caseId: c.id });
+    investigation.afterCaseChange(pid, c.id, who(req));
     return c;
   });
+  // ---- Local Intelligence Phase M2: investigation contracts, plans, packets, claim checks ----
+  const investigation = registerInvestigationRoutes(app, { store, secret: cfg.secret, cases, authed, who });
 
   // ---- optional bounded case assistance (R05.4): read-only drafts; deterministic without a model ----
   app.post("/api/projects/:p/cases/:id/assist", { preHandler: authed() }, async (req) => {
@@ -785,9 +789,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.post("/api/notifications/destinations/:id/test", { preHandler: authed("admin") }, async (req) => { const r = notifier.test(CP(req)); await notifier.deliver(); return r; });
   app.get("/api/projects/:p/notifications/status", { preHandler: authed() }, async (req) => notifier.status(store.require(req.principal!, P(req), "viewer").id));
   app.post("/api/projects/:p/notifications/:id/ack", { preHandler: authed("analyst") }, async (req) => notifier.acknowledge(store.require(req.principal!, P(req), "analyst").id, CP(req), who(req)));
-  app.post("/api/projects/:p/cases/:id/items", { preHandler: authed("analyst") }, async (req) => cases.addItem(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
+  app.post("/api/projects/:p/cases/:id/items", { preHandler: authed("analyst") }, async (req) => { const pid = store.require(req.principal!, P(req), "analyst").id; const c = cases.addItem(pid, CP(req), body(req), who(req)); investigation.afterCaseChange(pid, c.id, who(req)); return c; });
   app.post("/api/projects/:p/cases/:id/items/:item/question", { preHandler: authed("analyst") }, async (req) => cases.setQuestion(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req)));
-  app.post("/api/projects/:p/cases/:id/items/:item/remove", { preHandler: authed("analyst") }, async (req) => cases.removeItem(store.require(req.principal!, P(req), "analyst").id, CP(req), (req.params as { item: string }).item, body(req), who(req)));
+  app.post("/api/projects/:p/cases/:id/items/:item/remove", { preHandler: authed("analyst") }, async (req) => { const pid = store.require(req.principal!, P(req), "analyst").id; const c = cases.removeItem(pid, CP(req), (req.params as { item: string }).item, body(req), who(req)); investigation.afterCaseChange(pid, c.id, who(req)); return c; });
   app.post("/api/projects/:p/cases/:id/status", { preHandler: authed("analyst") }, async (req) => cases.setStatus(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req), req.principal!.role));
   app.post("/api/verify-export", { preHandler: authed("viewer") }, async (req) => verifyCase(req.body, cfg.secret));
   // Installation admins see the whole audit log; project admins only their projects' entries.

@@ -3,6 +3,7 @@ import { CHANGE_MIGRATION } from "./change-review.ts";
 import { NOTIFY_MIGRATION } from "./notify.ts";
 import { REGRESSION_MIGRATION } from "./regression.ts";
 import { DECEPTION_MIGRATION, BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIGRATION, FACTS_MIGRATION, IDENTITY_MIGRATION, AWS_SCOPE_MIGRATION, ACCESS_SNAPSHOT_MIGRATION, APPROVALS_MIGRATION } from "./schema-r01.ts";
+import { INVESTIGATION_CONTRACTS_MIGRATION } from "./investigation/schema.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -108,6 +109,8 @@ export const MIGRATIONS: string[] = [
   // R08.4: containment verification records.
   // (kept inline: verification.ts imports the store, and importing it here would be circular)
   `CREATE TABLE containment_verifications (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, containment_id TEXT NOT NULL, state TEXT NOT NULL, result TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL);`,
+  // Local Intelligence Phase LP08: investigation contracts, append-only revisions and obligation ledger.
+  INVESTIGATION_CONTRACTS_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

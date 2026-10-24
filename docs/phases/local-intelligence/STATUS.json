@@ -274,10 +274,17 @@
     "LP02",
     "LP03"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "PENDING",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP08.md",
+   "branch": "phase/li-m2 (worktree; rebased onto phase/local-intelligence when M2 completes)",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "95 files passed, 1 skipped; 685 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "generate:validators": "byte-identical"
+   }
   },
   {
    "id": "LP09",
@@ -778,23 +785,31 @@
   },
   "LP08-A1": {
    "package": "LP08",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp08-contracts.test.ts > LP08-A1 (4 tests: derivation from scope/asset kinds/recipes, twin worlds + canary, import isolation, proposal/truth/unbounded rejection)"
+   ]
   },
   "LP08-A2": {
    "package": "LP08",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp08-contracts.test.ts > LP08-A2 (3 tests: scope-mismatched results refused, no satisfied route, documented analyst inapplicability, validator)"
+   ]
   },
   "LP08-A3": {
    "package": "LP08",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp08-contracts.test.ts > LP08-A3 (2 tests: unresolved_answer_ready only after every obligation attempted; honest unresolved draft; negative claim refused)"
+   ]
   },
   "LP08-A4": {
    "package": "LP08",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp08-contracts.test.ts > LP08-A4 (3 tests: interval change, late arrival, asset add/remove; append-only revisions and ledger)"
+   ]
   },
   "LP09-A1": {
    "package": "LP09",
@@ -1354,6 +1369,21 @@
    "id": "D-LP03-3",
    "date": "2026-10-23",
    "decision": "Surface registry support stays the product-wide ceiling; per-asset capability tier is derived only from scoped receipts and capped by the ceiling. externally_verified receipts are rejected while EXT01 is deferred."
+  },
+  {
+   "id": "D-LP08-1",
+   "date": "2026-10-23",
+   "decision": "Adopted investigation-contract and conclusion proposals as dk.local.investigation_contract.v1 / dk.local.conclusion.v1 (proposal ids rejected), extended with typed obligation targets, derivation inputs digest, negative-claim requirements, closure prerequisites and an optional machine-checkable claim predicate."
+  },
+  {
+   "id": "D-LP08-2",
+   "date": "2026-10-23",
+   "decision": "Contracts are derived only from case scope, linked findings/events, declared asset kinds, applicable recipes and the versioned obligation catalog dk.obligation_catalog.v1. Revisions and the obligation ledger are append-only (DB triggers). Readers get an effective view with invalidations applied; writes record them as a new revision."
+  },
+  {
+   "id": "D-LP08-3",
+   "date": "2026-10-23",
+   "decision": "M2 is implemented on branch phase/li-m2 in a separate worktree while M1 runs on phase/local-intelligence; it is rebased and fast-forwarded onto phase/local-intelligence after all four packages are green (never force-pushed)."
   }
  ],
  "model_spend_usd": {
@@ -1362,11 +1392,10 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP04",
-  "why": "LP04 (Compile local application blueprints, M1, depends on LP03) is the first unfinished package in DAG order; LP08 (investigation contracts and obligations, M2, depends on LP01-LP03) is also eligible and independent. Read prompts/M1.md and the LP04 backlog entry first.",
+  "package": "LP09",
+  "why": "LP09 (Execute bounded investigation plans) depends on LP08, now implemented on phase/li-m2.",
   "eligible_now": [
-   "LP04",
-   "LP08"
+   "LP09"
   ]
  },
  "milestones": {

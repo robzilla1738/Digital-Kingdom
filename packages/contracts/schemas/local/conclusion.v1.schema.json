@@ -1,0 +1,236 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "urn:dk:local:conclusion:v1",
+ "title": "Conclusion v1 (LP08/LP10): structured, cited, bounded proposed answer drafted by an investigator and checked by deterministic validators. Never approves an action or closes a case. Adopted from dk.local.conclusion.proposed.v1 with an optional machine-checkable predicate per claim.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "case_id",
+  "run_id",
+  "contract_revision",
+  "claims",
+  "status",
+  "semantic_review",
+  "scope_note",
+  "requested_next_step"
+ ],
+ "properties": {
+  "schema": {
+   "const": "dk.local.conclusion.v1"
+  },
+  "case_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+  },
+  "run_id": {
+   "anyOf": [
+    {
+     "type": "string",
+     "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+    },
+    {
+     "type": "null"
+    }
+   ]
+  },
+  "contract_revision": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 1000000
+  },
+  "claims": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "id",
+     "type",
+     "text",
+     "evidence_refs",
+     "coverage_refs",
+     "obligation_ids",
+     "uncertainty"
+    ],
+    "properties": {
+     "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+     },
+     "type": {
+      "enum": [
+       "observed",
+       "not_observed_in_scope",
+       "hypothesis",
+       "unresolved"
+      ]
+     },
+     "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+     },
+     "evidence_refs": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "minItems": 0,
+      "maxItems": 200
+     },
+     "coverage_refs": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "minItems": 0,
+      "maxItems": 200
+     },
+     "obligation_ids": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+      },
+      "minItems": 1,
+      "maxItems": 200
+     },
+     "uncertainty": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+     },
+     "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+       "kind",
+       "asset_id",
+       "action"
+      ],
+      "properties": {
+       "kind": {
+        "enum": [
+         "action_observed",
+         "action_not_observed"
+        ]
+       },
+       "asset_id": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$"
+       },
+       "action": {
+        "enum": [
+         "request_received",
+         "authentication",
+         "authorization_change",
+         "decoy_used",
+         "sensor_unavailable",
+         "sensor_restored",
+         "waf_match",
+         "data_access",
+         "tool_invocation",
+         "side_effect_observed",
+         "runtime_alert"
+        ]
+       },
+       "outcome": {
+        "type": "string",
+        "maxLength": 40,
+        "pattern": "^[a-z_]{1,40}$"
+       },
+       "actor_ref": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+       },
+       "after": {
+        "type": "string",
+        "format": "date-time",
+        "maxLength": 40
+       },
+       "before": {
+        "type": "string",
+        "format": "date-time",
+        "maxLength": 40
+       }
+      }
+     }
+    },
+    "allOf": [
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "observed"
+        }
+       },
+       "required": [
+        "type"
+       ]
+      },
+      "then": {
+       "properties": {
+        "evidence_refs": {
+         "minItems": 1
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "not_observed_in_scope"
+        }
+       },
+       "required": [
+        "type"
+       ]
+      },
+      "then": {
+       "properties": {
+        "coverage_refs": {
+         "minItems": 1
+        }
+       }
+      }
+     }
+    ]
+   },
+   "minItems": 1,
+   "maxItems": 50
+  },
+  "status": {
+   "enum": [
+    "draft",
+    "machine_checked_structured",
+    "unresolved",
+    "rejected"
+   ]
+  },
+  "semantic_review": {
+   "enum": [
+    "not_reviewed",
+    "ai_advisory"
+   ]
+  },
+  "scope_note": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 2000
+  },
+  "requested_next_step": {
+   "enum": [
+    "retrieve_more",
+    "inspect_configuration",
+    "compare_repairs",
+    "request_local_lease",
+    "bounded_conclusion"
+   ]
+  }
+ }
+}
