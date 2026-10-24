@@ -6,6 +6,8 @@
  *   DK_LI_ROUTE=ai-gateway DK_LI_MODEL=meta/muse-spark-1.3-contributor DK_LI_CAP_USD=2.00 DK_LI_APPROVED=local-intelligence-phase \
  *   AI_GATEWAY_API_KEY=... tsx eval/local/run.ts run --out <dir> --mode approved_provider --block dev|heldout [--concurrency 2]
  *   tsx eval/local/run.ts prepare-followup --out <dir> --from <sealed dir> [--repetitions 1]   # same documents, new id
+ *   tsx eval/local/run.ts prepare-fresh --out <dir> --per-family 4 --allowance 0.90 --prior-phase-spend 1.725762
+ *       # final pass: NEW held-out documents only (fresh master seed, never seen by any run), own ledger and allowance
  *   tsx eval/local/run.ts critique --out <dir>                    # optional AI semantic critique, advisory only
  *   tsx eval/local/run.ts incident --out <dir>                    # record lost records + conservative spend (never re-run)
  *   tsx eval/local/run.ts seal     --out <dir>                    # report + reveal held-out docs after verification
@@ -39,6 +41,7 @@ const DEV_DOCS = ["LW-01", "LW-02", "LW-03"];
 const FAMILIES: Family[] = ["saas-storefront", "agent-workspace", "delivery-identity"];
 export const LIMITS = { maxToolCalls: 24, maxModelCalls: 30, maxCompletionTokens: 6000, maxPromptTokensTotal: 600_000, timeoutMs: 300_000, toolResultCharLimit: 60_000 };
 const RUN_STOP_USD = 1.8;
+const PREREG_MODEL_ID = "meta/muse-spark-1.3-contributor";
 
 interface Slot { index: number; block: "dev" | "heldout"; doc: string; condition: ConditionId; repetition: number }
 
@@ -72,6 +75,40 @@ if (cmd === "prepare") {
       invalid: "an invalid preflight is recorded as invalid_preflight and excluded from model denominators (reported separately); provider errors, timeouts, limits and schema failures stay in the denominator",
     },
     analysis: "Counts per block (dev, held-out) x condition, reported separately; repetitions are not independent cases; no significance test, no pooled superiority claim; held-out results only after seal.",
+  }, null, 2), { flag: "wx" });
+  console.log(JSON.stringify({ preregistration: PREREG, id: prereg, slots: order.length, private_dir: held.dir }));
+  process.exit(0);
+}
+
+if (cmd === "prepare-fresh") {
+  // Final excellence pass: a fresh-document comparison on NEWLY generated held-out documents only (no dev block: the
+  // dev documents are repository-resident and already run). Its own ledger with an allowance approved for this run;
+  // the phase total (prior spend + this allowance) must stay under the $3.00 phase cap. Committed before any attempt.
+  if (existsSync(PREREG)) throw new Error(`${PREREG} exists; a preregistration is never overwritten`);
+  const perFamily = Number(arg("per-family", "4")), reps = Number(arg("repetitions", "1"));
+  const allowance = Number(arg("allowance", "0.90")), prior = Number(arg("prior-phase-spend", "NaN"));
+  if (!(perFamily >= 1 && perFamily <= 6) || !(reps >= 1 && reps <= 2)) throw new Error("--per-family 1-6, --repetitions 1-2");
+  if (!(allowance > 0 && Number.isFinite(prior) && prior >= 0 && prior + allowance < 3.0)) throw new Error("prior phase spend + allowance must stay under the $3.00 phase cap");
+  mkdirSync(out, { recursive: true });
+  const prereg = `li-m7-${randomBytes(4).toString("hex")}`;
+  const masterSeed = randomBytes(24).toString("hex");
+  const held = materializeHeldout(prereg, masterSeed, Array.from({ length: perFamily }, () => FAMILIES).flat());
+  const orderSeed = randomBytes(8).toString("hex");
+  const block = (docs: string[]) => Array.from({ length: reps }, (_, r) => shuffle(docs, `${orderSeed}:heldout:${r}:docs`).flatMap((d) => shuffle(["C1", "C2", "C3"] as const, `${orderSeed}:heldout:${r}:${d}`).map((c) => ({ block: "heldout" as const, doc: d, condition: c, repetition: r + 1 })))).flat();
+  const order: Slot[] = block(held.commitments.map((c) => c.slot_doc)).map((x, index) => ({ index, ...x }));
+  const runStop = Math.round((allowance - 0.08) * 100) / 100;
+  writeFileSync(PREREG, JSON.stringify({
+    schema: "dk.local.eval_preregistration.v1", id: prereg, created_at: new Date().toISOString(), repository_commit: git("rev-parse", "HEAD"), working_tree_dirty: git("status", "--porcelain", "--untracked-files=no").length > 0,
+    question: "On newly generated held-out documents never seen by any run, does the guided investigation-contract loop (C3) differ from the full tool set (C1) and the event tools (C2) in end-to-end success, structured correctness, retrieval and unsupported claims, without expanding authority?",
+    conditions: Object.values(LI_CONDITIONS).map((c) => ({ id: c.id, label: c.label, mcp_env: c.env, description: c.description })),
+    model: { route: "ai-gateway (https://ai-gateway.vercel.sh/v1)", id: PREREG_MODEL_ID, decoding: "provider defaults (temperature not set); reasoning not requested and not stored", limits: { ...LIMITS, maxCompletionTokens: 16000 } },
+    prompt: { version: LI_PROMPT_VERSION, system_sha256: promptSha(), public_task_version: PUBLIC_TASK_VERSION, public_task_sha256: Object.fromEntries(Object.entries(PUBLIC_TASKS).map(([k, v]) => [k, sha(v)])) },
+    referee: REFEREE_VERSION, generator: HELDOUT_GENERATOR, master_seed_sha256: held.master_seed_sha256, order_seed: orderSeed,
+    dev_documents: [], heldout_documents: held.commitments.map((c) => ({ ...c, note: "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal" })),
+    repetitions: reps, order, fresh_conversation_per_attempt: true, fresh_world_per_attempt: true,
+    budget: { ledger_path: join(out, "model-spend-ledger.json").replace(`${ROOT}/`, ""), phase_cap_usd: 3.0, prior_phase_spend_usd: prior, allowance_usd: allowance, run_stop_usd: runStop, max_phase_total_usd: Math.round((prior + allowance) * 1e6) / 1e6, reservation: "worst-case cost reserved before every request; failed requests keep the reserved maximum; the run stop refuses new attempts once this ledger reaches it" },
+    metrics: { primary: ["end_to_end_success", "structured predicates admissible / eligible", "retrieval: required records exposed / reachable"], secondary: ["claim validity", "unsupported affirmatives", "cost and effort"], separate: ["coverage limitations", "AI critique not run", "human review deferred (EXT05)"], invalid: "an invalid preflight is excluded from model denominators and reported separately; provider errors, timeouts, limits and schema failures stay in the denominator" },
+    analysis: "Counts per condition on the fresh held-out block only; per document the three conditions are adjacent (a spend stop never leaves a document half compared); small sample, no significance test, no pooled superiority claim; results only after seal.",
   }, null, 2), { flag: "wx" });
   console.log(JSON.stringify({ preregistration: PREREG, id: prereg, slots: order.length, private_dir: held.dir }));
   process.exit(0);
@@ -123,7 +160,11 @@ const AMENDMENTS = existsSync(out) ? readdirSync(out).filter((f) => /^preregistr
 const REG_LIMITS: typeof LIMITS = existsSync(PREREG) ? (JSON.parse(readFileSync(PREREG, "utf8")).model?.limits ?? LIMITS) : LIMITS;
 const EFFECTIVE_LIMITS = AMENDMENTS.reduce((l, a) => ({ ...l, ...(a.limits ?? {}) }), { ...REG_LIMITS } as typeof LIMITS);
 const ledgerPath = (() => { const r = existsSync(PREREG) ? JSON.parse(readFileSync(PREREG, "utf8")) : null; return r?.budget?.ledger_path ? join(ROOT, r.budget.ledger_path) : join(out, "model-spend-ledger.json"); })();
-const openLedger = () => new PhaseLedger(ledgerPath, { phase_cap_usd: 3.0, allowance_usd: 2.0, allowance_note: "M6 (LP24-LP26) may spend at most $2.00 of the $3.00 phase cap; the rest is reserved for LP27/LP30", route: "ai-gateway", model: PREREG_MODEL });
+const REG_BUDGET = existsSync(PREREG) ? JSON.parse(readFileSync(PREREG, "utf8")).budget as { allowance_usd?: number; run_stop_usd?: number; prior_phase_spend_usd?: number } : {};
+const openLedger = () => REG_BUDGET?.allowance_usd
+  ? new PhaseLedger(ledgerPath, { phase_cap_usd: 3.0, allowance_usd: REG_BUDGET.allowance_usd, allowance_note: `final-pass fresh-document comparison: at most $${REG_BUDGET.allowance_usd} new spend (prior phase spend $${REG_BUDGET.prior_phase_spend_usd}; phase total stays under $3.00)`, route: "ai-gateway", model: PREREG_MODEL })
+  : new PhaseLedger(ledgerPath, { phase_cap_usd: 3.0, allowance_usd: 2.0, allowance_note: "M6 (LP24-LP26) may spend at most $2.00 of the $3.00 phase cap; the rest is reserved for LP27/LP30", route: "ai-gateway", model: PREREG_MODEL });
+const RUN_STOP = REG_BUDGET?.run_stop_usd ?? RUN_STOP_USD;
 
 if (cmd === "smoke") {
   // LP24: one declared real-route attempt (dev LW-01, guided C3) before any preregistered comparison slot.
@@ -182,7 +223,7 @@ if (cmd === "run") {
   const work = slots.slice(0, limit);
   const one = async (slot: Slot) => {
     if (halted) return;
-    if (ledger && ledger.budget.incurred >= RUN_STOP_USD) { halted = `run spend stop $${RUN_STOP_USD} reached`; return; }
+    if (ledger && ledger.budget.incurred >= RUN_STOP) { halted = `run spend stop $${RUN_STOP} reached`; return; }
     const before = ledger?.budget.incurred ?? 0;
     const rec = await runAttempt({ attempt_id: `${reg.id}-${mode.mode}-${String(slot.index).padStart(3, "0")}`, split: slot.block, doc: docFor(slot), condition: slot.condition, mode, ...(cfg ? { model: { cfg, secrets: [cfg.apiKey] } } : {}) });
     rec.slot = slot;
@@ -215,7 +256,7 @@ if (cmd === "critique") {
   const files = existsSync(runDir) ? readdirSync(runDir).filter((f) => /^\d{3}\.json$/.test(f)).sort() : [];
   for (const f of files) {
     if (existsSync(join(cdir, f))) continue;
-    if (ledger.budget.incurred >= RUN_STOP_USD) { console.error("spend stop reached; critique halted"); break; }
+    if (ledger.budget.incurred >= RUN_STOP) { console.error("spend stop reached; critique halted"); break; }
     const rec = JSON.parse(readFileSync(join(runDir, f), "utf8"));
     if (rec.status !== "completed" || !rec.answer) continue;
     const exposedRecords = new Map<string, unknown>();
