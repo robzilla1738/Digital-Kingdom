@@ -1,0 +1,38 @@
+{
+  "schema": "dk.local.model_spend_ledger.v1",
+  "phase": "local-intelligence",
+  "phase_cap_usd": 3,
+  "allowance_usd": 2,
+  "allowance_note": "M6 (LP24-LP26) may spend at most $2.00 of the $3.00 phase cap; the rest is reserved for LP27/LP30",
+  "route": "ai-gateway",
+  "model": "meta/muse-spark-1.3-contributor",
+  "entries": [
+    {
+      "id": "connectivity-curl",
+      "run": "lp24-smoke",
+      "kind": "smoke",
+      "reserved_max_usd": 0.00001,
+      "charged_usd": 0.00001,
+      "gateway_cost_usd": null,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "model_calls": 1,
+      "note": "one manual 20-token connectivity request (curl) before the harness existed; usage not captured, upper bound recorded",
+      "at": "2026-10-24T03:04:45.535Z"
+    },
+    {
+      "id": "lp24-smoke-1792811085539",
+      "run": "lp24-smoke",
+      "kind": "smoke",
+      "reserved_max_usd": 0.014253268,
+      "charged_usd": 0.014253268,
+      "gateway_cost_usd": 0.014253268,
+      "prompt_tokens": 119132,
+      "completion_tokens": 18430,
+      "model_calls": 7,
+      "at": "2026-10-24T03:07:22.679Z"
+    }
+  ],
+  "charged_total_usd": 0.014263267999999999,
+  "updated_at": "2026-10-24T03:07:22.679Z"
+}
