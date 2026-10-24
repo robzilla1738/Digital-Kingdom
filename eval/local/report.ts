@@ -45,12 +45,14 @@ export function buildReport(out: string, reg: Rec) {
   })));
   const ledger = existsSync(join(out, "model-spend-ledger.json")) ? JSON.parse(readFileSync(join(out, "model-spend-ledger.json"), "utf8")) : null;
   const planned = reg.order.length;
+  const amendments = readdirSync(out).filter((f) => /^preregistration-amendment-\d+\.json$/.test(f)).sort().map((f) => JSON.parse(readFileSync(join(out, f), "utf8")));
   const report = {
     schema: "dk.local.eval_report.v1", preregistration: reg.id, model: reg.model.id, planned_slots_per_mode: planned,
     model_runs: { started: model.length, by_block_condition: groups(model) },
     scripted_runs: { label: "scripted (no model): protocol baseline, not model skill", started: scripted.length, by_block_condition: groups(scripted) },
     ai_semantic_critique: { label: "ai_reviewed_advisory: same model family, separate conversation, no tools, no truth; never an objective score or an approval", by_block_condition: crit },
     human_review: "deferred (EXT05); no record is approved",
+    amendments: amendments.map((a) => ({ id: a.id, created_at: a.created_at, slots_recorded_at_amendment: a.slots_recorded_at_amendment, limits: a.limits, reason: a.reason })),
     spend: ledger ? { ledger: "model-spend-ledger.json", charged_total_usd: ledger.charged_total_usd, entries: ledger.entries.length, allowance_usd: ledger.allowance_usd, phase_cap_usd: ledger.phase_cap_usd } : null,
     limitations: [
       "Synthetic local laboratory only (three blueprints, trusted built-in services); no production, provider or real-identity claim.",
@@ -69,7 +71,7 @@ export function buildReport(out: string, reg: Rec) {
 Model ${reg.model.id} via the AI Gateway (restricted_model: MCP tools only). Conditions: C1 ${reg.conditions[0].label}; C2 ${reg.conditions[1].label}; C3 ${reg.conditions[2].label}.
 Preregistered ${planned} slots per mode (dev + held-out, 2 repetitions, fresh world and conversation per attempt). Spend (new phase ledger): $${(ledger?.charged_total_usd ?? 0).toFixed(4)} of the $${ledger?.allowance_usd ?? 2} M6 allowance.
 
-## Model runs — objective metrics (deterministic referee)
+${amendments.length ? `Preregistration amendments (made before any comparison slot ran): ${amendments.map((a) => `${a.id} — ${JSON.stringify(a.limits)}: ${a.reason}`).join(" ")}\n\n` : ""}## Model runs — objective metrics (deterministic referee)
 
 ${table(report.model_runs.by_block_condition)}
 
