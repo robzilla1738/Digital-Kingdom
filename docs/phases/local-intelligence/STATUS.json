@@ -1023,9 +1023,9 @@
     "LP23",
     "LP25"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "72383a6",
-   "ci_run": "40072232517 on 72383a6: check success, browser-pilot in progress at ledger time",
+   "ci_run": "40072232517 success (check + browser-pilot) on 72383a6. Ledger commit 261cfd4 run 40072612866 attempt 1: check failed only in examples/reference-app/e2e.test.ts (events 0 vs 10, collector timing; same code passed check on 72383a6 and locally) - re-ran failed jobs (attempt 2: check success).",
    "receipt": "docs/phases/local-intelligence/receipts/LP28.md",
    "branch": "phase/local-intelligence",
    "local_checks": {
@@ -2404,7 +2404,7 @@
  },
  "next_action": {
   "package": "LP29",
-  "why": "LP23 CI-verified (ddab371, run 40071651385); LP28 implemented at 72383a6 (CI check green, browser-pilot pending at ledger time). LP29 needs LP07 + LP18 + LP28.",
+  "why": "LP23 CI-verified (ddab371, run 40071651385) and LP28 CI-verified (72383a6, run 40072232517, check + browser-pilot). LP29 needs LP07 + LP18 + LP28, all CI-verified.",
   "eligible_now": [
    "LP29"
   ],
