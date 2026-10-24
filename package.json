@@ -34,6 +34,7 @@
     "quickstart": "tsx examples/reference-app/src/quickstart.ts",
     "world": "tsx examples/reference-app/src/world/cli.ts",
     "mission": "tsx examples/reference-app/src/world/mission.ts",
+    "loop:local": "tsx scripts/local-loop.ts",
     "admin:recover": "tsx scripts/recover-admin.ts",
     "backup": "tsx scripts/backup.ts",
     "restore": "tsx scripts/backup.ts --restore",
