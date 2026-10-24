@@ -4,6 +4,7 @@ import { hmac, sha256 } from "../security.ts";
 import { HttpError, type Store } from "../store.ts";
 import { provenanceOf } from "../provenance.ts";
 import type { InvestigationContracts } from "./contracts.ts";
+import { CLAIM_SCOPING_NOTE, coverageScopes, coveredWithin } from "./scoping.ts";
 
 /**
  * Compact evidence packets (Local Intelligence Phase LP10).
@@ -104,6 +105,7 @@ export class EvidencePackets {
 
   /** The fixed sections that survive every size limit. */
   private uncertainty(contract: InvestigationContract, revs: Set<number>) {
+    const scopes = coverageScopes(this.store, contract.id, revs);
     const unmet = contract.obligations.filter((o) => o.status !== "satisfied").map((o) => ({ id: o.id, kind: o.kind, status: o.status, reason: o.reason.slice(0, 600), supports_negative_claims: o.supports_negative_claims }));
     const cov = (this.db.prepare("SELECT ref, detail, contract_revision FROM investigation_deliveries WHERE contract_id = ? AND kind = 'coverage' ORDER BY id").all(contract.id) as { ref: string; detail: string; contract_revision: number }[])
       .filter((r) => revs.has(r.contract_revision)).map((r) => ({ ref: r.ref, ...(JSON.parse(r.detail) as Record<string, unknown>) }) as Record<string, unknown>)
@@ -112,7 +114,19 @@ export class EvidencePackets {
     return {
       readiness: contract.readiness, readiness_reason: contract.readiness_reason,
       unmet_obligations: unmet,
-      negative_claims: contract.negative_claim_requirements.map((n) => ({ id: n.id, assessable: n.assessable, reason: n.reason.slice(0, 600) })),
+      // li-next A: absence assessability is scoped by asset, action AND interval. When the whole interval is not
+      // assessable only because of known uncovered spans (activity retrieval complete, a configured source), the
+      // covered sub-intervals are listed: an absence claim confined to one of them is assessable.
+      negative_claims: contract.negative_claim_requirements.map((n) => {
+        const base = { id: n.id, assessable: n.assessable, reason: n.reason.slice(0, 600) };
+        if (n.assessable) return base;
+        const s = scopes.get(`${n.asset_id}:${n.action}`);
+        const act = contract.obligations.find((o) => o.id === `activity:${n.asset_id}`), cov = contract.obligations.find((o) => o.id === `coverage:${n.asset_id}:${n.action}`);
+        const scoped = s && act?.status === "satisfied" && cov && ["unavailable", "partial"].includes(cov.status) && cov.query_refs.includes(s.ref) && s.configured && s.spans_complete && s.after === contract.scope.after && s.before === contract.scope.before;
+        if (!scoped) return { ...base, assessable_within: [] };
+        return { ...base, assessable_within: coveredWithin(contract.scope.after, contract.scope.before, s.uncovered), not_assessable_within: s.uncovered.map((g) => ({ from: g.from, to: g.to })) };
+      }),
+      claim_scoping: CLAIM_SCOPING_NOTE,
       coverage_gaps: cov,
       query_status: steps.map((s) => ({ job_id: s.job_id, step_id: s.step_id, kind: s.kind, obligation_id: s.obligation_id, status: s.status, completeness: s.completeness, error: s.error, resumable: s.status === "partial_budget" || ((s.status === "pending" || s.status === "running") && ["queued", "running", "budget_exhausted"].includes(String(s.job_status))) })),
     };

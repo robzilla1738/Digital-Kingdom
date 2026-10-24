@@ -76,7 +76,7 @@ export function deriveReadiness(obligations: Pick<ContractObligation, "id" | "st
   if (failed.length) return { readiness: "blocked", reason: `${failed.length} obligation(s) failed and need a retry or an inapplicability decision: ${failed.slice(0, 5).map((o) => o.id).join(", ")}.` };
   const gaps = obligations.filter((o) => TERMINAL_GAP.includes(o.status));
   if (!gaps.length) return { readiness: "bounded_answer_ready", reason: "Every obligation is satisfied by scoped evidence or documented as inapplicable. A bounded answer about observable propositions is possible; intent and authorization still need records outside the telemetry." };
-  return { readiness: "unresolved_answer_ready", reason: `Every obligation was attempted; ${gaps.length} could not be met (${gaps.slice(0, 5).map((o) => `${o.id}: ${o.reason || o.status}`).join("; ")}). Only an unresolved answer for those parts is honest.` };
+  return { readiness: "unresolved_answer_ready", reason: `Every obligation was attempted; ${gaps.length} could not be met (${gaps.slice(0, 5).map((o) => `${o.id}: ${o.reason || o.status}`).join("; ")}). Only an unresolved answer is honest for the parts those obligations bear on (absence of those actions on those assets, in their uncovered spans); recorded observations, other assets and actions, and covered sub-intervals stay answerable.` };
 }
 
 const g = generated as unknown as Record<string, ((d: unknown) => boolean) & { errors?: unknown }>;

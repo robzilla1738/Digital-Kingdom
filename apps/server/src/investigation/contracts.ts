@@ -133,7 +133,7 @@ export class InvestigationContracts {
       const unmet = n.requires.map((r) => by.get(r)!).filter((o) => o.status !== "satisfied");
       n.assessable = unmet.length === 0;
       n.reason = n.assessable ? `Activity retrieval on ${n.asset_id} is complete and ${n.action} was covered for the whole interval; a not_observed_in_scope claim about it is assessable (absence in stored records within this interval only).`
-        : `A claim that ${n.action} did not happen on ${n.asset_id} cannot be made: ${unmet.map((o) => `${o.id} is ${o.status}${o.reason ? ` (${o.reason})` : ""}`).join("; ")}.`;
+        : `A claim that ${n.action} did not happen on ${n.asset_id} anywhere in the whole interval cannot be made: ${unmet.map((o) => `${o.id} is ${o.status}${o.reason ? ` (${o.reason})` : ""}`).join("; ")}. Absence claims about this asset and action only; see claim_scoping.`;
     }
     const questions = c.items.filter((i) => !i.removed && (i.kind === "question" || i.kind === "hypothesis"));
     const openQ = questions.filter((q) => q.status === "open");
