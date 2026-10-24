@@ -1,5 +1,5 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
-import { lstatSync, mkdirSync, mkdtempSync, readdirSync, realpathSync, rmdirSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { Agent, createServer, request as httpRequest, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { tmpdir } from "node:os";
 import { basename, dirname, join, sep } from "node:path";
@@ -11,7 +11,8 @@ import { refuseDestination, type RegisteredEndpoint } from "./address.ts";
 import { EffectObserver, type Reporter, type TapEffect } from "./observer.ts";
 import { preflight, type Preflight } from "./isolation.ts";
 import { LeaseRegistry, type IssueLeaseRequest, type LeaseAudit } from "./lease.ts";
-import type { LabLease } from "@dk/contracts";
+import type { LabLease, RepairPlan } from "@dk/contracts";
+import { REPAIR_OPERATIONS, refOf, type Compensation, type OpHost, type Pre } from "./repair-ops.ts";
 
 /**
  * LP05: the local run supervisor. It owns everything a run uses and is the only thing that can act on it.
@@ -489,6 +490,92 @@ export class Run {
     throw new RunRefusal("unregistered", `${String(id).slice(0, 80)} is not a resource of ${this.run_id}`);
   }
   revisions(): Record<string, string> { return Object.fromEntries([...this.services.keys(), ...this.observers.keys()].sort().map((id) => [id, this.revisionOf(id)])); }
+  // ---- LP21: leased typed repairs (the supervisor side; the journalled state machine is the RepairController) ----
+  private readonly repairPre = new Map<string, Pre>();
+  private journalBytes = 0;
+  private opHost(): OpHost {
+    return {
+      template: (id) => this.world.plan.resources.find((r) => r.id === id)?.template,
+      state: (id) => { const svc = this.services.get(id); return svc ? structuredClone(svc.snapshot()) as Record<string, unknown> : null; },
+      observerUp: (id) => this.observers.get(id)?.up,
+      send: async (resource, path, body) => {
+        const t = this.world.plan.resources.find((r) => r.id === resource);
+        if (!t || !this.listeners.has(resource)) throw new RunRefusal("unregistered", `${resource} has no registered listener`);
+        const req: OpRequest = { method: "POST", path, body };
+        this.assertRoute(t.template as WorldTemplate, req);
+        const op = this.nextOp();
+        const r = await this.send(resource, req, op, "controller");
+        return { status: r.status, op_id: op };
+      },
+      reconfigure: (id, variant) => { this.services.get(id)!.reconfigure?.({ policy_variant: variant }); },
+      restartObserver: (id) => { this.observers.get(id)!.restart("restarted by a leased repair"); },
+    };
+  }
+  private controllerId(token: string): string { return this.sup.authorize(token, { run_id: this.run_id, action: "repair_execute" }).id; }
+
+  /**
+   * Execute ONE leased typed action of a plan (supervisor side). Checks the controller identity and the lease
+   * (expiry, revocation, run, controller, plan digest, action, revision, replay, budget), resolves the reference in
+   * this run, records the use, applies the one fixed operation and confirms the new revision with the lease. The
+   * caller (the controller) journals before and after; nothing here takes a command, URL or path from the plan.
+   */
+  async leasedOperation(controllerToken: string, leaseToken: string, plan: RepairPlan, actionId: string, o: { idempotency_key: string; reapply?: boolean }) {
+    const ctl = this.controllerId(controllerToken);
+    this.assertActive("leased repair");
+    const { rec, action } = this.sup.leases.authorizeAction(leaseToken, { run: this, plan, action_id: actionId, controller_token_id: ctl, idempotency_key: o.idempotency_key, ...(o.reapply ? { reapply: true } : {}) });
+    const op = REPAIR_OPERATIONS[action.type], host = this.opHost(), ref = refOf(action), target = action.target_resource_id;
+    const why = op.resolve(host, ref, target);
+    if (why) throw new RunRefusal("unregistered", `action ${action.id}: ${why}`);
+    const from = this.revisionOf(target);
+    const preKey = `${rec.lease.lease_id}|${action.id}`;
+    if (!this.repairPre.has(preKey)) this.repairPre.set(preKey, op.capture(host, ref, target));
+    this.sup.leases.consume(rec, action.id, o.idempotency_key);
+    const res = await op.apply(host, ref, target);
+    const to = this.revisionOf(target), desired = op.desired(host, ref, target);
+    this.lifecycle("repair_operation", { lease_id: rec.lease.lease_id, action_id: action.id, type: action.type, target, op_id: res.op_id, status: res.status, from_revision: from, to_revision: to, desired });
+    if (desired && to !== from) this.sup.leases.confirmApplied(rec, action, to);
+    return { action_id: action.id, from_revision: from, to_revision: to, op_id: res.op_id, status: res.status, desired };
+  }
+  /** Read-only: is the action's effect present now, and at what revision is its target? (crash reconciliation) */
+  repairObservation(controllerToken: string, action: { type: keyof typeof REPAIR_OPERATIONS; target_resource_id: string; parameters: Record<string, string | undefined> }) {
+    this.controllerId(controllerToken);
+    const op = REPAIR_OPERATIONS[action.type];
+    const ref = refOf(action as never);
+    return { desired: op.desired(this.opHost(), ref, action.target_resource_id), revision: this.revisionOf(action.target_resource_id) };
+  }
+  /** Compensate one applied action of a lease, from the pre-state the RUN captured (never one the controller supplies). */
+  async compensateAction(controllerToken: string, leaseToken: string, plan: RepairPlan, actionId: string): Promise<Compensation> {
+    const ctl = this.controllerId(controllerToken);
+    const rec = this.sup.leases.authorizeCompensation(leaseToken, { run: this, action_id: actionId, controller_token_id: ctl });
+    const action = plan.actions.find((a) => a.id === actionId);
+    const pre = this.repairPre.get(`${rec.lease.lease_id}|${actionId}`);
+    if (!action || !pre) return { outcome: "failed", reason: `no captured pre-state for ${String(actionId).slice(0, 80)}` };
+    if (this.state !== "running" && this.state !== "paused") return { outcome: "failed", reason: `run is ${this.state}` };
+    const c = await REPAIR_OPERATIONS[action.type].compensate(this.opHost(), refOf(action), action.target_resource_id, pre);
+    this.lifecycle("repair_compensation", { lease_id: rec.lease.lease_id, action_id: actionId, outcome: c.outcome });
+    return c;
+  }
+  /** The holder gives up its lease (cancellation). */
+  relinquishLease(controllerToken: string, leaseToken: string, reason: string) { this.sup.leases.revokeToken(leaseToken, reason, this.controllerId(controllerToken)); }
+  leaseOf(controllerToken: string, leaseToken: string) { this.controllerId(controllerToken); return this.sup.leases.view(leaseToken); }
+
+  /** Run-owned append-only repair journal (bounded; removed by cleanup with the rest of the run). */
+  appendJournal(controllerToken: string, entry: Record<string, unknown>) {
+    this.controllerId(controllerToken);
+    const p = join(this.dir, "repair-journal.jsonl");
+    const line = JSON.stringify({ ...entry, at: new Date().toISOString(), at_mono_ms: monoMs() }) + "\n";
+    if (this.journalBytes + Buffer.byteLength(line) > 1_000_000) throw new RunRefusal("budget", "repair journal budget (1 MB) reached");
+    if (!this.manifest.owned_paths.some((x) => x.path === p)) { this.manifest.owned_paths.push({ path: p, kind: "file" }); this.writeManifest(); }
+    appendFileSync(p, line, { mode: 0o600 });
+    this.journalBytes += Buffer.byteLength(line);
+  }
+  readJournal(controllerToken: string): Record<string, unknown>[] {
+    this.controllerId(controllerToken);
+    const p = join(this.dir, "repair-journal.jsonl");
+    if (!existsSync(p)) return [];
+    return readFileSync(p, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l) as Record<string, unknown>);
+  }
+
   /** @internal LP20 audit transitions are also part of the run's private truth. */
   recordLeaseTransition(e: LeaseAudit) { this.lifecycle(`lease_${e.transition}`, { lease_id: e.lease_id, by: e.by, detail: e.detail }); }
 

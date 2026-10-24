@@ -56,7 +56,7 @@ const auth = (ctx: ServiceContext): BuiltinService => {
 
 // ---------------------------------------------------------------- local issuer: short-lived synthetic credentials and grants
 const issuer = (ctx: ServiceContext): BuiltinService => {
-  const st = stateful({ creds: {} as Record<string, { subject: string; secret_digest: string; active: boolean; scope: string[] }>, grants: {} as Record<string, string[]>, seq: 0 }, (s) => `${ctx.resource_id}:grants-${sha(JSON.stringify(s.grants)).slice(0, 8)}`);
+  const st = stateful({ creds: {} as Record<string, { subject: string; secret_digest: string; active: boolean; scope: string[] }>, grants: {} as Record<string, string[]>, seq: 0 }, (s) => `${ctx.resource_id}:grants-${sha(JSON.stringify(s.grants)).slice(0, 8)}-inactive-${sha(JSON.stringify(Object.keys(s.creds).filter((k) => !s.creds[k]!.active).sort())).slice(0, 8)}`);
   return {
     ...st,
     async handle(req) {
