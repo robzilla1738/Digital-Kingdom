@@ -153,7 +153,16 @@ describe("LP07-A3: missing, delayed and dropped evidence change observability, n
     // occurrence time is unchanged; the delay shows up as receipt lag relative to the undelayed ingress record
     expect(Math.max(...api.map((e) => Date.parse(e.occurred_at)))).toBeLessThanOrEqual(Date.parse(ingress.occurred_at)); // the API acted before the gateway answered
     const lag = (e: Record<string, any>) => Date.parse(e.received_at) - Date.parse(e.occurred_at);
-    expect(Math.min(...api.map(lag))).toBeGreaterThanOrEqual(lag(ingress) + 25); // held from step 6 until the release at step 11
+    // Held from step 6 until the release at step 11. The margin is the gap this run actually had between the end of
+    // the weak request's delivery (the next step starts only after every source flushed) and the release step, not a
+    // fixed 25 ms that runner load could eat when step 7 fired late (D-M5-CI-2); 2 ms allows wall/monotonic rounding.
+    const step = (i: number) => r.truth.steps[i]!;
+    const heldGap = step(11).started_offset_ms! - step(8).started_offset_ms!;
+    expect(heldGap).toBeGreaterThan(0);
+    expect(Math.min(...api.map(lag)), JSON.stringify({ api: api.map(lag), ingress: lag(ingress), heldGap })).toBeGreaterThanOrEqual(lag(ingress) + heldGap - 2);
+    // causal order, independent of timing: the held records were received after the undelayed record of a later step
+    const laterIngress = (await a.search({ request_id: unobs.op_id! })).find((e) => e.source_id === "ingress-sdk")!;
+    expect(Math.min(...api.map((e) => Date.parse(e.received_at)))).toBeGreaterThanOrEqual(Date.parse(laterIngress.received_at));
     expect(weak.scheduled_at_ms).toBe(70);
     expect(r.truth.effects.some((e) => e.op_id === unobs.op_id && e.resource_id === "tenant-db")).toBe(true); // it happened
     expect((await a.search({ request_id: unobs.op_id! })).some((e) => e.source_id === "audit")).toBe(false); // not observed

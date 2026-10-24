@@ -109,7 +109,13 @@ export function coverageHistory(store: Store, projectId: string, q: CoverageQues
     if (spans.every((s) => s.state === "unknown")) { perSource.push({ source_id: src.id, label: src.label, history_basis: basis, spans }); continue; }
 
     // Outage reports, placed at the sensor's stated times.
-    const health = store.db.prepare("SELECT action, occurred_at FROM events WHERE project_id = ? AND source_id = ? AND action IN ('sensor_unavailable','sensor_restored') ORDER BY occurred_at, received_at").all(projectId, src.id) as { action: string; occurred_at: string }[];
+    // M6b: health reports are paired per ASSET. A source watching several assets reports each one separately, and a
+    // restoration reported for another asset must never end this asset's outage (CI 40064260489: the other asset's
+    // restoration landed one millisecond earlier and the last millisecond of a deliberate outage counted as covered).
+    // A report names its assets by id, name or alias; one naming several assets applies to each of them.
+    const names = new Set([assetId, ...graph.assets.filter((x) => x.id === assetId).flatMap((x) => [x.name, ...(x.aliases ?? [])])]);
+    const health = (store.db.prepare("SELECT action, occurred_at, asset_ids FROM events WHERE project_id = ? AND source_id = ? AND action IN ('sensor_unavailable','sensor_restored') ORDER BY occurred_at, received_at").all(projectId, src.id) as { action: string; occurred_at: string; asset_ids: string }[])
+      .filter((h) => { try { const ids = JSON.parse(h.asset_ids) as unknown; return !Array.isArray(ids) || !ids.length || ids.some((x) => names.has(String(x))); } catch { return true; } });
     let down: number | null = null;
     for (const h of health) {
       const t = Date.parse(h.occurred_at);
