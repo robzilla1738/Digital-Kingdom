@@ -7,3 +7,5 @@ export declare const validateWorldPlan: V;
 export declare const validateRunProvenance: V;
 export declare const validateVerificationReceipt: V;
 export declare const validateCapabilityReceipt: V;
+export declare const validateInvestigationContract: V;
+export declare const validateConclusion: V;
