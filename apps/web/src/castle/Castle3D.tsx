@@ -5,6 +5,7 @@ import { Html, Line, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import type { CompiledScene, SceneRoom } from "@dk/contracts";
 import { CastleModule } from "./modules.tsx";
+import { InteriorMarkers } from "./InteriorMarkers.tsx";
 import { Environment } from "./Environment.tsx";
 import { hatchTexture } from "./materials.ts";
 import { EdgeChooser, type EdgeChoice } from "./EdgeChooser.tsx";
@@ -278,6 +279,7 @@ function Room({ room, selected, focused, quality }: { room: SceneRoom; selected:
       <boxGeometry args={[proxy.w, proxy.h, proxy.d]} /><meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
     </mesh>
     {(selected || hovered) && <Line points={[[-w / 2 - 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, -d / 2 - 0.18], [w / 2 + 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, d / 2 + 0.18], [-w / 2 - 0.18, 0.06, -d / 2 - 0.18]]} color={selected ? ACCENT : "#EEF3FA"} lineWidth={selected ? 2.6 : 1.5} raycast={() => null} />}
+    {selected && !ui.roofs && <InteriorMarkers assetId={room.asset_id} />}
     {gap && <CoverageHatch w={w + 0.32} d={d + 0.32} warning={status.coverage === "gap" || status.coverage === "partial"} />}
     <Html position={[0, room.label_anchor.y - 0.08, 0]} center zIndexRange={[20, 10]}>
       <div ref={labelRef} className="lbl"><button data-asset-label={asset.id} data-module-recovery={moduleFailure ?? undefined} className={`room-label${selected ? " is-selected" : ""}${dim ? " dim" : ""}`} onClick={e => { e.stopPropagation(); select(); }} onDoubleClick={e => { e.stopPropagation(); dispatch({ type: "focus" }); }}

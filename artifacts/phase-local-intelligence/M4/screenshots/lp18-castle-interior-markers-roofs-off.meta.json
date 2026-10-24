@@ -1,0 +1,22 @@
+{
+  "name": "lp18-castle-interior-markers-roofs-off",
+  "file": "lp18-castle-interior-markers-roofs-off.png",
+  "sha256": "9e94a047764275b4e52b6f80475f2f6cc36b8fa377d3ad3b4fbe0f997b08dcf7",
+  "bytes": 365017,
+  "capturedAt": "2026-10-24T05:45:28.509Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}
