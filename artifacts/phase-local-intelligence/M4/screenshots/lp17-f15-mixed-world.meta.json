@@ -1,0 +1,22 @@
+{
+  "name": "lp17-f15-mixed-world",
+  "file": "lp17-f15-mixed-world.png",
+  "sha256": "1daa83ba67db82cc494bfc4065536e700d70d03ca4d6097ccad3dbc926545b1e",
+  "bytes": 194962,
+  "capturedAt": "2026-10-24T05:30:23.297Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F15"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

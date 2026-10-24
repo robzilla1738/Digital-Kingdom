@@ -147,10 +147,11 @@ test('V11: replay uses explicit known-time basis and keeps source-coverage limit
   await captureRedesign(page,'V11c-expanded-exact-record-lanes');
 });
 
-test('V09–V10: ten architectural modules and actual roof removal', async ({ page }) => {
+test('V09–V10: all stable architectural modules and actual roof removal', async ({ page }) => {
   await page.goto(h.offlineUrl + '/?moduleSheet=all');
-  await expect(page.getByRole('heading', { name: /ten stable module IDs/ })).toBeVisible();
-  await expect.poll(async () => (await page.locator('canvas').screenshot()).length).toBeGreaterThan(25000);
+  await expect(page.getByRole('heading', { name: /16 stable module IDs/ })).toBeVisible();
+  // 16 modules (kit 2.1.0) make the first SwiftShader frame slower; the first element screenshot can exceed the 10 s action timeout.
+  await expect.poll(async () => (await page.locator('canvas').screenshot({ timeout: 30_000 })).length, { timeout: 60_000 }).toBeGreaterThan(25000);
   await page.waitForTimeout(500); await captureRedesign(page, 'V09-ten-module-sheet');
   await page.goto(h.offlineUrl + '/?moduleSheet=near');
   await expect(page.getByRole('heading', { name: /four-module near inspection/ })).toBeVisible();

@@ -1,0 +1,22 @@
+{
+  "name": "V10a-four-module-near",
+  "file": "V10a-four-module-near.png",
+  "sha256": "a4062dfbe3b3bf9a61ebba82dd9c1215c1ed93402a23ef1c68b95de6eb351678",
+  "bytes": 164554,
+  "capturedAt": "2026-10-24T05:32:41.185Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "moduleSheet": "near"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

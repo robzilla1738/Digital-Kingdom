@@ -1,0 +1,22 @@
+{
+  "name": "lp17-f15-roofs-off-family-selected",
+  "file": "lp17-f15-roofs-off-family-selected.png",
+  "sha256": "fd5d4b5e8b168e70862640d8994f9f2dc4438d72768107fad85ea782ad6f64bf",
+  "bytes": 336757,
+  "capturedAt": "2026-10-24T05:31:07.711Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F15"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

@@ -632,17 +632,17 @@
    "depends_on": [
     "LP16"
    ],
-   "status": "in_progress",
-   "commit": "99169a0",
+   "status": "implemented_locally_verified",
+   "commit": "99169a0 + 56d697a + (this commit)",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP17.md",
    "branch": "phase/li-m4",
    "local_checks": {
     "typecheck": "exit 0",
-    "test": "8 vitest shards: 873 passed, 1 skipped, 0 failed (moduleRecovery material-pool count updated to 16x3)",
-    "e2e": "not run yet"
+    "test": "8 vitest shards at 56d697a: 873 passed, 1 skipped; after sheet/offline changes: families, redesign-fixtures, groupSelection, architecture 122/122",
+    "e2e": "e2e/families-redesign.spec.ts 3/3 passed; redesign.spec.ts V09-V10 passed (Chromium headless, SwiftShader)"
    },
-   "progress_note": "Done: catalog 2.1.0, recordModuleFor/recordProposal, six geometries, selectionProxy, familyCapability, unknown-module fallback, manifest hashes, F15, local-world uses recordProposal. Remaining: rendered contact sheet + F15 screenshot, browser roofs-off interaction test. Then LP18 (draft at work/m4-lp18-draft/interior.ts), LP19."
+   "progress_note": "Done incl. rendered contact sheet, 16-module sheet, F15 screenshots (inspected, label-overlap defect fixed) and roofs-off click-through at environment and interior scale. Next: LP18 (draft at work/m4-lp18-draft/interior.ts), LP19, then M4 rebase onto phase/local-intelligence."
   },
   {
    "id": "LP18",
@@ -1347,14 +1347,18 @@
    "package": "LP17",
    "status": "passed_local",
    "evidence": [
-    "apps/web/src/castle/families.test.ts > LP17-A1 (geometry; rendered contact sheet still pending)"
+    "apps/web/src/castle/families.test.ts > LP17-A1",
+    "e2e/families-redesign.spec.ts > contact sheet + 16-module sheet",
+    "artifacts/phase-local-intelligence/M4/screenshots/lp17-families-contact-sheet.png"
    ]
   },
   "LP17-A2": {
    "package": "LP17",
    "status": "passed_local",
    "evidence": [
-    "apps/web/src/castle/families.test.ts > LP17-A2 (unit; browser click-through pending)"
+    "apps/web/src/castle/families.test.ts > LP17-A2",
+    "e2e/families-redesign.spec.ts > F15 roofs-off click-through (environment + interior scale, clear ground)",
+    "artifacts/phase-local-intelligence/M4/lp17-families-verification.json"
    ]
   },
   "LP17-A3": {
@@ -1370,7 +1374,8 @@
    "status": "passed_local",
    "evidence": [
     "apps/web/src/castle/families.test.ts > LP17-A4",
-    "work/m4-red/lp17-unknown-module-red.log"
+    "work/m4-red/lp17-unknown-module-red.log",
+    "e2e/families-redesign.spec.ts > family-capability text in inspector"
    ]
   },
   "LP18-A1": {
@@ -1904,10 +1909,10 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP17",
-  "why": "LP17 in_progress on phase/li-m4: remaining rendered contact sheet + browser interaction test; then LP18, LP19, M4 rebase onto phase/local-intelligence.",
+  "package": "LP18",
+  "why": "LP16, LP17 implemented and locally verified on phase/li-m4; LP18 evidence-linked interiors next (draft work/m4-lp18-draft/interior.ts), then LP19 and the M4 rebase onto phase/local-intelligence.",
   "eligible_now": [
-   "LP17",
+   "LP18",
    "LP20",
    "LP24"
   ]
