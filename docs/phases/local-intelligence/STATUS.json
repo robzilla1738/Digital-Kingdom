@@ -655,7 +655,7 @@
     "LP07"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
+   "commit": "3b327db",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP24.md",
    "branch": "phase/li-m6",
@@ -684,10 +684,25 @@
    "depends_on": [
     "LP24"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP25.md",
+   "branch": "phase/li-m6",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "lp25": "8 passed (eval/test/li-lp25-private-truth.test.ts)",
+    "lp24": "5 passed"
+   },
+   "reuses": [
+    "LP07 PrivateTruth (executed ops + effect tap log, 0600 run file)",
+    "scenario DSL validators + seedCommitment",
+    "LP04 compiled-world observation table and blueprint accounts/resources"
+   ],
+   "decisions": [
+    "D-LP25-1",
+    "D-LP25-2"
+   ]
   },
   {
    "id": "LP26",
@@ -1393,23 +1408,32 @@
   },
   "LP25-A1": {
    "package": "LP25",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A1 (oracle/truth/score/seed tools refused as unknown_tool and recorded; inspect of oracle/scenario/seed/canary refs found:false recorded; HTTP truth/oracle/score/scenario/seed/referee/traversal probes 404/403 with no marker; no unprompted response contains a private marker; canary positive control)",
+    "docs/phases/local-intelligence/receipts/LP25.md"
+   ]
   },
   "LP25-A2": {
    "package": "LP25",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A2 (3 tests: referee imports no product detector/claims/packets/coverage/findings code; deleting product evidence leaves the key unchanged and fails the investigator that trusted it; a changed controlled schedule changes the key)"
+   ]
   },
   "LP25-A3": {
    "package": "LP25",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A3 (2 tests: outage admits only unknown, silent loss admits not_observed/unknown with world divergence reported, observable facts and missing operations still fail; 6 generated held-out variants: stopped-observer ops admit unknown and the delivered-evidence-only scripted baseline reaches the full score)"
+   ]
   },
   "LP25-A4": {
    "package": "LP25",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp25-private-truth.test.ts > LP25-A4 (2 tests: renamed resources/sources/observers/labels + timing jitter give the same logical key, task and full score with no leak; held-out docs random-id, label/expectation-free, private 0600/0700 outside the repo, commitment-bound, never overwritten)"
+   ]
   },
   "LP26-A1": {
    "package": "LP26",
@@ -1714,6 +1738,16 @@
    "id": "D-LP24-2",
    "date": "2026-10-23",
    "decision": "The bring-your-agent harness lives in eval/local/ as a new track (li-m6), separate from v1/v2 eval code and artifacts, which stay untouched (only chat/Msg are exported from eval/src/agent.ts). Every investigator reaches DK only through stdio MCP with a project-scoped service viewer token; the controller keeps the private handle in-process and writes the oracle (with a canary) 0600 under the OS temp root. Native coding agents are development_assisted by construction."
+  },
+  {
+   "id": "D-LP25-1",
+   "date": "2026-10-23",
+   "decision": "The referee derives world truth from the executed schedule and the supervisor's effect tap log, and admissibility from the compiled world's observer attachment plus schedule faults: observer stopped -> only unknown; observer records silently dropped/held -> not_observed or unknown (world truth kept as divergence); otherwise the world value. It imports no product detector/claim/packet/contract code (static test)."
+  },
+  {
+   "id": "D-LP25-2",
+   "date": "2026-10-23",
+   "decision": "Held-out scenarios are generated from a private master seed into a 0700 directory under the OS temp root, never committed before seal; the preregistration holds only SHA-256 commitments. Dev scenarios (LW-01..03) stay repository-resident and are labelled as such."
   }
  ],
  "model_spend_usd": {
@@ -1722,10 +1756,10 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP25",
-  "why": "LP24 implemented and locally verified on phase/li-m6; LP25 (private truth and admissible-evidence grading) depends only on LP24.",
+  "package": "LP26",
+  "why": "LP24 and LP25 implemented and locally verified on phase/li-m6; LP26 depends on LP25 and LP10 (CI-verified).",
   "eligible_now": [
-   "LP25",
+   "LP26",
    "LP12",
    "LP13"
   ]
