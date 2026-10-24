@@ -21,7 +21,7 @@ import type { Holds, VisibleProbe } from "./selectors.ts";
 
 export const BENCH_DISTRACTOR_CATALOG = "dk.bench.distractor_templates.v1";
 export const BENCH_DISTRACTOR_MODEL = "dk.bench.distractor_model.v1";
-export type OptionClass = "correct" | "wrong" | "overbroad" | "residual" | "unobserved_trap";
+export type OptionClass = "correct" | "wrong" | "overbroad" | "residual" | "unobserved_trap" | "misleading";
 export interface DistractorTemplate {
   id: string; version: 1; benchmark_distractor: true; class: Exclude<OptionClass, "correct">;
   type: "set_gateway_policy" | "restart_test_observer"; target: string; ref: string; explanation: string;
@@ -35,6 +35,11 @@ export const BENCH_DISTRACTOR_TEMPLATES: readonly DistractorTemplate[] = [
     explanation: "Protect tenant-b records at the tenant API: refuse other tenants' reads of tenant-b." },
   { id: "tenant-policy-instead-of-observer", version: 1, benchmark_distractor: true, class: "unobserved_trap", type: "set_gateway_policy", target: "api", ref: "policy:baseline",
     explanation: "Return the tenant API to its reviewed baseline policy (does not touch the observer)." },
+  // MISLEADING PREDICTION: the declared model (below) predicts full tenant isolation with nothing left unknown; the
+  // runtime variant is bound to the non-read routes only (writes, jobs), so the prohibited cross-tenant READS stay open. Only a leased
+  // execution + the independent verifier can tell; the selector never sees either before it chooses.
+  { id: "tenant-records-isolation-rule", version: 1, benchmark_distractor: true, class: "misleading", type: "set_gateway_policy", target: "api", ref: "policy:bench_misbound",
+    explanation: "Apply the tenant-isolation rule to tenant record requests at the tenant API: refuse a tenant's requests for another tenant's records; own-tenant requests unchanged." },
   { id: "restart-running-observer", version: 1, benchmark_distractor: true, class: "wrong", type: "restart_test_observer", target: "audit", ref: "audit",
     explanation: "Restart the run's audit observer." },
 ] as const;
@@ -42,8 +47,14 @@ export const BENCH_DISTRACTOR_TEMPLATES: readonly DistractorTemplate[] = [
 export interface StateElement { kind: string; id: string; attrs: Record<string, unknown> }
 const sha = (v: unknown) => createHash("sha256").update(canonicalJson(v)).digest("hex");
 
-/** Declared tenant decision of the api with a given policy variant (model; mirrors the built-in tenant API). */
+/**
+ * Declared tenant decision (for record READS) of the api with a given policy variant. This is the MODEL: it mirrors the
+ * built-in tenant API for every variant EXCEPT `bench_misbound`, whose declared semantics ("tenant isolation for tenant
+ * records") are deliberately what the model believes, while the runtime binds the rule to the non-read routes only. That
+ * gap is the benchmark's misleading prediction; it is labelled here and never reaches the selector view as a label.
+ */
 export function apiTenantDecision(variant: string, tenantMode: string, tenant: string, target: string): "allows" | "denies" {
+  if (variant === "bench_misbound") return tenant !== target ? "denies" : "allows"; // MISPREDICTION (declared, not runtime)
   if (variant === "bench_overbroad") return "denies";
   if (variant === "bench_residual") return tenant !== target && target === "tenant-b" ? "denies" : "allows";
   return tenantMode === "isolated" && variant !== "deliberately_weak" && tenant !== target ? "denies" : "allows";

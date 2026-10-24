@@ -20,7 +20,7 @@ export interface OpHost {
   observerUp(id: string): boolean | undefined;
   /** POST to a declared route of a registered listener of this run, as the controller (never stimulus). */
   send(resource: string, path: string, body: unknown): Promise<{ status: number; op_id: string }>;
-  reconfigure(id: string, variant: "baseline" | "candidate" | "bench_overbroad" | "bench_residual"): void;
+  reconfigure(id: string, variant: "baseline" | "candidate" | "bench_overbroad" | "bench_residual" | "bench_misbound"): void;
   /** li-next D: benchmark distractor policy variants accepted on this run's supervisor (default false). */
   distractorVariants?(): boolean;
   restartObserver(id: string): void;
@@ -54,7 +54,7 @@ export const REPAIR_OPERATIONS: Record<RepairActionType, TypedOperation> = {
     },
     desired: (h, ref, t) => variantOf(h, t) === ref.slice("policy:".length),
     capture: (h, _ref, t) => ({ variant: variantOf(h, t) }),
-    async apply(h, ref, t) { h.reconfigure(t, ref.slice("policy:".length) as "baseline" | "candidate" | "bench_overbroad" | "bench_residual"); return { status: 200, op_id: null }; },
+    async apply(h, ref, t) { h.reconfigure(t, ref.slice("policy:".length) as "baseline" | "candidate" | "bench_overbroad" | "bench_residual" | "bench_misbound"); return { status: 200, op_id: null }; },
     async compensate(h, _ref, t, pre) {
       const prev = pre.variant;
       if (prev !== "baseline" && prev !== "candidate") return { outcome: "not_restored", reason: NOT_RESTORED(`the previous policy of ${t} was ${prev ?? "unknown"}, not a reviewed variant`) };

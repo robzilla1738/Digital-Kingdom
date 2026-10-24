@@ -66,7 +66,7 @@ describe("li-next D selectors (visible data only)", () => {
     const t = BENCH_DISTRACTOR_TEMPLATES.find((x) => x.class === "misleading")!;
     expect(t).toMatchObject({ benchmark_distractor: true, ref: "policy:bench_misbound", target: "api" });
     // the declared (model) semantics mispredict: they say every cross-tenant read is refused and own reads kept;
-    // the runtime only guards the write route (see next-d-distractor-gating.test.ts)
+    // the runtime only guards the non-read routes (see next-d-distractor-gating.test.ts)
     expect(apiTenantDecision("bench_misbound", "isolated", "tenant-a", "tenant-b")).toBe("denies");
     expect(apiTenantDecision("bench_misbound", "isolated", "tenant-b", "tenant-a")).toBe("denies");
     expect(apiTenantDecision("bench_misbound", "isolated", "tenant-a", "tenant-a")).toBe("allows");
@@ -74,7 +74,7 @@ describe("li-next D selectors (visible data only)", () => {
 });
 
 describe("li-next D benchmark end to end (disposable leased LW-01 worlds, 127.0.0.1)", () => {
-  it("catches every positive control, the reasoning selector is correct everywhere, rank-1 cannot abstain", async () => {
+  it("catches every positive control, reasoning is correct wherever predictions are truthful (and caught when misled), rank-1 cannot abstain", async () => {
     const r = await runRepairBench();
     expect(r.failures).toEqual([]);
     expect(r.ok).toBe(true);

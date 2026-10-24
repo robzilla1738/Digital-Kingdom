@@ -49,10 +49,11 @@ export const REPAIR_REF_PATTERN: Record<RepairActionType, RegExp> = {
 /**
  * li-next D: BENCHMARK DISTRACTOR policy references (reviewed, synthetic, deliberately wrong repairs used only by the
  * local repair-selection benchmark: `bench_overbroad` also breaks permitted tenant reads, `bench_residual` leaves
- * cross-tenant access to tenant-a open). Accepted ONLY on a supervisor started with `benchmarkDistractorVariants: true`;
+ * cross-tenant access to tenant-a open, `bench_misbound` is the MISLEADING-prediction distractor: its declared purpose is
+ * tenant isolation but it is bound to the non-read routes only, so cross-tenant reads stay open). Accepted ONLY on a supervisor started with `benchmarkDistractorVariants: true`;
  * every other supervisor refuses them exactly like any other unreviewed reference. No production template emits them.
  */
-export const BENCH_DISTRACTOR_POLICY_REF = /^policy:bench_(overbroad|residual)$/;
+export const BENCH_DISTRACTOR_POLICY_REF = /^policy:bench_(overbroad|residual|misbound)$/;
 export const refAllowed = (type: RepairActionType, ref: string, distractors: boolean) =>
   REPAIR_REF_PATTERN[type].test(ref) || (distractors && type === "set_gateway_policy" && BENCH_DISTRACTOR_POLICY_REF.test(ref));
 /** Provider identifiers that must never become a lab target, even when they fit the plain-id pattern. */

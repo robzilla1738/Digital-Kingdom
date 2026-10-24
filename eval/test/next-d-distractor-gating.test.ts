@@ -33,13 +33,13 @@ describe("li-next D benchmark distractor variants", () => {
     const w = await world(true);
     try {
       const a = await w.login("acct:tenant-a:user"), b = await w.login("acct:tenant-b:user");
-      const write = async (session: string, tenant: string) => (await w.run.request(w.operatorToken, { resource: "ingress", method: "POST", path: `/tenants/${tenant}/records`, headers: { "x-world-session": session }, body: { value: "x" } })).status;
+      const write = async (session: string, tenant: string) => (await w.run.request(w.operatorToken, { resource: "ingress", method: "POST", path: `/tenants/${tenant}/jobs`, headers: { "x-world-session": session }, body: {} })).status; // the ingress forwards POST /jobs (not POST /records)
       const m = w.lease("policy:bench_misbound");
       expect((await new RepairController(w.run, m.ctl).execute(m.l.token, m.pl as never)).state).toBe("completed");
       expect(await w.read(a, "tenant-b")).toBe(200); // the prohibited read is still possible
       expect(await w.read(b, "tenant-a")).toBe(200);
       expect(await w.read(a, "tenant-a")).toBe(200);
-      expect(await write(a, "tenant-b")).toBe(403); // the policy is bound to the write route only
+      expect(await write(a, "tenant-b")).toBe(403); // the policy is bound to the non-read (write/job) routes only
     } finally { await w.stop(); }
   });
   it("on a benchmark supervisor: overbroad breaks own-tenant reads; residual leaves tenant-a readable cross-tenant", async () => {
