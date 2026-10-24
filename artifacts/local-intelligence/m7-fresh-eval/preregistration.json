@@ -1,0 +1,433 @@
+{
+  "schema": "dk.local.eval_preregistration.v1",
+  "id": "li-m7-7f4a12cd",
+  "created_at": "2026-10-24T09:26:51.657Z",
+  "repository_commit": "407d9e393941a2c65ea58ff45127d52e70e5ff9f",
+  "working_tree_dirty": false,
+  "question": "On newly generated held-out documents never seen by any run, does the guided investigation-contract loop (C3) differ from the full tool set (C1) and the event tools (C2) in end-to-end success, structured correctness, retrieval and unsupported claims, without expanding authority?",
+  "conditions": [
+    {
+      "id": "C1",
+      "label": "existing full investigation tools",
+      "mcp_env": {
+        "DK_MCP_TOOLS": "investigation"
+      },
+      "description": "The existing 22-tool read-only investigation MCP profile (overview, findings, event search/detail, coverage, cases, recipes, bundles, ...)."
+    },
+    {
+      "id": "C2",
+      "label": "event tools with context",
+      "mcp_env": {
+        "DK_MCP_TOOLS": "dk_search_events,dk_get_event"
+      },
+      "description": "Only dk_search_events and dk_get_event; search returns query completeness and current coverage, detail returns finding references. Not a raw-only condition."
+    },
+    {
+      "id": "C3",
+      "label": "guided investigation contract",
+      "mcp_env": {
+        "DK_MCP_PROFILE": "investigation-read"
+      },
+      "description": "The LP11 focused investigation-read profile over the LP08 contract, LP09 job (run by the deterministic planner) and LP10 packets/claim checks."
+    }
+  ],
+  "model": {
+    "route": "ai-gateway (https://ai-gateway.vercel.sh/v1)",
+    "id": "meta/muse-spark-1.3-contributor",
+    "decoding": "provider defaults (temperature not set); reasoning not requested and not stored",
+    "limits": {
+      "maxToolCalls": 24,
+      "maxModelCalls": 30,
+      "maxCompletionTokens": 16000,
+      "maxPromptTokensTotal": 600000,
+      "timeoutMs": 300000,
+      "toolResultCharLimit": 60000
+    }
+  },
+  "prompt": {
+    "version": "li-p1",
+    "system_sha256": "75c85e450c2188d1af985397ed2b7613b3f1790673203764a4c30bbe0d04a7c1",
+    "public_task_version": "li-task-1",
+    "public_task_sha256": {
+      "saas-storefront": "d8d02e5304ed7a4088c5f92cc39009a5ed6b48cb3202be02f25a85c6bc99dbfd",
+      "agent-workspace": "0bf5d435c4cd0078e9b64c0d068f33e043c4ca46ebaf38ab81451823782be4fa",
+      "delivery-identity": "3426900cccfbceb7bca8160b30668c26fc10d66bd671ebc4d2237f1aa3126033"
+    }
+  },
+  "referee": "li-referee-2",
+  "generator": "li-heldout-gen-1",
+  "master_seed_sha256": "d111f98e198e83ee9c603b6e0644af819ac7fab5cea3646f5c828b143306654b",
+  "order_seed": "f7438bb22eb14728",
+  "dev_documents": [],
+  "heldout_documents": [
+    {
+      "slot_doc": "lh-3f97f7cb12",
+      "family": "saas-storefront",
+      "doc_sha256": "6701d81f916c5757417d09e347af282c8e03e40a15098ec477a53d323416ef81",
+      "seed_commitment": "7e9a5ba0495b64ae065a04c8e125f35ce306c9fc61b85734403153a4aab740eb",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-3d3bc9f7bb",
+      "family": "agent-workspace",
+      "doc_sha256": "eaedc20c102032c1cba4f9c6f46b38ef2f60cfd63ee09e680e898e6ae8b106bf",
+      "seed_commitment": "af4547d69cf83f80fa3b3a2eec6915d1a6ce4277050550805a5095074290b2ac",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-4f5e0a0ac2",
+      "family": "delivery-identity",
+      "doc_sha256": "b27d8e775182a95cbc5bdb46623d42581e2b5be780a61df524be69936e05f018",
+      "seed_commitment": "b3f5663abde40bcf3806918ef500fbc16c12ad100043c147d4f00ca6fb916961",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-5d1f5e157e",
+      "family": "saas-storefront",
+      "doc_sha256": "ad12eb836e7fe02d4a0f05b1389286161b2e939970fe11e275305e027c3b0652",
+      "seed_commitment": "5979aa9414e4b2047ef92c3dae497f4ccd110891e0850facca1a056076627edb",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-cbf8feaf21",
+      "family": "agent-workspace",
+      "doc_sha256": "331214ebfc3a645cec994c79cefa3a57663ddeeab00c7ce7c3db553bcf322626",
+      "seed_commitment": "0c7d98c5222166f5bd94921ea5d52975956f4dc9432789c24dce9809eb75fd85",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-17757478f2",
+      "family": "delivery-identity",
+      "doc_sha256": "20e41b533dea288f6adbd753242f597e24b9527082e19d01d2ea0363491204c0",
+      "seed_commitment": "20b6830ef481196538a812a78f9a4e5e2fb164b17621925bdb5aeeb090e62645",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-b4ff82e8bf",
+      "family": "saas-storefront",
+      "doc_sha256": "1921ae0dc8bf46310184d61d013163db33d36152c48720073ca7b634fe15490a",
+      "seed_commitment": "9a38de817b4379e290d758a5b6b9fb66a027a7b098e24ea26b022ea7ed7dbccc",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-462028f6b3",
+      "family": "agent-workspace",
+      "doc_sha256": "0e0d67cfa65a6ca23bbfccbefdb2c0e687aaba76e0b8c6c086e5dcd29cd264c7",
+      "seed_commitment": "915fa4bfb2e670f33146f0176d59a3b09dc8de22b627ec6cd20e4b71be07dfb8",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-247dd4848d",
+      "family": "delivery-identity",
+      "doc_sha256": "dcf081aa7838a8a34cfb036ce433595320c34e49d32cd6cdf18ca23e04782eda",
+      "seed_commitment": "cc5beaa85b93d1dbff7a907427434f7935b4a91aa9ca6bba589d174842c5deb2",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-bd558c1665",
+      "family": "saas-storefront",
+      "doc_sha256": "10456ad354bb4f6281c86ed67f17b326df008d3d41476cada809e04da37d7fc6",
+      "seed_commitment": "70820fa100a65f378a1e5a2ac679581af37ec9f30d58968874b89cf30501ea07",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-a98b17fb64",
+      "family": "agent-workspace",
+      "doc_sha256": "000b082b6c7a414e7fbe087517d6a2cf999529a47bcb6e4ddd21423ae5a36f32",
+      "seed_commitment": "1f1678de1df531d87fd22aa4d04f7103b5a96c1cbe6f5bcb77af1b4b5bd9969e",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-c104d94ade",
+      "family": "delivery-identity",
+      "doc_sha256": "e0035eaee8eaaece86c31de56b71690ea58b29f9817f69caa642f34b5508465c",
+      "seed_commitment": "94989e8a8b9ac455f0e2a9cdb79ca2b990360f8ed3fb1c202131df9aa4b7cc2b",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    }
+  ],
+  "repetitions": 1,
+  "order": [
+    {
+      "index": 0,
+      "block": "heldout",
+      "doc": "lh-247dd4848d",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 1,
+      "block": "heldout",
+      "doc": "lh-247dd4848d",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 2,
+      "block": "heldout",
+      "doc": "lh-247dd4848d",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 3,
+      "block": "heldout",
+      "doc": "lh-cbf8feaf21",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 4,
+      "block": "heldout",
+      "doc": "lh-cbf8feaf21",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 5,
+      "block": "heldout",
+      "doc": "lh-cbf8feaf21",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 6,
+      "block": "heldout",
+      "doc": "lh-5d1f5e157e",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 7,
+      "block": "heldout",
+      "doc": "lh-5d1f5e157e",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 8,
+      "block": "heldout",
+      "doc": "lh-5d1f5e157e",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 9,
+      "block": "heldout",
+      "doc": "lh-462028f6b3",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 10,
+      "block": "heldout",
+      "doc": "lh-462028f6b3",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 11,
+      "block": "heldout",
+      "doc": "lh-462028f6b3",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 12,
+      "block": "heldout",
+      "doc": "lh-a98b17fb64",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 13,
+      "block": "heldout",
+      "doc": "lh-a98b17fb64",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 14,
+      "block": "heldout",
+      "doc": "lh-a98b17fb64",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 15,
+      "block": "heldout",
+      "doc": "lh-3d3bc9f7bb",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 16,
+      "block": "heldout",
+      "doc": "lh-3d3bc9f7bb",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 17,
+      "block": "heldout",
+      "doc": "lh-3d3bc9f7bb",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 18,
+      "block": "heldout",
+      "doc": "lh-4f5e0a0ac2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 19,
+      "block": "heldout",
+      "doc": "lh-4f5e0a0ac2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 20,
+      "block": "heldout",
+      "doc": "lh-4f5e0a0ac2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 21,
+      "block": "heldout",
+      "doc": "lh-17757478f2",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 22,
+      "block": "heldout",
+      "doc": "lh-17757478f2",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 23,
+      "block": "heldout",
+      "doc": "lh-17757478f2",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 24,
+      "block": "heldout",
+      "doc": "lh-b4ff82e8bf",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 25,
+      "block": "heldout",
+      "doc": "lh-b4ff82e8bf",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 26,
+      "block": "heldout",
+      "doc": "lh-b4ff82e8bf",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 27,
+      "block": "heldout",
+      "doc": "lh-bd558c1665",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 28,
+      "block": "heldout",
+      "doc": "lh-bd558c1665",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 29,
+      "block": "heldout",
+      "doc": "lh-bd558c1665",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 30,
+      "block": "heldout",
+      "doc": "lh-3f97f7cb12",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 31,
+      "block": "heldout",
+      "doc": "lh-3f97f7cb12",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 32,
+      "block": "heldout",
+      "doc": "lh-3f97f7cb12",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 33,
+      "block": "heldout",
+      "doc": "lh-c104d94ade",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 34,
+      "block": "heldout",
+      "doc": "lh-c104d94ade",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 35,
+      "block": "heldout",
+      "doc": "lh-c104d94ade",
+      "condition": "C1",
+      "repetition": 1
+    }
+  ],
+  "fresh_conversation_per_attempt": true,
+  "fresh_world_per_attempt": true,
+  "budget": {
+    "ledger_path": "artifacts/local-intelligence/m7-fresh-eval/model-spend-ledger.json",
+    "phase_cap_usd": 3,
+    "prior_phase_spend_usd": 1.725762,
+    "allowance_usd": 0.9,
+    "run_stop_usd": 0.82,
+    "max_phase_total_usd": 2.625762,
+    "reservation": "worst-case cost reserved before every request; failed requests keep the reserved maximum; the run stop refuses new attempts once this ledger reaches it"
+  },
+  "metrics": {
+    "primary": [
+      "end_to_end_success",
+      "structured predicates admissible / eligible",
+      "retrieval: required records exposed / reachable"
+    ],
+    "secondary": [
+      "claim validity",
+      "unsupported affirmatives",
+      "cost and effort"
+    ],
+    "separate": [
+      "coverage limitations",
+      "AI critique not run",
+      "human review deferred (EXT05)"
+    ],
+    "invalid": "an invalid preflight is excluded from model denominators and reported separately; provider errors, timeouts, limits and schema failures stay in the denominator"
+  },
+  "analysis": "Counts per condition on the fresh held-out block only; per document the three conditions are adjacent (a spend stop never leaves a document half compared); small sample, no significance test, no pooled superiority claim; results only after seal."
+}
