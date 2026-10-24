@@ -55,15 +55,15 @@ describe("owned module shader recovery", () => {
     const renderer = { debug: { checkShaderErrors: false, onShaderError: prior }, getContext: () => context, domElement: { dataset: {} } } as unknown as THREE.WebGLRenderer;
     return { renderer, prior, fail(name: string, contextLost = false, fragmentName = name) { vertexSource = `#define SHADER_NAME ${name}\nPRIVATE_DRIVER_PAYLOAD`; fragmentSource = `#define SHADER_NAME ${fragmentName}\nPRIVATE_DRIVER_PAYLOAD`; lost = contextLost; renderer.debug.onShaderError!(context, {} as Parameters<NonNullable<typeof renderer.debug.onShaderError>>[1], vertex, fragment); } };
   }
-  it("reuses a bounded 30-material pool with unique programs and matching default shadow packing", () => {
+  it("reuses a bounded 48-material pool (16 modules x 3, kit 2.1.0) with unique programs and matching default shadow packing", () => {
     const keys = new Set<string>(), names = new Set<string>();
     for (const id of Object.keys(MODULE_CATALOG) as ModuleId[]) {
       const family = moduleMaterials(id); expect(moduleMaterials(id)).toBe(family);
       expect(family.depth.depthPacking).toBe(THREE.RGBADepthPacking);
       for (const material of Object.values(family)) { keys.add(material.customProgramCacheKey()); names.add(material.name); }
     }
-    expect(keys.size).toBe(30); expect(names.size).toBe(30); expect(cachedModuleMaterialCount()).toBe(30);
-    expect(() => moduleMaterials("private-invalid-family" as ModuleId)).toThrow(); expect(cachedModuleMaterialCount()).toBe(30);
+    expect(keys.size).toBe(48); expect(names.size).toBe(48); expect(cachedModuleMaterialCount()).toBe(48);
+    expect(() => moduleMaterials("private-invalid-family" as ModuleId)).toThrow(); expect(cachedModuleMaterialCount()).toBe(48);
   });
   it("notifies all proven same-family owners once, including depth failures, but no healthy family", async () => {
     const { renderer, prior, fail } = fakeRenderer(), bad = moduleMaterials("gatehouse"), healthy = moduleMaterials("hall");
