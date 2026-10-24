@@ -29,6 +29,8 @@ export interface WorldOpts {
   assets?: string[];
   /** file-backed database (restart tests) */
   dbPath?: string;
+  /** a blocked request on api contradicted by an independent db effect (trusted request id); links the blocked finding too */
+  contradiction?: boolean;
 }
 
 export async function world(o: WorldOpts = {}) {
@@ -39,8 +41,9 @@ export async function world(o: WorldOpts = {}) {
   expect((await app.inject({ method: "POST", url: "/api/projects", headers: h(admin), payload: { id: project, name: "Shop", dataset_kind: "live" } })).statusCode).toBe(200);
   const g = liveGraph(project);
   expect((await app.inject({ method: "POST", url: `/api/projects/${project}/graph`, headers: h(admin), payload: g })).statusCode).toBe(200);
-  const sources: Record<string, unknown>[] = [{ id: "app", label: "checkout app", kind: "app_security", asset_ids: ["api"], identity_namespace: "idp:corp", stale_after_seconds: 3600 }];
-  if (!o.noDbSource) sources.push({ id: "dbaudit", label: "db audit", kind: "db_audit", asset_ids: ["db"], identity_namespace: "idp:corp", stale_after_seconds: 3600 });
+  const trust = o.contradiction ? { trusts_request_ids: true } : {};
+  const sources: Record<string, unknown>[] = [{ id: "app", label: "checkout app", kind: "app_security", asset_ids: ["api"], identity_namespace: "idp:corp", stale_after_seconds: 3600, ...trust }];
+  if (!o.noDbSource) sources.push({ id: "dbaudit", label: "db audit", kind: "db_audit", asset_ids: ["db"], identity_namespace: "idp:corp", stale_after_seconds: 3600, ...trust });
   for (const s of sources) expect((await app.inject({ method: "POST", url: `/api/projects/${project}/sources`, headers: h(admin), payload: s })).statusCode).toBe(200);
   let n = 0;
   const send = (src: string, sec: number, p: Record<string, unknown>) => {
@@ -53,6 +56,7 @@ export async function world(o: WorldOpts = {}) {
   if (!o.noDbSource) {
     for (let s = 0; s <= 7200; s += 600) send("dbaudit", s, { action: "data_access", outcome: "success", actor_ref: s === 3000 ? "alice" : "etl" });
     for (let i = 0; i < (o.ties ?? 0); i++) send("dbaudit", 3600, { action: "data_access", outcome: "success", actor_ref: i === Math.floor((o.ties ?? 0) * 0.7) ? "mallory-key" : "etl" });
+    if (o.contradiction) { send("app", 4000, { action: "request_received", outcome: "blocked", request_id: "req-77", route: "/admin/export", rule_ref: "waf-942" }); send("dbaudit", 4001, { action: "data_access", outcome: "success", request_id: "req-77", actor_ref: "svc-export" }); }
     if (o.dbOutage) { send("dbaudit", o.dbOutage[0], { action: "sensor_unavailable", outcome: "unknown" }); send("dbaudit", o.dbOutage[1], { action: "sensor_restored", outcome: "unknown" }); }
   }
   const drain = () => { while (ctx.store.processBatch().processed) { /* drain */ } };
@@ -67,6 +71,13 @@ export async function world(o: WorldOpts = {}) {
   const link = await app.inject({ method: "POST", url: `/api/projects/${project}/cases/${kase.id}/items`, headers: h(analyst), payload: { kind: "finding", ref: finding.id, expected_version: kase.version } });
   expect(link.statusCode).toBe(200);
   kase = link.json();
+  if (o.contradiction) {
+    const blocked = ctx.store.listFindings(project).find((f) => f.kind === "blocked_request_reported" && f.counterevidence_event_ids.length)!;
+    expect(blocked).toBeTruthy();
+    const l2 = await app.inject({ method: "POST", url: `/api/projects/${project}/cases/${kase.id}/items`, headers: h(analyst), payload: { kind: "finding", ref: blocked.id, expected_version: kase.version } });
+    expect(l2.statusCode).toBe(200);
+    kase = l2.json();
+  }
   const contracts = new InvestigationContracts(ctx.store, (p, id) => cases.get(p, id) as never);
   const services = (store: Store = ctx.store, opts: JobsOptions = {}, secret = "test-secret") => {
     const cs = new Cases(store);

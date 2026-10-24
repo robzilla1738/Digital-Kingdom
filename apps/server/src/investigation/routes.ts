@@ -5,6 +5,8 @@ import type { Cases } from "../cases.ts";
 import { InvestigationContracts } from "./contracts.ts";
 import { checkAgainstContract, draftUnresolvedConclusion } from "./conclusions.ts";
 import { InvestigationJobs, JOB_LIMITS, type JobsOptions } from "./jobs.ts";
+import { EvidencePackets, PACKET_LIMITS } from "./packets.ts";
+import { ClaimChecker, listConclusions, proposeConclusion } from "./claims.ts";
 
 /**
  * Local Intelligence Phase M2 HTTP surface (LP08+). Every route rechecks project authorization through
@@ -84,7 +86,36 @@ export function registerInvestigationRoutes(app: FastifyInstance, d: Investigati
   app.post(`/api/projects/:p/jobs/:jid/budget`, { preHandler: authed("analyst") }, async (req) => jobs.extendBudget(store.require(req.principal!, P(req), "analyst").id, J(req), strict(body(req), ["add_units"]), who(req)));
   app.post(`/api/projects/:p/jobs/:jid/cancel`, { preHandler: authed("analyst") }, async (req) => jobs.cancel(store.require(req.principal!, P(req), "analyst").id, J(req), strict(body(req), ["reason"]).reason, who(req)));
 
-  return { contracts, jobs, afterCaseChange: (projectId: string, caseId: string, actor: string) => {
+  // ---- LP10 compact evidence packets, inspection, claim checks and conclusion proposals ----
+  const packets = new EvidencePackets(store, d.secret, contracts);
+  const checker = new ClaimChecker(store, contracts);
+  app.get(`/api/projects/:p/cases/:id/packet`, { preHandler: authed() }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "viewer").id;
+    const q = req.query as { max_bytes?: string; cursor?: string };
+    const unknown = Object.keys(q).filter((k) => k !== "max_bytes" && k !== "cursor");
+    if (unknown.length) throw new HttpError(422, `unsupported parameter(s) ${unknown.join(", ")}`);
+    return packets.build(pid, C(req), { maxBytes: q.max_bytes === undefined ? undefined : Number(q.max_bytes), cursor: q.cursor, principal: who(req) });
+  });
+  app.get(`/api/projects/:p/cases/:id/refs`, { preHandler: authed() }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "viewer").id;
+    const ids = String((req.query as { ids?: string }).ids ?? "").split(",").map((x) => x.trim()).filter(Boolean);
+    if (ids.some((x) => x.length > 200)) throw new HttpError(422, "ids: each ref at most 200 characters");
+    return packets.inspect(pid, C(req), ids, who(req));
+  });
+  app.post(`/api/projects/:p/cases/:id/packet/export`, { preHandler: authed("analyst") }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "analyst").id;
+    const b = strict(body(req), ["max_bytes"]);
+    return packets.export(pid, C(req), b.max_bytes === undefined ? undefined : Number(b.max_bytes), who(req));
+  });
+  app.post(`/api/verify-packet-export`, { preHandler: authed() }, async (req) => EvidencePackets.verifyExport(req.body, d.secret));
+  app.post(`/api/projects/:p/cases/:id/conclusions/check`, { preHandler: authed() }, async (req) => checker.check(store.require(req.principal!, P(req), "viewer").id, C(req), req.body));
+  app.post(`/api/projects/:p/cases/:id/conclusions`, { preHandler: authed("analyst") }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "analyst").id;
+    return proposeConclusion(store, checker, pid, C(req), req.body, who(req), req.principal!.principalType, contracts.contractId(pid, C(req)));
+  });
+  app.get(`/api/projects/:p/cases/:id/conclusions`, { preHandler: authed() }, async (req) => ({ proposals: listConclusions(store, store.require(req.principal!, P(req), "viewer").id, C(req)) }));
+
+  return { contracts, jobs, packets, checker, limits: { jobs: JOB_LIMITS, packets: PACKET_LIMITS }, afterCaseChange: (projectId: string, caseId: string, actor: string) => {
     if (store.db.prepare("SELECT 1 FROM investigation_contracts WHERE project_id = ? AND case_id = ?").get(projectId, caseId)) {
       try { contracts.refresh(projectId, caseId, actor, "case changed"); } catch (e) { if (!(e instanceof HttpError)) throw e; /* e.g. scope now unbounded: the view reports it */ }
     }

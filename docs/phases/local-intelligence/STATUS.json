@@ -347,7 +347,7 @@
     "LP08"
    ],
    "status": "implemented_locally_verified",
-   "commit": "PENDING",
+   "commit": "882d987",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP09.md",
    "branch": "phase/li-m2 (worktree)",
@@ -364,10 +364,16 @@
    "depends_on": [
     "LP09"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "PENDING",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP10.md",
+   "branch": "phase/li-m2 (worktree)",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "98 files passed, 1 skipped; 708 passed, 1 skipped",
+    "validate:fixtures": "exit 0"
+   }
   },
   {
    "id": "LP11",
@@ -928,23 +934,31 @@
   },
   "LP10-A1": {
    "package": "LP10",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp10-packets.test.ts > LP10-A1 (2 tests: machine-readable omissions and exact-once expansion; not-stored required record is an individual omission)"
+   ]
   },
   "LP10-A2": {
    "package": "LP10",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp10-packets.test.ts > LP10-A2 (2 tests: availability vs existence vs project scope; cross-revision scope and stale revision)"
+   ]
   },
   "LP10-A3": {
    "package": "LP10",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp10-packets.test.ts > LP10-A3 (3 tests: narrative flags keep draft, predicates checked only against delivered records, absence claims)"
+   ]
   },
   "LP10-A4": {
    "package": "LP10",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp10-packets.test.ts > LP10-A4 (3 tests: counterevidence first and uncertainty intact under limits, signed export with tamper detection, reads change nothing)"
+   ]
   },
   "LP11-A1": {
    "package": "LP11",
@@ -1489,6 +1503,16 @@
    "id": "D-LP09-2",
    "date": "2026-10-23",
    "decision": "A result planned under an earlier contract revision counts only when that obligation's target and (if interval-bound) the interval are unchanged since; decisions bump the revision without invalidating unrelated in-flight work."
+  },
+  {
+   "id": "D-LP10-1",
+   "date": "2026-10-23",
+   "decision": "Claim availability = delivered to the investigator through a contract channel (job step, packet page, inspection) under a contract revision with the same scope; packet/inspect reads append to that access log but change no case, contract, job or conclusion."
+  },
+  {
+   "id": "D-LP10-2",
+   "date": "2026-10-23",
+   "decision": "Packets never trim the uncertainty section (413 instead); counterevidence is ordered first; required records are individual omissions; machine_proved is never emitted and flagged narrative keeps a conclusion a draft pending human semantic review (EXT05, deferred)."
   }
  ],
  "model_spend_usd": {
@@ -1497,10 +1521,10 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP10",
-  "why": "LP10 (Deliver compact evidence and check claims) depends on LP09, now implemented on phase/li-m2.",
+  "package": "LP11",
+  "why": "LP11 (Expose a focused MCP workflow) depends on LP10, now implemented on phase/li-m2.",
   "eligible_now": [
-   "LP10"
+   "LP11"
   ]
  },
  "milestones": {

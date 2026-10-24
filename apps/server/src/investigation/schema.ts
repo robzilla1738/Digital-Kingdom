@@ -29,3 +29,10 @@ CREATE TABLE investigation_job_events (id INTEGER PRIMARY KEY AUTOINCREMENT, job
 CREATE INDEX investigation_job_events_job ON investigation_job_events (job_id, id);
 CREATE TABLE investigation_deliveries (id INTEGER PRIMARY KEY AUTOINCREMENT, project_id TEXT NOT NULL, contract_id TEXT NOT NULL, contract_revision INTEGER NOT NULL, channel TEXT NOT NULL CHECK (channel IN ('job','packet','inspect')), channel_id TEXT NOT NULL, step_id TEXT NOT NULL, ref TEXT NOT NULL, kind TEXT NOT NULL, role TEXT NOT NULL, detail TEXT, principal TEXT NOT NULL, at TEXT NOT NULL, UNIQUE (channel, channel_id, step_id, ref));
 CREATE INDEX investigation_deliveries_contract ON investigation_deliveries (contract_id, contract_revision, ref);`;
+
+/** LP10: conclusion proposals with their deterministic check result (append-only). */
+export const INVESTIGATION_CONCLUSIONS_MIGRATION = `
+CREATE TABLE investigation_conclusions (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, case_id TEXT NOT NULL, contract_id TEXT NOT NULL, contract_revision INTEGER NOT NULL, body TEXT NOT NULL, check_result TEXT NOT NULL, status TEXT NOT NULL, created_by TEXT NOT NULL, principal_type TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE INDEX investigation_conclusions_case ON investigation_conclusions (project_id, case_id, created_at);
+CREATE TRIGGER investigation_conclusions_append_only_u BEFORE UPDATE ON investigation_conclusions BEGIN SELECT RAISE(ABORT, 'conclusion proposals are append-only'); END;
+CREATE TRIGGER investigation_conclusions_append_only_d BEFORE DELETE ON investigation_conclusions BEGIN SELECT RAISE(ABORT, 'conclusion proposals are append-only'); END;`;

@@ -60,7 +60,7 @@ export function draftUnresolvedConclusion(contract: InvestigationContract): Conc
   const claims: ConclusionClaim[] = unmet.slice(0, 50).map((o, i) => ({
     id: `unresolved-${i + 1}`, type: "unresolved",
     text: `${o.question} This part of the case question is not assessable from the records retrieved so far.`.slice(0, 2000),
-    evidence_refs: [], coverage_refs: o.kind === "coverage" ? o.query_refs.slice(0, 200) : [], obligation_ids: [o.id],
+    evidence_refs: [], coverage_refs: o.kind === "coverage" ? o.query_refs.filter((q) => q.startsWith("cov:")).slice(0, 200) : [], obligation_ids: [o.id],
     uncertainty: (o.reason || `obligation is ${o.status}`).slice(0, 1000).trim() || `obligation is ${o.status}`,
   }));
   const conclusion: Conclusion = {
