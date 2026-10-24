@@ -196,3 +196,4 @@ Today this refuses with exit 2. It is recorded as `ai_selector: "model"` only wh
     flush; 999 passed / 1 failed). That test, its code and the SDK are untouched by this branch, and the same tree
     passed on the two runs above, so it is treated as a load-dependent flake, not a regression.
   - Failed job re-run: `check` **success**. `browser-pilot` was still running when this was appended.
+- Update: run 40136855523 (`4cbd172`, last code commit, includes the CI bench step) completed **success** (check + browser-pilot). Run 40136960674 (`6c21ce1`, receipt only) browser-pilot was still running at this append; later receipt commits are `[skip ci]`.
