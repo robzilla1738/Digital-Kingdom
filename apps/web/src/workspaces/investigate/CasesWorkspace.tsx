@@ -7,6 +7,7 @@ import { fmtDateTime } from "../../lib/vocab.ts";
 import { caseDrafts, type DraftScope } from "../../lib/caseDrafts.ts";
 import type { Workbench } from "../../lib/workbench.ts";
 import { CaseWorkbench } from "./CaseWorkbench.tsx";
+import { AttentionPanel } from "./AttentionPanel.tsx";
 
 /**
  * R03.1 durable cases. A case is the analyst's investigation: scope, questions, linked findings (each pinned
@@ -76,6 +77,7 @@ export function CasesWorkspace() {
   return <section className="workspace-page cases-workspace" aria-label="Cases workspace">
     <div className="workspace-heading"><div><h1>Cases</h1><p className="workspace-lede">Track investigations, questions, and pinned evidence.</p></div></div>
     {message && <p className="scope-note" role="status">{message}</p>}
+    <AttentionPanel project={project} canEdit={canEdit} onOpenCase={(id) => { if (id === selected) return; setDetail(null); setSelected(id); }} />
     <div className="cases-layout">
       <div className="section-card" aria-label="Case list">
         <h2>Cases</h2>

@@ -328,3 +328,12 @@
 .wb-tradeoffs th, .wb-tradeoffs td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--divider); vertical-align:top; }
 .wb-tradeoffs th { color:var(--text-3); font-weight:500; }
 .wb-tradeoffs code { overflow-wrap:anywhere; }
+/* LP15 attention queue */
+.attention-panel { margin-bottom:16px; }
+.attention-panel .attention-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.attention-list { list-style:none; margin:8px 0 0; padding:0 4px 0 0; display:grid; gap:8px; max-height:340px; overflow-y:auto; }
+.attention-list li { border:1px solid var(--divider); border-radius:8px; padding:8px 10px; display:grid; gap:4px; min-width:0; }
+.attention-list .attention-row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.attention-list .attention-actions { display:flex; gap:12px; align-items:center; }
+.attention-list .small { overflow-wrap:anywhere; }
+.pill.attention-high { color:var(--warning); border-color:#776342; }

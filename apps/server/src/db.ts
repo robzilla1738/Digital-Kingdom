@@ -6,6 +6,7 @@ import { DECEPTION_MIGRATION, BUNDLES_MIGRATION, CASES_MIGRATION, CONNECTORS_MIG
 import { INVESTIGATION_CONTRACTS_MIGRATION, INVESTIGATION_JOBS_MIGRATION, INVESTIGATION_CONCLUSIONS_MIGRATION } from "./investigation/schema.ts";
 import { ANALYSIS_MIGRATION } from "./exploration.ts";
 import { REPAIR_MIGRATION } from "./repair.ts";
+import { ATTENTION_MIGRATION } from "./attention.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -121,6 +122,8 @@ export const MIGRATIONS: string[] = [
   ANALYSIS_MIGRATION,
   // Local Intelligence Phase LP14: reviewable repair candidate sets (plan-only, append-only).
   REPAIR_MIGRATION,
+  // Local Intelligence Phase LP15: local attention queue (durable cursor, deduplicated items, append-only change log).
+  ATTENTION_MIGRATION,
 ];
 
 export function openDb(path: string): DB {
