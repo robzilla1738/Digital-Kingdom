@@ -1050,9 +1050,9 @@
     "LP18",
     "LP28"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "d3eb304",
-   "ci_run": "pending at ledger time",
+   "ci_run": "40075197316 success (check + browser-pilot) on d3eb304; ledger commit 031e69e run 40075237943 success",
    "receipt": "docs/phases/local-intelligence/receipts/LP29.md",
    "branch": "phase/local-intelligence",
    "local_checks": {
@@ -1077,10 +1077,18 @@
     "LP29",
     "LP27"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "implemented_locally_verified",
+   "commit": "b10de50",
+   "ci_run": "pending at ledger time",
+   "receipt": "docs/phases/local-intelligence/receipts/LP30.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "targeted": "examples/reference-app/lp30-robustness.test.ts 3 passed; e2e/usability-redesign.spec.ts 7 passed (run in groups, SwiftShader)",
+    "test": "no product code changed; candidate d3eb304 full suite 962 passed, 1 skipped"
+   },
+   "model_spend_usd": 0,
+   "progress_note": "LP30 done; findings: comparison at 390px hidden behind Show map and overlapping the camera bar (recorded, not fixed)."
   },
   {
    "id": "LP31",
@@ -2016,23 +2024,36 @@
   },
   "LP30-A1": {
    "package": "LP30",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "d3eb304 full suite 962 passed / 1 skipped; CI 40075197316 (check + browser-pilot incl. pilot:redesign)",
+    "docs/phases/local-intelligence/receipts/LP30.md (A1)"
+   ]
   },
   "LP30-A2": {
    "package": "LP30",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp30-robustness.test.ts (8 cycles, cleanup failure surfaced, LP27 variants)",
+    "e2e/usability-redesign.spec.ts > LP30-A2 repeated switching",
+    "artifacts/phase-local-intelligence/M7/lp30-robustness-report.json"
+   ]
   },
   "LP30-A3": {
    "package": "LP30",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "e2e/usability-redesign.spec.ts (6 views x desktop/reduced-motion/390px, failure state)",
+    "artifacts/phase-local-intelligence/M7/screenshots/lp30-*.png",
+    "e2e/missions-redesign.spec.ts"
+   ]
   },
   "LP30-A4": {
    "package": "LP30",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "docs/phases/local-intelligence/receipts/LP30.md (environment, SwiftShader renderer string, deferrals EXT06/manual screen reader kept deferred)"
+   ]
   },
   "LP31-A1": {
    "package": "LP31",
@@ -2414,6 +2435,10 @@
    {
     "id": "li-m6b (LP27 + CI stabilisation)",
     "usd": 0.0
+   },
+   {
+    "id": "li-m7 (LP29 + LP30)",
+    "usd": 0.0
    }
   ],
   "m6_allowance": 2.0,
@@ -2430,14 +2455,12 @@
   "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (LP27 used $0.00; reserved for LP30)."
  },
  "next_action": {
-  "package": "LP30",
-  "why": "LP29 implemented at d3eb304 (CI pending at ledger time); LP27 CI-verified. LP30 needs LP29 + LP27.",
+  "package": "LP31",
+  "why": "LP29 CI-verified (d3eb304, run 40075197316); LP30 implemented at b10de50 (CI pending at ledger time); LP26 CI-verified. LP31 needs LP30 + LP26.",
   "eligible_now": [
-   "LP30"
+   "LP31"
   ],
-  "blocked": {
-   "LP31": "needs LP30 (+LP26)"
-  }
+  "blocked": {}
  },
  "milestones": {
   "M0": {
