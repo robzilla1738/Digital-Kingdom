@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { startLocalCase, type LocalCase } from "../local/controller.ts";
+import { coverageHistory } from "../../apps/server/src/coverage-history.ts";
 
 /**
  * LP26.1 — in a local run the guided contract's coverage obligations must reflect the observers that were actually
@@ -29,7 +30,8 @@ describe("LP26.1: local-run coverage reflects live observers", () => {
     const cov = await coverage(c);
     const effect = cov.find((o) => o.target.asset_id === "deploy-data" && o.target.action === "data_access")!;
     expect(effect, JSON.stringify(cov.map((o) => [o.id, o.status]))).toBeDefined();
-    expect(effect.status, effect.reason).toBe("satisfied");
+    const why = () => JSON.stringify(coverageHistory(c.productStore, c.public.project, { asset: "deploy-data", action: "data_access", after: c.public.interval.after, before: c.public.interval.before }).spans.filter((x) => x.state !== "covered").map((x) => ({ ms: Date.parse(x.to) - Date.parse(x.from), sources: x.sources })));
+    expect(effect.status, `${effect.reason} ${effect.status === "satisfied" ? "" : why()}`).toBe("satisfied");
     // the case interval holds every stored record and does not extend into the future or before the world existed
     const { after, before } = c.public.interval;
     for (const e of await c.storedEvents()) {
@@ -39,6 +41,7 @@ describe("LP26.1: local-run coverage reflects live observers", () => {
     expect(Date.parse(before)).toBeLessThanOrEqual(Date.now());
     const sources = c.productStore.listSources(c.public.project);
     expect(Date.parse(after)).toBeGreaterThanOrEqual(Math.max(...sources.map((s) => Date.parse(s.created_at))));
+    expect(Date.parse(after)).toBeGreaterThanOrEqual(Math.max(...sources.map((s) => Date.parse(c.productStore.sourceHistory(c.public.project, s.id)[0]!.effective_at))));
   }, 90_000);
 
   it("an observer that was not live (disabled for the interval) still leaves the obligation unavailable", async () => {

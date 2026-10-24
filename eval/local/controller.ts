@@ -75,7 +75,9 @@ export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions 
     // LP26.1: the case interval is the run itself — from the moment every observer of this world was registered to
     // the moment its last record was stored. (v1 used [start - 60 s, setup + 120 s]: time before any observer existed
     // and time in the future, which coverage correctly reports as unknown, so no coverage obligation could hold.)
-    const registeredAt = Math.max(...store.listSources(world.project).map((s) => Date.parse(s.created_at)));
+    // (registration time = the later of the source row's created_at and its first configuration revision's effective_at,
+    // which are stamped separately and differ by a few ms on a slow machine)
+    const registeredAt = Math.max(...store.listSources(world.project).flatMap((s) => [Date.parse(s.created_at), ...store.sourceHistory(world!.project, s.id).slice(0, 1).map((r) => Date.parse(r.effective_at))]));
     const { result, truth } = await runScenario(world, doc, { timeScale: 1 });
     await world.flush(); drain();
     const ranUntil = Date.now();
