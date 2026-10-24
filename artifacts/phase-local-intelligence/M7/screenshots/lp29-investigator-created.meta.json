@@ -1,0 +1,22 @@
+{
+  "name": "lp29-investigator-created",
+  "file": "lp29-investigator-created.png",
+  "sha256": "997c9f22c0d66556d390dcd1f7e1877a4fee05739932c1435ecf416398799575",
+  "bytes": 280459,
+  "capturedAt": "2026-10-24T07:42:01.860Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

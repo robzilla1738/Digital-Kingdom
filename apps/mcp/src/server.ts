@@ -280,6 +280,12 @@ export function createServer(client: DkClient, opts: CreateServerOptions = {}): 
     inputSchema: { asset_id: z.string().max(200), project }, annotations: RO,
   }, async ({ asset_id, project: p }) => out(await client.req("GET", client.p(`/assets/${encodeURIComponent(asset_id)}/interior`, p))));
 
+  server.registerTool("dk_local_missions", {
+    title: "Local missions (investigator view)",
+    description: "LP29: local-only synthetic missions as the investigator sees them: mode, reviewed world components, declared sources, budget preview, unknowns, blinded/non-blinded state and runner-reported run lifecycle. Builder-only details are not held by the server (only a SHA-256 commitment). No remote setup is involved. Read-only.",
+    inputSchema: { mission_id: z.string().max(100).optional() }, annotations: RO,
+  }, async ({ mission_id }) => out(await client.req("GET", mission_id ? `/api/local-missions/${encodeURIComponent(mission_id)}` : "/api/local-missions")));
+
   server.registerTool("dk_capabilities", {
     title: "Server capabilities and contract versions",
     description: "Contract versions, recipe versions, query budgets and how incremental delivery works (polling; no push).",

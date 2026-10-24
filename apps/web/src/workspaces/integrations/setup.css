@@ -9,3 +9,19 @@
 .setup-checklist button { min-height:44px; text-align:left; }
 .integration-status { margin-top:16px; border-top:1px solid var(--border); padding-top:12px; font-size:.8125rem; line-height:1.5; overflow-wrap:anywhere; }
 .integration-status p { margin:6px 0; }
+/* LP29 mission desk (stone/slate surfaces from the existing tokens). */
+.mission-desk { display:grid; gap:12px; min-width:0; }
+.mission-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.mission-row button { min-height:44px; }
+.mission-builder,.mission-investigator { min-width:0; overflow-wrap:anywhere; }
+.mission-json { width:100%; min-height:12rem; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.75rem; line-height:1.4; resize:vertical; }
+.mission-list { list-style:none; padding:0; margin:8px 0; display:grid; gap:6px; }
+.mission-item { width:100%; min-height:44px; text-align:left; padding:8px 12px; border-radius:8px; border:1px solid var(--divider); background:transparent; color:var(--text); font:inherit; }
+.mission-item:hover { background:var(--surface); }
+.mission-item[aria-pressed=true] { border-color:var(--text-2); background:var(--surface-3); font-weight:600; }
+.mission-brief .data-table th { text-align:left; font-weight:600; }
+.warning-chip { border-style:dashed; }
+.truth-gate { margin-top:16px; border-top:1px solid var(--border); padding-top:12px; }
+.truth-gate button { min-height:44px; }
+/* Seven integration tabs do not fit 390px: scroll the tab list instead of overlapping labels (LP29 visual check). */
+@media(max-width:767px) { .workspace-page.integrations-workspace .tabs { width:100%; max-width:100%; overflow-x:auto; } .workspace-page.integrations-workspace .tabs button { flex:0 0 auto; min-width:max-content; white-space:nowrap; } }

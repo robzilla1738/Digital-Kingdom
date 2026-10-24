@@ -54,6 +54,11 @@ export interface ServerActions {
   /** LP04 local world preview (pure read) and LP06 local-run reporting. Optional: absent on older servers/mocks. */
   localWorldPreview?(input: { blueprint: string; seed: string }): Promise<unknown>;
   localWorldReporting?(signal?: AbortSignal): Promise<unknown>;
+  /** LP29 mission desk. Optional: absent on older servers/mocks and in the offline demo. */
+  missions?: {
+    templates(signal?: AbortSignal): Promise<unknown>; preview(body: { draft?: unknown; proposal?: unknown }): Promise<unknown>; create(draft: unknown): Promise<unknown>;
+    list(signal?: AbortSignal): Promise<unknown>; get(id: string, signal?: AbortSignal): Promise<unknown>; openTruth(id: string, reason: string): Promise<unknown>; cancel(id: string): Promise<unknown>;
+  };
 }
 export interface NotificationStatus {
   counts: { pending: number; delivered: number; failed: number; acknowledged: number };

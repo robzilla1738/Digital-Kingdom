@@ -1,0 +1,22 @@
+{
+  "name": "lp29-builder-invalid-draft-kept",
+  "file": "lp29-builder-invalid-draft-kept.png",
+  "sha256": "98aeeec4c7dfd7db4936d7764fc2b5b0f1fca6494671c24dda873a5c6ea079ac",
+  "bytes": 263492,
+  "capturedAt": "2026-10-24T07:41:59.395Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "dev",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "project": "demo-castle"
+  },
+  "evidenceClass": "API-backed isolated synthetic server test; not live-production evidence",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim."
+}

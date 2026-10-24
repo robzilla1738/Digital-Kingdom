@@ -11,6 +11,7 @@ export { templateMatches } from "@dk/graph-core";
 export * from "./runtime/verify.ts";
 export type { WorldPlan, VerificationReceipt } from "@dk/contracts";
 export * from "./scenario/dsl.ts";
+export * from "./mission.ts";
 export { canonicalJson } from "@dk/contracts";
 export { isHumanApproval, validateLabLease, validateRepairExecution, validateRepairPlan, validateRepairVerification, validateRepairRegression, LAB_AUTHORIZATION_NAMESPACE } from "@dk/contracts";
 export type { LabLease, RepairAction, RepairExecution, RepairPlan, RepairVerification, RepairRegression } from "@dk/contracts";

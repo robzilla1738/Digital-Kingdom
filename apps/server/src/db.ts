@@ -10,6 +10,7 @@ import { ATTENTION_MIGRATION } from "./attention.ts";
 import { WORLD_LAYOUT_MIGRATION } from "./world-layout.ts";
 import { LOCAL_REPAIR_MIGRATION } from "./local-repairs.ts";
 import { CAPSULE_MIGRATION } from "./capsule.ts";
+import { MISSIONS_MIGRATION } from "./missions.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -132,6 +133,8 @@ export const MIGRATIONS: string[] = [
   // Local Intelligence Phase LP23/LP28: executed local repair links; imported case capsules (separate namespaces).
   LOCAL_REPAIR_MIGRATION,
   CAPSULE_MIGRATION,
+  // Local Intelligence Phase LP29: local missions (brief + truth commitment only) and runner-reported run lifecycle.
+  MISSIONS_MIGRATION,
 ];
 
 export function openDb(path: string): DB {

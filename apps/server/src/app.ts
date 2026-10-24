@@ -40,6 +40,7 @@ import { runtimePolicy } from "./phase-policy.ts";
 import { parseLocalRun, provenanceOf } from "./provenance.ts";
 import { deriveCapability, LOCAL_CONTRACTS, INVESTIGATION_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
 import { registerLocalWorld } from "./local-world.ts";
+import { registerMissions } from "./missions.ts";
 import { registerInvestigationRoutes } from "./investigation/routes.ts";
 import { registerExplorationRoutes, grantElements } from "./exploration.ts";
 import { registerRepairRoutes } from "./repair.ts";
@@ -1077,6 +1078,7 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
 
   // ---- LP04+: local world builder (preview) and local run reporting ----
   registerLocalWorld(app, { store, authed });
+  registerMissions(app, { store, authed, who });
 
   // ---- static web app ----
   const dist = cfg.webDist ?? resolve(import.meta.dirname, "../../web/dist");
