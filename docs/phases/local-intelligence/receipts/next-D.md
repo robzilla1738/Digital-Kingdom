@@ -197,3 +197,122 @@ Today this refuses with exit 2. It is recorded as `ai_selector: "model"` only wh
     passed on the two runs above, so it is treated as a load-dependent flake, not a regression.
   - Failed job re-run: `check` **success**. `browser-pilot` was still running when this was appended.
 - Update: run 40136855523 (`4cbd172`, last code commit, includes the CI bench step) completed **success** (check + browser-pilot). Run 40136960674 (`6c21ce1`, receipt only) browser-pilot was still running at this append; later receipt commits are `[skip ci]`.
+
+## Follow-up: the "misleading prediction" case (appended 2026-10-24)
+Closes the limitation above ("a case where the model mispredicts an option's effect … is not covered"). No model or
+provider call; scripted and fake-model selectors only.
+
+### What was added
+- **Gated runtime variant `policy:bench_misbound`**:
+  - What it does: the tenant API's isolation rule is bound to the wrong route. Cross-tenant writes and job submissions
+    get 403, but cross-tenant **reads** still get 200, and own-tenant reads are unchanged.
+  - Where it is accepted: only on `Supervisor({ benchmarkDistractorVariants: true })`, via `BENCH_DISTRACTOR_POLICY_REF`,
+    and only through an exact lease plus the typed operation. Default supervisors refuse it (tested). Compensation
+    never restores it.
+  - Files: `packages/local-world/src/runtime/{lease,repair-ops}.ts`, `examples/reference-app/src/world/services.ts`.
+- **Labelled distractor `tenant-records-isolation-rule`** (class `misleading`, `benchmark_distractor: true`):
+  - What its prediction claims: its declared model semantics (`apiTenantDecision`, `dk.bench.distractor_model.v1`)
+    predict full isolation. Both cross-tenant reads are predicted `does_not_hold`, both own reads `holds`, and nothing
+    is left unknown.
+  - What the runtime does: something else. This is the **only** distractor whose prediction is deliberately wrong, and
+    it is commented as a misprediction in the source.
+  - What the selector sees: only the neutral template id, target, explanation, plan and predicted effects. It sees no
+    class, origin or result.
+- **New case `misleading-prediction`**: the same LW-01 world and objective as tenant-isolation.
+  - Options: the generator's 6 correct candidates, the misleading option, and `edge-session-policy` (wrong).
+  - Visible ranking: on visible data the misleading option ranks **1st**. The merged ranking puts "fewer unknowns" ahead
+    of provenance. The generator honestly lists one unknown on each of its own candidates ("declared change only; its
+    runtime behaviour was not executed"), while the misleading prediction claims none.
+- **Scoring** (`bench.ts`). Each (case, selector) now records:
+  - `prediction_check`: a per-probe comparison of the visible predicted impact with what the independent verifier
+    observed after the leased execution. The values are `consistent`, `contradicted` or `not_applicable`, and the
+    contradicted probes are listed.
+  - `verification_caught`: for every wrong executed choice, whatever the selector.
+  - `outcome`: one of "correct, verified", "correct abstention", "wrong, caught by independent verification", "wrong
+    abstention (…)" or "WRONG, NOT CAUGHT".
+  - Summary columns: `misleading_trusted`, `wrong_caught_by_verification` and `wrong_not_caught`.
+- **New fail conditions** (the run exits non-zero if any holds):
+  - a wrong executed choice was not caught;
+  - a misleading option scored as blocked plus preserved, as correct, or as a reproduced regression;
+  - a misleading choice was not flagged `contradicted`;
+  - a contradicted prediction was scored as correct;
+  - `reasoning` was wrong on a truthful-prediction case.
+
+  On the misleading case, `reasoning` may be wrong **only if** verification caught it.
+- **Selection order is unchanged:** every selector chooses from the view before anything executes. The selectors were
+  not changed to read hidden truth.
+
+### Result (`pnpm bench:repairs` on `6e49268`, linux-arm64, Node v22.23.3; positive controls 13/13 caught; BENCH OK, exit 0)
+| Case | Selector | Choice (class) | Selection | Prohibited (observed) | Legitimate | Regression | Prediction check | Outcome |
+|---|---|---|---|---|---|---|---|---|
+| misleading-prediction | rank1 | misleading (view rank 1) | wrong | **still_observed** (a→b, b→a observed) | preserved | n/a (EffectVerifier fail / security_failed) | **contradicted** | wrong, caught by independent verification |
+| misleading-prediction | reasoning | misleading (view rank 1) | **wrong** | **still_observed** | preserved | n/a | **contradicted** | wrong, caught by independent verification |
+| misleading-prediction | always_abstain | abstain | wrong | unchanged_open | preserved | n/a | n/a | wrong abstention (pc caught) |
+| misleading-prediction | fake_model_overbroad | abstain (no overbroad option) | wrong | unchanged_open | preserved | n/a | n/a | wrong abstention (pc caught) |
+| misleading-prediction | fake_model_residual | abstain (no residual option) | wrong | unchanged_open | preserved | n/a | n/a | wrong abstention (pc caught) |
+| misleading-prediction | fake_model_irrelevant | wrong (edge session) | wrong | still_observed | preserved | n/a | consistent | wrong, caught by independent verification |
+
+The three earlier cases are unchanged: the same choices and outcomes as the table above. Every other executed option's
+prediction checks `consistent`; only the misleading one is `contradicted`.
+
+Contradiction recorded for the misleading execution, from the leased run `lease-… (exact plan rp-…)`:
+`a-reads-b: predicted does_not_hold, observed holds (observed); b-reads-a: predicted does_not_hold, observed holds (observed)`.
+No regression was captured, because only a verified repair becomes one.
+
+Summary per selector (correct/4):
+
+| Selector | Correct | Blocked | Legit preserved | Regression | Abstained | Trusted misleading | Wrong caught by verification | Wrong NOT caught |
+|---|---|---|---|---|---|---|---|---|
+| rank1 | 2 | 2 | 4 | 1 | 0 | 1 | 2 | 0 |
+| **reasoning** | **3** | 2 | 4 | 1 | 1 | **1** | 1 | 0 |
+| always_abstain | 1 | 0 | 3 | 0 | 4 | 0 | 0 | 0 |
+| fake_model_overbroad | 1 | 1 | 2 | 0 | 3 | 0 | 1 | 0 |
+| fake_model_residual | 1 | 0 | 3 | 0 | 3 | 0 | 1 | 0 |
+| fake_model_irrelevant | 0 | 0 | 4 | 0 | 0 | 0 | 4 | 0 |
+
+**What this shows:**
+- **The reasoning selector is fooled.** Its rationale was "o4 (rank 1) is predicted to block 2/2 prohibited and keep
+  every positive control; 5 other safe option(s)". A correct candidate was present, 5 of them in fact, but on visible
+  data the misleading option looks *better* than they do, because it claims no unknowns. The harness did not save the
+  selection.
+- **What does save the run is independent verification.** The leased execution leaves both prohibited reads observed,
+  `EffectVerifier` returns `fail`, the prediction is flagged `contradicted`, no regression is captured, and the score is
+  "wrong, caught by independent verification".
+- **Design lesson (an observation, not a change made here):** the ranking criterion "fewer unknowns" rewards an
+  overconfident prediction over a candidate that honestly says its runtime behaviour was not executed. A selector or
+  ranking that treats "model-only, unexecuted" claims as unverified, for example by executing the top-k candidates in
+  disposable worlds before choosing, would be the next step. That is a separate change.
+
+### Tests (failing first, then passing)
+- Failing tests were committed first in `3062a38` `[skip ci]`. Output is in `work/next/d-misleading-before-test-output.txt`:
+  **2 failed | 1 passed** of the filtered set.
+  - The misbound lease was refused ("not a run-owned reference").
+  - No `misleading` template existed.
+  - The e2e assertions on the new case were also absent from the implementation.
+- One test edit after the failing commit: the gating test's write probe was changed from `POST /tenants/{t}/records` to
+  `POST /tenants/{t}/jobs`, because the ingress does not forward `POST /records`. The assertion is the same: the policy
+  refuses the non-read cross-tenant request.
+- **After:** `eval/test/next-d-distractor-gating.test.ts` **3/3** and `eval/test/next-d-repair-bench.test.ts` **8/8**
+  (11 passed, 19.6 s locally, including the end-to-end bench).
+- Also clean: `pnpm typecheck`. `pnpm loop:local` gives `LOOP OK` (LP31 and the observer leg are unchanged).
+  `pnpm bench:repairs` gives `BENCH OK`, exit 0.
+
+### Limitations (follow-up)
+- This is a single, synthetic, labelled misprediction (wrong route binding). It is not a model of real misprediction
+  rates, and it is not a real model.
+- The "stale config revision" variant was not added. A stale `expected_target_revision` is already refused by the
+  controller (not executed), so that path would show "not executed", not "executed but wrong".
+- `bench_misbound` is new reviewed code in the trusted built-in tenant API. It is gated and labelled, like the other
+  distractor variants.
+
+### Commits (follow-up)
+- `3062a38` failing tests first `[skip ci]`
+- `6e49268` misleading-prediction case: runtime variant, distractor and scoring
+- this receipt append `[skip ci]`
+
+### CI (follow-up)
+- run **40139120680** (`6e49268`, final code commit): **success**, both jobs.
+  - `check`: typecheck; `pnpm test` with Test Files 143 passed | 1 skipped and Tests **1002 passed | 1 skipped (1003)**,
+    up from 1000 (the +2 are this follow-up's new tests); validate:fixtures; scenarios; build; release verify. The
+    `pnpm bench:repairs` step printed `positive controls caught 13/13 · model not used` and `BENCH OK`.
+  - `browser-pilot`: success.
