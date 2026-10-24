@@ -1077,9 +1077,9 @@
     "LP29",
     "LP27"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "b10de50 + 10e66e9",
-   "ci_run": "40076513358 on b10de50 failed (check: release:verify dirty tree from the robustness report write); fixed in 10e66e9, CI pending at ledger time",
+   "ci_run": "40076967713 success (check + browser-pilot) on 10e66e9; 40076513358 on b10de50 failed (release:verify dirty tree, fixed in 10e66e9)",
    "receipt": "docs/phases/local-intelligence/receipts/LP30.md",
    "branch": "phase/local-intelligence",
    "local_checks": {
@@ -1088,7 +1088,22 @@
     "test": "no product code changed; candidate d3eb304 full suite 962 passed, 1 skipped"
    },
    "model_spend_usd": 0,
-   "progress_note": "LP30 implemented; confirm CI on 10e66e9 (check + browser-pilot) then mark ci_verified. Findings: comparison at 390px hidden behind Show map and overlapping the camera bar (recorded, not fixed)."
+   "progress_note": "LP30 CI-verified; both 390px findings fixed in 4358bbc (tested, screenshots inspected).",
+   "followups": {
+    "commit": "4358bbc",
+    "findings_fixed": [
+     "390px: an open comparison is now rendered in flow above the list/map (collapsed summary 'Comparison open ...'), visible in the list view before 'Show map'",
+     "390px: the comparison no longer overlaps the Castle view camera toolbar (bounding boxes asserted disjoint)"
+    ],
+    "tests": [
+     "e2e/usability-redesign.spec.ts comparison-branch (narrow: data-variant=inline, visible before Show map, no overlap with toolbar 'Castle view'; desktop: data-variant=overlay)"
+    ],
+    "screenshots": [
+     "artifacts/phase-local-intelligence/M7/screenshots/lp30-comparison-branch-narrow-390-list-view.png",
+     "artifacts/phase-local-intelligence/M7/screenshots/lp30-comparison-branch-narrow-390.png"
+    ],
+    "missions_in_capsules": "LP29 mission records travel in LP28 evidence-only capsules (role 'mission'; builder-truth fields refused at build and import): apps/server/test/phase-lp31-mission-capsules.test.ts (2 tests)"
+   }
   },
   {
    "id": "LP31",
@@ -1098,10 +1113,20 @@
     "LP30",
     "LP26"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "c4174f4 (loop) + ledger/report commit",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP31.md",
+   "branch": "phase/local-intelligence",
+   "deliverables": [
+    "eval/local/integrated-loop.ts",
+    "scripts/local-loop.ts (pnpm loop:local)",
+    "eval/test/li-lp31-integrated-loop.test.ts",
+    "eval/test/li-lp31-ledger.test.ts",
+    "docs/phases/local-intelligence/PHASE_REPORT.md"
+   ],
+   "model_spend_usd": 0,
+   "progress_note": "LP31 implemented; final candidate verification + CI recorded in receipts/LP31.md and here once green."
   }
  ],
  "requirements": {
@@ -2045,7 +2070,8 @@
    "evidence": [
     "e2e/usability-redesign.spec.ts (6 views x desktop/reduced-motion/390px, failure state)",
     "artifacts/phase-local-intelligence/M7/screenshots/lp30-*.png",
-    "e2e/missions-redesign.spec.ts"
+    "e2e/missions-redesign.spec.ts",
+    "e2e/usability-redesign.spec.ts comparison-branch 390px findings fixed in 4358bbc (inline comparison visible in list view; no overlap with camera toolbar)"
    ]
   },
   "LP30-A4": {
@@ -2057,23 +2083,36 @@
   },
   "LP31-A1": {
    "package": "LP31",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp31-integrated-loop.test.ts > LP31-A1 (one run: LW-01 world + scenario, case + guided contract, scripted investigation over the real stdio focused MCP read profile, evidence/claim checks 15/15 + 0 cited-missing, LP14 candidates recorded (0 returned for this world), lease, typed set_gateway_policy repair, independent verification success, regression capture + model-free replay, case link + castle comparison executed-local, evidence-only capsule export/import on a fresh instance)",
+    "docs/phases/local-intelligence/receipts/LP31.md"
+   ]
   },
   "LP31-A2": {
    "package": "LP31",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp31-integrated-loop.test.ts asserts the integrated receipt states model {used:false, spend_usd:0, ai_loop:not_exercised_in_this_run} and still completes the scripted loop",
+    "docs/phases/local-intelligence/receipts/LP26.md (the only AI-loop runs that actually ran: li-m6-c2c34916 with 28/54 records lost, li-m6-e61d01f7 follow-up)",
+    "docs/phases/local-intelligence/PHASE_REPORT.md"
+   ]
   },
   "LP31-A3": {
    "package": "LP31",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp31-ledger.test.ts (all 128 ids mapped with allowed statuses; passed ids cite existing test/receipt paths; EXT01-EXT09 remain deferred_by_owner)",
+    "docs/phases/local-intelligence/receipts/LP31.md"
+   ]
   },
   "LP31-A4": {
    "package": "LP31",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp31-ledger.test.ts (spend within cap, handoff names precise next work, package statuses never beyond ci_verified)",
+    "docs/phases/local-intelligence/PHASE_REPORT.md (no merge to main, no PR, no deploy, no provider call in M7; main unchanged at 9fec7ed)"
+   ]
   }
  },
  "deferrals": [
@@ -2437,7 +2476,7 @@
     "usd": 0.0
    },
    {
-    "id": "li-m7 (LP29 + LP30)",
+    "id": "li-m7 (LP29 + LP30 + LP31)",
     "usd": 0.0
    }
   ],
@@ -2455,12 +2494,20 @@
   "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (LP27 used $0.00; reserved for LP30)."
  },
  "next_action": {
-  "package": "LP31",
-  "why": "LP29 CI-verified (d3eb304, run 40075197316). LP30 implemented (b10de50 + CI fix 10e66e9); confirm its CI first. LP31 needs LP30 + LP26.",
-  "eligible_now": [
-   "LP31 (after LP30 CI on 10e66e9 is green)"
-  ],
-  "blocked": {}
+  "package": null,
+  "phase": "local-intelligence complete locally (engineering-verified per executed gates); awaiting owner review",
+  "why": "All LP00-LP31 implemented; LP31 CI on the final head recorded in receipts/LP31.md. No package is eligible inside this phase without owner action.",
+  "eligible_now": [],
+  "blocked": {
+   "EXT01-EXT09": "deferred_by_owner (external accounts, remote notifications, production response, outside users, human semantic review, manual accessibility/physical GPU, paid/new model provider, federation, merge/deploy)"
+  },
+  "precise_next_work": [
+   "Owner review of PHASE_REPORT.md, then decide whether to merge phase/local-intelligence to main (EXT09; not done by agents).",
+   "Teach the LP14 repair-candidate generator to model local-world gateway policies so it returns the reviewed set_gateway_policy candidate for saas-storefront (it returned 0 candidates in the LP31 loop).",
+   "Run the integrated loop in a single leased world (start LW-01 with labActions: leased) to remove the second-run seam.",
+   "Re-run the LP26 model comparison with preregistered fresh held-out documents and surviving records (v1 lost 28/54 model records) once the owner approves spend (remaining cap $1.274238).",
+   "EXT05/EXT06: human semantic review, manual screen-reader and physical-GPU acceptance."
+  ]
  },
  "milestones": {
   "M0": {

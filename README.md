@@ -190,6 +190,20 @@ Details: [SECURITY.md](SECURITY.md) and [docs/THREAT_MODEL.md](docs/THREAT_MODEL
 
 The screenshots above are from the offline synthetic demo (`VITE_DK_STATIC_DEMO=1`) in headless Chromium with SwiftShader WebGL at 1440×900.
 
+## Local Intelligence phase (branch `phase/local-intelligence`)
+
+A local-only loop on synthetic, run-owned worlds: blueprint world → scenario → investigation over the focused MCP
+profile → evidence and claim checks → repair candidates → lab lease → typed local repair → independent verification →
+regression → castle comparison → evidence-only capsule. Run it with one command (no model, 127.0.0.1 only):
+
+```
+pnpm loop:local   # writes an exact-candidate receipt to artifacts/tmp/lp31/integrated-loop-receipt.json
+```
+
+What was verified, what was not, AI-loop results, limitations and deferred gates:
+[docs/phases/local-intelligence/PHASE_REPORT.md](docs/phases/local-intelligence/PHASE_REPORT.md). Ledger:
+[STATUS.json](docs/phases/local-intelligence/STATUS.json). None of it is production authority.
+
 ## Support levels
 
 What this release supports, at which level, with which permissions, limits and uninstall steps, is in
