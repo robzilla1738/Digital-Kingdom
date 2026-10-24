@@ -1,0 +1,37 @@
+{
+  "schema": "dk.local.model_spend_ledger.v1",
+  "phase": "local-intelligence",
+  "phase_cap_usd": 3,
+  "allowance_usd": 0.9,
+  "allowance_note": "final-pass fresh-document comparison: at most $0.9 new spend (prior phase spend $1.725762; phase total stays under $3.00)",
+  "route": "ai-gateway",
+  "model": "meta/muse-spark-1.3-contributor",
+  "entries": [
+    {
+      "id": "li-m7-7f4a12cd-approved_provider-001",
+      "run": "li-m7-7f4a12cd",
+      "kind": "attempt",
+      "reserved_max_usd": 0.007844748,
+      "charged_usd": 0.007844748,
+      "gateway_cost_usd": 0.005612448,
+      "prompt_tokens": 46901,
+      "completion_tokens": 5726,
+      "model_calls": 5,
+      "at": "2026-10-24T09:30:56.378Z"
+    },
+    {
+      "id": "li-m7-7f4a12cd-approved_provider-000",
+      "run": "li-m7-7f4a12cd",
+      "kind": "attempt",
+      "reserved_max_usd": 0.014435774,
+      "charged_usd": 0.014435774,
+      "gateway_cost_usd": 0.0047535,
+      "prompt_tokens": 37308,
+      "completion_tokens": 8862,
+      "model_calls": 4,
+      "at": "2026-10-24T09:31:21.163Z"
+    }
+  ],
+  "charged_total_usd": 0.022280522,
+  "updated_at": "2026-10-24T09:31:21.163Z"
+}
