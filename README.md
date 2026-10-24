@@ -192,9 +192,10 @@ The screenshots above are from the offline synthetic demo (`VITE_DK_STATIC_DEMO=
 
 ## Local Intelligence phase (branch `phase/local-intelligence`)
 
-A local-only loop on synthetic, run-owned worlds: blueprint world → scenario → investigation over the focused MCP
-profile → evidence and claim checks → repair candidates → lab lease → typed local repair → independent verification →
-regression → castle comparison → evidence-only capsule. Run it with one command (no model, 127.0.0.1 only):
+A local-only loop on synthetic, run-owned worlds, in one leased world: blueprint world → scenario → investigation over
+the focused MCP profile → evidence and claim checks → generated repair candidates → lab lease → the generated candidate
+executed as a typed local repair → independent verification → regression → castle comparison of that candidate →
+evidence-only capsule. Run it with one command (no model, 127.0.0.1 only):
 
 ```
 pnpm loop:local   # writes an exact-candidate receipt to artifacts/tmp/lp31/integrated-loop-receipt.json
