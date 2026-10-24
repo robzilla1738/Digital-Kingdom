@@ -12,6 +12,7 @@ import { LOCAL_REPAIR_MIGRATION } from "./local-repairs.ts";
 import { CAPSULE_MIGRATION } from "./capsule.ts";
 import { MISSIONS_MIGRATION } from "./missions.ts";
 import { LOCAL_CONFIG_MIGRATION } from "./local-config.ts";
+import { LOCAL_OBSERVERS_MIGRATION } from "./local-observers.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -138,6 +139,8 @@ export const MIGRATIONS: string[] = [
   MISSIONS_MIGRATION,
   // Local Intelligence Phase (final pass): declared configuration snapshots of a local run's enforcement points (append-only).
   LOCAL_CONFIG_MIGRATION,
+  // li-next B: supervisor-reported observer capability state of a local run (append-only history).
+  LOCAL_OBSERVERS_MIGRATION,
 ];
 
 export function openDb(path: string): DB {
