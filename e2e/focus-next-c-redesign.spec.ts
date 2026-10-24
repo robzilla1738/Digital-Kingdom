@@ -7,6 +7,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { execSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createRedesignHarness, loginRedesign, rendererDetails, writeRedesignEvidence, REDESIGN_ROOT, type RedesignHarness } from './redesign-harness.ts';
@@ -77,6 +78,49 @@ test('next-C: F15 opens framed on the active environment; Realm overview is expl
   await expect(graph).toHaveAttribute('data-framing', /^realm:/);
   await expect(graph.locator('[data-world-focus]')).toHaveCount(0);
   report.push({ case: 'F15 framing', active, implicit_zoom: framed.zoom, overview_zoom: overview.zoom, labels, graph_parity: true, result: 'passed' });
+});
+
+test('next-C follow-up: Realm overview packs environments with a bounded gap; populated bounds fill the stage', async ({ page }) => {
+  const THREE = createRequire(new URL('../apps/web/package.json', import.meta.url))('three') as typeof import('three');
+  const { applyRedesignFixture } = await import('../fixtures/redesign/offline.ts');
+  const { demoGraph } = await import('../fixtures/testing/load.ts');
+  const { realmPresentation, REALM_ENVIRONMENT_GAP } = await import('../apps/web/src/castle/scenePresentation.ts');
+  // Same synthetic graph the offline F15 fixture uses (Node cannot load the Vite JSON imports of loadOfflineDemo).
+  const graph = demoGraph();
+  const base = { mode: 'offline-demo', project: { id: graph.project_id, name: 'x', dataset_kind: 'synthetic' }, projects: [], graph, sources: [], events: [], evidence: {}, findings: [], coverage: [], unobserved_asset_ids: [] } as never;
+  const fixture = applyRedesignFixture(base, 'F15');
+  const scene = realmPresentation(fixture.scene, fixture.graph), envOf = new Map(fixture.graph.assets.map(a => [a.id, a.environment]));
+  await page.goto(h.offlineUrl + '/?fixture=F15#workspace=kingdom&view=castle');
+  const wrap = page.locator('.castle-wrap'), canvas = page.locator('canvas');
+  await settled(page);
+  await page.getByTestId('world-framing').getByRole('button', { name: /^Realm overview/ }).click();
+  await expect(wrap).toHaveAttribute('data-framing', /^realm:/);
+  await settled(page);
+  for (const r of scene.rooms) await expect(page.locator(`[data-asset-label="${r.asset_id}"]`)).toHaveCount(1);
+  const p = await pose(page) as { zoom: number; target: number[]; position: number[] }, rect = (await canvas.boundingBox())!;
+  const camera = new THREE.OrthographicCamera(-rect.width / 2, rect.width / 2, rect.height / 2, -rect.height / 2, 0.1, 800);
+  camera.zoom = p.zoom; camera.position.fromArray(p.position); camera.lookAt(new THREE.Vector3(...(p.target as [number, number, number]))); camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+  const toScreen = (x: number, y: number, z: number) => { const s = new THREE.Vector3(x, y, z).project(camera); return { x: (s.x + 1) / 2 * rect.width, y: (1 - s.y) / 2 * rect.height }; };
+  // Screen-space extent of each environment's buildings (footprint corners at ground and roof height).
+  const envBox = new Map<string, { x0: number; x1: number; y0: number; y1: number }>();
+  for (const r of scene.rooms) for (const dx of [-1, 1]) for (const dz of [-1, 1]) for (const y of [0, r.height]) {
+    const s = toScreen(r.position.x + dx * r.footprint.w / 2, y, r.position.z + dz * r.footprint.d / 2), e = envOf.get(r.asset_id)!;
+    const b = envBox.get(e) ?? { x0: Infinity, x1: -Infinity, y0: Infinity, y1: -Infinity };
+    envBox.set(e, { x0: Math.min(b.x0, s.x), x1: Math.max(b.x1, s.x), y0: Math.min(b.y0, s.y), y1: Math.max(b.y1, s.y) });
+  }
+  const boxes = [...envBox.values()].sort((a, b) => a.x0 - b.x0);
+  expect(boxes.length).toBe(2);
+  const union = { x0: Math.min(...boxes.map(b => b.x0)), x1: Math.max(...boxes.map(b => b.x1)), y0: Math.min(...boxes.map(b => b.y0)), y1: Math.max(...boxes.map(b => b.y1)) };
+  const fillW = (union.x1 - union.x0) / rect.width, fillH = (union.y1 - union.y0) / rect.height;
+  // the camera fits the populated union: it fills most of one stage dimension and stays on stage
+  expect(Math.max(fillW, fillH)).toBeGreaterThan(0.6);
+  expect(union.x0).toBeGreaterThan(-4); expect(union.x1).toBeLessThan(rect.width + 4);
+  // the empty band between environments is small relative to the stage (it was ~half the width before packing)
+  const gaps = boxes.slice(1).map((b, i) => Math.max(0, b.x0 - boxes[i]!.x1) / rect.width);
+  for (const g of gaps) expect(g).toBeLessThan(0.15);
+  const occupied = boxes.reduce((s, b) => s + (b.x1 - b.x0) * (b.y1 - b.y0), 0) / ((union.x1 - union.x0) * (union.y1 - union.y0));
+  await shot(page, 'after-f15-realm-overview-v2', `Explicit Realm overview with presentation-only environment packing (gap <= ${REALM_ENVIRONMENT_GAP} m); stored layout and digest unchanged.`);
+  report.push({ case: 'F15 realm overview packing', zoom: p.zoom, fill_w: +fillW.toFixed(3), fill_h: +fillH.toFixed(3), env_gaps_of_stage_width: gaps.map(g => +g.toFixed(3)), env_box_area_over_union: +occupied.toFixed(3), result: 'passed' });
 });
 
 test('next-C: a single-environment world shows no framing control and keeps the full fit', async ({ page }) => {
