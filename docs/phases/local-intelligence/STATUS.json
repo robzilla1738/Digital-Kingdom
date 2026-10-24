@@ -241,7 +241,7 @@
     "scene-compiler compileScene/defaultProposal (pins)"
    ],
    "decisions": [
-    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec \u00a722; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
+    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec §22; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
     "D-LP04-2: world_plan.v1 template enum unchanged; observers compile to declared sources (not assets); asset id = logical resource id; revision = lw-sha256(catalog digest, plan digest).",
     "D-LP04-3: LP00-A2 test hashes frozen trees once with a 90 s timeout (timed out under concurrent load on a 2-CPU sandbox); assertions unchanged."
    ]
@@ -328,7 +328,7 @@
     "LP03"
    ],
    "status": "implemented_locally_verified",
-   "commit": "e12ef0a",
+   "commit": "0ab5027",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP08.md",
    "branch": "phase/li-m2 (worktree; rebased onto phase/local-intelligence when M2 completes)",
@@ -337,6 +337,12 @@
     "test": "95 files passed, 1 skipped; 685 passed, 1 skipped",
     "validate:fixtures": "exit 0",
     "generate:validators": "byte-identical"
+   },
+   "pre_rebase_commit": "e12ef0a",
+   "ci_run_pre_rebase": {
+    "id": 40046522740,
+    "check": "success",
+    "browser_pilot": "failure: flaky e2e/redesign.spec.ts:314 (camera zoom timing; also failed on M1 head 09cdeb3)"
    }
   },
   {
@@ -347,7 +353,7 @@
     "LP08"
    ],
    "status": "implemented_locally_verified",
-   "commit": "882d987",
+   "commit": "5b31ec0",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP09.md",
    "branch": "phase/li-m2 (worktree)",
@@ -355,6 +361,12 @@
     "typecheck": "exit 0",
     "test": "97 files passed, 1 skipped; 698 passed, 1 skipped",
     "validate:fixtures": "exit 0"
+   },
+   "pre_rebase_commit": "882d987",
+   "ci_run_pre_rebase": {
+    "id": 40047366167,
+    "check": "success",
+    "browser_pilot": "success"
    }
   },
   {
@@ -365,7 +377,7 @@
     "LP09"
    ],
    "status": "implemented_locally_verified",
-   "commit": "3281c88",
+   "commit": "dbc9fde",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP10.md",
    "branch": "phase/li-m2 (worktree)",
@@ -373,6 +385,12 @@
     "typecheck": "exit 0",
     "test": "98 files passed, 1 skipped; 708 passed, 1 skipped",
     "validate:fixtures": "exit 0"
+   },
+   "pre_rebase_commit": "3281c88",
+   "ci_run_pre_rebase": {
+    "id": 40048100457,
+    "check": "success",
+    "browser_pilot": "failure: same flaky redesign.spec.ts:314"
    }
   },
   {
@@ -383,7 +401,7 @@
     "LP10"
    ],
    "status": "implemented_locally_verified",
-   "commit": "PENDING",
+   "commit": "8b0b0c9",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP11.md",
    "branch": "phase/li-m2 (worktree)",
@@ -393,7 +411,8 @@
     "validate:fixtures": "exit 0",
     "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
     "build": "exit 0"
-   }
+   },
+   "pre_rebase_commit": "7763ba1"
   },
   {
    "id": "LP12",
@@ -1535,6 +1554,11 @@
    "id": "D-LP11-1",
    "date": "2026-10-23",
    "decision": "Focused MCP profiles investigation-read / investigation-author are selected by DK_MCP_PROFILE at process start; the full toolset stays the default. Profile, project, output budget and per-call unit cap are fixed at start and no tool takes such an argument. Output envelope dk.mcp_envelope.v1. lab-request is not offered (no executor exists)."
+  },
+  {
+   "id": "D-M2-REBASE",
+   "date": "2026-10-23",
+   "decision": "phase/li-m2 (LP08-LP11) rebased onto origin/phase/local-intelligence at 798f653 (M1 LP04-LP06). Conflicts: app.ts imports (kept both registerLocalWorld and registerInvestigationRoutes); STATUS.json merged automatically with every upstream package, requirement and decision entry preserved (checked by script). Re-ran typecheck, full suite, fixtures and scenarios on the rebased head before the fast-forward push; no force push."
   }
  ],
  "model_spend_usd": {
@@ -1544,8 +1568,9 @@
  },
  "next_action": {
   "package": "LP12",
-  "why": "M2 (LP08-LP11) implemented; LP12 (investigation workbench, M3) depends on LP08, LP10, LP11. LP13 (path/change exploration) depends on LP01 and LP08 and is also eligible. M1 packages continue on their own track.",
+  "why": "M2 (LP08-LP11) is implemented and on phase/local-intelligence. LP12 (investigation workbench, M3) depends on LP08/LP10/LP11 and LP13 (bounded path and change exploration) on LP01/LP08; both are eligible. LP07 (scenario DSL, M1) depends on LP06 and belongs to the M1 track.",
   "eligible_now": [
+   "LP07",
    "LP12",
    "LP13"
   ]
@@ -1562,6 +1587,24 @@
    "head": "936f558",
    "ci_run": 40042276966,
    "note": "Engineering-verified locally and in CI for the executed tests only. No model runs; AI execution not exercised (not needed for M0)."
+  },
+  "M2": {
+   "packages": [
+    "LP08",
+    "LP09",
+    "LP10",
+    "LP11"
+   ],
+   "status": "implemented_locally_verified",
+   "head": "8b0b0c9",
+   "rebased_onto": "798f653",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "105 files passed, 1 skipped; 763 passed, 1 skipped (rebased onto M1 LP04-LP06)",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)"
+   },
+   "note": "Scripted/protocol checks only; AI execution not exercised (no model run). CI on phase/local-intelligence is recorded after the fast-forward push."
   }
  }
 }
