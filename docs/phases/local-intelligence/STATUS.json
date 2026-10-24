@@ -365,7 +365,7 @@
     "LP09"
    ],
    "status": "implemented_locally_verified",
-   "commit": "PENDING",
+   "commit": "3281c88",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP10.md",
    "branch": "phase/li-m2 (worktree)",
@@ -382,10 +382,18 @@
    "depends_on": [
     "LP10"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "implemented_locally_verified",
+   "commit": "PENDING",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP11.md",
+   "branch": "phase/li-m2 (worktree)",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "99 files passed, 1 skipped; 713 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "build": "exit 0"
+   }
   },
   {
    "id": "LP12",
@@ -962,23 +970,32 @@
   },
   "LP11-A1": {
    "package": "LP11",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/mcp/test/phase-lp11-focused.test.ts > LP11-A1 (real stdio; both profiles: event detail parity, bundle-page parity, cross-project 404/not found)"
+   ]
   },
   "LP11-A2": {
    "package": "LP11",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/mcp/test/phase-lp11-focused.test.ts > LP11-A2 (annotations, read tools change no rows, viewer token refused 403 on every author write)"
+   ]
   },
   "LP11-A3": {
    "package": "LP11",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/mcp/test/phase-lp11-focused.test.ts > LP11-A3 (injected imperative text stays untrusted; profile/project/unit cap/budget/approvals unchanged)"
+   ]
   },
   "LP11-A4": {
    "package": "LP11",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/mcp/test/phase-lp11-focused.test.ts > LP11-A4 (bounded pages with cursors; disconnect + new process resume; model_calls 0)",
+    "apps/mcp/test/phase-lp11-focused.test.ts > exportable configuration launches the server over stdio"
+   ]
   },
   "LP12-A1": {
    "package": "LP12",
@@ -1513,6 +1530,11 @@
    "id": "D-LP10-2",
    "date": "2026-10-23",
    "decision": "Packets never trim the uncertainty section (413 instead); counterevidence is ordered first; required records are individual omissions; machine_proved is never emitted and flagged narrative keeps a conclusion a draft pending human semantic review (EXT05, deferred)."
+  },
+  {
+   "id": "D-LP11-1",
+   "date": "2026-10-23",
+   "decision": "Focused MCP profiles investigation-read / investigation-author are selected by DK_MCP_PROFILE at process start; the full toolset stays the default. Profile, project, output budget and per-call unit cap are fixed at start and no tool takes such an argument. Output envelope dk.mcp_envelope.v1. lab-request is not offered (no executor exists)."
   }
  ],
  "model_spend_usd": {
@@ -1521,10 +1543,11 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP11",
-  "why": "LP11 (Expose a focused MCP workflow) depends on LP10, now implemented on phase/li-m2.",
+  "package": "LP12",
+  "why": "M2 (LP08-LP11) implemented; LP12 (investigation workbench, M3) depends on LP08, LP10, LP11. LP13 (path/change exploration) depends on LP01 and LP08 and is also eligible. M1 packages continue on their own track.",
   "eligible_now": [
-   "LP11"
+   "LP12",
+   "LP13"
   ]
  },
  "milestones": {
