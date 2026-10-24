@@ -39,6 +39,7 @@ import { parseLocalRun, provenanceOf } from "./provenance.ts";
 import { deriveCapability, LOCAL_CONTRACTS, INVESTIGATION_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
 import { registerLocalWorld } from "./local-world.ts";
 import { registerInvestigationRoutes } from "./investigation/routes.ts";
+import { registerExplorationRoutes } from "./exploration.ts";
 
 export interface AppConfig {
   store: Store;
@@ -767,6 +768,8 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   });
   // ---- Local Intelligence Phase M2: investigation contracts, plans, packets, claim checks ----
   const investigation = registerInvestigationRoutes(app, { store, secret: cfg.secret, cases, authed, who });
+  // LP13 bounded path and change exploration (model-only analysis namespace; never writes baseline records).
+  const exploration = registerExplorationRoutes(app, { store, authed, who });
 
   // ---- optional bounded case assistance (R05.4): read-only drafts; deterministic without a model ----
   app.post("/api/projects/:p/cases/:id/assist", { preHandler: authed() }, async (req) => {

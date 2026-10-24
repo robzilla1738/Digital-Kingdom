@@ -151,6 +151,7 @@ export function App() {
       getCase: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}`, signal); },
       createCase: async (body) => { check(); return api.send("POST", `${prefix}/cases`, body); },
       caseWorkbench: (id, signal) => { check(); return api.get(`${prefix}/cases/${encodeURIComponent(id)}/workbench`, signal); },
+      analysisPaths: (q, signal) => { check(); return api.get(`${prefix}/analysis/paths?${new URLSearchParams(Object.entries(q).filter(([, v]) => v !== undefined && v !== "") as [string, string][])}`, signal); },
       openContract: async (id) => { check(); return api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}/contract`, {}); },
       caseAction: async (id, path, body) => { check(); return api.send("POST", `${prefix}/cases/${encodeURIComponent(id)}${path}`, body); },
       exportDurableCase: async (id) => {
