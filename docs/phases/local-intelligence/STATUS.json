@@ -1672,6 +1672,11 @@
    "id": "D-M1-CI-1",
    "date": "2026-10-23",
    "decision": "Browser-pilot failures on LP05/LP06 (and li-m2 run 40046522740) were a test timing race in e2e/redesign.spec.ts (baseline camera pose captured before a late overview refit). Fixed in the test by waiting for a stable pose and reading the baseline atomically with the Focus click; assertion unchanged."
+  },
+  {
+   "id": "D-M1-CI-2",
+   "date": "2026-10-23",
+   "decision": "Browser-pilot on the docs-only ledger commit 5a8f410 (run 40051696346) failed A11Y-05: one late demand frame (render count 7 -> 8) inside the 700 ms reduced-motion idle window after an immediate focus; the identical code passed on fa8de4a. Fixed in the test by first requiring a bounded 300 ms quiet interval (continuous motion never settles, so it still fails) before the unchanged 700 ms no-frame assertion."
   }
  ],
  "model_spend_usd": {
@@ -1741,7 +1746,8 @@
     "LP04": "40045896413 success",
     "LP05": "40047042997 failure (browser-pilot race, D-M1-CI-1)",
     "LP06": "40048249657 failure (same race)",
-    "LP07": "40050596307 success"
+    "LP07": "40050596307 success",
+    "ledger 5a8f410": "40051696346 failure (A11Y-05 late-frame race, D-M1-CI-2)"
    },
    "note": "Engineering-verified locally and in CI for the executed tests only. No model runs; AI execution not exercised (not needed for M1). Scenario DSL documents are repository-resident: DK API/MCP/web cannot serve them (tested), but repo-reading investigators are not blinded (D-LP07-3)."
   }
