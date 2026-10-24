@@ -66,6 +66,14 @@ export function CaseWorkbench({ wb, loading, error, canEdit, busy, onContract }:
       {wb.uncertainty.coverage_gaps.length > 0 && <ul className="mini-list">{wb.uncertainty.coverage_gaps.map((g) => <li key={g.ref}><span className="pill synthetic">coverage {g.status}</span> {g.asset_id} {g.action} <small className="faint">{g.uncovered_spans.length} uncovered span(s)</small><div className="small faint">{g.reason}</div></li>)}</ul>}
     </div>}
 
+    {wb.repair_candidates && <section className="wb-repairs" aria-label="Repair candidates (plan only)" data-testid="wb-repairs">
+      <h3>Repair candidates <span className="small faint">(plan only · {wb.repair_candidates.status.replace(/_/g, " ")})</span></h3>
+      {wb.repair_candidates.reasons.length > 0 && <ul className="mini-list">{wb.repair_candidates.reasons.map((r) => <li key={r}>{r}</li>)}</ul>}
+      {wb.repair_candidates.candidates.length > 0 && <div className="table-scroll"><table className="wb-tradeoffs"><caption className="small faint">{wb.repair_candidates.ranking_note}</caption>
+        <thead><tr><th scope="col">Rank</th><th scope="col">Template</th><th scope="col">Target</th><th scope="col">Prohibited blocked</th><th scope="col">Permitted broken</th><th scope="col">Changes</th><th scope="col">Unknowns</th><th scope="col">Plan</th></tr></thead>
+        <tbody>{wb.repair_candidates.candidates.map((c) => <tr key={c.candidate_id} className={c.valid ? "" : "faint"}><td>{c.rank}</td><td>{c.template}</td><td><code>{c.target}</code></td><td>{c.blocked} of {c.of}</td><td>{c.permitted_broken ? <strong>{c.permitted_broken} of {c.permitted_of}</strong> : `0 of ${c.permitted_of}`}</td><td>{c.elements_changed}</td><td>{c.unknowns}</td><td><code>{c.plan_id}</code> {c.valid ? "" : "(not valid)"}</td></tr>)}</tbody></table></div>}
+      <p className="small faint">No plan here is approved or applied. Applying needs a local lab lease (LP16); human approval is not recorded in this phase.</p>
+    </section>}
     <section className="wb-proposals" aria-label="Agent proposals, not part of the case record" data-testid="wb-proposals">
       <h3>Proposals <span className="small faint">(drafts, not part of the case record)</span></h3>
       <p className="small faint">{wb.proposals.note}</p>

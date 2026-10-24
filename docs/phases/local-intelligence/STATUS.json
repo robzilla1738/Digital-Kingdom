@@ -500,8 +500,8 @@
     "LP11"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
-   "ci_run": null,
+   "commit": "ca87929",
+   "ci_run": "40054523494 success (ci)",
    "receipt": "docs/phases/local-intelligence/receipts/LP12.md",
    "branch": "phase/li-m3",
    "local_checks": {
@@ -555,10 +555,25 @@
    "depends_on": [
     "LP13"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP14.md",
+   "branch": "phase/li-m3",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "112 files passed, 1 skipped; 796 passed, 1 skipped (4 vitest shards)",
+    "build": "exit 0",
+    "e2e": "repairs-redesign 1 passed"
+   },
+   "reuses": [
+    "LP13 exploration (applyChanges, compareStates, explainPath, stateHash)",
+    "LP01 evaluate (dk.aws_policy_eval.v2)",
+    "R03.1 cases",
+    "LP03 provenance run_id",
+    "R08.2 changed-digest-cannot-reuse-approval principle",
+    "package repair-plan proposal + negative fixtures"
+   ]
   },
   {
    "id": "LP15",
@@ -1201,23 +1216,34 @@
   },
   "LP14-A1": {
    "package": "LP14",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp14-repairs.test.ts > LP14-A1/A2 (3 tests)",
+    "e2e/repairs-redesign.spec.ts > LP14-A1/A2"
+   ]
   },
   "LP14-A2": {
    "package": "LP14",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp14-repairs.test.ts > LP14-A1/A2 (ranking criteria + optimality disclaimer)",
+    "e2e/repairs-redesign.spec.ts > tradeoff table"
+   ]
   },
   "LP14-A3": {
    "package": "LP14",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp14-repairs.test.ts > LP14-A3 (canary, static import/exec checks, no apply/publish routes, temp-dir-only materialisation)"
+   ]
   },
   "LP14-A4": {
    "package": "LP14",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp14-repairs.test.ts > LP14-A4 (exact digest binding, stale baseline, expiry, authorizes_execution false)",
+    "apps/server/test/phase-lp14-repairs.test.ts > contract tests (2)"
+   ]
   },
   "LP15-A1": {
    "package": "LP15",
@@ -1757,6 +1783,21 @@
    "id": "D-LP13-3",
    "date": "2026-10-23",
    "decision": "A path hop is observed (and may animate) only when the relationship's own evidence level is observed with evidence refs; configured or conditional permission is never observed use, enforced on the server and again in the console."
+  },
+  {
+   "id": "D-LP14-1",
+   "date": "2026-10-23",
+   "decision": "Repair templates are a reviewed code constant (dk.repair_templates.v1), one per finite local action type; adding a template is a reviewed code change with tests, never runtime input."
+  },
+  {
+   "id": "D-LP14-2",
+   "date": "2026-10-23",
+   "decision": "Repair plans are plan_only and bound to the LP13 baseline and candidate state hashes; the authorization check only reports whether an approval descriptor still binds those digests and never authorizes execution. No apply/publish/PR route exists; patches are exported or materialised only in a fresh temp directory outside the checkout."
+  },
+  {
+   "id": "D-LP14-3",
+   "date": "2026-10-23",
+   "decision": "An objective needs at least one permitted operation (positive control); ranking uses only recorded criteria (validity, coverage, positive controls broken, unknowns, elements changed) and states it is not globally optimal."
   }
  ],
  "model_spend_usd": {

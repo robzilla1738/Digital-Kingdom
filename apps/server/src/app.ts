@@ -40,6 +40,7 @@ import { deriveCapability, LOCAL_CONTRACTS, INVESTIGATION_CONTRACTS, type Capabi
 import { registerLocalWorld } from "./local-world.ts";
 import { registerInvestigationRoutes } from "./investigation/routes.ts";
 import { registerExplorationRoutes } from "./exploration.ts";
+import { registerRepairRoutes } from "./repair.ts";
 
 export interface AppConfig {
   store: Store;
@@ -770,6 +771,8 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   const investigation = registerInvestigationRoutes(app, { store, secret: cfg.secret, cases, authed, who });
   // LP13 bounded path and change exploration (model-only analysis namespace; never writes baseline records).
   const exploration = registerExplorationRoutes(app, { store, authed, who });
+  // LP14 reviewable repair candidates (plan-only; no executor, no approval recording, no publication).
+  registerRepairRoutes(app, { store, exploration, cases, authed, who });
 
   // ---- optional bounded case assistance (R05.4): read-only drafts; deterministic without a model ----
   app.post("/api/projects/:p/cases/:id/assist", { preHandler: authed() }, async (req) => {

@@ -63,6 +63,7 @@ export function buildWorkbench(d: WorkbenchDeps, projectId: string, caseId: stri
       note: hypotheses.length > 1 ? "Hypotheses are shown side by side; none is preferred until a person records supported or refuted with a reason." : hypotheses.length === 1 ? "Only one hypothesis is recorded; consider the competing explanation before concluding." : "No hypothesis recorded yet.",
     },
     writes: "none" as const,
+    repair_candidates: latestRepairs(d.store, projectId, caseId),
   };
 
   const proposals = (listConclusions(d.store, projectId, caseId) as unknown as { id: string; created_by: string; principal_type: string; created_at: string; contract_revision: number | string; status: string; body: unknown; check_result: unknown }[]).slice().reverse().map((p, i) => {
@@ -136,6 +137,19 @@ export function buildWorkbench(d: WorkbenchDeps, projectId: string, caseId: stri
     proposals: proposalSection,
     anchors: [...anchors.values()],
   };
+}
+
+/** LP14: the latest reviewable repair candidate set for the case (read-only summary; plans stay plan-only). */
+function latestRepairs(store: Store, projectId: string, caseId: string) {
+  let row: { id: string; body: string; created_at: string } | undefined;
+  try { row = store.db.prepare("SELECT id, body, created_at FROM repair_candidate_sets WHERE project_id = ? AND case_id = ? ORDER BY created_at DESC, rowid DESC LIMIT 1").get(projectId, caseId) as typeof row; }
+  catch { return null; } // table absent on a database that predates LP14 migrations
+  if (!row) return null;
+  const b = JSON.parse(row.body) as { status: string; reasons: string[]; baseline: { state_hash: string }; candidates: { candidate_id: string; rank: number; template: { id: string }; target: string; valid: boolean; breaks_permitted: boolean; tradeoffs: { objective_coverage: { blocked: number; of: number }; disruption: { permitted_broken: string[]; of: number; elements_changed: number }; unknowns: string[]; prerequisites: string[] }; plan: { plan_id: string; candidate_digest: string } }[]; ranking: { note: string } };
+  return { set_id: row.id, created_at: row.created_at, status: b.status, reasons: b.reasons, baseline_state_hash: b.baseline.state_hash, ranking_note: b.ranking.note,
+    candidates: b.candidates.map((c) => ({ candidate_id: c.candidate_id, rank: c.rank, template: c.template.id, target: c.target, valid: c.valid, breaks_permitted: c.breaks_permitted,
+      blocked: c.tradeoffs.objective_coverage.blocked, of: c.tradeoffs.objective_coverage.of, permitted_broken: c.tradeoffs.disruption.permitted_broken.length, permitted_of: c.tradeoffs.disruption.of,
+      elements_changed: c.tradeoffs.disruption.elements_changed, unknowns: c.tradeoffs.unknowns.length, prerequisites: c.tradeoffs.prerequisites.length, plan_id: c.plan.plan_id, authority: "plan_only" as const })) };
 }
 
 /** The five-part case summary (phase spec §11): never a single opaque score. */

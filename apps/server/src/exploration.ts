@@ -38,8 +38,8 @@ CREATE INDEX analysis_comparisons_project ON analysis_comparisons (project_id, c
 CREATE TRIGGER analysis_comparisons_append_only_u BEFORE UPDATE ON analysis_comparisons BEGIN SELECT RAISE(ABORT, 'analysis comparisons are append-only'); END;
 CREATE TRIGGER analysis_comparisons_append_only_d BEFORE DELETE ON analysis_comparisons BEGIN SELECT RAISE(ABORT, 'analysis comparisons are append-only'); END;`;
 
-export type ElementKind = "grant" | "route" | "tool" | "artifact" | "source";
-export const ELEMENT_KINDS: ElementKind[] = ["grant", "route", "tool", "artifact", "source"];
+export type ElementKind = "grant" | "credential" | "route" | "tool" | "artifact" | "source";
+export const ELEMENT_KINDS: ElementKind[] = ["grant", "credential", "route", "tool", "artifact", "source"];
 export interface Element { kind: ElementKind; authority: string; id: string; attrs: Record<string, unknown>; provenance: string[] }
 export interface AnalysisState {
   schema: typeof ANALYSIS_STATE; project_id: string; namespace: string;
@@ -62,7 +62,11 @@ function grantElements(snap: AuthSnapshot): Element[] {
     if (d === "unknown") { out.push({ kind: "grant", authority, id: `${nameInAuthority(owner)}#${layer}#unknown`, attrs: { layer, owner, unknown: true }, provenance: [`snapshot:${snap.snapshot_id}`] }); return; }
     for (const doc of Array.isArray(d) ? d : [d]) doc.Statement.forEach((st, i) => out.push({ kind: "grant", authority, id: `${nameInAuthority(owner)}#${layer}#${doc.id}#${st.Sid ?? i}`, attrs: { layer, owner, doc: doc.id, order: i, statement: st, conditional: !!st.Condition && Object.keys(st.Condition).length > 0 }, provenance: [`snapshot:${snap.snapshot_id}`, `policy:${doc.id}`] }));
   };
-  for (const p of snap.principals) { docs("identity", p.arn, p.account, p.policies); docs("boundary", p.arn, p.account, p.boundary); if (p.type === "role") docs("trust", p.arn, p.account, p.trust); }
+  for (const p of snap.principals) {
+    docs("identity", p.arn, p.account, p.policies); docs("boundary", p.arn, p.account, p.boundary); if (p.type === "role") docs("trust", p.arn, p.account, p.trust);
+    // credential references only (key id + status); secret values never exist in a snapshot or here
+    for (const k of p.access_keys ?? []) out.push({ kind: "credential", authority: p.account, id: `${nameInAuthority(p.arn)}#key#${k.id}`, attrs: { owner: p.arn, key_id: k.id, status: k.status }, provenance: [`snapshot:${snap.snapshot_id}`] });
+  }
   for (const r of snap.resources) docs("resource", r.arn, r.account, r.policy);
   if (snap.organization) docs("scp", "organization", "organization", snap.organization.scps);
   return out;
@@ -94,8 +98,9 @@ export function baselineState(store: Store, projectId: string, snap: AuthSnapsho
 export interface Change { op: "add" | "remove" | "modify"; kind: ElementKind; authority: string; id: string; attrs?: Record<string, unknown> }
 const ALLOWED_ATTRS: Record<ElementKind, string[]> = {
   grant: ["layer", "owner", "doc", "order", "statement"],
+  credential: ["status"],
   route: ["asset_id", "path", "methods", "hosts"],
-  tool: ["agent", "tool"],
+  tool: ["agent", "tool", "gateway", "policy_ref"],
   artifact: ["asset_id", "name", "version", "reference"],
   source: ["asset_ids", "disabled"],
 };
@@ -120,6 +125,8 @@ function checkChange(c: unknown, i: number): Change {
       const unknown = Object.keys(st).filter((k) => !STATEMENT_KEYS.has(k));
       if (unknown.length) throw new HttpError(422, `changes[${i}].attrs.statement unsupported key(s) ${unknown.join(", ")}`);
     }
+    if (kind === "credential" && a.status !== "Active" && a.status !== "Inactive") throw new HttpError(422, `changes[${i}].attrs.status must be Active or Inactive`);
+    if (kind === "tool" && a.gateway !== undefined && a.gateway !== "allow" && a.gateway !== "deny") throw new HttpError(422, `changes[${i}].attrs.gateway must be allow or deny`);
     if (kind === "grant" && a.layer !== undefined && !LAYERS.includes(a.layer as Layer)) throw new HttpError(422, `changes[${i}].attrs.layer must be one of ${LAYERS.join(", ")}`);
     if (canonicalJson(a).length > 20_000) throw new HttpError(413, `changes[${i}].attrs too large`);
   }
@@ -153,6 +160,7 @@ export function snapshotFromState(baseSnap: AuthSnapshot | null, s: AnalysisStat
     return [...byDoc].sort(([a], [b]) => a.localeCompare(b)).map(([id, els]) => ({ id, Statement: els.sort((x, y) => Number(x.attrs.order ?? 0) - Number(y.attrs.order ?? 0)).map((x) => x.attrs.statement as Statement) }));
   };
   for (const p of snap.principals) {
+    if (p.access_keys) p.access_keys = p.access_keys.map((k) => { const e = s.elements.find((x) => x.kind === "credential" && x.attrs.owner === p.arn && x.attrs.key_id === k.id); return { ...k, status: (e?.attrs.status as "Active" | "Inactive" | undefined) ?? k.status }; });
     const id = docsFor("identity", p.arn); p.policies = id === null ? [] : id;
     if (p.boundary !== undefined) { const b = docsFor("boundary", p.arn); p.boundary = b === null ? null : b === "unknown" ? "unknown" : b[0]!; }
     if (p.type === "role" && p.trust !== undefined) { const t = docsFor("trust", p.arn); p.trust = t === null ? { id: "none", Statement: [] } : t === "unknown" ? "unknown" : t[0]!; }
@@ -171,7 +179,8 @@ export function graphFromState(base: Graph, s: AnalysisState): Graph {
     const art = s.elements.find((e) => e.kind === "artifact" && e.attrs.asset_id === a.id);
     if (art) a.deployment = String(art.attrs.reference ?? `${art.authority}/${String(art.attrs.name)}@${String(art.attrs.version)}`);
   }
-  const tools = s.elements.filter((e) => e.kind === "tool");
+  // a tool link whose gateway policy denies it is not a path in that state
+  const tools = s.elements.filter((e) => e.kind === "tool" && e.attrs.gateway !== "deny");
   g.relationships = g.relationships.filter((r) => r.kind !== "invokes_tool" || tools.some((t) => t.attrs.agent === r.source_id && t.attrs.tool === r.target_id));
   for (const t of tools) if (!g.relationships.some((r) => r.kind === "invokes_tool" && r.source_id === t.attrs.agent && r.target_id === t.attrs.tool))
     g.relationships.push({ id: `proposed:${t.attrs.agent}->${t.attrs.tool}`, source_id: String(t.attrs.agent), target_id: String(t.attrs.tool), kind: "invokes_tool", evidence_level: "hypothetical", evidence_refs: [] } as unknown as Relationship);
@@ -180,6 +189,18 @@ export function graphFromState(base: Graph, s: AnalysisState): Graph {
 
 // ------------------------------------------------------------------------------------------------ comparison
 export interface Probe { principal: string; action: string; resource: string }
+/**
+ * `evaluate`, plus one declared fact the evaluator does not use: an IAM user whose every access key is Inactive has no
+ * usable long-term credential, so its configured permission is not usable through a key (blocked, reason stated).
+ * A user with no keys listed is evaluated unchanged (keys may simply not be in the snapshot).
+ */
+export function evaluateWithCredentials(snap: AuthSnapshot, principal: string, action: string, resource: string): Decision {
+  const d = evaluate(snap, principal, action, resource);
+  const p = snap.principals.find((x) => x.arn === principal);
+  if (p && p.type === "user" && p.access_keys?.length && p.access_keys.every((k) => k.status === "Inactive") && d.result !== "blocked")
+    return { ...d, result: "blocked", reasons: [`every access key of ${principal} is Inactive: no usable credential (configured permission was ${d.result})`, ...d.reasons] };
+  return d;
+}
 const SUPPORTED_ACTION = (a: string) => /^s3:/i.test(a) || a.toLowerCase() === "sts:assumerole";
 export function compareStates(input: { base: AnalysisState; candidate: AnalysisState; baseSnap: AuthSnapshot | null; baseGraph: Graph; probes: Probe[]; sources: { id: string; asset_ids: string[] }[] }) {
   const { base, candidate } = input;
@@ -191,7 +212,7 @@ export function compareStates(input: { base: AnalysisState; candidate: AnalysisS
   const decisions = input.probes.map((p) => {
     if (!SUPPORTED_ACTION(p.action) || !/^arn:aws:/.test(p.resource) || !/^arn:aws:/.test(p.principal)) return { probe: p, supported: false, base: null, candidate: null, reason: `${p.action} on ${p.resource}: provider/action semantics outside ${EVALUATOR_VERSION} (AWS S3 actions and sts:AssumeRole only); unresolved` };
     if (!input.baseSnap || !cSnap) return { probe: p, supported: true, base: null, candidate: null, reason: "no authorization snapshot stored; unresolved" };
-    return { probe: p, supported: true, base: evaluate(input.baseSnap, p.principal, p.action, p.resource), candidate: evaluate(cSnap, p.principal, p.action, p.resource), reason: null };
+    return { probe: p, supported: true, base: evaluateWithCredentials(input.baseSnap, p.principal, p.action, p.resource), candidate: evaluateWithCredentials(cSnap, p.principal, p.action, p.resource), reason: null };
   });
   const condition_keys = [...new Set([
     ...decisions.flatMap((d) => [...(d.base?.condition_keys ?? []), ...(d.candidate?.condition_keys ?? [])]),
@@ -203,8 +224,8 @@ export function compareStates(input: { base: AnalysisState; candidate: AnalysisS
     else { if (d.candidate.result === "unresolved") unassessed.push(`${d.probe.principal} ${d.probe.action} ${d.probe.resource}: unresolved in the candidate (${d.candidate.reasons[0] ?? ""})`); if (d.candidate.result === "conditional") unassessed.push(`${d.probe.principal} ${d.probe.action} ${d.probe.resource}: conditional on ${d.candidate.condition_keys.join(", ") || "conditions"} (conditions are not evaluated)`); }
   }
   const probedOwners = new Set(input.probes.flatMap((p) => [p.principal, p.resource]));
-  for (const k of changedKeys.filter((x) => x.startsWith("grant|"))) { const e = cm.get(k) ?? bm.get(k)!; if (!probedOwners.has(String(e.attrs.owner))) unassessed.push(`${k}: changed grant not exercised by any probe`); }
-  for (const k of changedKeys.filter((x) => !x.startsWith("grant|"))) unassessed.push(`${k}: declared change only; its runtime behaviour was not executed (model-only comparison)`);
+  for (const k of changedKeys.filter((x) => x.startsWith("grant|") || x.startsWith("credential|"))) { const e = cm.get(k) ?? bm.get(k)!; if (!probedOwners.has(String(e.attrs.owner))) unassessed.push(`${k}: changed ${k.split("|")[0]} not exercised by any probe`); }
+  for (const k of changedKeys.filter((x) => !x.startsWith("grant|") && !x.startsWith("credential|"))) unassessed.push(`${k}: declared change only; its runtime behaviour was not executed (model-only comparison)`);
   const side = (s: AnalysisState, snap: AuthSnapshot | null): Side => ({ commit: `state:${stateHash(s).slice(0, 16)}`, graph: graphFromState(input.baseGraph, s), snapshot: snap,
     sources: s.elements.filter((e) => e.kind === "source" && !e.attrs.disabled).map((e) => ({ id: e.id, asset_ids: e.attrs.asset_ids as string[] })),
     artifacts: Object.fromEntries(s.elements.filter((e) => e.kind === "artifact").map((e) => [String(e.attrs.asset_id), `${e.authority}/${String(e.attrs.name)}@${String(e.attrs.version)}`])),
