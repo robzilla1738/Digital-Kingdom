@@ -47,6 +47,9 @@ importers:
       '@dk/graph-core':
         specifier: workspace:*
         version: link:../../packages/graph-core
+      '@dk/local-world':
+        specifier: workspace:*
+        version: link:../../packages/local-world
       '@dk/scene-compiler':
         specifier: workspace:*
         version: link:../../packages/scene-compiler
@@ -169,6 +172,21 @@ importers:
       '@dk/contracts':
         specifier: workspace:*
         version: link:../contracts
+      yaml:
+        specifier: ~2.8.0
+        version: 2.8.4
+
+  packages/local-world:
+    dependencies:
+      '@dk/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@dk/graph-core':
+        specifier: workspace:*
+        version: link:../graph-core
+      '@dk/scene-compiler':
+        specifier: workspace:*
+        version: link:../scene-compiler
       yaml:
         specifier: ~2.8.0
         version: 2.8.4

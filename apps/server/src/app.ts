@@ -37,6 +37,7 @@ import { CAPABILITY_LEVELS, CONNECTORS } from "./adapters/connectors.ts";
 import { runtimePolicy } from "./phase-policy.ts";
 import { parseLocalRun, provenanceOf } from "./provenance.ts";
 import { deriveCapability, LOCAL_CONTRACTS, type CapabilityReceipt } from "@dk/contracts";
+import { registerLocalWorld } from "./local-world.ts";
 
 export interface AppConfig {
   store: Store;
@@ -964,6 +965,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
     const reasons = [...new Set(results.filter((r) => r.status === "rejected").map((r) => (r as { reason: string }).reason))];
     return { partialSuccess: { rejectedSpans: String(rejected), errorMessage: `${rejected} span(s) rejected${reasons.length ? `: ${reasons.join(", ")}` : " (invalid span structure)"}` } };
   });
+
+  // ---- LP04+: local world builder (preview) and local run reporting ----
+  registerLocalWorld(app, { store, authed });
 
   // ---- static web app ----
   const dist = cfg.webDist ?? resolve(import.meta.dirname, "../../web/dist");

@@ -1,0 +1,4 @@
+{ "name": "@dk/local-world", "version": "0.3.2", "private": true, "type": "module", "license": "Apache-2.0",
+  "description": "Local Intelligence Phase: reviewed local application blueprints, inert descriptor import, deterministic world compiler, run supervisor and finite scenario DSL.",
+  "main": "src/index.ts", "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@dk/contracts": "workspace:*", "@dk/graph-core": "workspace:*", "@dk/scene-compiler": "workspace:*", "yaml": "~2.8.0" } }

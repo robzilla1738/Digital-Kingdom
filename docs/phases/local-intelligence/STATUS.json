@@ -223,10 +223,28 @@
    "depends_on": [
     "LP03"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP04.md",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "96 files passed, 1 skipped; 688 passed, 1 skipped",
+    "validate:fixtures": "exit 0",
+    "scenarios": "12 passed, 1 partial_passed, 3 unavailable (unchanged)",
+    "deps:inventory": "notices unchanged"
+   },
+   "reuses": [
+    "dk.local.world_plan.v1 (LP03)",
+    "graph-core importers + R09.1 routesFromOpenApi",
+    "R00.3 matchDeclaredRoutes",
+    "scene-compiler compileScene/defaultProposal (pins)"
+   ],
+   "decisions": [
+    "D-LP04-1: new boundary packages/local-world (@dk/local-world) per spec \u00a722; graph-core exports ./packs/* so the OpenAPI route reader is reused, not copied.",
+    "D-LP04-2: world_plan.v1 template enum unchanged; observers compile to declared sources (not assets); asset id = logical resource id; revision = lw-sha256(catalog digest, plan digest).",
+    "D-LP04-3: LP00-A2 test hashes frozen trees once with a 90 s timeout (timed out under concurrent load on a 2-CPU sandbox); assertions unchanged."
+   ]
   },
   {
    "id": "LP05",
@@ -698,23 +716,33 @@
   },
   "LP04-A1": {
    "package": "LP04",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp04-blueprints.test.ts > LP04-A1 (3 tests: three blueprints compile+preview with no credential/endpoint; reviewed components; explicit observation gaps)",
+    "apps/server/test/phase-lp04-world.test.ts > LP04-A1 (empty DB previews all three via API; zero project/source/audit rows written)"
+   ]
   },
   "LP04-A2": {
    "package": "LP04",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp04-blueprints.test.ts > LP04-A2 (5 tests: hostile compose ignored/rejected with reasons; interpolation; YAML tags/alias bomb/size; OpenAPI remote/local refs, servers, callbacks, links, webhooks; manifest; world-plan injections)",
+    "apps/server/test/phase-lp04-world.test.ts > LP04-A2 (descriptor preview via API)"
+   ]
   },
   "LP04-A3": {
    "package": "LP04",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp04-blueprints.test.ts > LP04-A3 (3 tests: identical compiled world + layout per blueprint/seed; seed only as commitment; seed/setting/budget change => new revision)"
+   ]
   },
   "LP04-A4": {
    "package": "LP04",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "packages/local-world/test/lp04-blueprints.test.ts > LP04-A4 (2 tests: added service preserves prior coordinates/identities/sources; ambiguous route stays ambiguous)"
+   ]
   },
   "LP05-A1": {
    "package": "LP05",

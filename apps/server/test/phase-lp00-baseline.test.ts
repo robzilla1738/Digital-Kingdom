@@ -38,11 +38,12 @@ describe("LP00 phase ledger and frozen history", () => {
     expect(recorded.recorded_at_head).toBe("9fec7ed24dea46157af8a7c0ef09bee77c2ffa88");
     expect(recorded.trees.map((t) => t.path)).toEqual([...FROZEN_TREES]);
     for (const t of recorded.trees) expect(t.files, t.path).toBeGreaterThan(0);
-    expect(compare(recorded.trees, currentDigests())).toEqual([]);
+    const current = currentDigests();
+    expect(compare(recorded.trees, current)).toEqual([]);
     // the comparison actually detects a change (mutation check on the checker itself)
     const tampered = recorded.trees.map((t, i) => (i === 0 ? { ...t, sha256: "0".repeat(64) } : t));
-    expect(compare(tampered, currentDigests())).toEqual([expect.stringMatching(/^artifacts\/completion: changed/)]);
-  });
+    expect(compare(tampered, current)).toEqual([expect.stringMatching(/^artifacts\/completion: changed/)]);
+  }, 90_000); // hashes every tracked file of the frozen trees (hundreds of screenshots); slow on a loaded 2-CPU runner
 });
 
 describe("LP00-A3 runtime defaults: no external access, no new provider calls, plan-only actions", () => {
