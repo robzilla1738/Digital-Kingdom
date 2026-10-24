@@ -221,6 +221,7 @@ if (cmd === "run") {
   }
   let halted: string | null = null, next = 0;
   const work = slots.slice(0, limit);
+  const concurrency = Math.min(Math.max(Number(arg("concurrency", "1")), 1), 3);
   const one = async (slot: Slot) => {
     if (halted) return;
     if (ledger && ledger.budget.incurred >= RUN_STOP) { halted = `run spend stop $${RUN_STOP} reached`; return; }
@@ -228,8 +229,14 @@ if (cmd === "run") {
     const rec = await runAttempt({ attempt_id: `${reg.id}-${mode.mode}-${String(slot.index).padStart(3, "0")}`, split: slot.block, doc: docFor(slot), condition: slot.condition, mode, ...(cfg ? { model: { cfg, secrets: [cfg.apiKey] } } : {}) });
     rec.slot = slot;
     if (ledger) {
-      const charged = ledger.budget.incurred - before; // includes conservatively retained maxima of failed requests
-      rec.cost = { charged_usd: charged, gateway_reported_usd: rec.model?.usage?.cost_usd ?? null, note: "charged = settled ledger amount for this attempt's requests (gateway-reported cost, or the reserved maximum for failed requests)" };
+      // The ledger delta over this attempt includes any OTHER in-flight attempt's charges when concurrency > 1
+      // (over-attribution found in li-m7-7f4a12cd). With overlap, a clean attempt is charged its own gateway-reported
+      // cost; an attempt with a model error keeps the conservative delta (it may hold retained maxima). The cap is
+      // always enforced on the BudgetLedger's real incurred total, never on these attributions.
+      const delta = ledger.budget.incurred - before;
+      const own = rec.model?.usage?.cost_usd;
+      const charged = concurrency > 1 && typeof own === "number" && !rec.model?.error ? own : delta;
+      rec.cost = { charged_usd: charged, gateway_reported_usd: own ?? null, ledger_delta_usd: delta, note: concurrency > 1 ? "concurrency > 1: charged = this attempt's gateway-reported cost (or the ledger delta, conservative, when the attempt had a model error)" : "charged = settled ledger amount for this attempt's requests (gateway-reported cost, or the reserved maximum for failed requests)" };
       ledger.record({ id: rec.attempt_id, run: reg.id, kind: "attempt", reserved_max_usd: charged, charged_usd: charged, gateway_cost_usd: rec.model?.usage?.cost_usd ?? null, prompt_tokens: rec.model?.usage?.prompt_tokens ?? 0, completion_tokens: rec.model?.usage?.completion_tokens ?? 0, model_calls: rec.model?.usage?.model_calls ?? 0 });
       const resolved = (rec.model?.turns ?? []).map((t: { resolved_model?: string }) => t.resolved_model).filter(Boolean);
       if (resolved.some((m: string) => m !== reg.model.id)) halted = "provider returned a different model";
@@ -240,7 +247,6 @@ if (cmd === "run") {
     const line = { slot: slot.index, block: slot.block, doc: slot.block === "dev" ? slot.doc : "heldout", condition: slot.condition, status: rec.status, e2e: rec.metrics?.end_to_end_success ?? false, structured: rec.metrics ? `${rec.metrics.structured.passed}/${rec.metrics.structured.eligible}` : null, retrieval: rec.metrics ? `${rec.metrics.retrieval.exposed}/${rec.metrics.retrieval.reachable}` : null, cost: rec.cost?.charged_usd ?? 0, spent_total: ledger?.budget.incurred ?? 0 };
     appendFileSync(join(runDir, "progress.jsonl"), JSON.stringify(line) + "\n"); console.log(JSON.stringify(line));
   };
-  const concurrency = Math.min(Math.max(Number(arg("concurrency", "1")), 1), 3);
   await Promise.all(Array.from({ length: concurrency }, async () => { while (!halted && next < work.length) await one(work[next++]!); }));
   appendFileSync(join(runDir, "progress.jsonl"), JSON.stringify({ finished_at: new Date().toISOString(), attempted: next, halted, spent_total: ledger?.budget.incurred ?? 0 }) + "\n");
   if (halted) { console.error(`halted: ${halted}`); process.exitCode = 1; }

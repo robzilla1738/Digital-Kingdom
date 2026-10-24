@@ -1,0 +1,22 @@
+{
+ "schema": "dk.local.eval_spend_reconciliation.v1",
+ "preregistration": "li-m7-7f4a12cd",
+ "true_spend_usd": 0.208717694,
+ "basis": "sum of gateway-reported cost of every request (all 36 attempts report it; no failed request retained a reserved maximum); equals the BudgetLedger incurred total printed by the runner (progress.jsonl spent_total 0.208717694)",
+ "ledger_entries_charged_total_usd": 0.41225387,
+ "why_they_differ": "the runner attributes each attempt's cost as the ledger delta between its start and end; with --concurrency 2 the two in-flight attempts' charges overlap, so each attempt was also charged part of the other's requests (over-attribution, never under). The cap check uses the BudgetLedger's real incurred total, not the attributed sum. The per-condition cost column in REPORT.md uses the attributed amounts.",
+ "per_condition_true_usd": {
+  "C1": 0.09646,
+  "C2": 0.04419,
+  "C3": 0.068067
+ },
+ "per_condition_attributed_usd": {
+  "C1": 0.168198,
+  "C2": 0.110514,
+  "C3": 0.133542
+ },
+ "phase_total_true_usd": 1.93448,
+ "phase_total_conservative_usd": 2.138016,
+ "phase_cap_usd": 3.0,
+ "records_unchanged": true
+}

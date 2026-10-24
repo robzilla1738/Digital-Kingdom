@@ -58,3 +58,13 @@ Human review: deferred (EXT05). No record is approved.
 - Exposure means the record reached the model, not that it was attended to; packet records count as exposure only when their digest equals the stored record.
 - The referee's admissibility rules are this phase's specification (observer attachment + schedule faults); a silently dropped observer record admits not_observed or unknown.
 - AI critique is advisory and from the same model family; human review is deferred.
+
+## Post-seal note — spend reconciliation (records unchanged)
+
+True spend of this run: **$0.208718** (sum of the gateway-reported cost of every request; all 36 attempts report it and
+no failed request retained a reserved maximum; equal to the runner's BudgetLedger incurred total). The ledger entries and
+the per-condition cost column above sum to $0.412254 because the runner attributed each attempt's cost as the ledger
+delta over its lifetime, and with `--concurrency 2` overlapping attempts were each charged part of the other's
+requests (over-attribution only). Per condition, true: C1 $0.096460, C2 $0.044190, C3 $0.068067. Phase total: $1.934480
+true ($2.138016 using the conservative attributed sum), both under the $3.00 cap. Details: `spend-reconciliation.json`.
+The runner's attribution was fixed after this run (eval/local/run.ts); this run's records and ledger were not rewritten.
