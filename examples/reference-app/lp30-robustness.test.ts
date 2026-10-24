@@ -16,7 +16,9 @@ import { RUN_OPTIONS, VARIANT_FAMILIES, type Doc } from "../../eval/local/varian
  * environment only (see report.environment); budgets are generous bounds, not performance claims.
  */
 const ROOT = join(import.meta.dirname, "../..");
-const OUT = join(ROOT, "artifacts/phase-local-intelligence/M7");
+// The committed report was produced with DK_LP30_REPORT_DIR=artifacts/phase-local-intelligence/M7; by default the test
+// writes to the ignored artifacts/tmp so `pnpm test` never dirties the tree (release:verify requires a clean build tree).
+const OUT = join(ROOT, process.env.DK_LP30_REPORT_DIR ?? "artifacts/tmp/lp30");
 const lw = (id: string): Doc => JSON.parse(readFileSync(join(ROOT, `scenarios/local-world/dsl/${id}.scenario.json`), "utf8"));
 const report: Record<string, unknown> = { schema: "dk.lp30.robustness.v1", environment: { platform: os.platform(), arch: os.arch(), cpus: os.cpus().length, cpu_model: os.cpus()[0]?.model ?? "unknown", total_mem_mb: Math.round(os.totalmem() / 2 ** 20), node: process.version, note: "sandbox measurements; not a hardware benchmark" } };
 afterAll(() => { mkdirSync(OUT, { recursive: true }); writeFileSync(join(OUT, "lp30-robustness-report.json"), JSON.stringify(report, null, 2)); });

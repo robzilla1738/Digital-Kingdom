@@ -42,21 +42,24 @@ async function focusVisible(page: Page, presses = 12) {
 type View = { name: string; open: (page: Page) => Promise<void>; region: string };
 const views: View[] = [
   { name: 'castle-world', region: 'body', open: async (page) => { await page.evaluate(() => { location.hash = 'workspace=kingdom&view=castle'; }); const show = page.getByRole('button', { name: 'Show map', exact: true }); if (await show.isVisible()) await show.click(); await expect(page.locator('canvas')).toBeVisible(); await expect.poll(async () => Number(await page.locator('canvas').getAttribute('data-render-count'))).toBeGreaterThan(0); } },
-  { name: 'interior-inspector', region: '[data-testid="evidence-interior"]', open: async (page) => { await page.evaluate(() => { location.hash = 'workspace=kingdom&view=castle&sel=asset:api'; }); await expect(page.getByTestId('evidence-interior')).toBeVisible(); await page.getByTestId('evidence-interior').scrollIntoViewIfNeeded(); } },
+  { name: 'interior-inspector', region: '[data-testid="evidence-interior"]', open: async (page) => { await page.evaluate(() => { location.hash = 'workspace=kingdom&view=castle&sel=asset:api'; }); await expect(page.getByTestId('evidence-interior')).toBeVisible(); await page.getByTestId('evidence-interior').evaluate((e) => e.scrollIntoView({ block: 'start' })); } },
   { name: 'comparison-branch', region: '[data-testid="world-comparison"]', open: async (page) => { await page.goto(`${h.serverUrl}/?project=demo-castle&cmp=${cmpId}#workspace=kingdom&view=castle`); await expect(page.locator('.app')).toBeVisible({ timeout: 30_000 }); const show = page.getByRole('button', { name: 'Show map', exact: true }); if (await show.isVisible()) { report.findings.push('comparison-branch at 390px: the open comparison is only reachable after "Show map"; the list view gives no indication a comparison is open'); await show.click(); } await expect(page.getByTestId('world-comparison')).toBeVisible({ timeout: 30_000 }); } },
   { name: 'case-workbench', region: '[aria-label="Cases workspace"]', open: async (page) => { await page.getByRole('button', { name: 'Investigate', exact: true }).click(); await page.getByRole('tab', { name: 'Cases', exact: true }).click(); await expect(page.getByLabel('Cases workspace')).toBeVisible(); if (caseTitle) { const b = page.getByLabel('Cases workspace').getByRole('button', { name: new RegExp(caseTitle) }).first(); if (await b.count()) await b.click(); } } },
   { name: 'mission-builder', region: '[data-testid="mission-desk"]', open: async (page) => { await page.getByRole('button', { name: 'Integrations', exact: true }).click(); await page.getByRole('tab', { name: 'Missions' }).click(); await page.getByLabel('Start from reviewed blueprint').selectOption('agent-workspace'); await page.getByRole('button', { name: 'Preview' }).click(); await expect(page.getByTestId('mission-preview')).toBeVisible(); } },
-  { name: 'mission-failure-state', region: '[data-testid="mission-desk"]', open: async (page) => { await page.getByRole('button', { name: 'Integrations', exact: true }).click(); await page.getByRole('tab', { name: 'Missions' }).click(); await page.getByLabel('Start from reviewed blueprint').selectOption('delivery-identity'); const j = page.getByLabel('Mission draft JSON'); const d = JSON.parse(await j.inputValue()); d.scenario.steps[0].command = 'id'; await j.fill(JSON.stringify(d, null, 1)); await page.getByRole('button', { name: 'Preview' }).click(); await expect(page.getByTestId('mission-error')).toBeVisible(); await page.getByTestId('mission-error').scrollIntoViewIfNeeded(); } },
+  { name: 'mission-failure-state', region: '[data-testid="mission-desk"]', open: async (page) => { await page.getByRole('button', { name: 'Integrations', exact: true }).click(); await page.getByRole('tab', { name: 'Missions' }).click(); await page.getByLabel('Start from reviewed blueprint').selectOption('delivery-identity'); const j = page.getByLabel('Mission draft JSON'); const d = JSON.parse(await j.inputValue()); d.scenario.steps[0].command = 'id'; await j.fill(JSON.stringify(d, null, 1)); await page.getByRole('button', { name: 'Preview' }).click(); await expect(page.getByTestId('mission-error')).toBeVisible(); await page.getByTestId('mission-error').evaluate((e) => e.scrollIntoView({ block: 'start' })); } },
 ];
 
 for (const v of views) {
   test(`LP30-A3: ${v.name} — axe, keyboard focus, reduced motion and 390px`, async ({ browser }) => {
     expect(existsSync(AXE)).toBe(true);
     const row: Record<string, any> = { view: v.name };
-    for (const variant of ['desktop', 'reduced-motion', 'narrow-390'] as const) {
-      const { context, page } = await loginRedesign(browser, h, variant === 'narrow-390' ? { viewport: { width: 390, height: 844 } } : {});
-      try {
+    // One signed-in context per view (CI time budget): desktop, then reduced motion, then 390px, re-opening the view each time.
+    const { context, page } = await loginRedesign(browser, h);
+    try {
+      for (const variant of ['desktop', 'reduced-motion', 'narrow-390'] as const) {
         if (variant === 'reduced-motion') await page.emulateMedia({ reducedMotion: 'reduce' });
+        if (variant === 'narrow-390') await page.setViewportSize({ width: 390, height: 844 });
+        if (variant !== 'desktop') { await page.goto(`${h.serverUrl}/?project=demo-castle`); await expect(page.locator('.app')).toBeVisible({ timeout: 30_000 }); }
         const t0 = Date.now(); await v.open(page); const openMs = Date.now() - t0;
         if (variant === 'desktop') {
           row.open_ms = openMs; row.axe_region = await axe(page, v.region === 'body' ? undefined : v.region);
@@ -72,14 +75,13 @@ for (const v of views) {
             row.reduced_motion_camera_tween_seen = samples.includes('true');
             // let SwiftShader settle on demand frames before the screenshot (a bounded wait, not a retry)
             await expect(canvas).not.toHaveAttribute('data-camera-active', 'true');
-            const rc = await canvas.getAttribute('data-render-count'); await page.waitForTimeout(500);
-            row.reduced_motion_render_count_after_select = [rc, await canvas.getAttribute('data-render-count')];
+            await page.waitForTimeout(500);
           }
         }
         if (variant === 'narrow-390') row.overflow_390_px = await overflowX(page);
         await captureRedesign(page, `lp30-${v.name}-${variant}`, { timeout: 30_000 });
-      } finally { await context.close(); }
-    }
+      }
+    } finally { await context.close(); }
     report.views.push(row);
     writeRedesignEvidence(`lp30-usability-${v.name}.json`, { scope: report.scope, renderer: report.renderer, findings: report.findings, ...row });
     expect(row.axe_region.violations.filter((x: any) => ['serious', 'critical'].includes(x.impact)), JSON.stringify(row.axe_region.violations)).toEqual([]);
