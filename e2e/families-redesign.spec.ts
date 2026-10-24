@@ -48,13 +48,14 @@ test('LP17-A2/A4: F15 mixed world; with roofs off each family plinth selects its
   const THREE = createRequire(new URL('../apps/web/package.json', import.meta.url))('three') as typeof import('three');
   const { applyRedesignFixture } = await import('../fixtures/redesign/offline.ts');
   const { demoGraph } = await import('../fixtures/testing/load.ts');
-  const { presentationScene } = await import('../apps/web/src/castle/scenePresentation.ts');
+  const { realmPresentation } = await import('../apps/web/src/castle/scenePresentation.ts');
   // F15's scene depends only on the demo graph (recordProposal over declared fields); Node cannot load the
   // Vite JSON imports of loadOfflineDemo, so the same synthetic graph is read through the Node fixture loader.
   const graph = demoGraph();
   const base = { mode: 'offline-demo', project: { id: graph.project_id, name: 'x', dataset_kind: 'synthetic' }, projects: [], graph, sources: [], events: [], evidence: {}, findings: [], coverage: [], unobserved_asset_ids: [] } as never;
   const fixture = applyRedesignFixture(base, 'F15');
-  const rooms = presentationScene(fixture.scene).rooms;
+  // next-C: the castle draws the display-only realm packing (stored layout unchanged), so pick in those coordinates.
+  const rooms = realmPresentation(fixture.scene, fixture.graph).rooms;
   const familyRooms = FAMILIES.map(f => rooms.find(r => r.module_id === f)!);
   expect(familyRooms.every(Boolean)).toBe(true);
   await page.goto(h.offlineUrl + '/?fixture=F15#workspace=kingdom&view=castle');
@@ -126,7 +127,7 @@ test('LP17-A2/A4: F15 mixed world; with roofs off each family plinth selects its
   await captureRedesign(page, 'lp17-f15-roofs-off-family-selected');
   // A ground point clear of every footprint (by 1.2 m) must not select any building.
   const inside = (x: number, z: number) => rooms.some(o => Math.abs(x - o.position.x) < o.footprint.w / 2 + 1.2 && Math.abs(z - o.position.z) < o.footprint.d / 2 + 1.2);
-  const b = presentationScene(fixture.scene).bounds;
+  const b = realmPresentation(fixture.scene, fixture.graph).bounds;
   let ground: null | { x: number; y: number; world: number[]; selection: string | null } = null;
   await envRow.click(); await page.waitForTimeout(800);
   const anchor = familyRooms[0]!.asset_id; await readPose();

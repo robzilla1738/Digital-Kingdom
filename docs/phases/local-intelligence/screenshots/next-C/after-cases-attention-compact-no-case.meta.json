@@ -1,0 +1,23 @@
+{
+  "name": "after-cases-attention-compact-no-case",
+  "file": "after-cases-attention-compact-no-case.png",
+  "phase": "after",
+  "sha256": "29e3cff21dc160142a8e9f3df10115daab2382b6b40e95c8a43291159723cb37",
+  "bytes": 329667,
+  "commit": "9080c2011a8347bb5d1a5df081933be417f1fcf6",
+  "worktreeDirty": false,
+  "capturedAt": "2026-10-24T21:16:00.067Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "browser": "141.0.7390.37",
+  "renderer": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "rendererNote": "Chromium headless, SwiftShader software WebGL requested; no real-GPU claim.",
+  "url": "http://127.0.0.1:41363/?project=demo-castle#v=2&workspace=investigate&view=castle&tab=cases",
+  "note": "Cases with no case open: repeated low-priority stale checks compacted into one counted row."
+}
