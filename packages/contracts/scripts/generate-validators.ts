@@ -28,7 +28,9 @@ const map: Record<string, string> = { validateGraph: "graph", validateEvent: "ev
   // Local Intelligence Phase (LP21) repair execution receipts
   validateRepairExecution: "local/repair-execution.v1",
   // Local Intelligence Phase (LP22) independent repair verification
-  validateRepairVerification: "local/repair-verification.v1" };
+  validateRepairVerification: "local/repair-verification.v1",
+  // Local Intelligence Phase (LP23) replayable repair regressions
+  validateRepairRegression: "local/repair-regression.v1" };
 for (const [, n] of Object.entries(map)) ajv.addSchema(load(n), n);
 let code = standalone(ajv, Object.fromEntries(Object.entries(map).map(([k, v]) => [k, v])));
 // Make the output dependency-free (browser + node, no CommonJS require).

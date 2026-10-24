@@ -1,0 +1,134 @@
+{
+ "schema": "dk.local.repair_regression.v1",
+ "regression_id": "lrg-0620122bdcfde0db",
+ "lesson": "The tenant API must refuse a tenant-a session reading tenant-b records while tenant-a reads keep working (repair: tenant API policy back to baseline).",
+ "world": {
+  "blueprint": "saas-storefront",
+  "blueprint_version": 1,
+  "seed": "lr01-saas",
+  "plan_digest": "0bb247a25753cb9e64d2385e7083f6ab57efa4565f8fb38d46f95b0422b4748d",
+  "catalog_version": "dk-local-catalog-2",
+  "catalog_digest": "b03d0f9b6814f98da403a10cca39a1048974708a81207aa3ae09962848ea7804"
+ },
+ "prerequisites": {
+  "defect": [
+   {
+    "resource_id": "api",
+    "setting": "policy_variant",
+    "value": "deliberately_weak"
+   }
+  ],
+  "principals": [
+   {
+    "ref": "principal-1",
+    "kind": "session",
+    "account": "acct:tenant-a:user"
+   }
+  ]
+ },
+ "repair": {
+  "actions": [
+   {
+    "action_id": "a1",
+    "type": "set_gateway_policy",
+    "target_resource_id": "api",
+    "parameters": {
+     "policy_ref": "policy:baseline"
+    },
+    "expected_target_revision": "api:policy-deliberately_weak-r2"
+   }
+  ]
+ },
+ "probes": [
+  {
+   "id": "cross-tenant-read",
+   "expectation": "prohibited",
+   "control": "negative",
+   "request": {
+    "resource": "ingress",
+    "method": "GET",
+    "path": "/tenants/tenant-b/records",
+    "principal": "principal-1"
+   },
+   "effect": {
+    "observer": "audit",
+    "resource": "tenant-db"
+   }
+  },
+  {
+   "id": "own-tenant-read",
+   "expectation": "permitted",
+   "control": "positive",
+   "request": {
+    "resource": "ingress",
+    "method": "GET",
+    "path": "/tenants/tenant-a/records",
+    "principal": "principal-1"
+   },
+   "effect": {
+    "observer": "audit",
+    "resource": "tenant-db"
+   }
+  }
+ ],
+ "expected": {
+  "baseline": [
+   {
+    "probe_id": "cross-tenant-read",
+    "actual_effect": "observed"
+   },
+   {
+    "probe_id": "own-tenant-read",
+    "actual_effect": "observed"
+   }
+  ],
+  "without_repair": {
+   "prohibited_effects": "observed"
+  },
+  "after_repair": {
+   "security_verdict": "pass",
+   "residual_access": [],
+   "disruption": [],
+   "whole_run": "success"
+  }
+ },
+ "versions": {
+  "policies": {
+   "api": {
+    "template": "api",
+    "template_version": "1.0.0",
+    "template_digest": "8d663f44d581734e08d279d08a075158d22a84283dd12112b2e33286a6c427c0",
+    "revision_at_validation": "api:policy-deliberately_weak-r2"
+   }
+  },
+  "tools": {
+   "effect_verifier": "dk-effect-verifier-1",
+   "repair_controller": "dk-repair-controller-1",
+   "repair_operations": "ops-de40e36aef3c85da",
+   "replayer": "dk-local-regression-replay-1"
+  },
+  "artifacts": {}
+ },
+ "linkage": {
+  "case_ref": "sha256:1a98685ede87bec5",
+  "control_ids": [
+   "ctl-tenant-isolation"
+  ],
+  "plan_digest": "53da5a2d6635b6c4db181aca9e56434bb25f5f3c15c3d4589dd9cbb524481c47",
+  "execution_receipt_digest": "bd6d3d5ae2d7e94bb7438c190312a1e90cc007d24c9e22d98f2848da203e7785",
+  "verification_digest": "1b462237831551f6722b7b8e46fe10d607bb6a1af6a005af6ac2cdae56a7a04e",
+  "verification_outcome": "success"
+ },
+ "residual_uncertainty": [
+  "Local synthetic lab only: a reproduced boundary result is not a validated defence of any real system (EXT01 deferred).",
+  "Paths that never reach an observed resource are invisible to the verifier and are not covered by this regression."
+ ],
+ "replay": {
+  "llm": "not_used",
+  "executor": "typed_repair_controller_under_supervisor_lease",
+  "scope": "local_run_only",
+  "data_origin": "synthetic_local",
+  "private_truth": "not_included"
+ },
+ "descriptor_digest": "1a09c0d38fbb8e3c529b1f0c35d65ada4ca41c0a9c052b870f1e2fb031b966ac"
+}
