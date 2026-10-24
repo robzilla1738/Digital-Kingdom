@@ -1050,10 +1050,24 @@
     "LP18",
     "LP28"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "implemented_locally_verified",
+   "commit": "d3eb304",
+   "ci_run": "pending at ledger time",
+   "receipt": "docs/phases/local-intelligence/receipts/LP29.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "build": "exit 0",
+    "test": "d3eb304: 8 vitest shards, 135 files (134 passed, 1 skipped); 962 passed, 1 skipped",
+    "targeted": "examples/reference-app/lp29-missions.test.ts 10 passed; e2e/missions-redesign.spec.ts 1 passed (SwiftShader)"
+   },
+   "reuses": [
+    "LP04 compileWorld/previewWorld",
+    "LP07 parseScenario/checkScenarioAgainstWorld/runScenario",
+    "LP06 startLocalWorld",
+    "LP25 truth separation"
+   ],
+   "progress_note": "LP29 done; runs via pnpm mission run (console never launches processes); no mission capsule packaging or console capsule button yet."
   },
   {
    "id": "LP30",
@@ -1969,23 +1983,36 @@
   },
   "LP29-A1": {
    "package": "LP29",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp29-missions.test.ts > LP29-A1/A4 create, preview, run and reopen",
+    "e2e/missions-redesign.spec.ts",
+    "docs/phases/local-intelligence/receipts/LP29.md"
+   ]
   },
   "LP29-A2": {
    "package": "LP29",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp29-missions.test.ts > LP29-A2 opening truth taints",
+    "e2e/missions-redesign.spec.ts (builder vs investigator, open truth)"
+   ]
   },
   "LP29-A3": {
    "package": "LP29",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp29-missions.test.ts > LP29-A3 (library 9 invalid drafts; API 422 zero rows)",
+    "e2e/missions-redesign.spec.ts (invalid draft kept, Create disabled)"
+   ]
   },
   "LP29-A4": {
    "package": "LP29",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp29-missions.test.ts > LP29-A1/A4 (scope on API/list/MCP; no remote setup)",
+    "e2e/missions-redesign.spec.ts (Local only badge)"
+   ]
   },
   "LP30-A1": {
    "package": "LP30",
@@ -2403,13 +2430,12 @@
   "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (LP27 used $0.00; reserved for LP30)."
  },
  "next_action": {
-  "package": "LP29",
-  "why": "LP23 CI-verified (ddab371, run 40071651385) and LP28 CI-verified (72383a6, run 40072232517, check + browser-pilot). LP29 needs LP07 + LP18 + LP28, all CI-verified.",
+  "package": "LP30",
+  "why": "LP29 implemented at d3eb304 (CI pending at ledger time); LP27 CI-verified. LP30 needs LP29 + LP27.",
   "eligible_now": [
-   "LP29"
+   "LP30"
   ],
   "blocked": {
-   "LP30": "needs LP29 (+LP27)",
    "LP31": "needs LP30 (+LP26)"
   }
  },
