@@ -126,5 +126,23 @@ describe("li-next D benchmark end to end (disposable leased LW-01 worlds, 127.0.
     }
     const eff = mc.effects.find((e) => e.key === mis.key)!;
     expect(eff).toMatchObject({ security_verdict: "fail", prohibited: "still_observed", regression: "not_applicable" });
+    // REHEARSAL selector: rehearses the top-k predicted-safe options in their own fresh leased worlds, discards the
+    // contradicted misleading option and picks a confirmed one; correct on all four cases; the reasoning selector's
+    // recorded result is unchanged (still fooled on the misleading case, caught by verification)
+    expect(r.selectors.map((x) => x.id)).toContain("rehearsal");
+    for (const c of ["tenant-isolation", "observer-gap", "no-applicable-candidate", "misleading-prediction"]) expect(s(c, "rehearsal").selection_correct).toBe(true);
+    expect(s("misleading-prediction", "reasoning").option_class).toBe("misleading");
+    const rh = s("misleading-prediction", "rehearsal");
+    expect(rh).toMatchObject({ option_class: "correct", prohibited: "blocked", legitimate: "preserved", regression: "reproduced", prediction_check: "consistent" });
+    expect(rh.rehearsal!.verdicts[0]).toMatchObject({ verdict: "contradicted" });
+    expect(rh.rehearsal!.verdicts.some((v) => v.verdict === "confirmed")).toBe(true);
+    expect(s("no-applicable-candidate", "rehearsal")).toMatchObject({ choice: ABSTAIN, abstained: true });
+    for (const c of r.cases) {
+      const cost = s(c.id, "rehearsal").rehearsal!;
+      expect(cost.worlds_started).toBeLessThanOrEqual(3);
+      expect(cost.wall_ms).toBeGreaterThanOrEqual(0);
+      for (const v of cost.verdicts) expect(v.teardown).toMatchObject({ lease_state: "revoked", tokens_revoked: true });
+    }
+    for (const x of r.scores.filter((y) => y.selector !== "rehearsal")) expect(x.rehearsal).toBeUndefined();
   }, 240_000);
 });
