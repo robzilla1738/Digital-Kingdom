@@ -654,10 +654,28 @@
     "LP11",
     "LP07"
    ],
-   "status": "not_started",
+   "status": "implemented_locally_verified",
    "commit": null,
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP24.md",
+   "branch": "phase/li-m6",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "110 files passed, 1 skipped; 795 passed, 1 skipped (working tree incl. LP25/LP26 tests)",
+    "lp24": "5 passed (eval/test/li-lp24-bring-your-agent.test.ts)"
+   },
+   "reuses": [
+    "LP07 scenario engine + private truth store",
+    "LP05/LP06 supervisor, services, ingestion",
+    "LP08-LP11 case/contract/job/packet routes and the LP11 investigation-read MCP profile",
+    "existing 22-tool read-only investigation allowlist",
+    "documented stdio MCP launch path + SDK client re-export",
+    "eval/src/agent.ts bounded tool loop pattern and chat() budget reservation (chat/Msg now exported)"
+   ],
+   "decisions": [
+    "D-LP24-1",
+    "D-LP24-2"
+   ]
   },
   {
    "id": "LP25",
@@ -1346,23 +1364,32 @@
   },
   "LP24-A1": {
    "package": "LP24",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A1 (2 tests: scripted C1/C2/C3 investigators over real stdio subprocesses with a project-scoped service viewer token answer the 5 executed in-scope LW-01 requests; token revocation refuses the live session's next call; the native-agent kit's mcp.json launches the recording proxy in front of the real investigation-read server)",
+    "docs/phases/local-intelligence/receipts/LP24.md"
+   ]
   },
   "LP24-A2": {
    "package": "LP24",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A2 (mode must be explicit; incomplete approved_provider/local_model configurations incl. the historical DK_EVAL_V2_APPROVED resolve to not_exercised with ai_checks not_exercised; unknown route / remote local_model throw)"
+   ]
   },
   "LP24-A3": {
    "package": "LP24",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A3 (native_agent is always development_assisted and cannot be declared blinded; repo access relabels a model run development_assisted; kit TASK.md carries the label)"
+   ]
   },
   "LP24-A4": {
    "package": "LP24",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "eval/test/li-lp24-bring-your-agent.test.ts > LP24-A4 (loopback stand-in provider whose replies carry reasoning payloads: trace/turns contain no reasoning field or payload and no token; payload not replayed; trace entries are tool list/tool calls only; MCP env is the public handle only)"
+   ]
   },
   "LP25-A1": {
    "package": "LP25",
@@ -1677,6 +1704,16 @@
    "id": "D-M1-CI-2",
    "date": "2026-10-23",
    "decision": "Browser-pilot on the docs-only ledger commit 5a8f410 (run 40051696346) failed A11Y-05: one late demand frame (render count 7 -> 8) inside the 700 ms reduced-motion idle window after an immediate focus; the identical code passed on fa8de4a. Fixed in the test by first requiring a bounded 300 ms quiet interval (continuous motion never settles, so it still fails) before the unchanged 700 ms no-frame assertion."
+  },
+  {
+   "id": "D-LP24-1",
+   "date": "2026-10-23",
+   "decision": "M6 is implemented in worktree DK-m6 on branch phase/li-m6 (from origin/phase/local-intelligence 7aa9975) while M3 runs concurrently in DK-m3; M6 touches only eval/, its tests, receipts and this ledger (no console/workbench/UI files)."
+  },
+  {
+   "id": "D-LP24-2",
+   "date": "2026-10-23",
+   "decision": "The bring-your-agent harness lives in eval/local/ as a new track (li-m6), separate from v1/v2 eval code and artifacts, which stay untouched (only chat/Msg are exported from eval/src/agent.ts). Every investigator reaches DK only through stdio MCP with a project-scoped service viewer token; the controller keeps the private handle in-process and writes the oracle (with a canary) 0600 under the OS temp root. Native coding agents are development_assisted by construction."
   }
  ],
  "model_spend_usd": {
@@ -1685,12 +1722,12 @@
   "runs": []
  },
  "next_action": {
-  "package": "LP12",
-  "why": "M0, M1 (LP04-LP07) and M2 (LP08-LP11) are CI-verified on phase/local-intelligence. Eligible now: LP12 (investigation workbench, M3; deps LP08/LP10/LP11), LP13 (bounded path and change exploration, M3; deps LP01/LP08) and LP24 (bring-your-agent local investigation, M6; deps LP11/LP07). LP12 is first in DAG order.",
+  "package": "LP25",
+  "why": "LP24 implemented and locally verified on phase/li-m6; LP25 (private truth and admissible-evidence grading) depends only on LP24.",
   "eligible_now": [
+   "LP25",
    "LP12",
-   "LP13",
-   "LP24"
+   "LP13"
   ]
  },
  "milestones": {
