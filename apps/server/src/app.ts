@@ -26,6 +26,7 @@ import { ChangeReviews, type ChangePlanInput } from "./change-review.ts";
 import { Notifier, type FetchLike as NotifyFetch } from "./notify.ts";
 import { Regressions } from "./regression.ts";
 import { LocalRepairs } from "./local-repairs.ts";
+import { buildCapsule, CapsuleRefusal, importCapsule } from "./capsule.ts";
 import { Verifications } from "./verification.ts";
 import { assistCase, type AssistModel } from "./assistant.ts";
 import { Deception, fromCanarytokens } from "./deception.ts";
@@ -832,6 +833,37 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   app.post("/api/projects/:p/cases/:id/local-repairs", { preHandler: authed("analyst"), bodyLimit: 1_048_576 }, async (req) => localRepairs.link(store.require(req.principal!, P(req), "analyst").id, CP(req), body(req), who(req)));
   app.get("/api/projects/:p/cases/:id/local-repairs", { preHandler: authed() }, async (req) => localRepairs.list(store.require(req.principal!, P(req), "viewer").id, CP(req)));
   app.post("/api/projects/:p/local-regressions/check", { preHandler: authed("analyst") }, async (req) => ({ regressions: localRepairs.check(store.require(req.principal!, P(req), "analyst").id, body(req), who(req)) }));
+  // LP28: evidence-only case capsule (training capsules with a sealed oracle are built by the evaluation harness only;
+  // the server never holds private truth). Import goes into a new, separate namespace after full in-memory checks.
+  app.post("/api/projects/:p/cases/:id/capsule", { preHandler: authed("analyst") }, async (req) => {
+    const pid = store.require(req.principal!, P(req), "analyst").id, cid = CP(req);
+    const exp = cases.export(pid, cid, who(req), cfg.secret);
+    const scene = store.getScene(pid), graph = store.getGraph(pid);
+    const docs = localRepairs.documents(pid, cid);
+    try {
+      const c = buildCapsule({ kind: "evidence_only", caseExport: exp as never, scene: scene && graph ? { digest: scene.digest, layout_version: (scene as { layout_version?: number }).layout_version ?? null, graph_revision: graph.graph_revision } : null, regressions: docs.regressions, verifications: docs.verifications, signingSecret: cfg.secret, now: store.now() });
+      store.audit(who(req), "case.capsule_export", pid, cid, { capsule_id: c.manifest.capsule_id, entries: (c.manifest.entries as unknown[]).length });
+      return { manifest: c.manifest, signature: c.signature, archive_base64: c.archive.toString("base64"), media_type: "application/gzip", file_name: `${String(c.manifest.capsule_id)}.dkcapsule.tar.gz` };
+    } catch (e) { if (e instanceof CapsuleRefusal) throw new HttpError(422, e.message, e.problems); throw e; }
+  });
+  app.post("/api/capsules/import", { preHandler: authed("admin"), bodyLimit: 48 * 1024 * 1024 }, async (req) => {
+    const b = body(req);
+    if (typeof b.archive_base64 !== "string") throw new HttpError(400, "archive_base64 is required");
+    let imp;
+    try { imp = importCapsule(Buffer.from(b.archive_base64, "base64"), { signingSecret: cfg.secret }); }
+    catch (e) { if (e instanceof CapsuleRefusal) throw new HttpError(422, e.message, e.problems.length ? e.problems : [e.code]); throw e; }
+    if (store.db.prepare("SELECT 1 FROM capsule_imports WHERE namespace = ?").get(imp.namespace)) throw new HttpError(409, "this capsule is already imported");
+    const { sealed, ...rest } = imp;
+    const stored = { ...rest, sealed: { present: sealed.present, opened: false, note: sealed.present ? "a sealed training oracle is attached; the server never opens it" : "no sealed attachment" } };
+    store.db.prepare("INSERT INTO capsule_imports (namespace, capsule_id, kind, manifest, body, imported_by, imported_at) VALUES (?, ?, ?, ?, ?, ?, ?)").run(imp.namespace, String(imp.manifest.capsule_id), imp.kind, JSON.stringify(imp.manifest), JSON.stringify(stored), who(req), store.now().toISOString());
+    store.audit(who(req), "capsule.import", imp.namespace, String(imp.manifest.capsule_id), { kind: imp.kind, signature: imp.checks.signature });
+    return stored;
+  });
+  app.get("/api/capsules/:ns", { preHandler: authed("viewer") }, async (req) => {
+    const r = store.db.prepare("SELECT body FROM capsule_imports WHERE namespace = ?").get((req.params as { ns: string }).ns) as { body: string } | undefined;
+    if (!r) throw new HttpError(404, "no such imported capsule");
+    return JSON.parse(r.body);
+  });
   // ---- regression proposals from closed cases (R07.4) ----
   const regressions = new Regressions(store);
   app.post("/api/projects/:p/cases/:id/regression-proposal", { preHandler: authed("analyst") }, async (req) => { const pid = store.require(req.principal!, P(req), "analyst").id; return regressions.propose(pid, CP(req), body(req), who(req), cases.get(pid, CP(req)) as never); });

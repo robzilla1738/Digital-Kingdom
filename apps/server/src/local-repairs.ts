@@ -103,6 +103,12 @@ export class LocalRepairs {
     }));
   }
 
+  /** Raw linked documents for a case capsule (LP28): regressions are synthetic descriptors; verifications carry no secrets. */
+  documents(projectId: string, caseId: string) {
+    const rows = this.db.prepare("SELECT kind, body FROM local_repair_links WHERE project_id = ? AND case_id = ? ORDER BY created_at, id").all(projectId, caseId) as { kind: string; body: string }[];
+    return { regressions: rows.filter((r) => r.kind === "regression").map((r) => JSON.parse(r.body) as unknown), verifications: rows.filter((r) => r.kind === "verification").map((r) => JSON.parse(r.body) as unknown) };
+  }
+
   /** What must be accepted as an explicit unknown before the case can close. */
   closureBlockers(projectId: string, caseId: string) {
     const rows = this.db.prepare("SELECT * FROM local_repair_links WHERE project_id = ? AND case_id = ?").all(projectId, caseId) as unknown as Row[];

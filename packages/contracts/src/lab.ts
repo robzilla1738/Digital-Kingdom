@@ -157,4 +157,18 @@ export function validateRepairRegression(d: unknown): ValidationResult<RepairReg
   if (r.linkage.plan_digest === r.linkage.verification_digest) errors.push("/linkage plan and verification digests must differ");
   return errors.length ? { ok: false, errors } : { ok: true, value: r, errors: [] };
 }
+/** LP28: the manifest of a portable local case capsule (`dk.local.capsule.v1`). Schema only; digests are checked by the importer. */
+export function validateCapsuleManifest(d: unknown): ValidationResult<Record<string, unknown>> {
+  const fn = g.validateCapsuleManifest!;
+  if (!fn(d)) return { ok: false, errors: formatErrors(fn.errors as never) };
+  const m = d as { kind: string; sealed: unknown; entries: { path: string; role: string }[] };
+  const errors: string[] = [];
+  const paths = m.entries.map((e) => e.path);
+  if (new Set(paths).size !== paths.length) errors.push("/entries duplicate path");
+  const sealedEntries = m.entries.filter((e) => e.role === "sealed_oracle" || e.path.startsWith("sealed/"));
+  if (m.kind === "evidence_only" && (m.sealed !== null || sealedEntries.length)) errors.push("/kind an evidence-only capsule carries no oracle or sealed attachment");
+  if (m.kind === "training" && (m.sealed === null || sealedEntries.length !== 1)) errors.push("/sealed a training capsule carries exactly one separately sealed oracle attachment");
+  for (const e of m.entries) if ((e.role === "sealed_oracle") !== e.path.startsWith("sealed/")) errors.push(`/entries ${e.path} role and location disagree`);
+  return errors.length ? { ok: false, errors } : { ok: true, value: d as Record<string, unknown>, errors: [] };
+}
 export const labSchemas = { labLease: labLeaseSchema, repairExecution: repairExecutionSchema, repairVerification: repairVerificationSchema, repairRegression: repairRegressionSchema };

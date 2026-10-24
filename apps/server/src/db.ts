@@ -9,6 +9,7 @@ import { REPAIR_MIGRATION } from "./repair.ts";
 import { ATTENTION_MIGRATION } from "./attention.ts";
 import { WORLD_LAYOUT_MIGRATION } from "./world-layout.ts";
 import { LOCAL_REPAIR_MIGRATION } from "./local-repairs.ts";
+import { CAPSULE_MIGRATION } from "./capsule.ts";
 import { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -128,7 +129,9 @@ export const MIGRATIONS: string[] = [
   ATTENTION_MIGRATION,
   // Local Intelligence Phase LP16: append-only versioned layout history (previewed reflows, per-version room diffs).
   WORLD_LAYOUT_MIGRATION,
+  // Local Intelligence Phase LP23/LP28: executed local repair links; imported case capsules (separate namespaces).
   LOCAL_REPAIR_MIGRATION,
+  CAPSULE_MIGRATION,
 ];
 
 export function openDb(path: string): DB {
