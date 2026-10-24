@@ -18,7 +18,8 @@ import { openDb } from "../../apps/server/src/db.ts";
 import { Store } from "../../apps/server/src/store.ts";
 import { startLocalWorld, type LocalWorld } from "../../examples/reference-app/src/world/session.ts";
 import { intendedDigest, intendedState, runScenario, type PrivateTruth, type ScenarioResult } from "../../examples/reference-app/src/world/scenario.ts";
-import type { WorldPlan } from "../../packages/local-world/src/index.ts";
+import { Supervisor, type WorldPlan } from "../../packages/local-world/src/index.ts";
+import { BUILTIN_SERVICES } from "../../examples/reference-app/src/world/services.ts";
 import { canonicalJson } from "../../packages/contracts/src/index.ts";
 
 export const PUBLIC_TASK_VERSION = "li-task-1";
@@ -39,6 +40,9 @@ export interface PrivateHandle {
   doc: Record<string, unknown> & { id: string; seed: string; blueprint: string; steps: Record<string, unknown>[] };
   truth: PrivateTruth; result: ScenarioResult; canary: string; oracle_file: string;
   world: LocalWorld; intended_digest: string;
+  /** Present only when the world was started with supervisor-owned lab repair capability (`lab: "leased"`): the one-time
+   *  operator credential, held by this launcher and never given to the investigator or the product. */
+  lab: { operator: string } | null;
 }
 export interface GuidedWork { contract_revision: number | null; readiness: string | null; job_id: string | null; job_status: string | null; units: number; advances: number }
 export interface LocalCase {
@@ -57,7 +61,13 @@ export interface LocalCase {
 const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 
 /** legacyInterval reproduces the v1 (li-m6-c2c34916) case interval [start - 60 s, setup + 120 s] for tests only. */
-export interface StartOptions { plan?: WorldPlan; guided?: boolean; caseQuestion?: string; legacyInterval?: boolean }
+export interface StartOptions {
+  plan?: WorldPlan; guided?: boolean; caseQuestion?: string; legacyInterval?: boolean;
+  /** "leased": start the world on a supervisor with leased lab actions; the launcher keeps the operator credential.
+   *  Omitted (default): plan-only supervisor, exactly as before — no lease can be issued in that world. A lease is
+   *  still required for every typed action either way. */
+  lab?: "leased";
+}
 
 export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions = {}): Promise<LocalCase> {
   const family = doc.blueprint as Family;
@@ -71,7 +81,10 @@ export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions 
   let world: LocalWorld | null = null;
   const stop = async () => { await world?.stop().catch(() => undefined); await app.close(); store.db.close(); };
   try {
-    world = await startLocalWorld({ blueprint: doc.blueprint, seed: doc.seed, dk: { url, adminToken }, drain, ...(o.plan ? { plan: o.plan } : {}) });
+    let lab: PrivateHandle["lab"] = null;
+    let supervisor: Supervisor | undefined;
+    if (o.lab === "leased") { supervisor = new Supervisor({ services: BUILTIN_SERVICES, labActions: "leased" }); lab = { operator: supervisor.operatorCredential() }; }
+    world = await startLocalWorld({ blueprint: doc.blueprint, seed: doc.seed, dk: { url, adminToken }, drain, ...(o.plan ? { plan: o.plan } : {}), ...(supervisor ? { supervisor } : {}) });
     // LP26.1: the case interval is the run itself — from the moment every observer of this world was registered to
     // the moment its last record was stored. (v1 used [start - 60 s, setup + 120 s]: time before any observer existed
     // and time in the future, which coverage correctly reports as unknown, so no coverage obligation could hold.)
@@ -117,7 +130,7 @@ export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions 
     const storedEvents = async () => (await must(adminApi("GET", `/api/projects/${project}/events?limit=5000`))) as Record<string, unknown>[];
     return {
       public: { url, token: viewer.token, project, case_id: kase.id, task, task_version: PUBLIC_TASK_VERSION, interval: { after, before } },
-      private: { doc, truth, result, canary, oracle_file: oracleFile, world, intended_digest: intendedDigest(intendedState(truth, world)) },
+      private: { doc, truth, result, canary, oracle_file: oracleFile, world, intended_digest: intendedDigest(intendedState(truth, world)), lab },
       guided, adminApi: (m, p, b) => adminApi(m, p, b), storedEvents,
       mintViewer: (name: string) => store.createToken(name, "viewer", [project], undefined, "service").token,
       productStore: store,

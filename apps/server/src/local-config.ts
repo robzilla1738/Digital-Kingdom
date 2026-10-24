@@ -7,7 +7,7 @@ import { provenanceOf } from "./provenance.ts";
  * Declared configuration of a local run's enforcement points (`dk.local.config_snapshot.v1`).
  *
  * The supervisor side of a local run (the launcher holding the run's operator token, never an investigator) reports
- * the reviewed policy variant of each resource whose template has one (edge gateway, tenant API, agent tool gateway),
+ * the reviewed policy variant of each resource whose template has one (edge gateway, tenant API, agent tool gateway, worker),
  * with the run's own revision string for it. Digital Kingdom records it append-only, like an authorization snapshot,
  * and the analysis state turns the latest one into `policy` elements. That is what lets the LP14 generator propose a
  * typed `set_gateway_policy` repair for a local world whose defect is a weakened policy variant, bound to the exact
@@ -25,7 +25,7 @@ CREATE TRIGGER local_configurations_append_only_u BEFORE UPDATE ON local_configu
 CREATE TRIGGER local_configurations_append_only_d BEFORE DELETE ON local_configurations BEGIN SELECT RAISE(ABORT, 'local configurations are append-only'); END;`;
 
 /** Templates with a reviewed policy variant (mirrors the local-world catalog's supported_settings). */
-export const POLICY_TEMPLATES = ["gateway", "api", "agent_gateway"] as const;
+export const POLICY_TEMPLATES = ["gateway", "api", "agent_gateway", "worker"] as const;
 export const POLICY_VARIANTS = ["baseline", "candidate", "deliberately_weak"] as const;
 export const TENANT_MODES = ["isolated", "single"] as const;
 export type PolicyTemplate = (typeof POLICY_TEMPLATES)[number];

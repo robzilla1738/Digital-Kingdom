@@ -87,6 +87,7 @@ export async function startLocalWorld(o: LocalWorldOptions): Promise<LocalWorld>
   const hub = new ReporterHub();
   const { run, operatorToken } = await supervisor.start(world, { reporters: (id) => hub.reporter(id) });
   const prov = await provision(o.dk, run, hub);
+  let stopped = false;
   const flush = async () => { await run.settle(operatorToken).catch(() => undefined); await hub.flushAll(); o.drain?.(); };
   return {
     supervisor, run, operatorToken, world: run.world, hub, project: prov.project, sourceKeys: prov.keys, flush,
@@ -97,6 +98,7 @@ export async function startLocalWorld(o: LocalWorldOptions): Promise<LocalWorld>
       if (r.status !== 200) throw new Error(`login ${account} failed: ${r.status}`);
       return (r.body as { session: string }).session;
     },
-    async stop() { await flush().catch(() => undefined); if (run.state === "running" || run.state === "paused") await run.stop(operatorToken); await hub.closeAll(); if (run.state === "stopped") run.cleanup(); },
+    // idempotent: a launcher may stop and clean the run itself (e.g. before finalizing a verification) and stop again later
+    async stop() { if (stopped) return; stopped = true; await flush().catch(() => undefined); if (run.state === "running" || run.state === "paused") await run.stop(operatorToken); await hub.closeAll(); if (run.state === "stopped") run.cleanup(); },
   };
 }
