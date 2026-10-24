@@ -1749,7 +1749,13 @@
     "LP07": "40050596307 success",
     "ledger 5a8f410": "40051696346 failure (A11Y-05 late-frame race, D-M1-CI-2)"
    },
-   "note": "Engineering-verified locally and in CI for the executed tests only. No model runs; AI execution not exercised (not needed for M1). Scenario DSL documents are repository-resident: DK API/MCP/web cannot serve them (tested), but repo-reading investigators are not blinded (D-LP07-3)."
+   "note": "Engineering-verified locally and in CI for the executed tests only. No model runs; AI execution not exercised (not needed for M1). Scenario DSL documents are repository-resident: DK API/MCP/web cannot serve them (tested), but repo-reading investigators are not blinded (D-LP07-3).",
+   "final_head": {
+    "head": "109a127",
+    "ci_run": 40052836345,
+    "result": "success (check + browser-pilot)",
+    "note": "Last code change of M1 (A11Y-05 e2e race fix, D-M1-CI-2). Later commits that only edit this ledger are not separately recorded here."
+   }
   }
  }
 }
