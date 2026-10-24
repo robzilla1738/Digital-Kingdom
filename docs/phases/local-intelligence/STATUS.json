@@ -613,7 +613,7 @@
     "LP12"
    ],
    "status": "implemented_locally_verified",
-   "commit": null,
+   "commit": "f3a2dbc",
    "ci_run": null,
    "receipt": "docs/phases/local-intelligence/receipts/LP16.md",
    "branch": "phase/li-m4",
@@ -632,10 +632,17 @@
    "depends_on": [
     "LP16"
    ],
-   "status": "not_started",
-   "commit": null,
+   "status": "in_progress",
+   "commit": "99169a0",
    "ci_run": null,
-   "receipt": null
+   "receipt": "docs/phases/local-intelligence/receipts/LP17.md",
+   "branch": "phase/li-m4",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "8 vitest shards: 873 passed, 1 skipped, 0 failed (moduleRecovery material-pool count updated to 16x3)",
+    "e2e": "not run yet"
+   },
+   "progress_note": "Done: catalog 2.1.0, recordModuleFor/recordProposal, six geometries, selectionProxy, familyCapability, unknown-module fallback, manifest hashes, F15, local-world uses recordProposal. Remaining: rendered contact sheet + F15 screenshot, browser roofs-off interaction test. Then LP18 (draft at work/m4-lp18-draft/interior.ts), LP19."
   },
   {
    "id": "LP18",
@@ -1338,23 +1345,33 @@
   },
   "LP17-A1": {
    "package": "LP17",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A1 (geometry; rendered contact sheet still pending)"
+   ]
   },
   "LP17-A2": {
    "package": "LP17",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A2 (unit; browser click-through pending)"
+   ]
   },
   "LP17-A3": {
    "package": "LP17",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A3",
+    "apps/web/src/castle/architecture.test.ts > castle asset provenance"
+   ]
   },
   "LP17-A4": {
    "package": "LP17",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/web/src/castle/families.test.ts > LP17-A4",
+    "work/m4-red/lp17-unknown-module-red.log"
+   ]
   },
   "LP18-A1": {
    "package": "LP18",
@@ -1888,7 +1905,7 @@
  },
  "next_action": {
   "package": "LP17",
-  "why": "LP16 implemented_locally_verified on phase/li-m4. LP17 partial work kept outside the repo in work/m4-lp17-stash/.",
+  "why": "LP17 in_progress on phase/li-m4: remaining rendered contact sheet + browser interaction test; then LP18, LP19, M4 rebase onto phase/local-intelligence.",
   "eligible_now": [
    "LP17",
    "LP20",
