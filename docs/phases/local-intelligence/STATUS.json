@@ -820,9 +820,9 @@
     "LP25",
     "LP10"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "b4afa9c",
-   "ci_run": null,
+   "ci_run": 40065627734,
    "receipt": "docs/phases/local-intelligence/receipts/LP26.md",
    "branch": "phase/li-m6",
    "commits": [
@@ -856,8 +856,8 @@
     "38acd29": "40060858305 success",
     "798d8e2": "40061292021 check success; browser-pilot failure e2e/pilot.spec.ts F snapshot (live-source freshness; flaky, unrelated)",
     "aef7f12": "40064260489 failure: lp06-world.test.ts:161 (1 ms covered during a deliberate outage) - pre-existing per-source health pairing race, not LP26.1; fixed in 970e278 (D-M6b-CI-1)",
-    "970e278": "40065153104 check-success,browser-pilot-in-progress (check + browser-pilot)",
-    "0dc7e74": "40065627734 in_progress (check + browser-pilot)"
+    "970e278": "40065153104 success (check + browser-pilot)",
+    "0dc7e74": "40065627734 success (check + browser-pilot)"
    },
    "sub_packages": [
     {
@@ -931,7 +931,8 @@
     "D-LP26-4",
     "D-LP26-5"
    ],
-   "rebased_commit_map": "pre-rebase -> phase/local-intelligence: LP24 3b327db->2de0fbf; LP25 b82d3a3->3e330e4 (fix 6af3ed1->5b2b6db); LP26 b95ff3e->925de91, dbedf84->6bfe7c7, 73a13de->e05a354, 8c5f6b2->93f469c, a159fe0->e6b03b6, 38acd29->1b19ec6, 798d8e2->2e49c00, fb8f94f->8e5b9b2, 9085868->b4afa9c; ledger bab16d8"
+   "rebased_commit_map": "pre-rebase -> phase/local-intelligence: LP24 3b327db->2de0fbf; LP25 b82d3a3->3e330e4 (fix 6af3ed1->5b2b6db); LP26 b95ff3e->925de91, dbedf84->6bfe7c7, 73a13de->e05a354, 8c5f6b2->93f469c, a159fe0->e6b03b6, 38acd29->1b19ec6, 798d8e2->2e49c00, fb8f94f->8e5b9b2, 9085868->b4afa9c; ledger bab16d8",
+   "ci_note": "CI-verified on phase/local-intelligence 0dc7e74 (run 40065627734, check + browser-pilot), which contains every LP26/LP26.1 commit plus the 970e278 coverage per-asset fix (D-M6b-CI-1)"
   },
   {
    "id": "LP27",
@@ -941,9 +942,9 @@
     "LP25",
     "LP22"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "commit": "0dc7e74",
-   "ci_run": null,
+   "ci_run": 40065627734,
    "receipt": "docs/phases/local-intelligence/receipts/LP27.md",
    "branch": "phase/local-intelligence (from phase/li-m6b)",
    "local_checks": {
@@ -2272,7 +2273,7 @@
  },
  "next_action": {
   "package": "LP23 (after LP19) / LP28 (after LP23)",
-  "why": "M6 complete for engineering: LP24-LP27 on phase/local-intelligence. The next packages in order are blocked: LP28 needs LP23, which needs LP19 (M4, in progress in DK-m4 by dk-m4b); LP29 needs LP18+LP28; LP30 needs LP29+LP27. Remaining phase model budget $1.274238 of $3.00 (no LP27 spend).",
+  "why": "M6 complete for engineering: LP24-LP27 on phase/local-intelligence, CI green on 0dc7e74 (run 40065627734). The next packages in order are blocked: LP28 needs LP23, which needs LP19 (M4, in progress in DK-m4 by dk-m4b); LP29 needs LP18+LP28; LP30 needs LP29+LP27. Remaining phase model budget $1.274238 of $3.00 (no LP27 spend).",
   "eligible_now": [
    "LP16-LP19 (M4, in progress elsewhere)"
   ],
@@ -2428,7 +2429,7 @@
     "LP26",
     "LP27"
    ],
-   "status": "implemented_locally_verified",
+   "status": "ci_verified",
    "done": [
     "LP24",
     "LP25",
@@ -2439,7 +2440,7 @@
    ],
    "note": "LP24/LP25/LP26/LP27 engineering-verified for executed tests; LP26 model evaluations recorded in its receipt; LP27 scripted only (model not_exercised). Human/provider gates remain deferred.",
    "head": "0dc7e74",
-   "ci_run": null
+   "ci_run": 40065627734
   }
  }
 }
