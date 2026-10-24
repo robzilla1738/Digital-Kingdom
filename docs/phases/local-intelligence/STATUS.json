@@ -772,10 +772,25 @@
     "LP22",
     "LP19"
    ],
-   "status": "not_started",
-   "commit": null,
-   "ci_run": null,
-   "receipt": null
+   "status": "implemented_locally_verified",
+   "commit": "b4c6f4e + 2c82242 + ddab371",
+   "ci_run": "pending",
+   "receipt": "docs/phases/local-intelligence/receipts/LP23.md",
+   "branch": "phase/local-intelligence",
+   "local_checks": {
+    "typecheck": "exit 0",
+    "test": "ddab371: all 133 vitest files passed (1 skipped file), sharded 8/16 on aarch64 sandbox",
+    "validate_fixtures": "exit 0",
+    "targeted": "examples/reference-app/lp23-regression.test.ts 4 passed; apps/server/test/phase-lp23-local-repairs.test.ts 3 passed"
+   },
+   "reuses": [
+    "LP21 RepairController + LP20 leases",
+    "LP22 EffectVerifier",
+    "LP04 compileWorld template/catalog digests",
+    "R03.1 case closure",
+    "LP13/LP19 world comparison"
+   ],
+   "progress_note": "LP23 done incl. LP19 executed-local gap; 2D-graph comparison overlay still not implemented. CI b4c6f4e failed typecheck (test type), 2c82242 failed hardening downgrade list; fixed ddab371."
   },
   {
    "id": "LP24",
@@ -1755,23 +1770,34 @@
   },
   "LP23-A1": {
    "package": "LP23",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp23-regression.test.ts > LP23-A1 (2 tests: capture + two fresh model-free replays with identical results; committed LR-01 replays)",
+    "docs/phases/local-intelligence/receipts/LP23.md"
+   ]
   },
   "LP23-A2": {
    "package": "LP23",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp23-regression.test.ts > LP23-A2 (template/catalog/tool/artifact changes -> stale; stale not replayed)",
+    "apps/server/test/phase-lp23-local-repairs.test.ts > A2 (stale propagation to the case, sticky, closure gated)"
+   ]
   },
   "LP23-A3": {
    "package": "LP23",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "examples/reference-app/lp23-regression.test.ts > LP23-A3/A4 negative (secrets, headers, oracle fields, commands, shell type, URLs, unrelated records, tampering refused; descriptor scan)"
+   ]
   },
   "LP23-A4": {
    "package": "LP23",
-   "status": "not_run",
-   "evidence": []
+   "status": "passed_local",
+   "evidence": [
+    "apps/server/test/phase-lp23-local-repairs.test.ts > A4 (failed verification blocks closure; accepted unknown with reason recorded)",
+    "examples/reference-app/lp23-regression.test.ts > failed verification cannot be captured"
+   ]
   },
   "LP24-A1": {
    "package": "LP24",
@@ -2355,13 +2381,12 @@
   "note": "spent = M6 ledger total, conservative: it includes $0.977297 of estimates for work whose records were lost in a sandbox reset (real cost unknown, at most that). Remaining phase cap $1.274238 (LP27 used $0.00; reserved for LP30)."
  },
  "next_action": {
-  "package": "LP23",
-  "why": "M4 LP16-LP19 CI-verified on 1d9d7d8 (run 40069056700). LP23 (needs LP19) is next, then LP28 (needs LP23), LP29 (needs LP18+LP28).",
+  "package": "LP28",
+  "why": "LP23 implemented (ddab371). LP28 needs LP23 + LP25.",
   "eligible_now": [
-   "LP23"
+   "LP28"
   ],
   "blocked": {
-   "LP28": "needs LP23",
    "LP29": "needs LP28",
    "LP30": "needs LP29",
    "LP31": "needs LP30"
