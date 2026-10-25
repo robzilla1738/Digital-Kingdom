@@ -54,8 +54,56 @@
       "completion_tokens": 10718,
       "model_calls": 4,
       "at": "2026-10-25T02:30:41.840Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-005",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.010137558,
+      "charged_usd": 0.010137558,
+      "gateway_cost_usd": 0.010137558,
+      "prompt_tokens": 104163,
+      "completion_tokens": 10062,
+      "model_calls": 7,
+      "at": "2026-10-25T02:31:57.419Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-004",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.009245194,
+      "charged_usd": 0.009245194,
+      "gateway_cost_usd": 0.009245194,
+      "prompt_tokens": 96871,
+      "completion_tokens": 13371,
+      "model_calls": 7,
+      "at": "2026-10-25T02:32:03.639Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-006",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.004280626,
+      "charged_usd": 0.004280626,
+      "gateway_cost_usd": 0.004280626,
+      "prompt_tokens": 60725,
+      "completion_tokens": 8001,
+      "model_calls": 6,
+      "at": "2026-10-25T02:33:06.215Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-007",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.004805098000000001,
+      "charged_usd": 0.004805098000000001,
+      "gateway_cost_usd": 0.004805098000000001,
+      "prompt_tokens": 28685,
+      "completion_tokens": 10491,
+      "model_calls": 4,
+      "at": "2026-10-25T02:33:32.221Z"
     }
   ],
-  "charged_total_usd": 0.035080762,
-  "updated_at": "2026-10-25T02:30:41.840Z"
+  "charged_total_usd": 0.06354923800000001,
+  "updated_at": "2026-10-25T02:33:32.221Z"
 }
