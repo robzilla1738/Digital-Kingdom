@@ -342,8 +342,68 @@
       "completion_tokens": 6749,
       "model_calls": 5,
       "at": "2026-10-25T02:43:57.894Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-028",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.0031016159999999997,
+      "charged_usd": 0.0031016159999999997,
+      "gateway_cost_usd": 0.0031016159999999997,
+      "prompt_tokens": 29296,
+      "completion_tokens": 9047,
+      "model_calls": 4,
+      "at": "2026-10-25T02:44:23.888Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-029",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.009297063999999999,
+      "charged_usd": 0.009297063999999999,
+      "gateway_cost_usd": 0.009297063999999999,
+      "prompt_tokens": 98244,
+      "completion_tokens": 9188,
+      "model_calls": 6,
+      "at": "2026-10-25T02:45:11.041Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-030",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.0024415879999999997,
+      "charged_usd": 0.0024415879999999997,
+      "gateway_cost_usd": 0.0024415879999999997,
+      "prompt_tokens": 18720,
+      "completion_tokens": 6471,
+      "model_calls": 3,
+      "at": "2026-10-25T02:45:13.056Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-032",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.003407878,
+      "charged_usd": 0.003407878,
+      "gateway_cost_usd": 0.003407878,
+      "prompt_tokens": 45037,
+      "completion_tokens": 5663,
+      "model_calls": 4,
+      "at": "2026-10-25T02:45:57.942Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-031",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.00849258,
+      "charged_usd": 0.00849258,
+      "gateway_cost_usd": 0.00849258,
+      "prompt_tokens": 89381,
+      "completion_tokens": 8719,
+      "model_calls": 6,
+      "at": "2026-10-25T02:46:18.728Z"
     }
   ],
-  "charged_total_usd": 0.191371786,
-  "updated_at": "2026-10-25T02:43:57.894Z"
+  "charged_total_usd": 0.21811251199999998,
+  "updated_at": "2026-10-25T02:46:18.728Z"
 }
