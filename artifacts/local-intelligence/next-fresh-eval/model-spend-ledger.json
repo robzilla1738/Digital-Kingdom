@@ -246,8 +246,68 @@
       "completion_tokens": 7543,
       "model_calls": 6,
       "at": "2026-10-25T02:39:57.510Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-021",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.00628655,
+      "charged_usd": 0.00628655,
+      "gateway_cost_usd": 0.00628655,
+      "prompt_tokens": 64044,
+      "completion_tokens": 5646,
+      "model_calls": 6,
+      "at": "2026-10-25T02:40:40.566Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-020",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.0055536859999999995,
+      "charged_usd": 0.0055536859999999995,
+      "gateway_cost_usd": 0.0055536859999999995,
+      "prompt_tokens": 50649,
+      "completion_tokens": 11579,
+      "model_calls": 5,
+      "at": "2026-10-25T02:40:45.714Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-022",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.002277424,
+      "charged_usd": 0.002277424,
+      "gateway_cost_usd": 0.002277424,
+      "prompt_tokens": 18115,
+      "completion_tokens": 3193,
+      "model_calls": 3,
+      "at": "2026-10-25T02:41:04.710Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-023",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.008994942,
+      "charged_usd": 0.008994942,
+      "gateway_cost_usd": 0.008994942,
+      "prompt_tokens": 102650,
+      "completion_tokens": 8164,
+      "model_calls": 7,
+      "at": "2026-10-25T02:41:48.654Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-024",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.00404064,
+      "charged_usd": 0.00404064,
+      "gateway_cost_usd": 0.00404064,
+      "prompt_tokens": 33372,
+      "completion_tokens": 7251,
+      "model_calls": 4,
+      "at": "2026-10-25T02:42:03.630Z"
     }
   ],
-  "charged_total_usd": 0.140214186,
-  "updated_at": "2026-10-25T02:39:57.510Z"
+  "charged_total_usd": 0.167367428,
+  "updated_at": "2026-10-25T02:42:03.630Z"
 }
