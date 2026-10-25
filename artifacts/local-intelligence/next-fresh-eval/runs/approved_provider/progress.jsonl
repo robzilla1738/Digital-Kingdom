@@ -11,3 +11,7 @@
 {"slot":10,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"8/8","cost":0.005740589999999999,"spent_total":0.082146806}
 {"slot":11,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"8/8","cost":0.004211414,"spent_total":0.083988792}
 {"slot":12,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"6/6","retrieval":"8/8","cost":0.002027066,"spent_total":0.08603698800000001}
+{"slot":13,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"6/6","retrieval":"8/8","cost":0.006393232,"spent_total":0.09451018200000001}
+{"slot":14,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"6/6","retrieval":"8/8","cost":0.0037189659999999998,"spent_total":0.09584993200000001}
+{"slot":15,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":false,"structured":"11/12","retrieval":"13/13","cost":0.013402303999999999,"spent_total":0.11324481000000003}
+{"slot":16,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"12/12","retrieval":"13/13","cost":0.007981199999999999,"spent_total":0.11789277800000002}
