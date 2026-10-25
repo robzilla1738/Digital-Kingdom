@@ -1,2 +1,10 @@
 {"slot":0,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"12/12","cost":0,"spent_total":0}
 {"slot":1,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"12/12","cost":0,"spent_total":0}
+{"slot":2,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"12/12","cost":0,"spent_total":0}
+{"slot":3,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0,"spent_total":0}
+{"slot":4,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0,"spent_total":0}
+{"slot":5,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0,"spent_total":0}
+{"slot":6,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"10/10","cost":0,"spent_total":0}
+{"slot":7,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"10/10","cost":0,"spent_total":0}
+{"slot":8,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"10/10","cost":0,"spent_total":0}
+{"slot":9,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"8/8","cost":0,"spent_total":0}
