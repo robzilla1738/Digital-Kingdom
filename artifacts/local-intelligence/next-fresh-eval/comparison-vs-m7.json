@@ -1,0 +1,988 @@
+{
+ "schema": "dk.local.next_eval_comparison.v1",
+ "note": "different held-out documents in each run (12 each), one repetition, descriptive only; no significance test",
+ "new": {
+  "dir": "artifacts/local-intelligence/next-fresh-eval",
+  "model": {
+   "C1": {
+    "attempts": 12,
+    "end_to_end": "9/12",
+    "structured": "105/108",
+    "retrieval": "112/112",
+    "claim_validity": "130/130",
+    "unsupported_affirmatives": 0,
+    "underclaims": 3,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 3
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 6,
+    "s1_answered_correctly": 6,
+    "s2_exposed_predicates": 16,
+    "s2_answered_correctly": 13,
+    "gap_only_unknown_predicates": 3,
+    "gap_only_unknown_answered_unknown": 3,
+    "tool_calls": 200,
+    "cost_gateway_reported_usd": 0.119059
+   },
+   "C2": {
+    "attempts": 12,
+    "end_to_end": "11/12",
+    "structured": "107/108",
+    "retrieval": "112/112",
+    "claim_validity": "130/130",
+    "unsupported_affirmatives": 0,
+    "underclaims": 1,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 1
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 6,
+    "s1_answered_correctly": 6,
+    "s2_exposed_predicates": 16,
+    "s2_answered_correctly": 15,
+    "gap_only_unknown_predicates": 3,
+    "gap_only_unknown_answered_unknown": 3,
+    "tool_calls": 126,
+    "cost_gateway_reported_usd": 0.050092
+   },
+   "C3": {
+    "attempts": 12,
+    "end_to_end": "10/12",
+    "structured": "106/108",
+    "retrieval": "112/112",
+    "claim_validity": "130/130",
+    "unsupported_affirmatives": 0,
+    "underclaims": 2,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 2
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 6,
+    "s1_answered_correctly": 6,
+    "s2_exposed_predicates": 16,
+    "s2_answered_correctly": 14,
+    "gap_only_unknown_predicates": 3,
+    "gap_only_unknown_answered_unknown": 3,
+    "tool_calls": 64,
+    "cost_gateway_reported_usd": 0.074245
+   }
+  },
+  "scripted": {
+   "C1": {
+    "attempts": 12,
+    "end_to_end": "12/12",
+    "structured": "108/108",
+    "retrieval": "112/112",
+    "claim_validity": "112/112",
+    "unsupported_affirmatives": 0,
+    "underclaims": 0,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 6,
+    "s1_answered_correctly": 6,
+    "s2_exposed_predicates": 16,
+    "s2_answered_correctly": 16,
+    "gap_only_unknown_predicates": 3,
+    "gap_only_unknown_answered_unknown": 3,
+    "tool_calls": 24,
+    "cost_gateway_reported_usd": 0
+   },
+   "C2": {
+    "attempts": 12,
+    "end_to_end": "12/12",
+    "structured": "108/108",
+    "retrieval": "112/112",
+    "claim_validity": "112/112",
+    "unsupported_affirmatives": 0,
+    "underclaims": 0,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 6,
+    "s1_answered_correctly": 6,
+    "s2_exposed_predicates": 16,
+    "s2_answered_correctly": 16,
+    "gap_only_unknown_predicates": 3,
+    "gap_only_unknown_answered_unknown": 3,
+    "tool_calls": 172,
+    "cost_gateway_reported_usd": 0
+   },
+   "C3": {
+    "attempts": 12,
+    "end_to_end": "12/12",
+    "structured": "108/108",
+    "retrieval": "112/112",
+    "claim_validity": "112/112",
+    "unsupported_affirmatives": 0,
+    "underclaims": 0,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 6,
+    "s1_answered_correctly": 6,
+    "s2_exposed_predicates": 16,
+    "s2_answered_correctly": 16,
+    "gap_only_unknown_predicates": 3,
+    "gap_only_unknown_answered_unknown": 3,
+    "tool_calls": 61,
+    "cost_gateway_reported_usd": 0
+   }
+  }
+ },
+ "m7": {
+  "dir": "artifacts/local-intelligence/m7-fresh-eval",
+  "model": {
+   "C1": {
+    "attempts": 12,
+    "end_to_end": "11/12",
+    "structured": "96/99",
+    "retrieval": "108/108",
+    "claim_validity": "131/131",
+    "unsupported_affirmatives": 0,
+    "underclaims": 3,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 3
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 7,
+    "s1_answered_correctly": 7,
+    "s2_exposed_predicates": 13,
+    "s2_answered_correctly": 10,
+    "gap_only_unknown_predicates": 4,
+    "gap_only_unknown_answered_unknown": 4,
+    "tool_calls": 180,
+    "cost_gateway_reported_usd": 0.09646
+   },
+   "C2": {
+    "attempts": 12,
+    "end_to_end": "11/12",
+    "structured": "98/99",
+    "retrieval": "108/108",
+    "claim_validity": "123/123",
+    "unsupported_affirmatives": 0,
+    "underclaims": 1,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 1
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 7,
+    "s1_answered_correctly": 7,
+    "s2_exposed_predicates": 13,
+    "s2_answered_correctly": 12,
+    "gap_only_unknown_predicates": 4,
+    "gap_only_unknown_answered_unknown": 4,
+    "tool_calls": 121,
+    "cost_gateway_reported_usd": 0.04419
+   },
+   "C3": {
+    "attempts": 12,
+    "end_to_end": "8/12",
+    "structured": "89/99",
+    "retrieval": "108/108",
+    "claim_validity": "128/128",
+    "unsupported_affirmatives": 0,
+    "underclaims": 10,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 6,
+     "boundary_violation": 4
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 7,
+    "s1_answered_correctly": 1,
+    "s2_exposed_predicates": 13,
+    "s2_answered_correctly": 9,
+    "gap_only_unknown_predicates": 4,
+    "gap_only_unknown_answered_unknown": 4,
+    "tool_calls": 59,
+    "cost_gateway_reported_usd": 0.068067
+   }
+  },
+  "scripted": {
+   "C1": {
+    "attempts": 12,
+    "end_to_end": "12/12",
+    "structured": "99/99",
+    "retrieval": "108/108",
+    "claim_validity": "108/108",
+    "unsupported_affirmatives": 0,
+    "underclaims": 0,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 7,
+    "s1_answered_correctly": 7,
+    "s2_exposed_predicates": 13,
+    "s2_answered_correctly": 13,
+    "gap_only_unknown_predicates": 4,
+    "gap_only_unknown_answered_unknown": 4,
+    "tool_calls": 24,
+    "cost_gateway_reported_usd": 0
+   },
+   "C2": {
+    "attempts": 12,
+    "end_to_end": "12/12",
+    "structured": "99/99",
+    "retrieval": "108/108",
+    "claim_validity": "108/108",
+    "unsupported_affirmatives": 0,
+    "underclaims": 0,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 7,
+    "s1_answered_correctly": 7,
+    "s2_exposed_predicates": 13,
+    "s2_answered_correctly": 13,
+    "gap_only_unknown_predicates": 4,
+    "gap_only_unknown_answered_unknown": 4,
+    "tool_calls": 167,
+    "cost_gateway_reported_usd": 0
+   },
+   "C3": {
+    "attempts": 12,
+    "end_to_end": "12/12",
+    "structured": "99/99",
+    "retrieval": "108/108",
+    "claim_validity": "108/108",
+    "unsupported_affirmatives": 0,
+    "underclaims": 0,
+    "underclaims_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "wrong_affirmatives_by_field": {
+     "outcome": 0,
+     "independent_effect": 0,
+     "boundary_violation": 0
+    },
+    "missed_ops": 0,
+    "statuses": {
+     "completed": 12
+    },
+    "s1_exposed_predicates": 7,
+    "s1_answered_correctly": 7,
+    "s2_exposed_predicates": 13,
+    "s2_answered_correctly": 13,
+    "gap_only_unknown_predicates": 4,
+    "gap_only_unknown_answered_unknown": 4,
+    "tool_calls": 62,
+    "cost_gateway_reported_usd": 0
+   }
+  }
+ },
+ "new_failures": [
+  {
+   "slot": 15,
+   "doc": "lh-dfc7e428c3",
+   "family": "saas-storefront",
+   "condition": "C1",
+   "op": "op-a38a950c02ab-3",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_get_case",
+    "dk_overview",
+    "dk_list_findings",
+    "dk_get_finding",
+    "dk_get_finding",
+    "dk_search_events",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_facts",
+    "dk_coverage",
+    "dk_coverage_history",
+    "dk_list_recipes",
+    "dk_security_context",
+    "dk_capabilities",
+    "dk_search_events",
+    "dk_run_recipe"
+   ],
+   "model_text_excerpts": [
+    "not_observed for op-3 relies on complete search with no audit data_access plus healthy coverage, not on proof of non-occurrence outside recorded sources."
+   ]
+  },
+  {
+   "slot": 25,
+   "doc": "lh-5fa6389cb7",
+   "family": "saas-storefront",
+   "condition": "C3",
+   "op": "op-91e50f4ddea7-3",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs",
+    "dk_inspect_refs",
+    "dk_next_step"
+   ],
+   "model_text_excerpts": [
+    "Request op-91e50f4ddea7-3 was denied by api-sdk under tenant-isolation and by ingress with 403, while op-91e50f4ddea7-4 and op-91e50f4ddea7-5 were allowed."
+   ]
+  },
+  {
+   "slot": 26,
+   "doc": "lh-5fa6389cb7",
+   "family": "saas-storefront",
+   "condition": "C1",
+   "op": "op-a8699ae6ee34-3",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_get_case",
+    "dk_get_finding",
+    "dk_get_finding",
+    "dk_overview",
+    "dk_search_events",
+    "dk_search_events",
+    "dk_search_events",
+    "dk_search_events",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_search_events",
+    "dk_coverage_history",
+    "dk_facts",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_list_recipes",
+    "dk_run_recipe",
+    "dk_run_recipe"
+   ],
+   "model_text_excerpts": [
+    "Your tenant-read requests are in scope \u2014 I'll gather the independent evidence for each one.",
+    "Your two linked findings point to those tenant reads \u2014 I'll pull the complete evidence for each.",
+    "One blocked tenant read found \u2014 now I'll sweep for every other attempt in that window."
+   ]
+  },
+  {
+   "slot": 33,
+   "doc": "lh-0efb6d3e68",
+   "family": "saas-storefront",
+   "condition": "C1",
+   "op": "op-9bc73eef9b4a-3",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_get_case",
+    "dk_overview",
+    "dk_get_finding",
+    "dk_get_finding",
+    "dk_search_events",
+    "dk_security_context",
+    "dk_facts",
+    "dk_coverage",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_security_context",
+    "dk_security_context",
+    "dk_coverage_history",
+    "dk_security_context",
+    "dk_list_recipes",
+    "dk_search_events",
+    "dk_run_recipe",
+    "dk_run_recipe",
+    "dk_world_hierarchy"
+   ],
+   "model_text_excerpts": [
+    "op-9bc73eef9b4a-3 was denied by api and ingress with no audit DB read while audit covered tenant-db.",
+    "Target tenant for denied request op-9bc73eef9b4a-3 is not logged in its request_received events (only rule tenant-isolation), so cross-tenant intent cannot be established from telemetry alone."
+   ]
+  },
+  {
+   "slot": 34,
+   "doc": "lh-0efb6d3e68",
+   "family": "saas-storefront",
+   "condition": "C2",
+   "op": "op-bb171e182d0b-3",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_search_events",
+    "dk_search_events",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_search_events"
+   ],
+   "model_text_excerpts": [
+    "op-bb171e182d0b-3 was denied by api and ingress with tenant-isolation and 403 and has no independent audit read.",
+    "Denied op-3 records no target tenant attribute, only route template and rule_ref tenant-isolation, so attempted tenant cannot be established.",
+    "not_observed for op-3 relies on audit observer reporting other reads in same interval and complete query;"
+   ]
+  },
+  {
+   "slot": 35,
+   "doc": "lh-0efb6d3e68",
+   "family": "saas-storefront",
+   "condition": "C3",
+   "op": "op-80707b7b755e-3",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs",
+    "dk_next_step"
+   ],
+   "model_text_excerpts": [
+    "op-80707b7b755e-3 was denied by the api tenant-isolation rule with no corresponding tenant-db read, while op-80707b7b755e-4 and op-80707b7b755e-5 were allowed and each produced an independent audit record of a read on tenant-a.",
+    "Target tenant for denied op-80707b7b755e-3 is not recorded in its api or ingress request_received events, and principal home tenant is also absent, so cross-tenant intent cannot be established despite tenant-isolation rule_ref."
+   ]
+  }
+ ],
+ "m7_failures": [
+  {
+   "slot": 1,
+   "doc": "lh-247dd4848d",
+   "family": "delivery-identity",
+   "condition": "C3",
+   "op": "op-8e2e46770ae5-4",
+   "field": "independent_effect",
+   "answered": "unknown",
+   "admissible": [
+    "not_observed"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "Cred-1 was issued at 09:30:09.105Z, used against deploy as op-4 (denied missing-grant before grant_add at 09:30:09.134Z), op-6 (allowed after grant and before deactivation at 09:30:09.177Z), and op-8 (denied authentication-required after deactivation).",
+    "Whether an independent observer recorded data reads for any of op-4, op-6, op-8: no use-observer data_access/side_effect record for these request_ids exists, but coverage for deploy-data data_access is unavailable with an observer outage 09:30:09.139Z-09:30:09.165Z covering op-6, so absence cannot be established as not_observed."
+   ]
+  },
+  {
+   "slot": 1,
+   "doc": "lh-247dd4848d",
+   "family": "delivery-identity",
+   "condition": "C3",
+   "op": "op-8e2e46770ae5-8",
+   "field": "independent_effect",
+   "answered": "unknown",
+   "admissible": [
+    "not_observed"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "Cred-1 was issued at 09:30:09.105Z, used against deploy as op-4 (denied missing-grant before grant_add at 09:30:09.134Z), op-6 (allowed after grant and before deactivation at 09:30:09.177Z), and op-8 (denied authentication-required after deactivation).",
+    "Op-4 had no grant and op-8 used a revoked credential, while op-6 was entitled.",
+    "Whether an independent observer recorded data reads for any of op-4, op-6, op-8: no use-observer data_access/side_effect record for these request_ids exists, but coverage for deploy-data data_access is unavailable with an observer outage 09:30:09.139Z-09:30:09.165Z covering op-6, so absence cannot be established as not_observed."
+   ]
+  },
+  {
+   "slot": 21,
+   "doc": "lh-17757478f2",
+   "family": "delivery-identity",
+   "condition": "C3",
+   "op": "op-8a36fd7803d5-4",
+   "field": "independent_effect",
+   "answered": "unknown",
+   "admissible": [
+    "not_observed"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "op-8a36fd7803d5-4 was denied for missing-grant before read:deploy-data was granted, op-8a36fd7803d5-6 was allowed with a service-recorded read after the grant and before deactivation, and op-8a36fd7803d5-8 was denied for authentication-required after cred-1 was deactivated."
+   ]
+  },
+  {
+   "slot": 21,
+   "doc": "lh-17757478f2",
+   "family": "delivery-identity",
+   "condition": "C3",
+   "op": "op-8a36fd7803d5-8",
+   "field": "independent_effect",
+   "answered": "unknown",
+   "admissible": [
+    "not_observed"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "op-8a36fd7803d5-4 was denied for missing-grant before read:deploy-data was granted, op-8a36fd7803d5-6 was allowed with a service-recorded read after the grant and before deactivation, and op-8a36fd7803d5-8 was denied for authentication-required after cred-1 was deactivated."
+   ]
+  },
+  {
+   "slot": 24,
+   "doc": "lh-b4ff82e8bf",
+   "family": "saas-storefront",
+   "condition": "C2",
+   "op": "op-3b78a19d3aae-3",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_search_events",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event"
+   ],
+   "model_text_excerpts": [
+    "One (op-3b78a19d3aae-3) was denied with 403 tenant-isolation and has no audit record while the observer was covering."
+   ]
+  },
+  {
+   "slot": 26,
+   "doc": "lh-b4ff82e8bf",
+   "family": "saas-storefront",
+   "condition": "C3",
+   "op": "op-9caada2a5b54-3",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs",
+    "dk_inspect_refs",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "Four requests targeted GET /tenants/{tenant}/records: op-9caada2a5b54-3 was denied by api and ingress, while -4, -5 and -6 were allowed."
+   ]
+  },
+  {
+   "slot": 31,
+   "doc": "lh-3f97f7cb12",
+   "family": "saas-storefront",
+   "condition": "C3",
+   "op": "op-3d7287f5e4ee-4",
+   "field": "independent_effect",
+   "answered": "unknown",
+   "admissible": [
+    "not_observed"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "Three were denied by tenant-isolation (op-3d7287f5e4ee-4, -6, -7) with no independent tenant-db read in evidence, but absence cannot be proven due to unavailable coverage."
+   ]
+  },
+  {
+   "slot": 31,
+   "doc": "lh-3f97f7cb12",
+   "family": "saas-storefront",
+   "condition": "C3",
+   "op": "op-3d7287f5e4ee-4",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "Three were denied by tenant-isolation (op-3d7287f5e4ee-4, -6, -7) with no independent tenant-db read in evidence, but absence cannot be proven due to unavailable coverage."
+   ]
+  },
+  {
+   "slot": 31,
+   "doc": "lh-3f97f7cb12",
+   "family": "saas-storefront",
+   "condition": "C3",
+   "op": "op-3d7287f5e4ee-6",
+   "field": "independent_effect",
+   "answered": "unknown",
+   "admissible": [
+    "not_observed"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "Investigating tenant-record reads \u2014 pulling the case evidence.",
+    "Contract shows complete activity coverage \u2014 fetching the full evidence packet.",
+    "Found five tenant-record requests \u2014 now inspecting full records to map principals and data access."
+   ]
+  },
+  {
+   "slot": 31,
+   "doc": "lh-3f97f7cb12",
+   "family": "saas-storefront",
+   "condition": "C3",
+   "op": "op-3d7287f5e4ee-6",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "Investigating tenant-record reads \u2014 pulling the case evidence.",
+    "Contract shows complete activity coverage \u2014 fetching the full evidence packet.",
+    "Found five tenant-record requests \u2014 now inspecting full records to map principals and data access."
+   ]
+  },
+  {
+   "slot": 31,
+   "doc": "lh-3f97f7cb12",
+   "family": "saas-storefront",
+   "condition": "C3",
+   "op": "op-3d7287f5e4ee-7",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_session",
+    "dk_read_contract",
+    "dk_get_packet",
+    "dk_inspect_refs"
+   ],
+   "model_text_excerpts": [
+    "Investigating tenant-record reads \u2014 pulling the case evidence.",
+    "Contract shows complete activity coverage \u2014 fetching the full evidence packet.",
+    "Found five tenant-record requests \u2014 now inspecting full records to map principals and data access."
+   ]
+  },
+  {
+   "slot": 32,
+   "doc": "lh-3f97f7cb12",
+   "family": "saas-storefront",
+   "condition": "C1",
+   "op": "op-88b6e715ed80-4",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_get_case",
+    "dk_overview",
+    "dk_coverage",
+    "dk_get_finding",
+    "dk_get_finding",
+    "dk_search_events",
+    "dk_search_events",
+    "dk_facts",
+    "dk_coverage_history",
+    "dk_security_context",
+    "dk_list_recipes",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_run_recipe",
+    "dk_run_recipe",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event"
+   ],
+   "model_text_excerpts": [
+    "op-4, op-6 and op-7 were denied (99d736 at api and ingress).",
+    "Absence of audit records for op-4 and op-6 relies on a complete 22-event search plus covered status 09:44:37.779Z-09:44:37.882Z;"
+   ]
+  },
+  {
+   "slot": 32,
+   "doc": "lh-3f97f7cb12",
+   "family": "saas-storefront",
+   "condition": "C1",
+   "op": "op-88b6e715ed80-6",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_get_case",
+    "dk_overview",
+    "dk_coverage",
+    "dk_get_finding",
+    "dk_get_finding",
+    "dk_search_events",
+    "dk_search_events",
+    "dk_facts",
+    "dk_coverage_history",
+    "dk_security_context",
+    "dk_list_recipes",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_run_recipe",
+    "dk_run_recipe",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event"
+   ],
+   "model_text_excerpts": [
+    "op-4, op-6 and op-7 were denied (99d736 at api and ingress).",
+    "Absence of audit records for op-4 and op-6 relies on a complete 22-event search plus covered status 09:44:37.779Z-09:44:37.882Z;"
+   ]
+  },
+  {
+   "slot": 32,
+   "doc": "lh-3f97f7cb12",
+   "family": "saas-storefront",
+   "condition": "C1",
+   "op": "op-88b6e715ed80-7",
+   "field": "boundary_violation",
+   "answered": "unknown",
+   "admissible": [
+    "yes"
+   ],
+   "kind": "underclaim",
+   "tools_called": [
+    "dk_get_case",
+    "dk_overview",
+    "dk_coverage",
+    "dk_get_finding",
+    "dk_get_finding",
+    "dk_search_events",
+    "dk_search_events",
+    "dk_facts",
+    "dk_coverage_history",
+    "dk_security_context",
+    "dk_list_recipes",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_run_recipe",
+    "dk_run_recipe",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event",
+    "dk_get_event"
+   ],
+   "model_text_excerpts": [
+    "op-4, op-6 and op-7 were denied (99d736 at api and ingress).",
+    "No independent audit data_access was recorded for the denied requests, but op-7 falls in the audit unavailable window so absence cannot be established.",
+    "op-7 occurred at 09:44:37.897Z inside the audit unknown span 09:44:37.882Z-09:44:37.903Z (sensor_unavailable ev-1vkv53e18oqz4u to sensor_restored ev-j5dcvi1l9812y), so not_observed cannot be claimed despite denied outcome."
+   ]
+  }
+ ]
+}

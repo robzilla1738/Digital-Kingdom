@@ -26,3 +26,12 @@
 {"slot":25,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"10/10","cost":0,"spent_total":0}
 {"slot":26,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"10/10","cost":0,"spent_total":0}
 {"slot":27,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"8/8","cost":0,"spent_total":0}
+{"slot":28,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"8/8","cost":0,"spent_total":0}
+{"slot":29,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"8/8","cost":0,"spent_total":0}
+{"slot":30,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0,"spent_total":0}
+{"slot":31,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0,"spent_total":0}
+{"slot":32,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0,"spent_total":0}
+{"slot":33,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"10/10","cost":0,"spent_total":0}
+{"slot":34,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"10/10","cost":0,"spent_total":0}
+{"slot":35,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"10/10","cost":0,"spent_total":0}
+{"finished_at":"2026-10-25T02:50:12.175Z","attempted":36,"halted":null,"spent_total":0}

@@ -15,6 +15,27 @@ def load(d, mode):
         return []
     return [json.load(open(os.path.join(rd, f))) for f in sorted(os.listdir(rd)) if re.fullmatch(r"\d{3}\.json", f)]
 
+def _answers(r):
+    return {o["request_id"]: o for o in (r.get("answer") or {}).get("operations", [])}
+
+def s1(r):
+    ops = r.get("key", {}).get("ops", [])
+    if not any("unknown" in o["admissible"]["independent_effect"] for o in ops if o.get("visible")):
+        return (0, 0)
+    ex = [o for o in ops if o.get("visible") and o["admissible"]["independent_effect"] == ["not_observed"]]
+    a = _answers(r)
+    return (len(ex), sum(1 for o in ex if a.get(o["op_id"], {}).get("independent_effect") == "not_observed"))
+
+def s2(r):
+    ex = [o for o in r.get("key", {}).get("ops", []) if o.get("visible") and o["admissible"]["boundary_violation"] == ["yes"]]
+    a = _answers(r)
+    return (len(ex), sum(1 for o in ex if a.get(o["op_id"], {}).get("boundary_violation") == "yes"))
+
+def g(r):
+    ex = [o for o in r.get("key", {}).get("ops", []) if o.get("visible") and o["admissible"]["independent_effect"] == ["unknown"]]
+    a = _answers(r)
+    return (len(ex), sum(1 for o in ex if a.get(o["op_id"], {}).get("independent_effect") == "unknown"))
+
 def summarize(recs):
     out = {}
     for c in ("C1", "C2", "C3"):
@@ -32,6 +53,13 @@ def summarize(recs):
             "wrong_affirmatives_by_field": {f: sum(1 for x in m for y in x["failures"] if y["field"] == f and y["answered"] not in (None, "unknown")) for f in ("outcome", "independent_effect", "boundary_violation")},
             "missed_ops": sum(len(x["operations"]["missed"]) for x in m),
             "statuses": {s: sum(1 for r in recs if r["condition"] == c and r["status"] == s) for s in sorted({r["status"] for r in recs if r["condition"] == c})},
+            # exposure to the two m7 failure shapes (from the referee key stored in each record):
+            # S1 = independent_effect admissible exactly [not_observed] in an attempt where another op's independent_effect
+            #      admits unknown (an observer gap exists in the interval); S2 = boundary_violation admissible exactly [yes]
+            "s1_exposed_predicates": sum(s1(r)[0] for r in rs), "s1_answered_correctly": sum(s1(r)[1] for r in rs),
+            "s2_exposed_predicates": sum(s2(r)[0] for r in rs), "s2_answered_correctly": sum(s2(r)[1] for r in rs),
+            # legitimate uncertainty kept: independent_effect admissible exactly [unknown] (request inside an observer gap)
+            "gap_only_unknown_predicates": sum(g(r)[0] for r in rs), "gap_only_unknown_answered_unknown": sum(g(r)[1] for r in rs),
             "tool_calls": sum(x.get("tool_calls", 0) for x in m),
             "cost_gateway_reported_usd": round(sum((r.get("cost") or {}).get("gateway_reported_usd") or 0 for r in rs), 6),
         }

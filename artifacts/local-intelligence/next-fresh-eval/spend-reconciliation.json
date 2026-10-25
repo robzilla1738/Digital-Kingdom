@@ -1,0 +1,27 @@
+{
+ "schema": "dk.local.eval_spend_reconciliation.v1",
+ "preregistration": "li-next-6a102b1f",
+ "true_spend_usd": 0.243396532,
+ "basis": "sum of the gateway-reported cost (usage.cost) of every model request in every record",
+ "requests": 206,
+ "requests_without_gateway_cost": 0,
+ "generation_ids": 206,
+ "attempts_with_model_error": [],
+ "attempt_level_gateway_reported_sum_usd": 0.243396532,
+ "budget_ledger_incurred_usd_runner_final": 0.24339653200000003,
+ "ledger_entries_charged_total_usd": 0.243396532,
+ "attribution": "runner fixed after m7 (fbe77c7): with concurrency 2 each clean attempt is charged its own gateway-reported cost, so the ledger entries should equal the true spend",
+ "per_condition_true_usd": {
+  "C1": 0.119059,
+  "C2": 0.050092,
+  "C3": 0.074245
+ },
+ "allowance_usd": 0.6,
+ "run_stop_usd": 0.52,
+ "phase_total_conservative_usd": 2.381413,
+ "phase_total_true_usd": 2.177877,
+ "prior_phase_total_conservative_usd": 2.138016,
+ "prior_phase_total_true_usd": 1.93448,
+ "phase_cap_usd": 3.0,
+ "records_unchanged": true
+}
