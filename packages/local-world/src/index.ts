@@ -19,3 +19,4 @@ export * from "./runtime/effects.ts";
 export * from "./runtime/repair-ops.ts";
 export * from "./runtime/controller.ts";
 export * from "./runtime/regression.ts";
+export * from "./runtime/observer-recovery.ts";

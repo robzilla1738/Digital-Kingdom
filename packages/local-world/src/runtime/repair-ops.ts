@@ -1,5 +1,5 @@
 import { REPAIR_ACTION_PARAMETER, type RepairAction, type RepairActionType } from "@dk/contracts";
-import { grantRef } from "./lease.ts";
+import { BENCH_DISTRACTOR_POLICY_REF, grantRef } from "./lease.ts";
 
 /**
  * LP21: the five reviewed typed repair operations, as the supervisor executes them inside one run.
@@ -20,7 +20,9 @@ export interface OpHost {
   observerUp(id: string): boolean | undefined;
   /** POST to a declared route of a registered listener of this run, as the controller (never stimulus). */
   send(resource: string, path: string, body: unknown): Promise<{ status: number; op_id: string }>;
-  reconfigure(id: string, variant: "baseline" | "candidate"): void;
+  reconfigure(id: string, variant: "baseline" | "candidate" | "bench_overbroad" | "bench_residual" | "bench_misbound"): void;
+  /** li-next D: benchmark distractor policy variants accepted on this run's supervisor (default false). */
+  distractorVariants?(): boolean;
   restartObserver(id: string): void;
 }
 export type Pre = Record<string, string | null>;
@@ -47,11 +49,12 @@ export const REPAIR_OPERATIONS: Record<RepairActionType, TypedOperation> = {
     resolve: (h, ref, t) => {
       const st = h.state(t);
       if (!st || !("variant" in st)) return `${t} has no policy variant`;
-      return /^policy:(baseline|candidate)$/.test(ref) ? null : `${ref} is not a reviewed policy`;
+      if (/^policy:(baseline|candidate)$/.test(ref)) return null;
+      return h.distractorVariants?.() === true && BENCH_DISTRACTOR_POLICY_REF.test(ref) ? null : `${ref} is not a reviewed policy`;
     },
     desired: (h, ref, t) => variantOf(h, t) === ref.slice("policy:".length),
     capture: (h, _ref, t) => ({ variant: variantOf(h, t) }),
-    async apply(h, ref, t) { h.reconfigure(t, ref.slice("policy:".length) as "baseline" | "candidate"); return { status: 200, op_id: null }; },
+    async apply(h, ref, t) { h.reconfigure(t, ref.slice("policy:".length) as "baseline" | "candidate" | "bench_overbroad" | "bench_residual" | "bench_misbound"); return { status: 200, op_id: null }; },
     async compensate(h, _ref, t, pre) {
       const prev = pre.variant;
       if (prev !== "baseline" && prev !== "candidate") return { outcome: "not_restored", reason: NOT_RESTORED(`the previous policy of ${t} was ${prev ?? "unknown"}, not a reviewed variant`) };

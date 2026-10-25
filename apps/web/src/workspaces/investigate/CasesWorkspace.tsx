@@ -8,6 +8,7 @@ import { caseDrafts, type DraftScope } from "../../lib/caseDrafts.ts";
 import type { Workbench } from "../../lib/workbench.ts";
 import { CaseWorkbench } from "./CaseWorkbench.tsx";
 import { AttentionPanel } from "./AttentionPanel.tsx";
+import { nextObligation } from "../../lib/caseFocus.ts";
 
 /**
  * R03.1 durable cases. A case is the analyst's investigation: scope, questions, linked findings (each pinned
@@ -81,6 +82,7 @@ export function CasesWorkspace() {
   return <section className="workspace-page cases-workspace" aria-label="Cases workspace">
     <div className="workspace-heading"><div><h1>Cases</h1><p className="workspace-lede">Track investigations, questions, and pinned evidence.</p></div></div>
     {message && <p className="scope-note" role="status">{message}</p>}
+    {detail && <CaseFocus c={detail} wb={wb && wb.case.id === detail.id ? wb : null} />}
     <AttentionPanel project={project} canEdit={canEdit} onOpenCase={(id) => { if (id === selected) return; setDetail(null); setSelected(id); }} />
     <div className="cases-layout">
       <div className="section-card" aria-label="Case list">
@@ -180,4 +182,19 @@ function RecipeRunner({ c, kinds, onDone }: { c: CaseDetail; kinds: Record<strin
       <ul className="mini-list">{result.hypotheses.map((h) => <li key={h.id}><strong>{h.status}</strong>{h.kind ? <span className="small faint"> ({h.kind})</span> : null} {h.statement} <small>Needs {h.needs}. {h.supporting_event_ids.length} supporting, {h.counter_event_ids.length} counter.</small></li>)}</ul>
       <p className="small faint">{result.unlinked_follow_on_event_ids.length} follow-on event(s) no finding references · {result.budget.used}/{result.budget.max_queries} queries.</p></div>}
   </div>;
+}
+
+/**
+ * next-C: the open case's question and its next evidence obligation, kept in the first viewport above the attention
+ * queue. Read-only mirror of the case record and workbench; it changes no evidence state.
+ */
+function CaseFocus({ c, wb }: { c: CaseDetail; wb: Workbench | null }) {
+  const next = wb ? nextObligation(wb.evidence_questions) : null;
+  return <section className="section-card case-focus" data-testid="case-focus" aria-label="Current case focus">
+    <div className="case-focus-head"><span className="eyebrow">Current case</span><strong>{c.title}</strong><span className="pill">{c.status}</span></div>
+    <p className="case-focus-question" data-testid="case-focus-question"><strong>Question:</strong> {c.scope.question || "No question recorded."}</p>
+    <p className="case-focus-next small" data-testid="case-focus-next">{!wb ? "Loading the next evidence obligation…" : next
+      ? <><strong>Next evidence obligation:</strong> <span className={`pill wb-ob-${next.status}`}>{next.status.replace(/_/g, " ")}</span> {next.question}{next.supports_negative_claims ? " · needed for absence claims" : ""}</>
+      : <><strong>Next meaningful action:</strong> {wb.summary.next}</>}</p>
+  </section>;
 }

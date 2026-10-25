@@ -5,7 +5,9 @@ import { INVESTIGATION_CONTRACTS, validateConclusion, type Conclusion, type Conc
  * flags) builds on these in claims.ts (LP10).
  *
  * - `not_observed_in_scope` needs an assessable negative-claim requirement: complete activity retrieval AND covered
- *   coverage for that asset and action. Otherwise it is refused, however it is worded.
+ *   coverage for that asset and action. Otherwise it is refused, however it is worded. With an assessor (li-next A), a
+ *   claim whose predicate interval lies inside a sub-interval the coverage result shows as covered is assessable even
+ *   when the whole interval is not; any window touching an uncovered span is still refused.
  * - `unresolved` needs at least one cited obligation that is genuinely unmet (unavailable, partial, failed or not yet
  *   attempted) with a reason; it may not cite only satisfied obligations to dodge a bounded answer.
  * - Every cited obligation must exist in the cited contract revision.
@@ -13,7 +15,10 @@ import { INVESTIGATION_CONTRACTS, validateConclusion, type Conclusion, type Conc
  */
 export interface ContractClaimCheck { claim_id: string; ok: boolean; problems: string[] }
 
-export function checkAgainstContract(contract: InvestigationContract, conclusion: Conclusion): { ok: boolean; claims: ContractClaimCheck[]; problems: string[] } {
+/** Sub-interval absence assessment (li-next A); without it only whole-interval requirements are used. */
+export type AbsenceAssessor = (asset: string, action: string, after?: string, before?: string) => { assessable: boolean; reason: string };
+
+export function checkAgainstContract(contract: InvestigationContract, conclusion: Conclusion, assess?: AbsenceAssessor): { ok: boolean; claims: ContractClaimCheck[]; problems: string[] } {
   const problems: string[] = [];
   if (conclusion.case_id !== contract.case_id) problems.push(`conclusion is for case ${conclusion.case_id}, contract is for ${contract.case_id}`);
   if (conclusion.run_id !== contract.run_id) problems.push(`conclusion names run ${conclusion.run_id ?? "(none)"}, contract run is ${contract.run_id ?? "(none)"}`);
@@ -29,8 +34,12 @@ export function checkAgainstContract(contract: InvestigationContract, conclusion
       else {
         const req = contract.negative_claim_requirements.find((n) => n.asset_id === target.asset_id && n.action === target.action);
         if (!req) p.push(`no negative-claim requirement exists for ${target.action} on ${target.asset_id}; the contract cannot support that absence claim`);
-        else if (!req.assessable) p.push(`negative claim not assessable: ${req.reason}`);
-        else for (const r of req.requires) if (!cl.obligation_ids.includes(r)) p.push(`a negative claim must cite every obligation it rests on (${req.requires.join(", ")})`);
+        else if (!req.assessable) {
+          // a claim confined (predicate after/before) to a covered sub-interval may be assessable although the whole interval is not
+          const sub = assess && cl.predicate && (cl.predicate.after || cl.predicate.before) ? assess(target.asset_id, target.action, cl.predicate.after, cl.predicate.before) : null;
+          if (!sub?.assessable) p.push(`negative claim not assessable: ${sub ? sub.reason : req.reason}`);
+          else for (const r of req.requires) if (!cl.obligation_ids.includes(r)) p.push(`a negative claim must cite every obligation it rests on (${req.requires.join(", ")})`);
+        } else for (const r of req.requires) if (!cl.obligation_ids.includes(r)) p.push(`a negative claim must cite every obligation it rests on (${req.requires.join(", ")})`);
       }
     }
     if (cl.type === "unresolved") {

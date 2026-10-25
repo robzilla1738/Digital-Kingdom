@@ -7,7 +7,7 @@ import { sha256, type Role } from "./security.ts";
 import { HttpError, type Store } from "./store.ts";
 import type { Cases } from "./cases.ts";
 import { provenanceOf } from "./provenance.ts";
-import { applyChanges, compareStates, evaluateWithCredentials, explainPath, graphFromState, keyOf, snapshotFromState, stateHash, type AnalysisState, type Change, type Element, type Exploration } from "./exploration.ts";
+import { RESTARTABLE_OBSERVER_STATES, applyChanges, compareStates, evaluateWithCredentials, explainPath, graphFromState, keyOf, snapshotFromState, stateHash, type AnalysisState, type Change, type Element, type Exploration } from "./exploration.ts";
 import type { AuthSnapshot } from "./access/aws-policy.ts";
 
 /**
@@ -65,6 +65,9 @@ export const REPAIR_TEMPLATES = [
   { id: "restore-reviewed-policy", version: 1, action: "set_gateway_policy", applies_to: ["tenant_access", "path"], disruption_class: "targeted", reversible: true,
     prerequisites: ["the enforcement point is a run-owned local resource whose declared policy variant is in the latest local configuration snapshot", "a supervisor lab lease scoped to this plan (LP20) to apply it"],
     explanation: "Return the enforcement point from the deliberately weak policy variant to a reviewed variant, so its declared rule (tenant isolation at a tenant API; the approved destination at an agent tool gateway) denies the prohibited operation again while permitted operations keep working." },
+  { id: "restart-supervised-observer", version: 1, action: "restart_test_observer", applies_to: ["observer_gap"], disruption_class: "none", reversible: true,
+    prerequisites: ["the observer is a supervisor-owned observer of the run, reported stopped or misconfigured in the latest observer state report (dk.local.observer_state.v1)", "a supervisor lab lease scoped to this plan (LP20) to apply it", "an observation handshake after the restart (a controlled permitted operation the restarted observer must report) before anything is called restored"],
+    explanation: "Restart the run's stopped or misconfigured independent observer (re-attached to exactly its declared resources) so effects at those resources are independently observed again. This restores observation only: it blocks no prohibited operation, and effects during the outage stay unknown." },
 ] as const;
 type Template = (typeof REPAIR_TEMPLATES)[number];
 
@@ -149,6 +152,14 @@ export class Repairs {
         : { holds: "does_not_hold", detail: `every declared path is denied (${[...new Set(t.paths.map((x) => `${x.deniedBy!.attrs.asset_id} ${String(x.deniedBy!.attrs.variant)}`))].join(", ")}; ${LOCAL_TENANT_POLICY_MODEL})` };
     }
     if (p.kind === "observer_gap") {
+      // li-next B: a supervisor-reported observer (capability state) takes precedence over a server source record
+      const ob = s.elements.find((x) => x.kind === "observer" && x.attrs.observer_id === p.source_id);
+      if (ob) {
+        const st = String(ob.attrs.state);
+        if (st === "running") return { holds: "does_not_hold", detail: `observer ${p.source_id} running since ${String(ob.attrs.since)}, observing ${(ob.attrs.observes as string[]).join(", ")} (supervisor-reported)` };
+        if ((RESTARTABLE_OBSERVER_STATES as readonly string[]).includes(st)) return { holds: "holds", detail: `observer ${p.source_id} ${st} since ${String(ob.attrs.since)}; observes ${(ob.attrs.observes as string[]).join(", ") || "nothing"} of declared ${(ob.attrs.declared as string[]).join(", ")} (supervisor-reported)` };
+        return { holds: "unknown", detail: `observer ${p.source_id} is reported ${st}; the reviewed restart-supervised-observer template applies only to a supervisor-owned observer that is stopped or misconfigured, so there is no applicable candidate` };
+      }
       const e = s.elements.find((x) => x.kind === "source" && x.id === p.source_id);
       return e ? { holds: e.attrs.disabled ? "holds" : "does_not_hold", detail: e.attrs.disabled ? "observer disabled" : "observer enabled" } : { holds: "unknown", detail: "observer not in the state" };
     }
@@ -218,7 +229,13 @@ export class Repairs {
         }
       }
       if (p.kind === "observer_gap") {
-        const e = base.elements.find((y) => y.kind === "source" && y.id === p.source_id);
+        const ob = base.elements.find((y) => y.kind === "observer" && y.attrs.observer_id === p.source_id);
+        if (ob && (RESTARTABLE_OBSERVER_STATES as readonly string[]).includes(String(ob.attrs.state)) && typeof ob.attrs.revision === "string") {
+          const id = String(ob.attrs.observer_id);
+          out.push({ template: REPAIR_TEMPLATES[6], target: id, covers: [p.id], changes: [{ op: "modify", kind: "observer", authority: ob.authority, id: ob.id, attrs: { state: "running", observes: [...(ob.attrs.declared as string[])] } }],
+            actions: [{ target_resource_id: plainId(id), type: "restart_test_observer", parameters: { observer_ref: plainId(id) }, expected_target_revision: ob.attrs.revision }] });
+        }
+        const e = ob ? undefined : base.elements.find((y) => y.kind === "source" && y.id === p.source_id);
         if (e) out.push({ template: REPAIR_TEMPLATES[4], target: p.source_id!, covers: [p.id], changes: [{ op: "modify", kind: "source", authority: e.authority, id: e.id, attrs: { disabled: false } }],
           actions: [{ target_resource_id: plainId(p.source_id!), type: "restart_test_observer", parameters: { observer_ref: ref("observer", keyOf(e)) }, expected_target_revision: revisionOf(e) }] });
       }
@@ -234,7 +251,12 @@ export class Repairs {
     return out.slice(0, REPAIR_LIMITS.max_candidates);
   }
 
-  generate(projectId: string, caseId: string, body: Record<string, unknown>, actor: string) {
+  /**
+   * The ranked candidate set for a case objective on the CURRENT analysis state (the local world as declared and
+   * supervisor-reported), without persisting or emitting anything. `generate` stores exactly this result. A selection
+   * benchmark lists candidates through this (or the `/repairs/ranked` route); it never reads scenario truth.
+   */
+  rank(projectId: string, caseId: string, body: Record<string, unknown>) {
     const bad = Object.keys(body).filter((k) => !["base_state_hash", "objective", "available_artifacts"].includes(k));
     if (bad.length) throw new HttpError(422, `unsupported field(s) ${bad.join(", ")}`);
     const c = this.cases.get(projectId, caseId);
@@ -290,7 +312,8 @@ export class Repairs {
         breaks_permitted: broken.length > 0,
         expected_impact: [...prohibited, ...permitted].map((p) => ({ probe: p.id, role: prohibited.includes(p) ? "prohibited" : "permitted", before: before[p.id]!, after: after[p.id]! })),
         positive_controls: permitted.map((p) => ({ probe: p.id, expected: "still possible", modeled_after: after[p.id]!.holds })),
-        verification: { model_only: { prohibited_blocked: blocked, permitted_kept: permitted.filter((p) => after[p.id]!.holds === "holds").map((p) => p.id) }, executed_local: "pending: needs a disposable run and a lab lease (LP16); not run", external: "deferred (EXT01)" },
+        verification: { model_only: { prohibited_blocked: blocked, permitted_kept: permitted.filter((p) => after[p.id]!.holds === "holds").map((p) => p.id) },
+          executed_local: pr.template.id === "restart-supervised-observer" ? "pending: needs a supervisor lease scoped to this plan, then an observation handshake (dk.local.observer_recovery_verification.v1): a controlled permitted operation the restarted observer must report. Not run." : "pending: needs a disposable run and a lab lease (LP16); not run", external: "deferred (EXT01)" },
         compensation: { changes: inverse, note: "Apply these exact inverse changes to restore the baseline element values; verify the positive controls again afterwards." },
         plan, patch: buildPatch(base, cand, pr.changes, inverse, snap, graph),
         analysis: { namespace, candidate_state_hash: candHash, mode: "model_only" as const },
@@ -306,20 +329,35 @@ export class Repairs {
       ...prohibited.filter((p) => before[p.id]!.holds === "unknown").map((p) => `${p.id}: ${before[p.id]!.detail}; no reviewed template can act on an unresolved operation`),
       ...prohibited.filter((p) => before[p.id]!.holds === "holds" && !ranked.some((c) => c.valid && c.tradeoffs.objective_coverage.blocked && c.expected_impact.find((x) => x.probe === p.id)?.after.holds === "does_not_hold")).map((p) => `${p.id}: no reviewed template (${REPAIR_TEMPLATES.map((t) => t.id).join(", ")}) applies to the declared elements behind it`),
     ] : [];
+    // li-next B: probes whose executed verification depends on an observer the supervisor reports as not running.
+    // An unobserved operation is never a blocked one: these probes would be unknown/inconclusive until observation is restored.
+    const observation = base.elements.filter((e) => e.kind === "observer" && e.attrs.state !== "running").map((e) => {
+      const declared = e.attrs.declared as string[];
+      const probes = [...prohibited, ...permitted].filter((p) => p.kind !== "observer_gap" && [p.from, p.to, p.asset_id].some((a) => a && declared.includes(a))).map((p) => p.id);
+      return { observer_id: String(e.attrs.observer_id), state: String(e.attrs.state), since: String(e.attrs.since), declared, probes,
+        note: "executed (LP22) verification of these probes is unknown/inconclusive while this observer is not running; absence of an observed effect is not evidence that the operation was blocked" };
+    }).filter((x) => x.probes.length);
     const result = {
       schema: REPAIR_CANDIDATES, project_id: projectId, case_id: c.id, status, reasons,
       baseline: { state_hash: baseHash, graph_revision: base.base.graph_revision, snapshot_id: base.base.snapshot_id, snapshot_digest: base.base.snapshot_digest },
       objective: { prohibited, permitted }, templates: REPAIR_TEMPLATES.map((t) => ({ id: t.id, version: t.version, action: t.action })),
       candidates: ranked,
       ranking: { criteria: ["validity (plan validates and blocks at least one prohibited operation)", "objective coverage (prohibited operations blocked)", "disruption (positive controls broken)", "unknowns", "elements changed"], note: "Ordered by these recorded criteria within this finite candidate set from reviewed templates. It is not a claim of global optimality; read the tradeoffs." },
+      ...(observation.length ? { observation_prerequisites: observation } : {}),
       not_claimed: ["Model-only simulation over declared/configured state; nothing was applied, executed or observed.", "No plan here is approved; approval recording is deferred (EXT05) and no executor exists in this phase.", "Evidence text was not read or interpreted to build any patch."],
     };
+    return { result, caseId: c.id, valid: valid.length, status, ranked: ranked.length };
+  }
+
+  generate(projectId: string, caseId: string, body: Record<string, unknown>, actor: string) {
+    const { result, caseId: cid, valid, status, ranked } = this.rank(projectId, caseId, body);
+    const c = { id: cid }; const baseHash = result.baseline.state_hash;
     const id = `rcs_${sha256(`${projectId}:${caseId}:${canonicalJson(result)}:${this.store.now().toISOString()}:${Math.random()}`).slice(0, 16)}`;
     const digest = sha256(canonicalJson(result));
     this.store.db.prepare("INSERT INTO repair_candidate_sets (id, project_id, case_id, base_state_hash, body, digest, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)").run(id, projectId, c.id, baseHash, canonicalJson(result), digest, actor, this.store.now().toISOString());
-    this.store.audit(actor, "repair.candidates", projectId, id, { case_id: c.id, status, candidates: ranked.length });
+    this.store.audit(actor, "repair.candidates", projectId, id, { case_id: c.id, status, candidates: ranked });
     // LP15: the local attention queue reads this from the project change stream (ids and counts only)
-    this.store.emit(projectId, "repair_candidates", { id, case_id: c.id, status, valid_candidates: valid.length });
+    this.store.emit(projectId, "repair_candidates", { id, case_id: c.id, status, valid_candidates: valid });
     return { id, digest, ...result };
   }
 
@@ -376,6 +414,7 @@ function documents(s: AnalysisState, snap: AuthSnapshot | null, keys: string[]):
     else if (kind === "tool") out.set(`gateways/${plainId(String(e?.attrs.agent ?? id.split("->")[0]))}.json`, s.elements.filter((x) => x.kind === "tool" && x.attrs.agent === (e?.attrs.agent ?? id.split("->")[0])).map((x) => ({ tool: x.attrs.tool, gateway: x.attrs.gateway ?? "allow", policy_ref: x.attrs.policy_ref ?? null })));
     else if (kind === "artifact") out.set(`deployments/${plainId(String(e?.attrs.asset_id ?? id.split(":")[0]))}.json`, e ? { asset_id: e.attrs.asset_id, registry: e.authority, name: e.attrs.name, version: e.attrs.version, reference: e.attrs.reference ?? null } : null);
     else if (kind === "policy") out.set(`local-policies/${plainId(String(e?.attrs.asset_id ?? id.split("#")[0]))}.json`, e ? { resource_id: e.attrs.asset_id, template: e.attrs.template, policy_variant: e.attrs.variant, tenant_mode: e.attrs.tenant_mode ?? null } : null);
+    else if (kind === "observer") out.set(`observers/${plainId(String(e?.attrs.observer_id ?? id.split("#")[0]))}.state.json`, e ? { observer_id: e.attrs.observer_id, state: e.attrs.state, declared: e.attrs.declared, observes: e.attrs.observes } : null);
     else if (kind === "source") out.set(`observers/${plainId(id)}.json`, e ? { id: e.id, asset_ids: e.attrs.asset_ids, enabled: !e.attrs.disabled } : null);
     else out.set(`${plainId(kind!)}/${plainId(id)}.json`, e?.attrs ?? null);
   }
@@ -433,6 +472,7 @@ export function registerRepairRoutes(app: FastifyInstance, d: { store: Store; ex
   const body = (req: FastifyRequest) => ((req.body && typeof req.body === "object" && !Array.isArray(req.body)) ? req.body : {}) as Record<string, unknown>;
   app.get("/api/repairs/templates", { preHandler: d.authed() }, async () => ({ catalog: REPAIR_TEMPLATE_CATALOG, templates: REPAIR_TEMPLATES }));
   app.post("/api/projects/:p/cases/:id/repairs", { preHandler: d.authed("analyst") }, async (req) => r.generate(d.store.require(req.principal!, P(req), "analyst").id, prm(req).id, body(req), d.who(req)));
+  app.post("/api/projects/:p/cases/:id/repairs/ranked", { preHandler: d.authed("analyst") }, async (req) => ({ ...r.rank(d.store.require(req.principal!, P(req), "analyst").id, prm(req).id, body(req)).result, persisted: false }));
   app.get("/api/projects/:p/repairs/:sid", { preHandler: d.authed() }, async (req) => r.get(d.store.require(req.principal!, P(req), "viewer").id, prm(req).sid));
   app.get("/api/projects/:p/repairs/:sid/candidates/:cid/patch", { preHandler: d.authed() }, async (req, reply) => {
     const { candidate } = r.candidate(d.store.require(req.principal!, P(req), "viewer").id, prm(req).sid, prm(req).cid);

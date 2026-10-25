@@ -4,6 +4,10 @@ import { sha256 } from "../security.ts";
 import { HttpError, type Principal, type Store } from "../store.ts";
 import { parseSearchQuery, searchEvents } from "../investigate.ts";
 import { coverageHistory } from "../coverage-history.ts";
+import { SPAN_LIST_CAP } from "./scoping.ts";
+
+/** A duration at a precision that keeps sub-minute gaps visible. */
+export const fmtDuration = (n: number) => n < 1000 ? `${Math.round(n)} ms` : n < 120_000 ? `${(n / 1000).toFixed(n < 10_000 ? 2 : 1)} s` : `${Math.round(n / 60_000)} minute(s)`;
 import { RECIPES, runRecipe } from "../recipes.ts";
 import { bundleEvents } from "../bundles.ts";
 import type { InvestigationContracts, ObligationResult } from "./contracts.ts";
@@ -439,9 +443,14 @@ export class InvestigationJobs {
         const h = coverageHistory(this.store, job.project_id, { asset: p.asset_id!, action: p.action!, after: p.after!, before: p.before! });
         const configured = h.sources.length > 0 && h.spans.some((s) => s.sources.length > 0);
         const status = !configured || h.totals_ms.unknown > 0 ? "unavailable" : h.totals_ms.partial > 0 ? "partial" : "satisfied";
-        const unknownSpans = h.spans.filter((s) => s.state !== "covered").slice(0, 20).map((s) => ({ from: s.from, to: s.to, state: s.state }));
-        r = { status, reason: status === "satisfied" ? "a capable, assigned, live source covered the whole interval" : !configured ? "no source is configured to observe this asset and event class" : status === "partial" ? `${Math.round(h.totals_ms.partial / 60000)} minute(s) only partially covered (sampling or unverifiable liveness)` : `${Math.round(h.totals_ms.unknown / 60000)} minute(s) with no capable live observer`,
-          detail: { totals_ms: h.totals_ms, configured, uncovered_spans: unknownSpans, sources: h.sources.map((s) => s.source_id) } };
+        const notCovered = h.spans.filter((s) => s.state !== "covered");
+        const unknownSpans = notCovered.slice(0, SPAN_LIST_CAP).map((s) => ({ from: s.from, to: s.to, state: s.state }));
+        const intervalMs = Math.max(0, Date.parse(p.before!) - Date.parse(p.after!));
+        // li-next A: say how much of the interval the gap is, at a precision that does not round short gaps to "0 minute(s)"
+        // and imply the whole interval; the spans themselves scope which claims the gap bears on.
+        const where = (n: number) => `${notCovered.length} span(s)${notCovered.length && notCovered.length <= 3 ? ` (${notCovered.map((s) => `${s.from}..${s.to}`).join(", ")})` : ""}; ${n >= intervalMs ? "that is the whole interval" : "the rest of the interval was covered"}`;
+        r = { status, reason: status === "satisfied" ? "a capable, assigned, live source covered the whole interval" : !configured ? "no source is configured to observe this asset and event class (the whole interval)" : status === "partial" ? `${fmtDuration(h.totals_ms.partial)} of ${fmtDuration(intervalMs)} only partially covered (sampling or unverifiable liveness) in ${where(h.totals_ms.partial + h.totals_ms.unknown)}` : `${fmtDuration(h.totals_ms.unknown)} of ${fmtDuration(intervalMs)} with no capable live observer in ${where(h.totals_ms.unknown + h.totals_ms.partial)}`,
+          detail: { totals_ms: h.totals_ms, interval_ms: intervalMs, configured, uncovered_spans: unknownSpans, uncovered_spans_total: notCovered.length, sources: h.sources.map((s) => s.source_id) } };
       } catch (e) { r = { status: "failed", reason: `coverage question failed: ${String((e as Error).message).slice(0, 300)}`, detail: {} }; }
       const seq = Number((this.db.prepare("SELECT COALESCE(MAX(seq), 0) AS m FROM events WHERE project_id = ?").get(job.project_id) as { m: number }).m);
       const ref = `cov:${job.id}:${step.step_id}`;

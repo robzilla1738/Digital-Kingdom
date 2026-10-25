@@ -1,0 +1,23 @@
+{
+  "name": "after-f15-active-environment",
+  "file": "after-f15-active-environment.png",
+  "phase": "after",
+  "sha256": "853a03109876acbf5c2c0643f87b3bd6be264ef3f10d4eb430fc747d2916c12f",
+  "bytes": 309612,
+  "commit": "8fc2e72ef0ece42f2a2796131f26d36ba9181c13",
+  "worktreeDirty": false,
+  "capturedAt": "2026-10-24T21:06:26.623Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "dpr": 1,
+  "browser": "141.0.7390.37",
+  "renderer": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "vendor": "Google Inc. (Google)"
+  },
+  "rendererNote": "Chromium headless, SwiftShader software WebGL requested; no real-GPU claim.",
+  "url": "http://127.0.0.1:5173/?fixture=F15#v=2&workspace=kingdom&view=castle",
+  "note": "Default: framed on the active environment (most urgent findings). Realm overview control in the toolbar."
+}

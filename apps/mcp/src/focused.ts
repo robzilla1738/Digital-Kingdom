@@ -48,7 +48,8 @@ export function createFocusedServer(client: DkClient, opts: FocusedOptions): Mcp
       `Digital Kingdom focused investigation profile "${profile}" for project ${client.cfg.project}. Loop: dk_session (what you may do) -> dk_read_contract (the case question, scope and evidence obligations) -> dk_next_step` +
       (writes ? " -> dk_run_step (bounded, resumable work)" : "") +
       " -> dk_get_packet / dk_inspect_refs (compact evidence; follow continuation.next_cursor) -> dk_check_conclusion" + (writes ? " -> dk_propose_conclusion" : "") + ". " +
-      "Cite only records delivered to you. Absence needs complete retrieval AND continuous coverage. Unknown coverage is unknown, not safe. " + UNTRUSTED_NOTE,
+      "Cite only records delivered to you. Absence needs complete retrieval AND continuous coverage. Unknown coverage is unknown, not safe. " +
+      "Uncertainty is claim-local: a coverage gap blocks absence claims only for its own asset, action and uncovered spans (see the packet's negative_claims[].assessable_within / not_assessable_within); it never erases a recorded positive observation and never taints other assets, actions or covered intervals. " + UNTRUSTED_NOTE,
   });
   const RO = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false } as const;
   const W = (idempotent: boolean) => ({ readOnlyHint: false, destructiveHint: false, idempotentHint: idempotent, openWorldHint: false }) as const;

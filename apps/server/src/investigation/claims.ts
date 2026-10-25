@@ -4,6 +4,7 @@ import type { Store } from "../store.ts";
 import type { InvestigationContracts } from "./contracts.ts";
 import { checkAgainstContract } from "./conclusions.ts";
 import { sameScopeRevisions } from "./packets.ts";
+import { assessAbsence, bearingUnmet, coverageScopes, type CoverageScope } from "./scoping.ts";
 
 /**
  * Structured claim checker (Local Intelligence Phase LP10).
@@ -37,6 +38,8 @@ export interface ClaimResult {
   references: RefCheck[]; coverage_refs: RefCheck[];
   predicate: { present: boolean; holds: boolean | null; detail: string; matching_refs?: string[]; contradicting_refs?: string[] };
   narrative: { machine_checked: false; flags: { id: string; phrase: string; why: string }[] };
+  /** li-next A: which unmet obligations actually bear on this claim (by asset, action, interval); none for positive observations. */
+  uncertainty_scope: { bearing_unmet_obligations: string[]; note: string };
   problems: string[];
 }
 
@@ -50,8 +53,9 @@ export class ClaimChecker {
     const contract = view.contract;
     if (!v.ok) return this.result(contract, raw, "rejected", [], [`schema: ${v.errors.join("; ")}`], view.stale);
     const c = v.value!;
-    const base = checkAgainstContract(contract, c);
     const revs = sameScopeRevisions(this.store, contract.id, contract.revision);
+    const scopes = coverageScopes(this.store, contract.id, revs);
+    const base = checkAgainstContract(contract, c, (asset, action, after, before) => assessAbsence(contract, scopes, asset, action, after, before));
     // every delivery under this contract, with the revision it was delivered under and its channel
     const deliveries = this.db.prepare("SELECT ref, kind, contract_revision, channel, channel_id, step_id FROM investigation_deliveries WHERE contract_id = ?").all(contract.id) as { ref: string; kind: string; contract_revision: number; channel: string; channel_id: string; step_id: string }[];
     const byRef = new Map<string, typeof deliveries>();
@@ -95,11 +99,13 @@ export class ClaimChecker {
       for (const r of [...references, ...coverage]) problems.push(...r.problems);
       const flags = NARRATIVE_FLAGS.flatMap((f) => { const m = cl.text.match(f.re); return m ? [{ id: f.id, phrase: m[0], why: f.why }] : []; });
       if (cl.type === "observed" && NEGATION.test(cl.text)) flags.push({ id: "negation_in_observed_claim", phrase: cl.text.match(NEGATION)![0], why: "an observed claim states what a record shows; absence belongs in a not_observed_in_scope claim with coverage" });
-      const predicate = this.predicate(contract, cl, references, events, deliveries, revs);
+      const predicate = this.predicate(contract, cl, references, events, deliveries, revs, scopes);
       if (predicate.present && predicate.holds === false) problems.push(`predicate does not hold: ${predicate.detail}`);
       const failed = problems.length > 0;
       const support: SupportLevel = failed ? "failed" : cl.type === "unresolved" ? "unresolved_documented" : predicate.present && predicate.holds ? "predicate_checked" : "references_checked_narrative_unverified";
-      return { claim_id: cl.id, type: cl.type, support_level: support, machine_proved: false, references, coverage_refs: coverage, predicate, narrative: { machine_checked: false, flags }, problems: [...new Set(problems)] };
+      const bearing = bearingUnmet(contract, scopes, cl);
+      const uncertainty_scope = { bearing_unmet_obligations: bearing, note: cl.type === "observed" ? "a recorded positive observation: no coverage gap or unmet obligation weakens what a delivered record shows" : cl.type === "unresolved" ? "documents an unmet obligation" : bearing.length ? `absence here rests on unmet obligation(s): ${bearing.join(", ")}` : "no unmet obligation bears on this claim's asset, action and interval" };
+      return { claim_id: cl.id, type: cl.type, support_level: support, machine_proved: false, references, coverage_refs: coverage, predicate, narrative: { machine_checked: false, flags }, uncertainty_scope, problems: [...new Set(problems)] };
     });
     const failed = !base.ok || claims.some((x) => x.support_level === "failed");
     const flagged = claims.some((x) => x.narrative.flags.length);
@@ -117,7 +123,7 @@ export class ClaimChecker {
     return false;
   }
 
-  private predicate(contract: InvestigationContract, cl: ConclusionClaim, refs: RefCheck[], events: Map<string, SecurityEvent>, deliveries: { ref: string; kind: string; contract_revision: number; channel: string; channel_id: string; step_id: string }[], revs: Set<number>): ClaimResult["predicate"] {
+  private predicate(contract: InvestigationContract, cl: ConclusionClaim, refs: RefCheck[], events: Map<string, SecurityEvent>, deliveries: { ref: string; kind: string; contract_revision: number; channel: string; channel_id: string; step_id: string }[], revs: Set<number>, scopes: Map<string, CoverageScope>): ClaimResult["predicate"] {
     const p = cl.predicate;
     if (!p) return { present: false, holds: null, detail: "no structured predicate: only references were checked; the text is not machine-checked" };
     const after = Date.parse(p.after ?? contract.scope.after), before = Date.parse(p.before ?? contract.scope.before);
@@ -132,15 +138,16 @@ export class ClaimChecker {
     }
     // action_not_observed: the negative requirement (complete retrieval + coverage) is checked by the contract rules;
     // here the complete retrieval itself is searched for a contradicting record.
-    const req = contract.negative_claim_requirements.find((n) => n.asset_id === p.asset_id && n.action === p.action);
-    if (!req?.assessable) return { present: true, holds: false, detail: `absence of ${p.action} on ${p.asset_id} is not assessable (${req?.reason ?? "no requirement"})` };
+    // assessable for the whole interval, or (li-next A) for the claim's own covered sub-interval
+    const ass = assessAbsence(contract, scopes, p.asset_id, p.action, p.after, p.before);
+    if (!ass.assessable) return { present: true, holds: false, detail: `absence of ${p.action} on ${p.asset_id} is not assessable (${ass.reason})` };
     const act = contract.obligations.find((o) => o.id === `activity:${p.asset_id}`)!;
     const stepRefs = new Set(act.query_refs);
     const retrieved = deliveries.filter((d) => d.channel === "job" && d.kind === "event" && revs.has(d.contract_revision) && stepRefs.has(`${d.channel_id}:${d.step_id}`)).map((d) => d.ref);
     const stored = new Map(this.store.eventsByIds(contract.project_id, retrieved).map((e) => [e.id, e]));
     const contra = retrieved.filter((id) => stored.get(id) && matches(stored.get(id)!));
     return contra.length ? { present: true, holds: false, detail: `${contra.length} record(s) in the complete retrieval of ${p.asset_id} show ${p.action}`, contradicting_refs: contra.slice(0, 50) }
-      : { present: true, holds: true, detail: `no record matching ${p.action} on ${p.asset_id} in the complete retrieval (${retrieved.length} record(s)) while coverage was continuous; this is absence in stored records within the interval only` };
+      : { present: true, holds: true, detail: `no record matching ${p.action} on ${p.asset_id} in the complete retrieval (${retrieved.length} record(s)) while coverage was continuous${ass.scope === "sub_interval" ? ` in ${p.after ?? contract.scope.after}..${p.before ?? contract.scope.before}` : ""}; this is absence in stored records within ${ass.scope === "sub_interval" ? "that sub-interval" : "the interval"} only` };
   }
 
   private result(contract: InvestigationContract, conclusion: unknown, status: "rejected" | "draft" | "unresolved" | "machine_checked_structured", claims: ClaimResult[], problems: string[], stale: boolean) {

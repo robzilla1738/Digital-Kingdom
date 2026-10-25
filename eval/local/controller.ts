@@ -67,6 +67,9 @@ export interface StartOptions {
    *  Omitted (default): plan-only supervisor, exactly as before — no lease can be issued in that world. A lease is
    *  still required for every typed action either way. */
   lab?: "leased";
+  /** li-next D repair-selection benchmark only: the leased supervisor also accepts the BENCHMARK DISTRACTOR policy
+   *  references (overbroad / residual-access variants). Never set by the investigation or the LP31 loop. */
+  benchmarkDistractors?: true;
 }
 
 export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions = {}): Promise<LocalCase> {
@@ -83,7 +86,7 @@ export async function startLocalCase(doc: PrivateHandle["doc"], o: StartOptions 
   try {
     let lab: PrivateHandle["lab"] = null;
     let supervisor: Supervisor | undefined;
-    if (o.lab === "leased") { supervisor = new Supervisor({ services: BUILTIN_SERVICES, labActions: "leased" }); lab = { operator: supervisor.operatorCredential() }; }
+    if (o.lab === "leased") { supervisor = new Supervisor({ services: BUILTIN_SERVICES, labActions: "leased", ...(o.benchmarkDistractors ? { benchmarkDistractorVariants: true } : {}) }); lab = { operator: supervisor.operatorCredential() }; }
     world = await startLocalWorld({ blueprint: doc.blueprint, seed: doc.seed, dk: { url, adminToken }, drain, ...(o.plan ? { plan: o.plan } : {}), ...(supervisor ? { supervisor } : {}) });
     // LP26.1: the case interval is the run itself — from the moment every observer of this world was registered to
     // the moment its last record was stored. (v1 used [start - 60 s, setup + 120 s]: time before any observer existed

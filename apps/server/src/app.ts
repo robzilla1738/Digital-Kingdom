@@ -45,6 +45,7 @@ import { registerInvestigationRoutes } from "./investigation/routes.ts";
 import { registerExplorationRoutes, grantElements } from "./exploration.ts";
 import { registerRepairRoutes } from "./repair.ts";
 import { latestLocalConfig, recordLocalConfig } from "./local-config.ts";
+import { latestObserverState, observerHistory, recordObserverState } from "./local-observers.ts";
 import { registerAttentionRoutes, type AttentionSinkConfig } from "./attention.ts";
 
 export interface AppConfig {
@@ -837,6 +838,9 @@ export async function buildApp(cfg: AppConfig): Promise<FastifyInstance> {
   // Declared configuration of a local run's enforcement points (launcher/admin only; read by the analysis state and LP14).
   app.post("/api/projects/:p/local-configuration", { preHandler: authed("admin"), bodyLimit: 262_144 }, async (req) => recordLocalConfig(store, store.require(req.principal!, P(req), "admin").id, body(req), who(req)));
   app.get("/api/projects/:p/local-configuration", { preHandler: authed("analyst") }, async (req) => latestLocalConfig(store, store.require(req.principal!, P(req), "analyst").id) ?? { schema: "dk.local.config_snapshot.v1", none: true });
+  app.post("/api/projects/:p/local-observers", { preHandler: authed("admin"), bodyLimit: 262_144 }, async (req) => recordObserverState(store, store.require(req.principal!, P(req), "admin").id, body(req), who(req)));
+  app.get("/api/projects/:p/local-observers", { preHandler: authed("analyst") }, async (req) => latestObserverState(store, store.require(req.principal!, P(req), "analyst").id) ?? { schema: "dk.local.observer_state.v1", none: true });
+  app.get("/api/projects/:p/local-observers/history", { preHandler: authed("analyst") }, async (req) => observerHistory(store, store.require(req.principal!, P(req), "analyst").id));
   app.post("/api/projects/:p/local-regressions/check", { preHandler: authed("analyst") }, async (req) => ({ regressions: localRepairs.check(store.require(req.principal!, P(req), "analyst").id, body(req), who(req)) }));
   // LP28: evidence-only case capsule (training capsules with a sealed oracle are built by the evaluation harness only;
   // the server never holds private truth). Import goes into a new, separate namespace after full in-memory checks.

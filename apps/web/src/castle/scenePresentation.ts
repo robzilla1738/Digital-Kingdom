@@ -86,6 +86,64 @@ export function presentationScene(scene: CompiledScene): CompiledScene {
     maxZ: Math.max(...rooms.map(r => r.position.z + r.footprint.d / 2)) + 1.6,
   } : scene.bounds };
 }
+/** next-C: the widest empty lawn the realm overview keeps between two environments (metres, display only). */
+export const REALM_ENVIRONMENT_GAP = 14;
+/**
+ * next-C realm packing. The compiler separates environments by a deterministic stride (pinned positions, digest), which
+ * leaves a wide empty band in a mixed world. For display only, translate each environment's region along X so the band
+ * is at most REALM_ENVIRONMENT_GAP. The map is a monotone piecewise-linear function of X: inside an environment it is a
+ * rigid translation (every intra-environment offset, footprint, slot and zone is preserved); only empty lawn between
+ * environments is compressed, so relationship paths stay attached and keep their direction. Environments whose regions
+ * already overlap or sit closer than the gap are left as they are. Returns a new scene; the stored scene and its digest
+ * are never written. Identity for a single-environment world.
+ */
+export function environmentPackingMap(scene: Pick<CompiledScene, "rooms">, graph: Pick<Graph, "assets">): ((x: number) => number) | null {
+  const env = new Map(graph.assets.map(a => [a.id, a.environment]));
+  const extents = new Map<string, { min: number; max: number }>();
+  for (const r of scene.rooms) {
+    const e = env.get(r.asset_id); if (e === undefined) continue;
+    const x = extents.get(e) ?? { min: Infinity, max: -Infinity };
+    x.min = Math.min(x.min, r.position.x - r.footprint.w / 2); x.max = Math.max(x.max, r.position.x + r.footprint.w / 2); extents.set(e, x);
+  }
+  // Merge overlapping regions into rigid blocks (left to right); a block never splits an environment.
+  const blocks: { min: number; max: number }[] = [];
+  for (const x of [...extents.values()].sort((a, b) => a.min - b.min || a.max - b.max)) {
+    const last = blocks.at(-1);
+    if (last && x.min <= last.max) last.max = Math.max(last.max, x.max); else blocks.push({ ...x });
+  }
+  if (blocks.length < 2) return null;
+  const shifts: number[] = [0];
+  for (let i = 1; i < blocks.length; i++) shifts.push(shifts[i - 1]! - Math.max(0, blocks[i]!.min - blocks[i - 1]!.max - REALM_ENVIRONMENT_GAP));
+  if (shifts.every(s => s === 0)) return null;
+  return (x: number): number => {
+    if (x <= blocks[0]!.max) return x;
+    for (let i = 1; i < blocks.length; i++) {
+      const prev = blocks[i - 1]!, b = blocks[i]!;
+      if (x < b.min) { const t = (x - prev.max) / (b.min - prev.max); return prev.max + shifts[i - 1]! + t * (b.min + shifts[i]! - prev.max - shifts[i - 1]!); }
+      if (x <= b.max) return x + shifts[i]!;
+    }
+    return x + shifts.at(-1)!;
+  };
+}
+export function packEnvironments(scene: CompiledScene, graph: Pick<Graph, "assets">): CompiledScene {
+  const map = environmentPackingMap(scene, graph);
+  if (!map) return scene;
+  // A room is moved rigidly by the shift at its centre (its footprint lies inside its block).
+  const moveRoom = <R extends SceneRoom>(r: R): R => { const d = map(r.position.x) - r.position.x; return d ? { ...r, position: { ...r.position, x: r.position.x + d }, label_anchor: { ...r.label_anchor, x: r.label_anchor.x + d } } : r; };
+  const box = <B extends { minX: number; maxX: number }>(b: B): B => ({ ...b, minX: map(b.minX), maxX: map(b.maxX) });
+  return {
+    ...scene,
+    rooms: scene.rooms.map(moveRoom),
+    paths: scene.paths.map(p => ({ ...p, points: p.points.map(v => ({ ...v, x: map(v.x) })) })),
+    zones: scene.zones.map(z => ({ ...z, bounds: box(z.bounds) })),
+    wall: box(scene.wall), bounds: box(scene.bounds),
+    ...(scene.historical_rooms ? { historical_rooms: scene.historical_rooms.map(moveRoom) } : {}),
+  };
+}
+/** The castle's scene: presentation metadata plus the display-only realm packing. */
+export function realmPresentation(scene: CompiledScene, graph: Pick<Graph, "assets">): CompiledScene {
+  return packEnvironments(presentationScene(scene), graph);
+}
 export function presentationCollisions(rooms: SceneRoom[]): [string, string][] {
   const hits: [string, string][] = [];
   for (let i = 0; i < rooms.length; i++) for (let j = i + 1; j < rooms.length; j++) {

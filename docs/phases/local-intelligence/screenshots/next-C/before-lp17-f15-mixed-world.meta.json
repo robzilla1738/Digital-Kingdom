@@ -1,0 +1,26 @@
+{
+  "name": "lp17-f15-mixed-world",
+  "file": "before-lp17-f15-mixed-world.png",
+  "sha256": "41fc8b4bf1b31d58a8601cb5baa9b2a1502148f1a99fe9ad04d0d05a67b49b12",
+  "bytes": 199464,
+  "capturedAt": "2026-10-24T18:31:26.244Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "browser": "141.0.7390.37",
+  "dpr": 1,
+  "build": "b0b4a20913d8e341c6b33104d69f8cfdb1f665aa",
+  "reducedMotion": false,
+  "forcedColors": false,
+  "cssZoom": "1",
+  "query": {
+    "fixture": "F15"
+  },
+  "evidenceClass": "explicit offline synthetic design fixture",
+  "rendererNote": "Chromium headless SwiftShader requested; no real-GPU performance claim.",
+  "phase": "before",
+  "commit": "b0b4a20913d8e341c6b33104d69f8cfdb1f665aa",
+  "renderer": "Chromium headless SwiftShader (software WebGL) requested",
+  "provenance": "Copied unchanged from the post-phase review capture (work/next/review/screenshots/lp17-f15-mixed-world.png) at main b0b4a20; same 1440x900 viewport as the next-C after captures. Not recaptured by next-C."
+}

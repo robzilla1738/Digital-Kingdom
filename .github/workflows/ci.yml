@@ -16,6 +16,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm validate:fixtures
+      - run: pnpm bench:repairs
       - run: pnpm scenarios
       - run: pnpm build
       # R10.5: dependency/license inventory must be current; release build identity recorded and re-verified
