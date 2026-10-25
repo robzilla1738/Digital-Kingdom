@@ -1,0 +1,55 @@
+{
+  "preregistration": "li-next-6a102b1f",
+  "preregistration_sha256": "77636566516da73900ed9a433fa8ebbb9b1cacf8fabfcd75f473b46ead4e2bf0",
+  "commit": "618fae1b522c537cef74a17c9176cc67de9ec88f",
+  "dirty": false,
+  "lockfile_sha256": "2cd012b7b7060c72360a9050f415752432d2b238dc53e941b9d479c901f39a87",
+  "node": "v22.23.3",
+  "mode": {
+    "mode": "approved_provider",
+    "label": "restricted_model",
+    "capabilities": {
+      "repository_access": false,
+      "filesystem": false,
+      "shell": false,
+      "network": false,
+      "prior_exposure_to_fixtures": false,
+      "mcp_profile": "per condition (preregistered)",
+      "credential": "project-scoped service viewer token"
+    },
+    "blinded": true,
+    "status": "ready",
+    "reason": "explicit approved route with a phase cap",
+    "route": {
+      "kind": "ai_gateway",
+      "base_url": "https://ai-gateway.vercel.sh/v1",
+      "model": "meta/muse-spark-1.3-contributor",
+      "cap_usd": 0.6,
+      "approval": "owner brief 2026-10-23: local-intelligence phase cap $3.00 total"
+    },
+    "ai_checks": "exercised"
+  },
+  "pricing_per_token": {
+    "input": 1e-7,
+    "output": 2e-7
+  },
+  "preregistered_limits": {
+    "maxToolCalls": 24,
+    "maxModelCalls": 30,
+    "maxCompletionTokens": 16000,
+    "maxPromptTokensTotal": 600000,
+    "timeoutMs": 300000,
+    "toolResultCharLimit": 60000
+  },
+  "effective_limits": {
+    "maxToolCalls": 24,
+    "maxModelCalls": 30,
+    "maxCompletionTokens": 16000,
+    "maxPromptTokensTotal": 600000,
+    "timeoutMs": 300000,
+    "toolResultCharLimit": 60000
+  },
+  "amendments": [],
+  "block": "heldout",
+  "started_at": "2026-10-25T02:27:14.626Z"
+}

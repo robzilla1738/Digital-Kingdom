@@ -1,0 +1,25 @@
+{
+  "schema": "dk.local.model_spend_ledger.v1",
+  "phase": "local-intelligence",
+  "phase_cap_usd": 3,
+  "allowance_usd": 0.6,
+  "allowance_note": "final-pass fresh-document comparison: at most $0.6 new spend (prior phase spend $2.138016; phase total stays under $3.00)",
+  "route": "ai-gateway",
+  "model": "meta/muse-spark-1.3-contributor",
+  "entries": [
+    {
+      "id": "li-next-6a102b1f-approved_provider-001",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.00505724,
+      "charged_usd": 0.00505724,
+      "gateway_cost_usd": 0.00505724,
+      "prompt_tokens": 51902,
+      "completion_tokens": 7773,
+      "model_calls": 5,
+      "at": "2026-10-25T02:28:22.654Z"
+    }
+  ],
+  "charged_total_usd": 0.00505724,
+  "updated_at": "2026-10-25T02:28:22.655Z"
+}
