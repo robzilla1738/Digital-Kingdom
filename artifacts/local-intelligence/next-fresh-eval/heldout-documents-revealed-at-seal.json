@@ -1,0 +1,781 @@
+{
+ "revealed_at": "2026-10-25T02:51:19.544Z",
+ "note": "held-out documents verified against their preregistered SHA-256 commitments; now burned for future held-out use",
+ "master_seed": "79781c9713f26dabdcc0ecf5eadb35a36c2650376de5a069",
+ "documents": [
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-dfc7e428c3",
+   "version": 1,
+   "blueprint": "saas-storefront",
+   "blueprint_version": 1,
+   "seed": "lh-seed-42ae67700b8453fb",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 15,
+     "action": "sign_in",
+     "actor": "acct:tenant-a:user",
+     "as": "s1"
+    },
+    {
+     "at_ms": 26,
+     "action": "sign_in",
+     "actor": "acct:tenant-b:user",
+     "as": "s2"
+    },
+    {
+     "at_ms": 41,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-b"
+     },
+     "session": "s1"
+    },
+    {
+     "at_ms": 56,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-b"
+     },
+     "session": "s2"
+    },
+    {
+     "at_ms": 71,
+     "action": "set_policy",
+     "resource": "api",
+     "policy_variant": "deliberately_weak"
+    },
+    {
+     "at_ms": 85,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-b"
+     },
+     "session": "s1"
+    },
+    {
+     "at_ms": 100,
+     "action": "observer",
+     "observer": "audit",
+     "state": "stop"
+    },
+    {
+     "at_ms": 112,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-b"
+     },
+     "session": "s1"
+    },
+    {
+     "at_ms": 122,
+     "action": "observer",
+     "observer": "audit",
+     "state": "restart"
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-cd07001522",
+   "version": 1,
+   "blueprint": "agent-workspace",
+   "blueprint_version": 1,
+   "seed": "lh-seed-4b889d17306ee7ab",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 10,
+     "action": "agent_send",
+     "run": "run-874685",
+     "to": "allowed-receiver"
+    },
+    {
+     "at_ms": 23,
+     "action": "agent_search",
+     "run": "run-874685"
+    },
+    {
+     "at_ms": 36,
+     "action": "set_policy",
+     "resource": "tool-gateway",
+     "policy_variant": "deliberately_weak"
+    },
+    {
+     "at_ms": 46,
+     "action": "agent_send",
+     "run": "run-1f59c4",
+     "to": "blocked-receiver"
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-38e898415e",
+   "version": 1,
+   "blueprint": "delivery-identity",
+   "blueprint_version": 1,
+   "seed": "lh-seed-8d1369f33b49559a",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 15,
+     "action": "publish_artifact",
+     "name": "build-04ff5",
+     "actor": "svc:builder",
+     "as": "a1"
+    },
+    {
+     "at_ms": 30,
+     "action": "select_artifact",
+     "artifact": "a1"
+    },
+    {
+     "at_ms": 44,
+     "action": "issue_credential",
+     "subject": "svc:deployer",
+     "as": "c1"
+    },
+    {
+     "at_ms": 59,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    },
+    {
+     "at_ms": 70,
+     "action": "change_grant",
+     "subject": "svc:deployer",
+     "grant": "read:deploy-data",
+     "op": "add"
+    },
+    {
+     "at_ms": 82,
+     "action": "observer",
+     "observer": "use-observer",
+     "state": "stop"
+    },
+    {
+     "at_ms": 96,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    },
+    {
+     "at_ms": 106,
+     "action": "observer",
+     "observer": "use-observer",
+     "state": "restart"
+    },
+    {
+     "at_ms": 119,
+     "action": "revoke_credential",
+     "credential": "c1"
+    },
+    {
+     "at_ms": 130,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-0efb6d3e68",
+   "version": 1,
+   "blueprint": "saas-storefront",
+   "blueprint_version": 1,
+   "seed": "lh-seed-372552e11e1f29a1",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 10,
+     "action": "sign_in",
+     "actor": "acct:tenant-b:user",
+     "as": "s1"
+    },
+    {
+     "at_ms": 24,
+     "action": "sign_in",
+     "actor": "acct:tenant-a:user",
+     "as": "s2"
+    },
+    {
+     "at_ms": 37,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-a"
+     },
+     "session": "s1"
+    },
+    {
+     "at_ms": 48,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-a"
+     },
+     "session": "s2"
+    },
+    {
+     "at_ms": 59,
+     "action": "set_policy",
+     "resource": "api",
+     "policy_variant": "deliberately_weak"
+    },
+    {
+     "at_ms": 70,
+     "action": "evidence",
+     "source": "api-sdk",
+     "fault": "delay"
+    },
+    {
+     "at_ms": 81,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-a"
+     },
+     "session": "s1"
+    },
+    {
+     "at_ms": 93,
+     "action": "evidence",
+     "source": "api-sdk",
+     "fault": "release"
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-4164b8eb45",
+   "version": 1,
+   "blueprint": "agent-workspace",
+   "blueprint_version": 1,
+   "seed": "lh-seed-16bdee8d25f227d7",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 10,
+     "action": "agent_send",
+     "run": "run-e09e2b",
+     "to": "allowed-receiver"
+    },
+    {
+     "at_ms": 24,
+     "action": "agent_search",
+     "run": "run-e09e2b"
+    },
+    {
+     "at_ms": 34,
+     "action": "set_policy",
+     "resource": "tool-gateway",
+     "policy_variant": "deliberately_weak"
+    },
+    {
+     "at_ms": 46,
+     "action": "evidence",
+     "source": "effects",
+     "fault": "drop"
+    },
+    {
+     "at_ms": 57,
+     "action": "agent_send",
+     "run": "run-aca58b",
+     "to": "blocked-receiver"
+    },
+    {
+     "at_ms": 67,
+     "action": "agent_send",
+     "run": "run-038f21",
+     "to": "allowed-receiver"
+    },
+    {
+     "at_ms": 79,
+     "action": "evidence",
+     "source": "effects",
+     "fault": "restore"
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-e822b21bf0",
+   "version": 1,
+   "blueprint": "delivery-identity",
+   "blueprint_version": 1,
+   "seed": "lh-seed-023595476554d6f7",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 13,
+     "action": "publish_artifact",
+     "name": "build-50075",
+     "actor": "svc:builder",
+     "as": "a1"
+    },
+    {
+     "at_ms": 26,
+     "action": "select_artifact",
+     "artifact": "a1"
+    },
+    {
+     "at_ms": 40,
+     "action": "issue_credential",
+     "subject": "svc:deployer",
+     "as": "c1"
+    },
+    {
+     "at_ms": 50,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    },
+    {
+     "at_ms": 65,
+     "action": "change_grant",
+     "subject": "svc:deployer",
+     "grant": "read:deploy-data",
+     "op": "add"
+    },
+    {
+     "at_ms": 80,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    },
+    {
+     "at_ms": 93,
+     "action": "revoke_credential",
+     "credential": "c1"
+    },
+    {
+     "at_ms": 103,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-5fa6389cb7",
+   "version": 1,
+   "blueprint": "saas-storefront",
+   "blueprint_version": 1,
+   "seed": "lh-seed-adfcda1e6f58e89f",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 11,
+     "action": "sign_in",
+     "actor": "acct:tenant-b:user",
+     "as": "s1"
+    },
+    {
+     "at_ms": 25,
+     "action": "sign_in",
+     "actor": "acct:tenant-a:user",
+     "as": "s2"
+    },
+    {
+     "at_ms": 40,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-a"
+     },
+     "session": "s1"
+    },
+    {
+     "at_ms": 54,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-a"
+     },
+     "session": "s2"
+    },
+    {
+     "at_ms": 66,
+     "action": "set_policy",
+     "resource": "api",
+     "policy_variant": "deliberately_weak"
+    },
+    {
+     "at_ms": 78,
+     "action": "evidence",
+     "source": "api-sdk",
+     "fault": "delay"
+    },
+    {
+     "at_ms": 92,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-a"
+     },
+     "session": "s1"
+    },
+    {
+     "at_ms": 107,
+     "action": "evidence",
+     "source": "api-sdk",
+     "fault": "release"
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-5279343c52",
+   "version": 1,
+   "blueprint": "agent-workspace",
+   "blueprint_version": 1,
+   "seed": "lh-seed-88c700bc3f84c2d9",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 15,
+     "action": "agent_send",
+     "run": "run-c76866",
+     "to": "allowed-receiver"
+    },
+    {
+     "at_ms": 28,
+     "action": "agent_send",
+     "run": "run-66f810",
+     "to": "blocked-receiver"
+    },
+    {
+     "at_ms": 42,
+     "action": "agent_search",
+     "run": "run-c76866"
+    },
+    {
+     "at_ms": 56,
+     "action": "evidence",
+     "source": "effects",
+     "fault": "drop"
+    },
+    {
+     "at_ms": 67,
+     "action": "agent_send",
+     "run": "run-d77181",
+     "to": "blocked-receiver"
+    },
+    {
+     "at_ms": 80,
+     "action": "agent_send",
+     "run": "run-66f810",
+     "to": "allowed-receiver"
+    },
+    {
+     "at_ms": 91,
+     "action": "evidence",
+     "source": "effects",
+     "fault": "restore"
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-1ffd050141",
+   "version": 1,
+   "blueprint": "delivery-identity",
+   "blueprint_version": 1,
+   "seed": "lh-seed-9e024aaa57aad0c2",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 11,
+     "action": "publish_artifact",
+     "name": "build-05eb4",
+     "actor": "svc:builder",
+     "as": "a1"
+    },
+    {
+     "at_ms": 21,
+     "action": "select_artifact",
+     "artifact": "a1"
+    },
+    {
+     "at_ms": 35,
+     "action": "issue_credential",
+     "subject": "svc:deployer",
+     "as": "c1"
+    },
+    {
+     "at_ms": 50,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    },
+    {
+     "at_ms": 61,
+     "action": "change_grant",
+     "subject": "svc:deployer",
+     "grant": "read:deploy-data",
+     "op": "add"
+    },
+    {
+     "at_ms": 72,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    },
+    {
+     "at_ms": 86,
+     "action": "revoke_credential",
+     "credential": "c1"
+    },
+    {
+     "at_ms": 97,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-e721eab00f",
+   "version": 1,
+   "blueprint": "saas-storefront",
+   "blueprint_version": 1,
+   "seed": "lh-seed-55720bfd55238c91",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 13,
+     "action": "sign_in",
+     "actor": "acct:tenant-a:user",
+     "as": "s1"
+    },
+    {
+     "at_ms": 27,
+     "action": "sign_in",
+     "actor": "acct:tenant-b:user",
+     "as": "s2"
+    },
+    {
+     "at_ms": 40,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-a"
+     },
+     "session": "s1"
+    },
+    {
+     "at_ms": 53,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-b"
+     },
+     "session": "s2"
+    },
+    {
+     "at_ms": 67,
+     "action": "set_policy",
+     "resource": "api",
+     "policy_variant": "deliberately_weak"
+    },
+    {
+     "at_ms": 81,
+     "action": "request_route",
+     "resource": "ingress",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "tenant-b"
+     },
+     "session": "s1"
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-1c1c6ef434",
+   "version": 1,
+   "blueprint": "agent-workspace",
+   "blueprint_version": 1,
+   "seed": "lh-seed-91a97c3c34aba66b",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 13,
+     "action": "agent_send",
+     "run": "run-973580",
+     "to": "allowed-receiver"
+    },
+    {
+     "at_ms": 26,
+     "action": "agent_search",
+     "run": "run-973580"
+    },
+    {
+     "at_ms": 40,
+     "action": "set_policy",
+     "resource": "tool-gateway",
+     "policy_variant": "deliberately_weak"
+    },
+    {
+     "at_ms": 52,
+     "action": "agent_send",
+     "run": "run-8d7192",
+     "to": "blocked-receiver"
+    }
+   ],
+   "expect": []
+  },
+  {
+   "schema": "dk.local.scenario.v1",
+   "id": "lh-12ab189c0b",
+   "version": 1,
+   "blueprint": "delivery-identity",
+   "blueprint_version": 1,
+   "seed": "lh-seed-b3b2d2894b1e0f27",
+   "start": "2026-10-19T14:00:00.000Z",
+   "steps": [
+    {
+     "at_ms": 13,
+     "action": "publish_artifact",
+     "name": "build-4ff1c",
+     "actor": "svc:builder",
+     "as": "a1"
+    },
+    {
+     "at_ms": 28,
+     "action": "select_artifact",
+     "artifact": "a1"
+    },
+    {
+     "at_ms": 41,
+     "action": "issue_credential",
+     "subject": "svc:deployer",
+     "as": "c1"
+    },
+    {
+     "at_ms": 51,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    },
+    {
+     "at_ms": 61,
+     "action": "change_grant",
+     "subject": "svc:deployer",
+     "grant": "read:deploy-data",
+     "op": "add"
+    },
+    {
+     "at_ms": 73,
+     "action": "observer",
+     "observer": "use-observer",
+     "state": "stop"
+    },
+    {
+     "at_ms": 87,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    },
+    {
+     "at_ms": 102,
+     "action": "observer",
+     "observer": "use-observer",
+     "state": "restart"
+    },
+    {
+     "at_ms": 117,
+     "action": "revoke_credential",
+     "credential": "c1"
+    },
+    {
+     "at_ms": 128,
+     "action": "use_credential",
+     "credential": "c1",
+     "resource": "deploy",
+     "route": "GET /tenants/{tenant}/records",
+     "params": {
+      "tenant": "release"
+     }
+    }
+   ],
+   "expect": []
+  }
+ ]
+}

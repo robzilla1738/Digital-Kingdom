@@ -90,7 +90,12 @@ if (cmd === "prepare-fresh") {
   if (!(perFamily >= 1 && perFamily <= 6) || !(reps >= 1 && reps <= 2)) throw new Error("--per-family 1-6, --repetitions 1-2");
   if (!(allowance > 0 && Number.isFinite(prior) && prior >= 0 && prior + allowance < 3.0)) throw new Error("prior phase spend + allowance must stay under the $3.00 phase cap");
   mkdirSync(out, { recursive: true });
-  const prereg = `li-m7-${randomBytes(4).toString("hex")}`;
+  // --id-prefix: a later fresh-document run gets its own id family (default li-m7, the first one); --hypothesis and
+  // --follows record a preregistered directional hypothesis and the earlier sealed run it is compared with.
+  const idPrefix = arg("id-prefix", "li-m7")!;
+  if (!/^li-[a-z0-9-]{1,24}$/.test(idPrefix)) throw new Error("--id-prefix must match li-[a-z0-9-]{1,24}");
+  const hypothesis = arg("hypothesis"), follows = arg("follows");
+  const prereg = `${idPrefix}-${randomBytes(4).toString("hex")}`;
   const masterSeed = randomBytes(24).toString("hex");
   const held = materializeHeldout(prereg, masterSeed, Array.from({ length: perFamily }, () => FAMILIES).flat());
   const orderSeed = randomBytes(8).toString("hex");
@@ -100,6 +105,8 @@ if (cmd === "prepare-fresh") {
   writeFileSync(PREREG, JSON.stringify({
     schema: "dk.local.eval_preregistration.v1", id: prereg, created_at: new Date().toISOString(), repository_commit: git("rev-parse", "HEAD"), working_tree_dirty: git("status", "--porcelain", "--untracked-files=no").length > 0,
     question: "On newly generated held-out documents never seen by any run, does the guided investigation-contract loop (C3) differ from the full tool set (C1) and the event tools (C2) in end-to-end success, structured correctness, retrieval and unsupported claims, without expanding authority?",
+    ...(hypothesis ? { hypothesis } : {}),
+    ...(follows ? { compared_with: follows } : {}),
     conditions: Object.values(LI_CONDITIONS).map((c) => ({ id: c.id, label: c.label, mcp_env: c.env, description: c.description })),
     model: { route: "ai-gateway (https://ai-gateway.vercel.sh/v1)", id: PREREG_MODEL_ID, decoding: "provider defaults (temperature not set); reasoning not requested and not stored", limits: { ...LIMITS, maxCompletionTokens: 16000 } },
     prompt: { version: LI_PROMPT_VERSION, system_sha256: promptSha(), public_task_version: PUBLIC_TASK_VERSION, public_task_sha256: Object.fromEntries(Object.entries(PUBLIC_TASKS).map(([k, v]) => [k, sha(v)])) },

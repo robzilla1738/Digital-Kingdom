@@ -1,0 +1,1872 @@
+{
+ "schema": "dk.local.gateway_generation_lookup.v1",
+ "looked_up_at": "2026-10-25T02:48:43.146Z",
+ "endpoint": "GET https://ai-gateway.vercel.sh/v1/generation?id=<generation_id>",
+ "summary": {
+  "generations": 206,
+  "looked_up": 206,
+  "lookup_errors": 0,
+  "gateway_total_cost_usd": 0.243396532,
+  "recorded_cost_usd": 0.243396532,
+  "mismatches": [],
+  "models": [
+   "meta/muse-spark-1.3-contributor"
+  ]
+ },
+ "rows": [
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE4KYZ02NSN9XEHF3GQ73N",
+   "recorded_cost": 0.0005401,
+   "gateway_total_cost": 0.0005401,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE4NY6CH3XDK646HTX7EZ0",
+   "recorded_cost": 0.00011901,
+   "gateway_total_cost": 0.00011901,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE4QGQF9E4MW4JD61BAP2K",
+   "recorded_cost": 0.000693526,
+   "gateway_total_cost": 0.000693526,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE4T3B8RQCQ6TENJKAWCJK",
+   "recorded_cost": 0.00072327,
+   "gateway_total_cost": 0.00072327,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE52H3TRAJ5DRHJXYQCXH1",
+   "recorded_cost": 0.00155429,
+   "gateway_total_cost": 0.00155429,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE5AR5NJH12YV6RSDEGA7C",
+   "recorded_cost": 0.0024367,
+   "gateway_total_cost": 0.0024367,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE5FW585ZJPT52ZV1QPMZ7",
+   "recorded_cost": 0.002881526,
+   "gateway_total_cost": 0.002881526,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE5PRW25QRJH71D9733R8R",
+   "recorded_cost": 0.001659702,
+   "gateway_total_cost": 0.001659702,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE69WZWBWCJKC8TVQ2W7WQ",
+   "recorded_cost": 0.001153142,
+   "gateway_total_cost": 0.001153142,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE6P0765PSATH51QAG31MB",
+   "recorded_cost": 0.002176694,
+   "gateway_total_cost": 0.002176694,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE7V04JT8YVADKCY4QEHB5",
+   "recorded_cost": 0.000929398,
+   "gateway_total_cost": 0.000929398,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 0,
+   "condition": "C1",
+   "id": "gen_01M5RE88DHXWTSCJH5DF3AN5SR",
+   "recorded_cost": 0.0046406,
+   "gateway_total_cost": 0.0046406,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 1,
+   "condition": "C2",
+   "id": "gen_01M5RE4KR397CKK3HT7QWM491D",
+   "recorded_cost": 0.000252526,
+   "gateway_total_cost": 0.000252526,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 1,
+   "condition": "C2",
+   "id": "gen_01M5RE4QJSMRAD65NBEMMDXPSV",
+   "recorded_cost": 0.000797726,
+   "gateway_total_cost": 0.000797726,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 1,
+   "condition": "C2",
+   "id": "gen_01M5RE4WW5RH26XSTQYJ6Q7RN7",
+   "recorded_cost": 0.000649314,
+   "gateway_total_cost": 0.000649314,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 1,
+   "condition": "C2",
+   "id": "gen_01M5RE53W3ZT47F9AGFFQ1MSW9",
+   "recorded_cost": 0.0017275,
+   "gateway_total_cost": 0.0017275,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 1,
+   "condition": "C2",
+   "id": "gen_01M5RE5DNQMTGTSCBCJQX572D4",
+   "recorded_cost": 0.001630174,
+   "gateway_total_cost": 0.001630174,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 2,
+   "condition": "C3",
+   "id": "gen_01M5RE6M1TRT9D3PPMEPMK3PXD",
+   "recorded_cost": 0.000227126,
+   "gateway_total_cost": 0.000227126,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 2,
+   "condition": "C3",
+   "id": "gen_01M5RE6NVQCSC8R46XRSJFNA48",
+   "recorded_cost": 0.0002847,
+   "gateway_total_cost": 0.0002847,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 2,
+   "condition": "C3",
+   "id": "gen_01M5RE6QTQBX440YW58SRSH81J",
+   "recorded_cost": 0.0008652,
+   "gateway_total_cost": 0.0008652,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 2,
+   "condition": "C3",
+   "id": "gen_01M5RE6SBP5TDHSPW0C9PT3A00",
+   "recorded_cost": 0.001545922,
+   "gateway_total_cost": 0.001545922,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 2,
+   "condition": "C3",
+   "id": "gen_01M5RE7071EWGR8C6CTWHGBQ37",
+   "recorded_cost": 0.00290469,
+   "gateway_total_cost": 0.00290469,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 3,
+   "condition": "C2",
+   "id": "gen_01M5RE8EZX1GW0SRN3JG0FHPYY",
+   "recorded_cost": 0.000213426,
+   "gateway_total_cost": 0.000213426,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 3,
+   "condition": "C2",
+   "id": "gen_01M5RE8H5B8P6J5JNTRN35PNHC",
+   "recorded_cost": 0.000876498,
+   "gateway_total_cost": 0.000876498,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 3,
+   "condition": "C2",
+   "id": "gen_01M5RE8ZK0W5DY5AXE90K1HKDV",
+   "recorded_cost": 0.0014169,
+   "gateway_total_cost": 0.0014169,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 3,
+   "condition": "C2",
+   "id": "gen_01M5RE9DZZ984D8SCZ8MSGK78S",
+   "recorded_cost": 0.002181102,
+   "gateway_total_cost": 0.002181102,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 4,
+   "condition": "C3",
+   "id": "gen_01M5REA538HBG1Y2SVB92TN2R5",
+   "recorded_cost": 0.000248026,
+   "gateway_total_cost": 0.000248026,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 4,
+   "condition": "C3",
+   "id": "gen_01M5REA7MQTBSRMV6WN1RCJXMK",
+   "recorded_cost": 0.000070622,
+   "gateway_total_cost": 0.000070622,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 4,
+   "condition": "C3",
+   "id": "gen_01M5REA8YE2VS34W031GGWFKEC",
+   "recorded_cost": 0.00073719,
+   "gateway_total_cost": 0.00073719,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 4,
+   "condition": "C3",
+   "id": "gen_01M5REAAEFXCN5METAAJN2BW22",
+   "recorded_cost": 0.0022534,
+   "gateway_total_cost": 0.0022534,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 4,
+   "condition": "C3",
+   "id": "gen_01M5REAW2MS2YT52YJ390QH0W1",
+   "recorded_cost": 0.00190107,
+   "gateway_total_cost": 0.00190107,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 4,
+   "condition": "C3",
+   "id": "gen_01M5REBTCCVPD91YRHN4RAJJR4",
+   "recorded_cost": 0.001092486,
+   "gateway_total_cost": 0.001092486,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 4,
+   "condition": "C3",
+   "id": "gen_01M5RECF81GGHKE2Z4XKTAHK0N",
+   "recorded_cost": 0.0029424,
+   "gateway_total_cost": 0.0029424,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 5,
+   "condition": "C1",
+   "id": "gen_01M5REAVTNNC5VBFTGE1MTVZW0",
+   "recorded_cost": 0.0005595,
+   "gateway_total_cost": 0.0005595,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 5,
+   "condition": "C1",
+   "id": "gen_01M5REAXXRF6325C50A6GCCSWB",
+   "recorded_cost": 0.0008192,
+   "gateway_total_cost": 0.0008192,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 5,
+   "condition": "C1",
+   "id": "gen_01M5REB1B6D1938MHGVW1E2EVB",
+   "recorded_cost": 0.0012047,
+   "gateway_total_cost": 0.0012047,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 5,
+   "condition": "C1",
+   "id": "gen_01M5REB4W1G7P1MT3V5GN0HHFN",
+   "recorded_cost": 0.000804706,
+   "gateway_total_cost": 0.000804706,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 5,
+   "condition": "C1",
+   "id": "gen_01M5REB86PGKEDMK85K9SHP54M",
+   "recorded_cost": 0.001109542,
+   "gateway_total_cost": 0.001109542,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 5,
+   "condition": "C1",
+   "id": "gen_01M5REBJN54QMX26Q81KPTFAEM",
+   "recorded_cost": 0.0026508,
+   "gateway_total_cost": 0.0026508,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 5,
+   "condition": "C1",
+   "id": "gen_01M5REC5APN8NY57HAPAR6QR65",
+   "recorded_cost": 0.00298911,
+   "gateway_total_cost": 0.00298911,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 6,
+   "condition": "C3",
+   "id": "gen_01M5RED4HD7R4A6C2TZN5Z8KAF",
+   "recorded_cost": 0.0002386,
+   "gateway_total_cost": 0.0002386,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 6,
+   "condition": "C3",
+   "id": "gen_01M5RED604EC5PZEXJN1XR9B0B",
+   "recorded_cost": 0.000271226,
+   "gateway_total_cost": 0.000271226,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 6,
+   "condition": "C3",
+   "id": "gen_01M5RED79QVD1Y6P28V9XFE2JN",
+   "recorded_cost": 0.00050469,
+   "gateway_total_cost": 0.00050469,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 6,
+   "condition": "C3",
+   "id": "gen_01M5RED8P6H2FCGGBTBRT8BXBX",
+   "recorded_cost": 0.001278722,
+   "gateway_total_cost": 0.001278722,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 6,
+   "condition": "C3",
+   "id": "gen_01M5REDE71PM2W2EM7M1833Z03",
+   "recorded_cost": 0.000338406,
+   "gateway_total_cost": 0.000338406,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 6,
+   "condition": "C3",
+   "id": "gen_01M5REDG8TD5TCF4VVDZE4KANM",
+   "recorded_cost": 0.001648982,
+   "gateway_total_cost": 0.001648982,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 7,
+   "condition": "C2",
+   "id": "gen_01M5REDA943DY70WWCBVTDTMBN",
+   "recorded_cost": 0.0002295,
+   "gateway_total_cost": 0.0002295,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 7,
+   "condition": "C2",
+   "id": "gen_01M5REDCSJXPF9YHPHGNEVPCCQ",
+   "recorded_cost": 0.000913598,
+   "gateway_total_cost": 0.000913598,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 7,
+   "condition": "C2",
+   "id": "gen_01M5REDZ7CE26B2XC8DV61QVKC",
+   "recorded_cost": 0.0015759,
+   "gateway_total_cost": 0.0015759,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 7,
+   "condition": "C2",
+   "id": "gen_01M5REERHV5T8D7VEDKEE733E9",
+   "recorded_cost": 0.0020861,
+   "gateway_total_cost": 0.0020861,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 8,
+   "condition": "C1",
+   "id": "gen_01M5REF7HP0XCH1C2FJ6A1J5YW",
+   "recorded_cost": 0.000571326,
+   "gateway_total_cost": 0.000571326,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 8,
+   "condition": "C1",
+   "id": "gen_01M5REFA49H6T78BX6WXGKH6J0",
+   "recorded_cost": 0.0007625,
+   "gateway_total_cost": 0.0007625,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 8,
+   "condition": "C1",
+   "id": "gen_01M5REFBQCWTJDBYZCETP50WGX",
+   "recorded_cost": 0.000446862,
+   "gateway_total_cost": 0.000446862,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 8,
+   "condition": "C1",
+   "id": "gen_01M5REFJ8PPP1P3T0Y4DA0BJBT",
+   "recorded_cost": 0.001006682,
+   "gateway_total_cost": 0.001006682,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 8,
+   "condition": "C1",
+   "id": "gen_01M5REG3T89Y34NWCM731JVQEJ",
+   "recorded_cost": 0.002205926,
+   "gateway_total_cost": 0.002205926,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 8,
+   "condition": "C1",
+   "id": "gen_01M5REGRB5V76WSGDP1J0Z6ZMW",
+   "recorded_cost": 0.0024161,
+   "gateway_total_cost": 0.0024161,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 9,
+   "condition": "C2",
+   "id": "gen_01M5REG15FVHJYR3B19YJXE267",
+   "recorded_cost": 0.000213226,
+   "gateway_total_cost": 0.000213226,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 9,
+   "condition": "C2",
+   "id": "gen_01M5REG39D8X4D8R6JRMC1NF5E",
+   "recorded_cost": 0.000997326,
+   "gateway_total_cost": 0.000997326,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 9,
+   "condition": "C2",
+   "id": "gen_01M5REGN5MQHVBSQ0XHJ6P5QM7",
+   "recorded_cost": 0.001014178,
+   "gateway_total_cost": 0.001014178,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 10,
+   "condition": "C1",
+   "id": "gen_01M5REHEA7ESXX2YA18HPXJ669",
+   "recorded_cost": 0.000565826,
+   "gateway_total_cost": 0.000565826,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 10,
+   "condition": "C1",
+   "id": "gen_01M5REHGVGWTBW6TJRGJAVXS0D",
+   "recorded_cost": 0.0011186,
+   "gateway_total_cost": 0.0011186,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 10,
+   "condition": "C1",
+   "id": "gen_01M5REHMG4KPHGAYEEZT07ACCK",
+   "recorded_cost": 0.00096251,
+   "gateway_total_cost": 0.00096251,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 10,
+   "condition": "C1",
+   "id": "gen_01M5REHQE0YDDPEE3END007Q31",
+   "recorded_cost": 0.0020922,
+   "gateway_total_cost": 0.0020922,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 10,
+   "condition": "C1",
+   "id": "gen_01M5REJ3SPG11GTDNCS7C0PE2C",
+   "recorded_cost": 0.001001454,
+   "gateway_total_cost": 0.001001454,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 11,
+   "condition": "C3",
+   "id": "gen_01M5REHGA62GYZZVZ2YH91EEYQ",
+   "recorded_cost": 0.0002509,
+   "gateway_total_cost": 0.0002509,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 11,
+   "condition": "C3",
+   "id": "gen_01M5REHK4T68X6PYYQG6ZR611M",
+   "recorded_cost": 0.0002813,
+   "gateway_total_cost": 0.0002813,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 11,
+   "condition": "C3",
+   "id": "gen_01M5REHMTMPRCDNAS5WV09448X",
+   "recorded_cost": 0.00071689,
+   "gateway_total_cost": 0.00071689,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 11,
+   "condition": "C3",
+   "id": "gen_01M5REHPHGTK8H5T3QHQM8J60B",
+   "recorded_cost": 0.000956714,
+   "gateway_total_cost": 0.000956714,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 11,
+   "condition": "C3",
+   "id": "gen_01M5REHZT3HH6E1Q67ZNMSYE35",
+   "recorded_cost": 0.000370282,
+   "gateway_total_cost": 0.000370282,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 11,
+   "condition": "C3",
+   "id": "gen_01M5REJ4W8VF6NKR7RG7D0M0C5",
+   "recorded_cost": 0.000646766,
+   "gateway_total_cost": 0.000646766,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 11,
+   "condition": "C3",
+   "id": "gen_01M5REJK4QX6208P8KWK61DCTJ",
+   "recorded_cost": 0.000988562,
+   "gateway_total_cost": 0.000988562,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 12,
+   "condition": "C2",
+   "id": "gen_01M5REK1GKKQ701EKHWZDRBGJT",
+   "recorded_cost": 0.000211926,
+   "gateway_total_cost": 0.000211926,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 12,
+   "condition": "C2",
+   "id": "gen_01M5REK3MZZ2A4Z9WTVQ717QVB",
+   "recorded_cost": 0.000641498,
+   "gateway_total_cost": 0.000641498,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 12,
+   "condition": "C2",
+   "id": "gen_01M5REKCTBNHJEWVM0K2Y3R0D4",
+   "recorded_cost": 0.001173642,
+   "gateway_total_cost": 0.001173642,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 13,
+   "condition": "C1",
+   "id": "gen_01M5REKNDC8G5TQ8Q08VWS1T2W",
+   "recorded_cost": 0.0005758,
+   "gateway_total_cost": 0.0005758,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 13,
+   "condition": "C1",
+   "id": "gen_01M5REKQSKP2YTPCPW9NQX0W7J",
+   "recorded_cost": 0.000298754,
+   "gateway_total_cost": 0.000298754,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 13,
+   "condition": "C1",
+   "id": "gen_01M5REKSZPDE51H63PGQRSQGCK",
+   "recorded_cost": 0.001291226,
+   "gateway_total_cost": 0.001291226,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 13,
+   "condition": "C1",
+   "id": "gen_01M5REKZCTZ8FBZJSNFFGZG214",
+   "recorded_cost": 0.001775026,
+   "gateway_total_cost": 0.001775026,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 13,
+   "condition": "C1",
+   "id": "gen_01M5REM9BDM3ZTQTNPZAX5XM0N",
+   "recorded_cost": 0.002452426,
+   "gateway_total_cost": 0.002452426,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 14,
+   "condition": "C3",
+   "id": "gen_01M5REKY8QZE9XNXRSBMEDP20X",
+   "recorded_cost": 0.0002325,
+   "gateway_total_cost": 0.0002325,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 14,
+   "condition": "C3",
+   "id": "gen_01M5REKZARC6E2WC90Z9JGYZRQ",
+   "recorded_cost": 0.000270226,
+   "gateway_total_cost": 0.000270226,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 14,
+   "condition": "C3",
+   "id": "gen_01M5REM0PTHDAZRM0FR7WH8MR4",
+   "recorded_cost": 0.000788726,
+   "gateway_total_cost": 0.000788726,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 14,
+   "condition": "C3",
+   "id": "gen_01M5REM274M0BE0JMK5MJJSAKW",
+   "recorded_cost": 0.00132669,
+   "gateway_total_cost": 0.00132669,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 14,
+   "condition": "C3",
+   "id": "gen_01M5REM8VQ1CXWBFRCHQNZWRKZ",
+   "recorded_cost": 0.000336374,
+   "gateway_total_cost": 0.000336374,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 14,
+   "condition": "C3",
+   "id": "gen_01M5REMAZW895SD88C3F0PBFN8",
+   "recorded_cost": 0.00076445,
+   "gateway_total_cost": 0.00076445,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 15,
+   "condition": "C1",
+   "id": "gen_01M5REMW13R1RFTZCCS9YMJRRW",
+   "recorded_cost": 0.0005753,
+   "gateway_total_cost": 0.0005753,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 15,
+   "condition": "C1",
+   "id": "gen_01M5REMYY5Y2X4WV6X9JPT2Q36",
+   "recorded_cost": 0.00038021,
+   "gateway_total_cost": 0.00038021,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 15,
+   "condition": "C1",
+   "id": "gen_01M5REN20F3A3X15QG8B3NKHPD",
+   "recorded_cost": 0.001742826,
+   "gateway_total_cost": 0.001742826,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 15,
+   "condition": "C1",
+   "id": "gen_01M5RENBVQEQFJ65VV66V8FZ42",
+   "recorded_cost": 0.000593266,
+   "gateway_total_cost": 0.000593266,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 15,
+   "condition": "C1",
+   "id": "gen_01M5RENH9A98EFRC8QT4SW4Y4X",
+   "recorded_cost": 0.001810642,
+   "gateway_total_cost": 0.001810642,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 15,
+   "condition": "C1",
+   "id": "gen_01M5RENSAC1NZ5SFCVGQBC9PE0",
+   "recorded_cost": 0.003471526,
+   "gateway_total_cost": 0.003471526,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 15,
+   "condition": "C1",
+   "id": "gen_01M5REP8EGEKJ8VNMAPVMJ3Q8F",
+   "recorded_cost": 0.000847434,
+   "gateway_total_cost": 0.000847434,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 15,
+   "condition": "C1",
+   "id": "gen_01M5REPP4RMR0B8YMDASCT734B",
+   "recorded_cost": 0.0039811,
+   "gateway_total_cost": 0.0039811,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 16,
+   "condition": "C2",
+   "id": "gen_01M5REN3HEMQF4GR6Z629NFWYW",
+   "recorded_cost": 0.000238126,
+   "gateway_total_cost": 0.000238126,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 16,
+   "condition": "C2",
+   "id": "gen_01M5REN71ZS8Q7FQBX9JJD6DTJ",
+   "recorded_cost": 0.000865498,
+   "gateway_total_cost": 0.000865498,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 16,
+   "condition": "C2",
+   "id": "gen_01M5RENHNKNQRSAXY2C7V8H6EJ",
+   "recorded_cost": 0.00132315,
+   "gateway_total_cost": 0.00132315,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 16,
+   "condition": "C2",
+   "id": "gen_01M5REP3QSF0NQD5FCXD0VBWPY",
+   "recorded_cost": 0.0021411,
+   "gateway_total_cost": 0.0021411,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 16,
+   "condition": "C2",
+   "id": "gen_01M5REPD14QT2S6XK0HCVZRDR0",
+   "recorded_cost": 0.003413326,
+   "gateway_total_cost": 0.003413326,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 17,
+   "condition": "C3",
+   "id": "gen_01M5REQKHBS2HV2PPE2ZT71WMN",
+   "recorded_cost": 0.000247426,
+   "gateway_total_cost": 0.000247426,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 17,
+   "condition": "C3",
+   "id": "gen_01M5REQP4EJGCDR168X28Y5WTJ",
+   "recorded_cost": 0.000271726,
+   "gateway_total_cost": 0.000271726,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 17,
+   "condition": "C3",
+   "id": "gen_01M5REQQEVYZ3SNW0B06YE82HC",
+   "recorded_cost": 0.00071549,
+   "gateway_total_cost": 0.00071549,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 17,
+   "condition": "C3",
+   "id": "gen_01M5REQRZ5BN075Y8HJKD7NJD6",
+   "recorded_cost": 0.001693022,
+   "gateway_total_cost": 0.001693022,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 17,
+   "condition": "C3",
+   "id": "gen_01M5REQXPKNBTYDDK1MKSXCGZS",
+   "recorded_cost": 0.0024089,
+   "gateway_total_cost": 0.0024089,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 17,
+   "condition": "C3",
+   "id": "gen_01M5RER67KGE9QTC314PX7EPQK",
+   "recorded_cost": 0.002084158,
+   "gateway_total_cost": 0.002084158,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 17,
+   "condition": "C3",
+   "id": "gen_01M5RES2B588PA6VPF04D8X5M7",
+   "recorded_cost": 0.003717526,
+   "gateway_total_cost": 0.003717526,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 18,
+   "condition": "C3",
+   "id": "gen_01M5REQXW78BBZA7WK0AKC9FRV",
+   "recorded_cost": 0.000222526,
+   "gateway_total_cost": 0.000222526,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 18,
+   "condition": "C3",
+   "id": "gen_01M5REQZ3QTASKX1PE1QNXPP5N",
+   "recorded_cost": 0.0002813,
+   "gateway_total_cost": 0.0002813,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 18,
+   "condition": "C3",
+   "id": "gen_01M5RER048Z2YYZT4C98A04VY2",
+   "recorded_cost": 0.00058869,
+   "gateway_total_cost": 0.00058869,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 18,
+   "condition": "C3",
+   "id": "gen_01M5RER1ASB0E8CTJHNF8PXNNX",
+   "recorded_cost": 0.000828154,
+   "gateway_total_cost": 0.000828154,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 18,
+   "condition": "C3",
+   "id": "gen_01M5RER6FW07A7EQ7ZZ4QE13V1",
+   "recorded_cost": 0.0020574,
+   "gateway_total_cost": 0.0020574,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 18,
+   "condition": "C3",
+   "id": "gen_01M5RERDW0FB93SH3W496ER4WS",
+   "recorded_cost": 0.001541146,
+   "gateway_total_cost": 0.001541146,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 19,
+   "condition": "C1",
+   "id": "gen_01M5RESYQ5R11FZWRD7DVJKZ97",
+   "recorded_cost": 0.000545326,
+   "gateway_total_cost": 0.000545326,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 19,
+   "condition": "C1",
+   "id": "gen_01M5RET1H762V0ASH377M7E2FW",
+   "recorded_cost": 0.0007222,
+   "gateway_total_cost": 0.0007222,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 19,
+   "condition": "C1",
+   "id": "gen_01M5RET3RP0DQQ28999D6A4G3J",
+   "recorded_cost": 0.000589382,
+   "gateway_total_cost": 0.000589382,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 19,
+   "condition": "C1",
+   "id": "gen_01M5RET96DANNK0M4J3ZET6KQ1",
+   "recorded_cost": 0.001569226,
+   "gateway_total_cost": 0.001569226,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 19,
+   "condition": "C1",
+   "id": "gen_01M5RETE51KWJGAX73BP5F06NM",
+   "recorded_cost": 0.00183891,
+   "gateway_total_cost": 0.00183891,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 19,
+   "condition": "C1",
+   "id": "gen_01M5RETR6SVAAGVKTDXS4C87A0",
+   "recorded_cost": 0.001633542,
+   "gateway_total_cost": 0.001633542,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 20,
+   "condition": "C2",
+   "id": "gen_01M5RETJB8WG7HE25CECW8HJ46",
+   "recorded_cost": 0.0002385,
+   "gateway_total_cost": 0.0002385,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 20,
+   "condition": "C2",
+   "id": "gen_01M5RETMQSNQC9W3QP6ZV8V96Z",
+   "recorded_cost": 0.001093498,
+   "gateway_total_cost": 0.001093498,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 20,
+   "condition": "C2",
+   "id": "gen_01M5REVCNC0N8S7VW2E1E36E4Y",
+   "recorded_cost": 0.00107367,
+   "gateway_total_cost": 0.00107367,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 20,
+   "condition": "C2",
+   "id": "gen_01M5REW28QXGNCGGKHA3NRG8XA",
+   "recorded_cost": 0.0018195,
+   "gateway_total_cost": 0.0018195,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 20,
+   "condition": "C2",
+   "id": "gen_01M5REWECAG4M2VHQ1JSWQ4SW4",
+   "recorded_cost": 0.001328518,
+   "gateway_total_cost": 0.001328518,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 21,
+   "condition": "C3",
+   "id": "gen_01M5REVS0GAQ328F3CENR9HV9A",
+   "recorded_cost": 0.0002368,
+   "gateway_total_cost": 0.0002368,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 21,
+   "condition": "C3",
+   "id": "gen_01M5REVTC25YN68PGCJ7NRC5DM",
+   "recorded_cost": 0.000269926,
+   "gateway_total_cost": 0.000269926,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 21,
+   "condition": "C3",
+   "id": "gen_01M5REVVGBKNVG1XJYKK8FVZZ0",
+   "recorded_cost": 0.00055269,
+   "gateway_total_cost": 0.00055269,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 21,
+   "condition": "C3",
+   "id": "gen_01M5REVWNDHAJV8E4HDYT3A99A",
+   "recorded_cost": 0.001548126,
+   "gateway_total_cost": 0.001548126,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 21,
+   "condition": "C3",
+   "id": "gen_01M5REW1J5SA6YYVQ97STAWEA3",
+   "recorded_cost": 0.002051122,
+   "gateway_total_cost": 0.002051122,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 21,
+   "condition": "C3",
+   "id": "gen_01M5REWF4DR4S58C6V34GGJPPZ",
+   "recorded_cost": 0.001627886,
+   "gateway_total_cost": 0.001627886,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 22,
+   "condition": "C2",
+   "id": "gen_01M5REX30M33W3VC641CPTZRG5",
+   "recorded_cost": 0.000219126,
+   "gateway_total_cost": 0.000219126,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 22,
+   "condition": "C2",
+   "id": "gen_01M5REX54EYF9MHNMEBRFS1D67",
+   "recorded_cost": 0.0007521,
+   "gateway_total_cost": 0.0007521,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 22,
+   "condition": "C2",
+   "id": "gen_01M5REXBQCRW2CT807F2MS89NV",
+   "recorded_cost": 0.001306198,
+   "gateway_total_cost": 0.001306198,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 23,
+   "condition": "C1",
+   "id": "gen_01M5REX89FG73GZ8Y5KFDZ2Z2Q",
+   "recorded_cost": 0.000539126,
+   "gateway_total_cost": 0.000539126,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 23,
+   "condition": "C1",
+   "id": "gen_01M5REXAJYYB06YYRC1VKTX4TN",
+   "recorded_cost": 0.000692,
+   "gateway_total_cost": 0.000692,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 23,
+   "condition": "C1",
+   "id": "gen_01M5REXCM2QBY532KE8CBB9GP2",
+   "recorded_cost": 0.0011941,
+   "gateway_total_cost": 0.0011941,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 23,
+   "condition": "C1",
+   "id": "gen_01M5REXH8YP1JW6MZCFFKKPS0S",
+   "recorded_cost": 0.001450126,
+   "gateway_total_cost": 0.001450126,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 23,
+   "condition": "C1",
+   "id": "gen_01M5REXQGNY3SC7TSDBZAG599R",
+   "recorded_cost": 0.000891718,
+   "gateway_total_cost": 0.000891718,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 23,
+   "condition": "C1",
+   "id": "gen_01M5REXY05PHM4YGYF1PGHB7Z5",
+   "recorded_cost": 0.002318314,
+   "gateway_total_cost": 0.002318314,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 23,
+   "condition": "C1",
+   "id": "gen_01M5REYF690PA1H9Q7DKJF8YQP",
+   "recorded_cost": 0.001909558,
+   "gateway_total_cost": 0.001909558,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 24,
+   "condition": "C2",
+   "id": "gen_01M5REXV249B2GQCGKWWGJ0KJX",
+   "recorded_cost": 0.000085098,
+   "gateway_total_cost": 0.000085098,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 24,
+   "condition": "C2",
+   "id": "gen_01M5REXXM0BKXKXJMWV1HJS0FY",
+   "recorded_cost": 0.000787926,
+   "gateway_total_cost": 0.000787926,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 24,
+   "condition": "C2",
+   "id": "gen_01M5REY6951D9Y5GZ2MMX46JWZ",
+   "recorded_cost": 0.00065159,
+   "gateway_total_cost": 0.00065159,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 24,
+   "condition": "C2",
+   "id": "gen_01M5REYC1FR800G98K84T3EZ99",
+   "recorded_cost": 0.002516026,
+   "gateway_total_cost": 0.002516026,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 25,
+   "condition": "C3",
+   "id": "gen_01M5REZ5SPDQQGGA4SVE0RNB53",
+   "recorded_cost": 0.000247326,
+   "gateway_total_cost": 0.000247326,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 25,
+   "condition": "C3",
+   "id": "gen_01M5REZ7HREQB0C0V9G68AVTP5",
+   "recorded_cost": 0.0002836,
+   "gateway_total_cost": 0.0002836,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 25,
+   "condition": "C3",
+   "id": "gen_01M5REZ8PPJ5DT117F58BXMPFJ",
+   "recorded_cost": 0.000736222,
+   "gateway_total_cost": 0.000736222,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 25,
+   "condition": "C3",
+   "id": "gen_01M5REZA8N7KEKVZ6XSAJ43WZD",
+   "recorded_cost": 0.000887446,
+   "gateway_total_cost": 0.000887446,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 25,
+   "condition": "C3",
+   "id": "gen_01M5REZHFTQ6HDESHXY1AER488",
+   "recorded_cost": 0.000335714,
+   "gateway_total_cost": 0.000335714,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 25,
+   "condition": "C3",
+   "id": "gen_01M5REZNNG8BNJBE0JSJEZTMXG",
+   "recorded_cost": 0.000843354,
+   "gateway_total_cost": 0.000843354,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 25,
+   "condition": "C3",
+   "id": "gen_01M5RF0CMTQH3FEJKHWBVJY9WK",
+   "recorded_cost": 0.0030435,
+   "gateway_total_cost": 0.0030435,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5REZM9K7JCH0XR7320995QR",
+   "recorded_cost": 0.0005555,
+   "gateway_total_cost": 0.0005555,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5REZP2QCP5KXBENV3QE7X34",
+   "recorded_cost": 0.000694726,
+   "gateway_total_cost": 0.000694726,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5REZRB734PHJ5RZ3Q423DCW",
+   "recorded_cost": 0.00047321,
+   "gateway_total_cost": 0.00047321,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5REZVZE62E7ZFETDJFK4J0S",
+   "recorded_cost": 0.000872498,
+   "gateway_total_cost": 0.000872498,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5RF01FXPYA250P01CGA9NBQ",
+   "recorded_cost": 0.00127147,
+   "gateway_total_cost": 0.00127147,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5RF07AA0CX3A0E642FW1JD6",
+   "recorded_cost": 0.000515286,
+   "gateway_total_cost": 0.000515286,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5RF0CBY9F3FNW26Z866PSPH",
+   "recorded_cost": 0.001515086,
+   "gateway_total_cost": 0.001515086,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5RF0R45YX5BXBFVYFXVGZEY",
+   "recorded_cost": 0.0037091,
+   "gateway_total_cost": 0.0037091,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 26,
+   "condition": "C1",
+   "id": "gen_01M5RF14MRQ2KVV3Q1DVZV4S83",
+   "recorded_cost": 0.000939982,
+   "gateway_total_cost": 0.000939982,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 27,
+   "condition": "C3",
+   "id": "gen_01M5RF1G3X2209Q9D6SREVFWMY",
+   "recorded_cost": 0.0002537,
+   "gateway_total_cost": 0.0002537,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 27,
+   "condition": "C3",
+   "id": "gen_01M5RF1HTX0VYCTVZJBRVTCHZY",
+   "recorded_cost": 0.000306,
+   "gateway_total_cost": 0.000306,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 27,
+   "condition": "C3",
+   "id": "gen_01M5RF1M32EFYRPBTWF105E2CY",
+   "recorded_cost": 0.00172389,
+   "gateway_total_cost": 0.00172389,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 27,
+   "condition": "C3",
+   "id": "gen_01M5RF1YKHX90P9SMA9K7F48ZJ",
+   "recorded_cost": 0.001840322,
+   "gateway_total_cost": 0.001840322,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 27,
+   "condition": "C3",
+   "id": "gen_01M5RF240F29PHKY0VJBBRCM0R",
+   "recorded_cost": 0.002956426,
+   "gateway_total_cost": 0.002956426,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 28,
+   "condition": "C2",
+   "id": "gen_01M5RF1S1W5FBW43MG4E0CQKRR",
+   "recorded_cost": 0.000074142,
+   "gateway_total_cost": 0.000074142,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 28,
+   "condition": "C2",
+   "id": "gen_01M5RF1TYSQNCPXW225TQFMM3D",
+   "recorded_cost": 0.000904426,
+   "gateway_total_cost": 0.000904426,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 28,
+   "condition": "C2",
+   "id": "gen_01M5RF271ERW924YTD9C42VGGH",
+   "recorded_cost": 0.001012578,
+   "gateway_total_cost": 0.001012578,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 28,
+   "condition": "C2",
+   "id": "gen_01M5RF2XJ93W3XGSG8920SHBCT",
+   "recorded_cost": 0.00111047,
+   "gateway_total_cost": 0.00111047,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 29,
+   "condition": "C1",
+   "id": "gen_01M5RF357DYWKSH2KW3YBFBGVB",
+   "recorded_cost": 0.000570026,
+   "gateway_total_cost": 0.000570026,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 29,
+   "condition": "C1",
+   "id": "gen_01M5RF37HNTYW9V7XJ4S8S4Y8M",
+   "recorded_cost": 0.0011061,
+   "gateway_total_cost": 0.0011061,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 29,
+   "condition": "C1",
+   "id": "gen_01M5RF3AV3R6YMC6G1KFYGPQBJ",
+   "recorded_cost": 0.001480326,
+   "gateway_total_cost": 0.001480326,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 29,
+   "condition": "C1",
+   "id": "gen_01M5RF3EV1AP25THKV6RMEVG80",
+   "recorded_cost": 0.0022771,
+   "gateway_total_cost": 0.0022771,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 29,
+   "condition": "C1",
+   "id": "gen_01M5RF3SXA626HKW1GRY7G4PNQ",
+   "recorded_cost": 0.001697774,
+   "gateway_total_cost": 0.001697774,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 29,
+   "condition": "C1",
+   "id": "gen_01M5RF4KF77VXS1JN0C1HG1ZH0",
+   "recorded_cost": 0.002165738,
+   "gateway_total_cost": 0.002165738,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 30,
+   "condition": "C2",
+   "id": "gen_01M5RF3YNBDTFB18A84T7SQGSX",
+   "recorded_cost": 0.0002357,
+   "gateway_total_cost": 0.0002357,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 30,
+   "condition": "C2",
+   "id": "gen_01M5RF41422TKJT9XGGYHACX7R",
+   "recorded_cost": 0.000844342,
+   "gateway_total_cost": 0.000844342,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 30,
+   "condition": "C2",
+   "id": "gen_01M5RF4EYR0GKX25Z3JJQAKTE1",
+   "recorded_cost": 0.001361546,
+   "gateway_total_cost": 0.001361546,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 31,
+   "condition": "C1",
+   "id": "gen_01M5RF5CR9QFXZK082ZQV9SJG0",
+   "recorded_cost": 0.000566526,
+   "gateway_total_cost": 0.000566526,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 31,
+   "condition": "C1",
+   "id": "gen_01M5RF5FECE92WFARCMS72AA62",
+   "recorded_cost": 0.0010099,
+   "gateway_total_cost": 0.0010099,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 31,
+   "condition": "C1",
+   "id": "gen_01M5RF5JQ51VP0EVQX74R7FDZJ",
+   "recorded_cost": 0.0014081,
+   "gateway_total_cost": 0.0014081,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 31,
+   "condition": "C1",
+   "id": "gen_01M5RF5Q8ZKKECRGYY0YWDCTVC",
+   "recorded_cost": 0.002044726,
+   "gateway_total_cost": 0.002044726,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 31,
+   "condition": "C1",
+   "id": "gen_01M5RF62B7SV39N2DRBFSWAK6N",
+   "recorded_cost": 0.001583546,
+   "gateway_total_cost": 0.001583546,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 31,
+   "condition": "C1",
+   "id": "gen_01M5RF6FAGBXPFYWCF1XXDT5NR",
+   "recorded_cost": 0.001879782,
+   "gateway_total_cost": 0.001879782,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 32,
+   "condition": "C3",
+   "id": "gen_01M5RF5E4QD3ZB8DGF13XZPS5E",
+   "recorded_cost": 0.0002486,
+   "gateway_total_cost": 0.0002486,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 32,
+   "condition": "C3",
+   "id": "gen_01M5RF5FGRFX77PQMB12TCY20A",
+   "recorded_cost": 0.000108466,
+   "gateway_total_cost": 0.000108466,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 32,
+   "condition": "C3",
+   "id": "gen_01M5RF5H9E66FYHVWTZR9XM07R",
+   "recorded_cost": 0.00188449,
+   "gateway_total_cost": 0.00188449,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 32,
+   "condition": "C3",
+   "id": "gen_01M5RF5VGQB8Q3E0P01H2B0ZJ4",
+   "recorded_cost": 0.001166322,
+   "gateway_total_cost": 0.001166322,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 33,
+   "condition": "C1",
+   "id": "gen_01M5RF6SGRA8NCMJD3420WJEAA",
+   "recorded_cost": 0.0005684,
+   "gateway_total_cost": 0.0005684,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 33,
+   "condition": "C1",
+   "id": "gen_01M5RF6VQT6J1N2RZQN6470ZXF",
+   "recorded_cost": 0.000346398,
+   "gateway_total_cost": 0.000346398,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 33,
+   "condition": "C1",
+   "id": "gen_01M5RF6YT97BM75V14TGYRZ095",
+   "recorded_cost": 0.00095611,
+   "gateway_total_cost": 0.00095611,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 33,
+   "condition": "C1",
+   "id": "gen_01M5RF74JQ11E6B1RN4YTJ17XK",
+   "recorded_cost": 0.002261826,
+   "gateway_total_cost": 0.002261826,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 33,
+   "condition": "C1",
+   "id": "gen_01M5RF7C97X8768AWJFH19H17R",
+   "recorded_cost": 0.000724342,
+   "gateway_total_cost": 0.000724342,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 33,
+   "condition": "C1",
+   "id": "gen_01M5RF7K8CNKSKMFNX8KP1KGA7",
+   "recorded_cost": 0.0031478,
+   "gateway_total_cost": 0.0031478,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 33,
+   "condition": "C1",
+   "id": "gen_01M5RF82HQ7XH5DYHSFP97D1ZX",
+   "recorded_cost": 0.000662678,
+   "gateway_total_cost": 0.000662678,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 33,
+   "condition": "C1",
+   "id": "gen_01M5RF8AJNN0B2856Y300TSZAZ",
+   "recorded_cost": 0.003570562,
+   "gateway_total_cost": 0.003570562,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 34,
+   "condition": "C2",
+   "id": "gen_01M5RF7DQWDHKN2HA2WD8NHRVK",
+   "recorded_cost": 0.0002452,
+   "gateway_total_cost": 0.0002452,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 34,
+   "condition": "C2",
+   "id": "gen_01M5RF7GKRQ7SHGDHAQK5PSPB8",
+   "recorded_cost": 0.000199242,
+   "gateway_total_cost": 0.000199242,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 34,
+   "condition": "C2",
+   "id": "gen_01M5RF7K56PJ2M7T66ZVB01KSM",
+   "recorded_cost": 0.000766598,
+   "gateway_total_cost": 0.000766598,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 34,
+   "condition": "C2",
+   "id": "gen_01M5RF7TN62J6TAV46VJ0T4PYV",
+   "recorded_cost": 0.000979302,
+   "gateway_total_cost": 0.000979302,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 34,
+   "condition": "C2",
+   "id": "gen_01M5RF7ZPE1H2EJ7K5SMZC9KJJ",
+   "recorded_cost": 0.0018259,
+   "gateway_total_cost": 0.0018259,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 34,
+   "condition": "C2",
+   "id": "gen_01M5RF8ARKE6WBW4738YT0X13C",
+   "recorded_cost": 0.001877442,
+   "gateway_total_cost": 0.001877442,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 35,
+   "condition": "C3",
+   "id": "gen_01M5RF9B50866AQAN1WQXY5YZX",
+   "recorded_cost": 0.0002425,
+   "gateway_total_cost": 0.0002425,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 35,
+   "condition": "C3",
+   "id": "gen_01M5RF9CF5NFVVS1NWQNYYFGF3",
+   "recorded_cost": 0.000270826,
+   "gateway_total_cost": 0.000270826,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 35,
+   "condition": "C3",
+   "id": "gen_01M5RF9DQ63T1W5493GN0Q66JA",
+   "recorded_cost": 0.0009367,
+   "gateway_total_cost": 0.0009367,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 35,
+   "condition": "C3",
+   "id": "gen_01M5RF9FCTM76X2BFFWZMH311B",
+   "recorded_cost": 0.001496522,
+   "gateway_total_cost": 0.001496522,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 35,
+   "condition": "C3",
+   "id": "gen_01M5RF9NB9E87KYRBWA2BR57P0",
+   "recorded_cost": 0.002212926,
+   "gateway_total_cost": 0.002212926,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  },
+  {
+   "slot": 35,
+   "condition": "C3",
+   "id": "gen_01M5RF9X568A3Y57JRVXNEA6Z4",
+   "recorded_cost": 0.001992746,
+   "gateway_total_cost": 0.001992746,
+   "gateway_model": "meta/muse-spark-1.3-contributor",
+   "is_byok": false
+  }
+ ]
+}

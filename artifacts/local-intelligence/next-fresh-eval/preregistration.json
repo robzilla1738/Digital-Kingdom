@@ -1,0 +1,435 @@
+{
+  "schema": "dk.local.eval_preregistration.v1",
+  "id": "li-next-6a102b1f",
+  "created_at": "2026-10-25T02:26:41.748Z",
+  "repository_commit": "e02d26ab808083c8c4ad813840bc3131309e47b7",
+  "working_tree_dirty": false,
+  "question": "On newly generated held-out documents never seen by any run, does the guided investigation-contract loop (C3) differ from the full tool set (C1) and the event tools (C2) in end-to-end success, structured correctness, retrieval and unsupported claims, without expanding authority?",
+  "hypothesis": "After the li-next item A claim-scoped uncertainty fix (main 271b545; eval system prompt SYSTEM_LI unchanged), on 12 NEW held-out documents with the same harness, conditions and limits: (H1) C3 underclaims (unknown where an affirmative value was established) fall below the m7 count of 10; (H2) C3 end-to-end success rises above m7's 8/12; (H3) unsupported affirmatives stay 0 in every condition (a non-zero C3 count is a regression of the fix regardless of H1/H2). Different documents, n=12, one repetition: descriptive comparison only, no significance test.",
+  "compared_with": "li-m7-7f4a12cd (artifacts/local-intelligence/m7-fresh-eval): C3 end-to-end 8/12, 10 underclaims, 0 unsupported affirmatives; different documents",
+  "conditions": [
+    {
+      "id": "C1",
+      "label": "existing full investigation tools",
+      "mcp_env": {
+        "DK_MCP_TOOLS": "investigation"
+      },
+      "description": "The existing 22-tool read-only investigation MCP profile (overview, findings, event search/detail, coverage, cases, recipes, bundles, ...)."
+    },
+    {
+      "id": "C2",
+      "label": "event tools with context",
+      "mcp_env": {
+        "DK_MCP_TOOLS": "dk_search_events,dk_get_event"
+      },
+      "description": "Only dk_search_events and dk_get_event; search returns query completeness and current coverage, detail returns finding references. Not a raw-only condition."
+    },
+    {
+      "id": "C3",
+      "label": "guided investigation contract",
+      "mcp_env": {
+        "DK_MCP_PROFILE": "investigation-read"
+      },
+      "description": "The LP11 focused investigation-read profile over the LP08 contract, LP09 job (run by the deterministic planner) and LP10 packets/claim checks."
+    }
+  ],
+  "model": {
+    "route": "ai-gateway (https://ai-gateway.vercel.sh/v1)",
+    "id": "meta/muse-spark-1.3-contributor",
+    "decoding": "provider defaults (temperature not set); reasoning not requested and not stored",
+    "limits": {
+      "maxToolCalls": 24,
+      "maxModelCalls": 30,
+      "maxCompletionTokens": 16000,
+      "maxPromptTokensTotal": 600000,
+      "timeoutMs": 300000,
+      "toolResultCharLimit": 60000
+    }
+  },
+  "prompt": {
+    "version": "li-p1",
+    "system_sha256": "75c85e450c2188d1af985397ed2b7613b3f1790673203764a4c30bbe0d04a7c1",
+    "public_task_version": "li-task-1",
+    "public_task_sha256": {
+      "saas-storefront": "d8d02e5304ed7a4088c5f92cc39009a5ed6b48cb3202be02f25a85c6bc99dbfd",
+      "agent-workspace": "0bf5d435c4cd0078e9b64c0d068f33e043c4ca46ebaf38ab81451823782be4fa",
+      "delivery-identity": "3426900cccfbceb7bca8160b30668c26fc10d66bd671ebc4d2237f1aa3126033"
+    }
+  },
+  "referee": "li-referee-2",
+  "generator": "li-heldout-gen-1",
+  "master_seed_sha256": "cef530f8d3969de72ee64601da719784d59bce583ec556e256f0d66036ea71bb",
+  "order_seed": "51dcaddd8511ea92",
+  "dev_documents": [],
+  "heldout_documents": [
+    {
+      "slot_doc": "lh-dfc7e428c3",
+      "family": "saas-storefront",
+      "doc_sha256": "46b48a0a0f9b035da55273859188f4fb20d520e874baad21f8aaf372e70c6431",
+      "seed_commitment": "e76ea71639e61d242ab5bdbb557484f75d7101a5eee09501f3bb4cf31b786800",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-cd07001522",
+      "family": "agent-workspace",
+      "doc_sha256": "0ef61e664efa4ae526253613ac6a9c0dcfb44611a61f5b4c43d75aa6f418842e",
+      "seed_commitment": "587ff0c61155f68400bcbf7fd4bbaf68f463df32877bee739f4bd56135ff343e",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-38e898415e",
+      "family": "delivery-identity",
+      "doc_sha256": "226e63f377336280013379dd8b3fbdb2f013bee31fbbfcc22d6d5957cf3b8f3a",
+      "seed_commitment": "f4bdc14268a8e112339d4c098ea72837362146934e60bc0ee5048e702b89b48b",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-0efb6d3e68",
+      "family": "saas-storefront",
+      "doc_sha256": "c3cacc2540f299371b9b8564194b8ee672ef6b68b79f0ce09324b0f6fa319302",
+      "seed_commitment": "f840beed7f7d291fe8afbe574d4749dac8f84a21797a6060d5d6ba0bfdacb176",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-4164b8eb45",
+      "family": "agent-workspace",
+      "doc_sha256": "893d1f1ee45d6ead7bcb2e9be5b4da90ff395d4921e9f19f02add4fc09e5880f",
+      "seed_commitment": "de7d5e1998442b533a8ddd606d2a60a55918158bbebf42639a64fb1421e17b16",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-e822b21bf0",
+      "family": "delivery-identity",
+      "doc_sha256": "15b176f3d85e1b0de7ba5c39616b9645f0936c4437353cddd7683b5f4e2e817b",
+      "seed_commitment": "a08a7d1b404995a539621eb41ba8fce783c8b212fb295b3dc939813ab5612b1d",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-5fa6389cb7",
+      "family": "saas-storefront",
+      "doc_sha256": "fd1945efebe5e00a95b63c0d1ebe83344eb0c74233fe76f7496a870eb0b51dbf",
+      "seed_commitment": "8a33d676f441c4ec0b91a35ebb780b2e94b0ee5c3e54c2dc1827b9ce79e1bac2",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-5279343c52",
+      "family": "agent-workspace",
+      "doc_sha256": "46eef6674a189ef072e8cb9d8bf317e756bdb065129d4bd857bc1437c10c4915",
+      "seed_commitment": "64be31c385f86e50d68efdb03949bbf724c84fe743849c9eee0314b47b5c604f",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-1ffd050141",
+      "family": "delivery-identity",
+      "doc_sha256": "dfb62636b2d9649aaf67979db97cbe94f2da8d6553c6dae8adbf365201e5aca6",
+      "seed_commitment": "562010e23712dd93e62c079fe66cbbe24eaa1963fe2b34b23f452cb6afe02d2d",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-e721eab00f",
+      "family": "saas-storefront",
+      "doc_sha256": "6beb19df716ed1488d21d04349c2f5d8b95c7bc9721922f96b3353f8aaa1ebb0",
+      "seed_commitment": "ff864e7912f1e4045eea99f55acb56a0ea5ae09639c1138e04634c7f7b62760d",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-1c1c6ef434",
+      "family": "agent-workspace",
+      "doc_sha256": "2bc744227f37d0e48e76944bd11e72c6bba2bc616221caf500bd0345ca0e2495",
+      "seed_commitment": "07d1379c88552bd95714a32a327945e0b66a45999640ac4b557752f35aa63b0a",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    },
+    {
+      "slot_doc": "lh-12ab189c0b",
+      "family": "delivery-identity",
+      "doc_sha256": "9161ec325a2040d19e65cc23140ed5e2615cf8d3db186a69494ecaf91e248913",
+      "seed_commitment": "f57b8ef350035818bd233e4fd75264241429b7f5153b1b8bf85fe069dea04276",
+      "note": "generated from a fresh master seed into a private directory outside the repository; never seen by any run; revealed only at seal"
+    }
+  ],
+  "repetitions": 1,
+  "order": [
+    {
+      "index": 0,
+      "block": "heldout",
+      "doc": "lh-e721eab00f",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 1,
+      "block": "heldout",
+      "doc": "lh-e721eab00f",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 2,
+      "block": "heldout",
+      "doc": "lh-e721eab00f",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 3,
+      "block": "heldout",
+      "doc": "lh-38e898415e",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 4,
+      "block": "heldout",
+      "doc": "lh-38e898415e",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 5,
+      "block": "heldout",
+      "doc": "lh-38e898415e",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 6,
+      "block": "heldout",
+      "doc": "lh-4164b8eb45",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 7,
+      "block": "heldout",
+      "doc": "lh-4164b8eb45",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 8,
+      "block": "heldout",
+      "doc": "lh-4164b8eb45",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 9,
+      "block": "heldout",
+      "doc": "lh-e822b21bf0",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 10,
+      "block": "heldout",
+      "doc": "lh-e822b21bf0",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 11,
+      "block": "heldout",
+      "doc": "lh-e822b21bf0",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 12,
+      "block": "heldout",
+      "doc": "lh-1c1c6ef434",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 13,
+      "block": "heldout",
+      "doc": "lh-1c1c6ef434",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 14,
+      "block": "heldout",
+      "doc": "lh-1c1c6ef434",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 15,
+      "block": "heldout",
+      "doc": "lh-dfc7e428c3",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 16,
+      "block": "heldout",
+      "doc": "lh-dfc7e428c3",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 17,
+      "block": "heldout",
+      "doc": "lh-dfc7e428c3",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 18,
+      "block": "heldout",
+      "doc": "lh-5279343c52",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 19,
+      "block": "heldout",
+      "doc": "lh-5279343c52",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 20,
+      "block": "heldout",
+      "doc": "lh-5279343c52",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 21,
+      "block": "heldout",
+      "doc": "lh-cd07001522",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 22,
+      "block": "heldout",
+      "doc": "lh-cd07001522",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 23,
+      "block": "heldout",
+      "doc": "lh-cd07001522",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 24,
+      "block": "heldout",
+      "doc": "lh-5fa6389cb7",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 25,
+      "block": "heldout",
+      "doc": "lh-5fa6389cb7",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 26,
+      "block": "heldout",
+      "doc": "lh-5fa6389cb7",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 27,
+      "block": "heldout",
+      "doc": "lh-1ffd050141",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 28,
+      "block": "heldout",
+      "doc": "lh-1ffd050141",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 29,
+      "block": "heldout",
+      "doc": "lh-1ffd050141",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 30,
+      "block": "heldout",
+      "doc": "lh-12ab189c0b",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 31,
+      "block": "heldout",
+      "doc": "lh-12ab189c0b",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 32,
+      "block": "heldout",
+      "doc": "lh-12ab189c0b",
+      "condition": "C3",
+      "repetition": 1
+    },
+    {
+      "index": 33,
+      "block": "heldout",
+      "doc": "lh-0efb6d3e68",
+      "condition": "C1",
+      "repetition": 1
+    },
+    {
+      "index": 34,
+      "block": "heldout",
+      "doc": "lh-0efb6d3e68",
+      "condition": "C2",
+      "repetition": 1
+    },
+    {
+      "index": 35,
+      "block": "heldout",
+      "doc": "lh-0efb6d3e68",
+      "condition": "C3",
+      "repetition": 1
+    }
+  ],
+  "fresh_conversation_per_attempt": true,
+  "fresh_world_per_attempt": true,
+  "budget": {
+    "ledger_path": "artifacts/local-intelligence/next-fresh-eval/model-spend-ledger.json",
+    "phase_cap_usd": 3,
+    "prior_phase_spend_usd": 2.138016,
+    "allowance_usd": 0.6,
+    "run_stop_usd": 0.52,
+    "max_phase_total_usd": 2.738016,
+    "reservation": "worst-case cost reserved before every request; failed requests keep the reserved maximum; the run stop refuses new attempts once this ledger reaches it"
+  },
+  "metrics": {
+    "primary": [
+      "end_to_end_success",
+      "structured predicates admissible / eligible",
+      "retrieval: required records exposed / reachable"
+    ],
+    "secondary": [
+      "claim validity",
+      "unsupported affirmatives",
+      "cost and effort"
+    ],
+    "separate": [
+      "coverage limitations",
+      "AI critique not run",
+      "human review deferred (EXT05)"
+    ],
+    "invalid": "an invalid preflight is excluded from model denominators and reported separately; provider errors, timeouts, limits and schema failures stay in the denominator"
+  },
+  "analysis": "Counts per condition on the fresh held-out block only; per document the three conditions are adjacent (a spend stop never leaves a document half compared); small sample, no significance test, no pooled superiority claim; results only after seal."
+}
