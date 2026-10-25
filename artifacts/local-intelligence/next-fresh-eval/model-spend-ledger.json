@@ -18,8 +18,20 @@
       "completion_tokens": 7773,
       "model_calls": 5,
       "at": "2026-10-25T02:28:22.654Z"
+    },
+    {
+      "id": "li-next-6a102b1f-approved_provider-002",
+      "run": "li-next-6a102b1f",
+      "kind": "attempt",
+      "reserved_max_usd": 0.005827638,
+      "charged_usd": 0.005827638,
+      "gateway_cost_usd": 0.005827638,
+      "prompt_tokens": 48841,
+      "completion_tokens": 7079,
+      "model_calls": 5,
+      "at": "2026-10-25T02:29:24.030Z"
     }
   ],
-  "charged_total_usd": 0.00505724,
-  "updated_at": "2026-10-25T02:28:22.655Z"
+  "charged_total_usd": 0.010884878,
+  "updated_at": "2026-10-25T02:29:24.030Z"
 }
