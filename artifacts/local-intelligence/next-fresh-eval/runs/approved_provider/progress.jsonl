@@ -31,3 +31,7 @@
 {"slot":30,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0.0024415879999999997,"spent_total":0.20621205400000006}
 {"slot":32,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0.003407878,"spent_total":0.21623273000000004}
 {"slot":31,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":true,"structured":"9/9","retrieval":"7/7","cost":0.00849258,"spent_total":0.21998342000000004}
+{"slot":33,"block":"heldout","doc":"heldout","condition":"C1","status":"completed","e2e":false,"structured":"8/9","retrieval":"10/10","cost":0.012238116,"spent_total":0.23436687}
+{"slot":34,"block":"heldout","doc":"heldout","condition":"C2","status":"completed","e2e":false,"structured":"8/9","retrieval":"10/10","cost":0.005893684,"spent_total":0.23769433800000003}
+{"slot":35,"block":"heldout","doc":"heldout","condition":"C3","status":"completed","e2e":false,"structured":"8/9","retrieval":"10/10","cost":0.007152220000000001,"spent_total":0.24339653200000003}
+{"finished_at":"2026-10-25T02:48:14.716Z","attempted":36,"halted":null,"spent_total":0.24339653200000003}
