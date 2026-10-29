@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { setup } from "./helpers.ts"; // first: db.ts and change-review.ts import each other
-import { readFileSync, existsSync, readdirSync, rmSync, mkdtempSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, rmSync, mkdtempSync, realpathSync } from "node:fs";
 import { join, resolve, relative } from "node:path";
 import { tmpdir } from "node:os";
 import { validateRepairPlan, REPAIR_ACTION_TYPES } from "@dk/contracts";
@@ -194,7 +194,7 @@ describe("LP14-A3 a patch cannot execute evidence instructions, write the operat
     const dir = materializePatch(c.patch, { checkout: ROOT });
     try {
       expect(relative(ROOT, dir).startsWith("..")).toBe(true);
-      expect(dir.startsWith(resolve(tmpdir()))).toBe(true);
+      expect(dir.startsWith(realpathSync(tmpdir()))).toBe(true);
       expect(readFileSync(join(dir, "PATCH.diff"), "utf8")).toContain("-      \"Sid\": \"ReadAnything\"");
       for (const f of c.patch.files) expect(readFileSync(join(dir, f.path), "utf8")).toBe(f.after);
       expect(JSON.parse(readFileSync(join(dir, "BASELINE.json"), "utf8"))).toMatchObject({ baseline: { state_hash: base.state_hash, snapshot_id: "lp14-1", graph_revision: "r1" }, artifact_refs: [{ asset_id: "api", registry: "registry.lab.example", name: "checkout" }] });

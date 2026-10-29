@@ -25,7 +25,7 @@ import { semanticLevelForScale, type SemanticLevel } from "@dk/scene-compiler";
 import { districtGroupKey, focusMembers, worldHierarchy } from "../lib/world.ts";
 import { viewFraming } from "../lib/framing.ts";
 
-const BG = "#0c0e12", ACCENT = "#c3cbf5", CAM_DIST = 110;
+const ACCENT = "#c3cbf5", CAM_DIST = 110;
 type Command = { n: number; type: "in" | "out" | "fit" | "focus" | "back"; group?: string; ids?: string[] };
 type Pose = { pos: THREE.Vector3; target: THREE.Vector3; zoom: number };
 // Harmless camera-only context survives Castle/Graph toggles. Bounded; never contains evidence.
@@ -97,9 +97,9 @@ export function Castle3D() {
       <Canvas orthographic style={{ isolation: "isolate" }} shadows={quality !== "low" ? "soft" : false} dpr={quality === "low" ? 1 : quality === "high" ? [1, 2] : [1, 1.5]} frameloop="demand"
         camera={{ position: [60, 68, 60], zoom: 12, near: 0.1, far: 800 }}
         gl={{ antialias: quality !== "low", powerPreference: "default", preserveDrawingBuffer: false }}
-        onCreated={({ gl }) => { gl.toneMapping = THREE.NeutralToneMapping; gl.toneMappingExposure = 1.05; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
+        onCreated={({ gl }) => { gl.toneMapping = THREE.AgXToneMapping; gl.toneMappingExposure = 1.02; gl.shadowMap.type = THREE.PCFSoftShadowMap; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
         onPointerMissed={e => { if (e.type === "click") dispatch({ type: "select", selection: null }); }}>
-        <color attach="background" args={[BG]} />
+        <Sky />
         <Rig scene={scene} command={cmd} groups={groups} onLevel={setLevel} initialRooms={initialRooms} />
         <Lights scene={scene} quality={quality} />
         <SceneLifecycle quality={quality} onSlow={() => { if (quality !== "low") { setQuality(quality === "high" ? "medium" : "low"); setReduced(true); } }} />
@@ -118,13 +118,15 @@ export function Castle3D() {
     {edgeChoice && <EdgeChooser choice={edgeChoice} paths={scene.paths} graph={vm.data.graph} width={wrap.current?.clientWidth ?? 800} height={wrap.current?.clientHeight ?? 600} onChoose={id => { dispatch({ type: "select", selection: { kind: "path", id } }); setEdgeChoice(null); }} onClose={() => setEdgeChoice(null)} />}
     {!narrowLayout && <ComparisonPanel view={comparison.view} error={comparison.error} id={comparison.id} />}
     <div className="stage-tools" style={{ zIndex: 30 }} role="toolbar" aria-label="Castle view">
-      <button className="icon-btn sm" onClick={() => send("in")} aria-label="Zoom in"><Icon name="plus" size={15} /></button>
-      <button className="icon-btn sm" onClick={() => send("out")} aria-label="Zoom out"><Icon name="minus" size={15} /></button>
-      <button className="icon-btn sm" onClick={() => { setDistrict(null); send("fit"); }} aria-label="Fit all assets"><Icon name="fit" size={15} /></button>
-      <button onClick={() => dispatch({ type: "focus" })} disabled={!focus.size}>Focus selection</button>
-      <button onClick={() => send("back")} aria-label="Back to previous camera view">Back</button>
-      <button className={`icon-btn sm${ui.roofs ? " on" : ""}`} aria-pressed={ui.roofs} onClick={() => dispatch({ type: "roofs", roofs: !ui.roofs })} aria-label="Show roofs"><Icon name="roof" size={15} /></button>
-      <button onClick={() => setHelp(!help)} aria-expanded={help}>View help</button>
+      <button className="icon-btn sm" onClick={() => send("in")} aria-label="Zoom in" title="Zoom in  (+)"><Icon name="plus" size={15} /></button>
+      <button className="icon-btn sm" onClick={() => send("out")} aria-label="Zoom out" title="Zoom out  (−)"><Icon name="minus" size={15} /></button>
+      <button className="icon-btn sm" onClick={() => { setDistrict(null); send("fit"); }} aria-label="Fit all assets" title="Fit all assets  (0)"><Icon name="fit" size={15} /></button>
+      <div className="vr-h" />
+      <button onClick={() => dispatch({ type: "focus" })} disabled={!focus.size} title="Move the camera to the selection  (f)">Focus selection</button>
+      <button className="icon-btn sm" onClick={() => send("back")} aria-label="Back to previous camera view" title="Back to previous view"><Icon name="reset" size={15} /></button>
+      <div className="vr-h" />
+      <button className={`icon-btn sm${ui.roofs ? " on" : ""}`} aria-pressed={ui.roofs} onClick={() => dispatch({ type: "roofs", roofs: !ui.roofs })} aria-label="Show roofs" title={ui.roofs ? "Hide roofs" : "Show roofs"}><Icon name="roof" size={15} /></button>
+      <button className={`icon-btn sm${help ? " on" : ""}`} onClick={() => setHelp(!help)} aria-expanded={help} aria-label="View help" title="How to read and navigate the map"><Icon name="help" size={15} /></button>
       <span className="semantic-level" data-testid="semantic-level" title="Semantic zoom level: distant levels suppress label detail, never findings or unobserved resources">{level}</span>
     </div>
     {!!collisions.length && <div role="status" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "polite"} style={panelStyle}>This stored layout has {collisions.length} overlapping module bounds with the upgraded kit. Positions are preserved; use Graph or request an explicit layout reflow.</div>}
@@ -247,15 +249,31 @@ function Rig({ scene, command, groups, onLevel, initialRooms }: { scene: Compile
     onStart={() => { gl.domElement.dataset.cameraActive = "true"; if (tween.current?.focusRevision) dispatch({ type: "focusHandled", revision: tween.current.focusRevision }); tween.current = null; manual.current = true; }} onEnd={() => { gl.domElement.dataset.cameraActive = "false"; }} onChange={() => { const c = ctl.current; if (!c) return;
       const x = THREE.MathUtils.clamp(c.target.x, b.minX - 5, b.maxX + 5), z = THREE.MathUtils.clamp(c.target.z, b.minZ - 5, b.maxZ + 5); const delta = new THREE.Vector3(x - c.target.x, 0, z - c.target.z); c.target.add(delta); camera.position.add(delta); invalidate(); }} />;
 }
+/** Dusk sky with a soft vignette, drawn as one full-screen gradient quad behind everything. No texture: a
+ * canvas-backed background texture is re-uploaded by every renderer and retained DOM across project switches. */
+const SKY_VERTEX = `varying vec2 vUv; void main() { vUv = position.xy * 0.5 + 0.5; gl_Position = vec4(position.xy, 0.9999, 1.0); }`;
+const SKY_FRAGMENT = `varying vec2 vUv; void main() {
+  float d = distance(vUv, vec2(0.5, 1.15));
+  vec3 c = mix(vec3(0.169, 0.227, 0.322), vec3(0.094, 0.129, 0.184), smoothstep(0.0, 0.6, d));
+  c = mix(c, vec3(0.051, 0.067, 0.094), smoothstep(0.6, 1.25, d));
+  c *= 1.0 - 0.55 * smoothstep(0.35, 0.85, distance(vUv, vec2(0.5, 0.45)));
+  gl_FragColor = vec4(c, 1.0); }`;
+function Sky() {
+  return <mesh frustumCulled={false} renderOrder={-1} raycast={() => null}>
+    <planeGeometry args={[2, 2]} />
+    <shaderMaterial vertexShader={SKY_VERTEX} fragmentShader={SKY_FRAGMENT} depthWrite={false} depthTest={false} />
+  </mesh>;
+}
 function Lights({ scene, quality }: { scene: CompiledScene; quality: DetailLevel }) {
   const cx = (scene.bounds.minX + scene.bounds.maxX) / 2, cz = (scene.bounds.minZ + scene.bounds.maxZ) / 2;
   const span = Math.max(scene.bounds.maxX - scene.bounds.minX, scene.bounds.maxZ - scene.bounds.minZ) / 2 + 6;
   const key = useRef<THREE.DirectionalLight>(null);
   useEffect(() => { if (key.current) { key.current.target.position.set(cx, 0, cz); key.current.target.updateMatrixWorld(); } }, [cx, cz]);
-  return <><hemisphereLight args={["#DCE7F4", "#3D3529", 1.45]} />
-    <directionalLight ref={key} position={[cx - 30, 50, cz + 32]} intensity={3.3} color="#FFE7C7" castShadow={quality !== "low"} shadow-mapSize={quality === "high" ? [2048, 2048] : [1024, 1024]} shadow-bias={-0.0003} shadow-normalBias={0.04} shadow-radius={3}
+  // Late-afternoon sun, a cool sky fill and a warm ground bounce; long, soft shadows give the campus depth.
+  return <><hemisphereLight args={["#CFE0F5", "#5A4630", 0.95]} />
+    <directionalLight ref={key} position={[cx - 34, 38, cz + 30]} intensity={4.2} color="#FFD9A8" castShadow={quality !== "low"} shadow-mapSize={quality === "high" ? [2048, 2048] : [1024, 1024]} shadow-bias={-0.0002} shadow-normalBias={0.03} shadow-radius={3}
       shadow-camera-left={-span} shadow-camera-right={span} shadow-camera-top={span} shadow-camera-bottom={-span} shadow-camera-near={1} shadow-camera-far={200} />
-    <directionalLight position={[cx + 24, 16, cz - 30]} intensity={0.95} color="#9FC0EA" />
+    <directionalLight position={[cx + 26, 18, cz - 30]} intensity={0.7} color="#8FB4E8" />
   </>;
 }
 function Room({ room, selected, focused, quality }: { room: SceneRoom; selected: boolean; focused: boolean; quality: DetailLevel }) {

@@ -142,3 +142,16 @@ input::placeholder,textarea::placeholder { color:#7f8797; }
 .section-disclosure-body { display:grid; gap:12px; padding-top:12px; }
 .case-placeholder { min-height:280px; align-content:center; }
 .case-placeholder h2 { font-size:1rem; }
+/* Coverage and Integrations carry their own page heading; keep the toolbar h1 for structure only. */
+.workspace-toolbar.label-only { position:absolute; width:1px; height:1px; min-height:0; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); border:0; }
+/* Sidebar tabs share the narrow column instead of overflowing it. */
+.sidebar .tabs { min-width:0; }
+.sidebar .tabs button { min-width:0; padding:6px 8px; white-space:nowrap; }
+/* Timeline actions stay on one line when the inspector narrows the stage. */
+.tl-controls > .btn,.tl-details > summary { white-space:nowrap; flex:none; }
+/* Camera toolbar: grouped icon controls with thin separators. */
+.castle-wrap .stage-tools,.graph-wrap .stage-tools,#graph-view-controls { gap:2px; }
+#graph-view-controls:not([hidden]) { display:flex; align-items:center; gap:2px; }
+.castle-wrap .stage-tools .vr-h,.graph-wrap .stage-tools .vr-h { width:1px; height:20px; margin:0 4px; background:var(--glass-border); }
+.stage-tools .icon-btn.sm.on { background:var(--accent-soft); color:var(--text); }
+.castle-wrap .stage-tools .semantic-level { margin-left:4px; padding:2px 8px; border-left:1px solid var(--glass-border); }
