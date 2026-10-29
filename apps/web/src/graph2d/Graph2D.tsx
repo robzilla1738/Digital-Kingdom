@@ -396,10 +396,10 @@ export function Graph2D() {
         <div id="graph-view-controls" hidden={grouped && size.w < 600 && !controlsExpanded}>
         <button className="icon-btn sm" onClick={() => zoomBy(1 / 1.25)} aria-label="Zoom in" title="Zoom in  (+)"><Icon name="plus" size={15} /></button>
         <button className="icon-btn sm" onClick={() => zoomBy(1.25)} aria-label="Zoom out" title="Zoom out  (−)"><Icon name="minus" size={15} /></button>
-        <button onClick={() => dispatch({ type: "focus" })} disabled={!focusIds.size}>Focus selection</button>
-        <button onClick={() => { const prior = cameraHistory.current.pop(); if (prior) { setVb(prior); moved.current = true; } }} aria-label="Back to previous graph view">Back</button>
-        <div className="vr-h" />
         <button className="icon-btn sm" onClick={() => fit()} aria-label="Fit to view" title="Fit to view  (0)"><Icon name="fit" size={15} /></button>
+        <div className="vr-h" />
+        <button onClick={() => dispatch({ type: "focus" })} disabled={!focusIds.size} title="Move the view to the selection  (f)">Focus selection</button>
+        <button className="icon-btn sm" onClick={() => { const prior = cameraHistory.current.pop(); if (prior) { setVb(prior); moved.current = true; } }} aria-label="Back to previous graph view" title="Back to previous view"><Icon name="reset" size={15} /></button>
         </div>
       </div>}
     </div>

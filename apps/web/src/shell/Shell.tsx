@@ -65,7 +65,7 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
     <TopBar {...props} />
     <nav className="primary-nav" aria-label="Primary navigation">{navigation.map((item) => <button key={item.id} className="nav-item" aria-current={ui.workspace === item.id ? "page" : undefined} onClick={() => { dispatch({ type: "workspace", workspace: item.id }); if (item.id === "coverage" || item.id === "integrations") dispatch({ type: "panel", panel: "inspector", open: false }); }}><Icon name={item.icon} size={20} /><span>{item.label}</span></button>)}<div className="nav-footer"><span className="nav-monogram" aria-label="Digital Kingdom">DK</span></div></nav>
     <main id="main" tabIndex={-1} className="workspace" aria-label={`${navigation.find((n) => n.id === ui.workspace)?.label} workspace`}>
-      <div className="workspace-toolbar">
+      <div className={`workspace-toolbar${ui.workspace === "coverage" || ui.workspace === "integrations" ? " label-only" : ""}`}>
         <h1>{navigation.find((n) => n.id === ui.workspace)?.label}</h1>
         {ui.workspace === "kingdom" && <>
           <button className={`${contextCollapsed ? "btn" : "icon-btn"} context-toggle`} onClick={() => { if (contextCollapsed) { dispatch({ type: "panel", panel: "inspector", open: false }); dispatch({ type: "panel", panel: "sidebar", open: true }); } else dispatch({ type: "panel", panel: "sidebar", open: !ui.sidebar }); }} aria-pressed={ui.sidebar && !contextCollapsed} aria-label={ui.sidebar && !contextCollapsed ? "Hide findings list" : "Show findings list"}><Icon name="panel-left" />{contextCollapsed && <span>Show list</span>}</button>
@@ -81,7 +81,6 @@ export function Shell(props: { connection: Connection | null; onSignIn: () => vo
         {ui.workspace === "investigate" && <Tabs label="Investigation views" value={ui.investigateTab} onChange={(tab) => dispatch({ type: "investigateTab", tab })} options={[{ value: "findings", label: "Findings" }, { value: "events", label: "Events" }, { value: "cases", label: "Cases" }]} />}
 
       </div>
-      {vm.data.project.dataset_kind === "synthetic" && <div className="workspace-data-banner">Synthetic demo · no production systems connected.</div>}
       {vm.data.project.provenance?.local_run && <div className="workspace-data-banner" data-testid="local-lab-banner">{vm.data.project.provenance.label} · run {vm.data.project.provenance.run_id} · local scope only; not production evidence.</div>}
       {props.connection && props.connection.state !== "live" && <div className="workspace-data-banner" role="alert" aria-live={ui.reduceAutomaticAnnouncements ? "off" : "assertive"} data-testid="connection-banner">{CONNECTION_BANNER[props.connection.state]} Showing data as of {props.connection.since ? fmtTime(props.connection.since) : "the last confirmed sync"}. This view is not live monitoring.</div>}
       {vm.pendingUpdates > 0 && <div className="workspace-data-banner"><div className="inline-actions"><span>A newer confirmed snapshot is available. Your current selection and records are pinned.</span><button className="btn sm" disabled={!vm.isLatest} onClick={() => dispatch({ type: "acceptUpdates" })}>Load updates</button></div></div>}

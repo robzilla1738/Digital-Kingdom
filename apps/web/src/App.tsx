@@ -177,7 +177,7 @@ export function App() {
     };
   }, [data?.project.id, data?.mode, data?.role, data?.identity, api]);
   if (needsLogin) return <Login api={api} onDone={() => { setNeedsLogin(false); void load(); }} />;
-  if (error) return <div className="fullscreen-msg" role="alert"><span className="brand-mark"><BrandMark size={18} /></span><h1>Digital Kingdom</h1><p>{error}</p><button className="btn" onClick={() => { setError(null); void load(); }}>Retry server</button><button className="btn" onClick={() => { clearSensitive(); setError(null); setNeedsLogin(false); setData(loadOfflineDemo()); }}>Open explicitly synthetic offline demo</button></div>;
+  if (error) return <div className="fullscreen-msg" role="alert"><span className="brand-mark"><BrandMark size={18} /></span><h1>Digital Kingdom</h1><p>{error}</p><div className="inline-actions"><button className="btn primary" onClick={() => { setError(null); void load(); }}>Retry server</button><button className="btn" onClick={() => { clearSensitive(); setError(null); setNeedsLogin(false); setData(loadOfflineDemo()); }}>Open offline demo (synthetic data)</button></div></div>;
   if (!data) return <div className="fullscreen-msg" aria-busy="true"><div className="spinner" aria-hidden /><p className="small">Loading evidence…</p></div>;
   return <ConnectionCtx.Provider value={connection}><ActionsCtx.Provider value={actions}><AppStateProvider key={`${data.project.id}:${data.role}:${authorizationEpoch.current}`} data={data}>
     <Shell connection={connection} onSignIn={() => { clearSensitive(); setNeedsLogin(true); }}
