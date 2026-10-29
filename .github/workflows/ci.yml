@@ -40,7 +40,9 @@ jobs:
     # began migrating to Ubuntu 26 on 2026-10-19
     runs-on: ubuntu-24.04
     needs: check
-    timeout-minutes: 20
+    # The redesign suite runs ~12.5 min on the faster hosted runners and 16+ min on slower ones (it scales
+    # with SwiftShader CPU speed), which left no headroom under a 20 min cap.
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - name: Isolate fresh CI evidence from the frozen handoff
