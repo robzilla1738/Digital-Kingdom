@@ -1,5 +1,7 @@
-/* Liquid glass: translucent, saturated blur with a specular rim. Loaded last so it is the final visual layer.
-   Text colours and status vocabulary are untouched; only surfaces, edges and depth change. */
+/* Liquid glass: translucent tint with a specular rim. Loaded last so it is the final visual layer.
+   Text colours and status vocabulary are untouched; only surfaces, edges and depth change.
+   Real backdrop blur is reserved for the few surfaces that float over the moving scene: blurring a static
+   gradient looks identical to not blurring it, and dozens of blurred layers are costly to composite. */
 :root {
   --lg-tint: rgba(20, 24, 33, .5);
   --lg-tint-strong: rgba(20, 24, 33, .72);
@@ -22,17 +24,14 @@
     radial-gradient(60vw 50vh at 60% 110%, rgba(70, 160, 150, .12), transparent 70%),
     var(--canvas);
 }
-.stage { background: radial-gradient(120% 90% at 50% -10%, #2b3a52 0%, #18212f 45%, #0d1118 100%); }
-.castle-wrap::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; background: radial-gradient(130% 100% at 50% 45%, transparent 55%, rgba(5, 7, 11, .55) 100%); }
+.stage { background: radial-gradient(130% 100% at 50% 45%, transparent 55%, rgba(5, 7, 11, .55) 100%), radial-gradient(120% 90% at 50% -10%, #2b3a52 0%, #18212f 45%, #0d1118 100%); }
 
-/* Chrome bars and docked panels. */
-.topbar, .primary-nav, .sidebar, .evidence, .workspace-toolbar, .timeline, .tl {
-  background: var(--lg-fill); backdrop-filter: var(--lg-blur); -webkit-backdrop-filter: var(--lg-blur); border-color: var(--glass-border);
-}
+/* Chrome bars and docked panels (the top bar and rail keep their existing blur). */
+.topbar, .primary-nav, .sidebar, .evidence, .workspace-toolbar, .timeline, .tl { background: var(--lg-fill); border-color: var(--glass-border); }
 .topbar { box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .05); }
 .evidence { background: var(--lg-fill-strong); box-shadow: inset 1px 0 0 rgba(255, 255, 255, .05); }
 .timeline { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07); }
-/* backdrop-filter opens a stacking context; lift these bars so their menus and popovers stay above the panes. */
+/* Keep these bars' menus and popovers above the docked panes. */
 .workspace-toolbar { position: relative; z-index: 20; }
 .timeline { z-index: 20; }
 
@@ -62,22 +61,21 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]), select, textarea
 
 /* Cards and tables read as panes of glass on the tinted canvas. */
 .section-card, .summary-strip, .table-scroll, .filter-bar, .claim, .context-note > div, .scope-note {
-  background: var(--lg-sheen), rgba(20, 24, 33, .34); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border-color: var(--glass-border); box-shadow: var(--lg-edge);
+  background: var(--lg-sheen), rgba(20, 24, 33, .34); border-color: var(--glass-border); box-shadow: var(--lg-edge);
 }
 .row.finding.selected { background: linear-gradient(160deg, rgba(195, 203, 245, .13), rgba(195, 203, 245, .04)); border-color: rgba(195, 203, 245, .22); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08); }
 
-/* Map labels: small glass lozenges floating over the castle. */
+/* Map labels: small glass lozenges floating over the castle. Many labels move with the camera, so they use a
+   denser tint instead of a per-label backdrop blur. */
 .room-label {
-  background: linear-gradient(180deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .03)), rgba(14, 18, 26, .6);
-  backdrop-filter: blur(14px) saturate(170%); -webkit-backdrop-filter: blur(14px) saturate(170%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .03)), rgba(14, 18, 26, .8);
   border-color: rgba(255, 255, 255, .16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 6px 18px -6px rgba(0, 0, 0, .6);
 }
-.room-label:hover { background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .05)), rgba(14, 18, 26, .7); }
+.room-label:hover { background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .05)), rgba(14, 18, 26, .86); }
 .room-label.is-selected { background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .06)), rgba(70, 82, 140, .72); border-color: rgba(205, 214, 255, .5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 4px rgba(170, 182, 255, .16), 0 8px 22px -6px rgba(0, 0, 0, .6); }
 .zone-label {
   display: block; padding: 4px 9px; border-radius: 999px; font-size: 10px; letter-spacing: .1em; color: #d5dde8;
-  background: rgba(12, 16, 23, .5); backdrop-filter: blur(10px) saturate(160%); -webkit-backdrop-filter: blur(10px) saturate(160%);
+  background: rgba(12, 16, 23, .72);
   border: 1px solid rgba(255, 255, 255, .1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1); text-shadow: none;
 }
 
@@ -87,5 +85,5 @@ input:not([type=checkbox]):not([type=radio]):not([type=range]), select, textarea
 }
 @media (prefers-reduced-transparency: reduce) {
   :root { --lg-tint: rgba(20, 24, 33, .96); --lg-tint-strong: #141821; }
-  .room-label, .zone-label, .section-card, .summary-strip, .table-scroll { backdrop-filter: none; -webkit-backdrop-filter: none; background: #161a23; }
+  .room-label, .zone-label, .section-card, .summary-strip, .table-scroll { background: #161a23; }
 }
