@@ -4,10 +4,12 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { CompiledScene } from "@dk/contracts";
 import { useLabel } from "./labels.tsx";
+import { applySurface } from "./materials.ts";
 import type { PresentationGroup } from "./scenePresentation.ts";
 
-const LAWN = new THREE.Color("#3C5243"), LAWN_HC = new THREE.Color("#52705A"), EARTH = new THREE.Color("#4A3F33");
-const CANOPY = ["#3F5E49", "#4B6A50", "#365444"].map(c => new THREE.Color(c)), TRUNK = new THREE.Color("#5A4634");
+const LAWN = new THREE.Color("#45633A"), LAWN_HC = new THREE.Color("#5E7E52"), EARTH = new THREE.Color("#6B5A47"), ROCK = new THREE.Color("#7A746A");
+const CANOPY = ["#3E6136", "#4F7040", "#35552F", "#5B7A45"].map(c => new THREE.Color(c)), CONIFER = ["#2F4B33", "#3A5A3C"].map(c => new THREE.Color(c)), TRUNK = new THREE.Color("#5A4634");
+const ISLAND_DEPTH = 1.1, ISLAND_TOP = -0.08;
 /** Deterministic hash in [0, 1): decoration placement never depends on time, events or randomness. */
 const hash = (a: number, b: number) => { const x = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return x - Math.floor(x); };
 function paint(g: THREE.BufferGeometry, color: (normalY: number, y: number) => THREE.Color) {
@@ -32,10 +34,11 @@ export function Environment({ scene, groups, highContrast, quality = "medium" }:
             for (const [px, pz] of [[x, cz], [cx, cz], [x, z]] as [number, number][]) for (const dx of [-1.4, 1.4]) for (const dz of [-1.4, 1.4]) points.push([px + dx, pz + dz]); } } }
       const hull = convexHull(points); if (hull.length < 3) continue;
       const shape = new THREE.Shape(hull.map(([x, z]) => new THREE.Vector2(x, -z)));
-      const slab = new THREE.ExtrudeGeometry(shape, { depth: 0.26, bevelEnabled: quality !== "low", bevelSegments: 1, bevelSize: 0.16, bevelThickness: 0.08, steps: 1 });
-      slab.rotateX(-Math.PI / 2); slab.translate(0, -0.4, 0); slab.deleteAttribute("uv");
-      // Lawn on top, banded earth on the chamfered sides.
-      foundations.push(paint(slab.index ? slab.toNonIndexed() : slab, (ny, y) => ny > 0.6 ? (highContrast ? LAWN_HC : LAWN) : EARTH.clone().multiplyScalar(0.8 + 0.25 * Math.min(1, Math.max(0, (y + 0.4) / 0.35)))));
+      const slab = new THREE.ExtrudeGeometry(shape, { depth: ISLAND_DEPTH, bevelEnabled: quality !== "low", bevelSegments: quality === "high" ? 3 : 2, bevelSize: 0.22, bevelThickness: 0.12, steps: quality === "low" ? 1 : 4 });
+      const bevel = quality !== "low" ? 0.12 : 0; slab.rotateX(-Math.PI / 2); slab.translate(0, ISLAND_TOP - ISLAND_DEPTH - bevel, 0); slab.deleteAttribute("uv");
+      // A diorama tile: lawn on top, a thin soil lip, then rock strata that darken towards the base.
+      const bottom = ISLAND_TOP - ISLAND_DEPTH - 2 * bevel;
+      foundations.push(paint(slab.index ? slab.toNonIndexed() : slab, (ny, y) => { if (ny > 0.6) return highContrast ? LAWN_HC : LAWN; const t = Math.min(1, Math.max(0, (y - bottom) / (ISLAND_TOP - bottom))); return (t > 0.88 ? EARTH : ROCK).clone().multiplyScalar(0.45 + 0.55 * t); }));
       if (quality !== "low") {
         const districtsHere = groups.filter(g => g.environment === environment), xs = hull.map(h => h[0]), zs = hull.map(h => h[1]);
         const inside = (x: number, z: number) => hull.every((a, i) => { const b = hull[(i + 1) % hull.length]!; return (b[0] - a[0]) * (z - a[1]) - (b[1] - a[1]) * (x - a[0]) >= 0.55 * Math.hypot(b[0] - a[0], b[1] - a[1]); });
@@ -45,12 +48,7 @@ export function Environment({ scene, groups, highContrast, quality = "medium" }:
         for (let gx = minX; gx <= maxX && placed < 34; gx += 1.6) for (let gz = minZ; gz <= maxZ && placed < 34; gz += 1.6) {
           const x = gx + (hash(gx, gz) - 0.5) * 1.1, z = gz + (hash(gz, gx) - 0.5) * 1.1;
           if (hash(x, z) < 0.55 || !inside(x, z) || !clear(x, z)) continue;
-          const s = 0.75 + hash(z, x) * 0.5, canopy = CANOPY[Math.floor(hash(x + 1, z) * CANOPY.length)]!;
-          const trunk = new THREE.CylinderGeometry(0.06 * s, 0.08 * s, 0.34 * s, 5); trunk.translate(x, -0.12 + 0.17 * s, z);
-          const lower = new THREE.ConeGeometry(0.42 * s, 0.78 * s, 7); lower.translate(x, -0.12 + 0.62 * s, z);
-          const upper = new THREE.ConeGeometry(0.3 * s, 0.6 * s, 7); upper.translate(x, -0.12 + 1.0 * s, z);
-          trees.push(paint(trunk.toNonIndexed(), () => TRUNK), paint(lower.toNonIndexed(), (_ny, y) => canopy.clone().multiplyScalar(0.85 + 0.15 * (y - (-0.12 + 0.23 * s)) / (0.78 * s))), paint(upper.toNonIndexed(), () => canopy.clone().multiplyScalar(1.08)));
-          [trunk, lower, upper].forEach(g => g.dispose()); placed++;
+          trees.push(...tree(x, z, 0.75 + hash(z, x) * 0.5, hash(x + 3, z + 5), quality)); placed++;
         }
       }
       const districts = groups.filter(g => g.environment === environment), centre = districts.find(g => g.zoneId === "application") ?? districts[0];
@@ -84,18 +82,50 @@ export function Environment({ scene, groups, highContrast, quality = "medium" }:
     return joined;
   }, [groups, quality, highContrast]);
   useEffect(() => () => geo.forEach(g => g.dispose()), [geo]);
+  const materials = useMemo(() => ({
+    ground: applySurface(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.97 }), "lawn"),
+    paving: applySurface(new THREE.MeshStandardMaterial({ color: highContrast ? "#8A8F90" : "#857F74", roughness: 0.9 }), "paving"),
+    trim: applySurface(new THREE.MeshStandardMaterial({ color: "#A39C8E", roughness: 0.85 }), "paving"),
+    foliage: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.82, flatShading: true }),
+  }), [highContrast]);
+  useEffect(() => () => Object.values(materials).forEach(m => m.dispose()), [materials]);
   return <group name="presentation-decoration" raycast={() => null}>
-    <mesh geometry={geo[2]} receiveShadow raycast={() => null}><meshStandardMaterial vertexColors roughness={1} /></mesh>
-    <mesh geometry={geo[0]} receiveShadow raycast={() => null}><meshStandardMaterial color={highContrast ? "#7A7F80" : "#625F58"} roughness={0.95} /></mesh>
-    <mesh geometry={geo[1]} receiveShadow raycast={() => null}><meshStandardMaterial color="#8A857A" roughness={0.92} /></mesh>
-    {geo[3]!.getAttribute("position") && <mesh geometry={geo[3]} castShadow receiveShadow raycast={() => null}><meshStandardMaterial vertexColors roughness={0.9} flatShading /></mesh>}
+    <mesh geometry={geo[2]} receiveShadow raycast={() => null} material={materials.ground} />
+    <mesh geometry={geo[0]} receiveShadow raycast={() => null} material={materials.paving} />
+    <mesh geometry={geo[1]} receiveShadow raycast={() => null} material={materials.trim} />
+    {geo[3]!.getAttribute("position") && <mesh geometry={geo[3]} castShadow receiveShadow raycast={() => null} material={materials.foliage} />}
     {groups.map(g => <ZoneLabel key={g.key} group={g} />)}
   </group>;
 }
 function ZoneLabel({ group }: { group: PresentationGroup }) {
   const x = (group.bounds.minX + group.bounds.maxX) / 2, z = group.bounds.maxZ + 0.2;
   const ref = useLabel(`zone:${group.key}`, [x, 0.1, z], -20);
-  return <Html position={[x, 0.1, z]} center zIndexRange={[9, 1]}><div ref={ref} className="lbl"><span className="zone-label" style={{ display: "block", color: "#B5C3D3", background: "#121C29", fontSize: 12, lineHeight: "16px", padding: "4px 7px", borderRadius: 4 }}>{group.label} · {group.environment}</span></div></Html>;
+  return <Html position={[x, 0.1, z]} center zIndexRange={[9, 1]}><div ref={ref} className="lbl"><span className="zone-label">{group.label} · {group.environment}</span></div></Html>;
+}
+
+/** One decorative tree: a rounded broadleaf crown (jittered icosphere lobes) or a layered conifer.
+ * Jitter comes from the deterministic hash, so the same campus always grows the same trees. */
+function tree(x: number, z: number, s: number, kind: number, quality: "low" | "medium" | "high"): THREE.BufferGeometry[] {
+  const base = ISLAND_TOP, out: THREE.BufferGeometry[] = [];
+  const trunk = new THREE.CylinderGeometry(0.05 * s, 0.085 * s, 0.5 * s, 6); trunk.translate(x, base + 0.25 * s, z);
+  out.push(paint(trunk.toNonIndexed(), () => TRUNK)); trunk.dispose();
+  if (kind < 0.35) {
+    const shade = CONIFER[Math.floor(hash(x, z + 9) * CONIFER.length)]!;
+    for (const [r, h, y] of [[0.42, 0.62, 0.48], [0.33, 0.55, 0.8], [0.22, 0.46, 1.08]] as const) {
+      const cone = new THREE.ConeGeometry(r * s, h * s, 8); cone.translate(x, base + y * s, z);
+      out.push(paint(cone.toNonIndexed(), (ny) => shade.clone().multiplyScalar(0.72 + 0.4 * Math.max(0, ny)))); cone.dispose();
+    }
+    return out;
+  }
+  const shade = CANOPY[Math.floor(hash(x + 1, z) * CANOPY.length)]!, lobes = quality === "high" ? 4 : 3;
+  for (let i = 0; i < lobes; i++) {
+    const a = i * 2.1 + kind * 6, r = (i ? 0.26 : 0.36) * s * (0.9 + hash(x + i, z) * 0.25);
+    const blob = new THREE.IcosahedronGeometry(r, 1), p = blob.getAttribute("position");
+    for (let v = 0; v < p.count; v++) { const k = 0.88 + 0.24 * hash(p.getX(v) * 7 + i, p.getZ(v) * 7 + p.getY(v)); p.setXYZ(v, p.getX(v) * k, p.getY(v) * k * 0.92, p.getZ(v) * k); }
+    blob.translate(x + (i ? Math.cos(a) * 0.2 * s : 0), base + (i ? 0.66 + hash(z, i) * 0.18 : 0.78) * s, z + (i ? Math.sin(a) * 0.2 * s : 0));
+    out.push(paint(blob.toNonIndexed(), (ny) => shade.clone().multiplyScalar(0.7 + 0.42 * (ny * 0.5 + 0.5)))); blob.dispose();
+  }
+  return out;
 }
 
 /** Monotonic-chain convex hull with deterministic sorting; presentation geometry only. */

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { MODULE_CATALOG, type ModuleId } from "@dk/contracts";
+import { applySurface } from "./materials.ts";
 
 export type DetailLevel = "low" | "medium" | "high";
 export type ArchitectureGroup = "structure" | "roof" | "interior-structure" | "detail-static";
@@ -387,8 +388,8 @@ export function moduleGeometry(id: ModuleId, lod: DetailLevel = "medium"): Modul
 }
 export const cachedModuleGeometryCount = () => cache.size;
 export const architectureMaterials = {
-  body: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.87, metalness: 0.02 }),
-  roof: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.76, metalness: 0.08 }),
+  body: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0 }),
+  roof: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.12 }),
 };
 export interface ModuleMaterials { body: THREE.MeshStandardMaterial; roof: THREE.MeshStandardMaterial; depth: THREE.MeshDepthMaterial; }
 const materialFamilies = new Map<ModuleId, ModuleMaterials>();
@@ -399,11 +400,11 @@ export function moduleMaterials(id: ModuleId): ModuleMaterials {
   if (!Object.hasOwn(MODULE_CATALOG, id)) throw new Error("Unknown architectural material family");
   let materials = materialFamilies.get(id);
   if (!materials) {
-    materials = { body: architectureMaterials.body.clone(), roof: architectureMaterials.roof.clone(), depth: new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking }) };
+    materials = { body: applySurface(architectureMaterials.body.clone(), "masonry"), roof: applySurface(architectureMaterials.roof.clone(), "slate"), depth: new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking }) };
     for (const [part, material] of Object.entries(materials)) {
       const name = `dk_arch_${id}_${part}`;
       material.name = name;
-      material.customProgramCacheKey = () => `dk-architecture-v2:${id}:${part}`;
+      material.customProgramCacheKey = () => `dk-architecture-v3:${id}:${part}`;
       shaderMaterials.set(name, { id, material });
     }
     materialFamilies.set(id, materials);

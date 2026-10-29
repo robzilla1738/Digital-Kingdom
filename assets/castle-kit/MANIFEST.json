@@ -14,7 +14,7 @@
     "source_files": [
       {
         "path": "apps/web/src/castle/geometry.ts",
-        "sha256": "9b968d4aa6129ba848c81b8b7c83afa3d6e762e4d3a9ac94e7d800f5ebeaf4ba"
+        "sha256": "fb89c54dbfac525e25acbcb9945bc7f10cd80fff32b128d47ca7c9c14e63878c"
       },
       {
         "path": "apps/web/src/castle/modules.tsx",
@@ -22,7 +22,7 @@
       },
       {
         "path": "apps/web/src/castle/materials.ts",
-        "sha256": "c4906364cd0b6a1e343cbbcb488d5c919790e3b9362ffba32af36f3b579a726c"
+        "sha256": "4bd9367c346de720f47b7f9743aebc98e87f69c985beb755036b5393d02247e5"
       },
       {
         "path": "packages/contracts/src/catalog.ts",
@@ -37,7 +37,7 @@
         "sha256": "fc8b71170d02331c2931a3919e7126c4b3cbf19b341e2465873b601b9c60c81b"
       }
     ],
-    "content_hash": "sha256:633e954234ff5475f0a52cd8c9a45c0c3f7d3ae700871a50c29a869bd5ef8fee",
+    "content_hash": "sha256:3f97d3fc19b468e974011158afa3fb9ea4cfc6c2f2ef79b463ab4d8a5cc6fee7",
     "hash_method": "SHA-256 over UTF-8 path + NUL + raw file bytes + NUL, in editable_source_paths order. Shared source content hash applies to all ten procedural modules.",
     "ownership": "Repository-owned implementation; no paid or externally generated asset pipeline."
   },
@@ -2063,5 +2063,5 @@
     "visual": "Synthetic three-module and ten-module sheets are exposed by ?moduleSheet=prototype and ?moduleSheet=all; screenshots and release-gate results recorded separately. This manifest does not claim human approval."
   },
   "materials_sha256": "sha256:8833af5e7fb1fb5c8100b064ca8f1ca73e74d29aaacafb17637efa43a816a01e",
-  "manifest_sha256": "sha256:f1cfceb47b2a4e7063d67fd11cf4deefe4eda9857f3e9e3a43ca1e7fb156ba11"
+  "manifest_sha256": "sha256:f1b1f8d630206e8aaa68e7ed63c4b3df1ce13566d54209d4d9173c6c5600aebe"
 }
