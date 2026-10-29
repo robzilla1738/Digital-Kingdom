@@ -8,7 +8,7 @@ import { CastleModule } from "./modules.tsx";
 import { InteriorMarkers } from "./InteriorMarkers.tsx";
 import { ComparisonBadges, ComparisonPanel, useNarrowLayout, useWorldComparison } from "./ComparisonOverlay.tsx";
 import { Environment } from "./Environment.tsx";
-import { hatchTexture } from "./materials.ts";
+import { hatchTexture, skyTexture } from "./materials.ts";
 import { EdgeChooser, type EdgeChoice } from "./EdgeChooser.tsx";
 import { overlappingEdges, pointerWasDrag, type ScreenPoint } from "./edgePicking.ts";
 import { sampleFrameBudget, type FrameBudget } from "./frameBudget.ts";
@@ -25,7 +25,7 @@ import { semanticLevelForScale, type SemanticLevel } from "@dk/scene-compiler";
 import { districtGroupKey, focusMembers, worldHierarchy } from "../lib/world.ts";
 import { viewFraming } from "../lib/framing.ts";
 
-const BG = "#0c0e12", ACCENT = "#c3cbf5", CAM_DIST = 110;
+const ACCENT = "#c3cbf5", CAM_DIST = 110;
 type Command = { n: number; type: "in" | "out" | "fit" | "focus" | "back"; group?: string; ids?: string[] };
 type Pose = { pos: THREE.Vector3; target: THREE.Vector3; zoom: number };
 // Harmless camera-only context survives Castle/Graph toggles. Bounded; never contains evidence.
@@ -96,9 +96,10 @@ export function Castle3D() {
     <CanvasBoundary onError={msg => dispatch({ type: "webglFailed", reason: msg })}>
       <Canvas orthographic style={{ isolation: "isolate" }} shadows={quality !== "low" ? "soft" : false} dpr={quality === "low" ? 1 : quality === "high" ? [1, 2] : [1, 1.5]} frameloop="demand"
         camera={{ position: [60, 68, 60], zoom: 12, near: 0.1, far: 800 }}
-        gl={{ antialias: quality !== "low", alpha: true, powerPreference: "default", preserveDrawingBuffer: false }}
-        onCreated={({ gl }) => { gl.setClearColor(BG, 0); gl.toneMapping = THREE.AgXToneMapping; gl.toneMappingExposure = 1.02; gl.shadowMap.type = THREE.PCFSoftShadowMap; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
+        gl={{ antialias: quality !== "low", powerPreference: "default", preserveDrawingBuffer: false }}
+        onCreated={({ gl }) => { gl.toneMapping = THREE.AgXToneMapping; gl.toneMappingExposure = 1.02; gl.shadowMap.type = THREE.PCFSoftShadowMap; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
         onPointerMissed={e => { if (e.type === "click") dispatch({ type: "select", selection: null }); }}>
+        <primitive attach="background" object={skyTexture()} />
         <Rig scene={scene} command={cmd} groups={groups} onLevel={setLevel} initialRooms={initialRooms} />
         <Lights scene={scene} quality={quality} />
         <SceneLifecycle quality={quality} onSlow={() => { if (quality !== "low") { setQuality(quality === "high" ? "medium" : "low"); setReduced(true); } }} />

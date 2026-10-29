@@ -404,7 +404,7 @@ export function moduleMaterials(id: ModuleId): ModuleMaterials {
     for (const [part, material] of Object.entries(materials)) {
       const name = `dk_arch_${id}_${part}`;
       material.name = name;
-      material.customProgramCacheKey = () => `dk-architecture-v3:${id}:${part}`;
+      material.customProgramCacheKey = () => `dk-architecture-v4:${id}:${part}`;
       shaderMaterials.set(name, { id, material });
     }
     materialFamilies.set(id, materials);

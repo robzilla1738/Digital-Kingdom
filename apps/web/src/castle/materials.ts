@@ -13,6 +13,22 @@ export function hatchTexture(): THREE.CanvasTexture {
   hatch.colorSpace = THREE.SRGBColorSpace; return hatch;
 }
 
+/** Dusk sky with a soft vignette, drawn as the scene background so the canvas stays opaque (a transparent
+ * canvas must be re-blended with the page on every frame, which is costly on software renderers). */
+let sky: THREE.CanvasTexture | null = null;
+export function skyTexture(): THREE.CanvasTexture {
+  if (sky) return sky;
+  const c = document.createElement("canvas"); c.width = 256; c.height = 256;
+  const ctx = c.getContext("2d")!;
+  const base = ctx.createRadialGradient(128, -40, 10, 128, -40, 340);
+  base.addColorStop(0, "#2b3a52"); base.addColorStop(0.45, "#18212f"); base.addColorStop(1, "#0d1118");
+  ctx.fillStyle = base; ctx.fillRect(0, 0, 256, 256);
+  const vignette = ctx.createRadialGradient(128, 115, 70, 128, 115, 190);
+  vignette.addColorStop(0, "rgba(5,7,11,0)"); vignette.addColorStop(1, "rgba(5,7,11,0.55)");
+  ctx.fillStyle = vignette; ctx.fillRect(0, 0, 256, 256);
+  sky = new THREE.CanvasTexture(c); sky.colorSpace = THREE.SRGBColorSpace; return sky;
+}
+
 /** Procedural surface detail, computed in world space so the shared UV-less geometry, its digests and
  * its triangle counts stay unchanged. Deterministic and status-independent: it only modulates the baked
  * vertex colour (masonry courses, roof slates, flagstones, grass and rock strata), never hue by state. Fades out with
@@ -20,10 +36,10 @@ export function hatchTexture(): THREE.CanvasTexture {
 export type SurfaceKind = "masonry" | "slate" | "paving" | "lawn";
 const SURFACE_COMMON = /* glsl */ `
 varying vec3 vDkWorld; varying vec3 vDkNormal;
-float dkHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+/* Arithmetic hash (no sin): far cheaper on software rasterisers, and stable across GPUs. */
+float dkHash(vec2 p) { vec3 q = fract(p.xyx * 0.1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
 float dkNoise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(dkHash(i), dkHash(i + vec2(1, 0)), f.x), mix(dkHash(i + vec2(0, 1)), dkHash(i + vec2(1, 1)), f.x), f.y); }
-float dkFbm(vec2 p) { return 0.65 * dkNoise(p) + 0.35 * dkNoise(p * 2.13 + 7.1); }
 /* Running-bond blocks: x = per-block tone in [0,1), y = joint mask (1 inside a block, 0 on mortar). */
 vec2 dkBond(vec2 uv, vec2 size, float joint) { float row = floor(uv.y / size.y); vec2 q = vec2(uv.x / size.x + mod(row, 2.0) * 0.5, uv.y / size.y);
   vec2 cell = floor(q), f = fract(q), w = fwidth(q) + 1e-4, j = joint / size;
@@ -47,13 +63,12 @@ const SURFACE_BODY: Record<SurfaceKind, string> = {
   paving: `{ vec2 b = dkBond(vDkWorld.xz, vec2(0.55, 0.42), 0.02); float grain = dkNoise(vDkWorld.xz * 2.7);
     diffuseColor.rgb *= (0.88 + 0.2 * b.x) * mix(0.72, 1.0, b.y) * (0.93 + 0.14 * grain); }`,
   lawn: `{ vec3 n = normalize(vDkNormal); float top = smoothstep(0.55, 0.75, n.y);
-    float patches = dkFbm(vDkWorld.xz * 0.35), clumps = dkNoise(vDkWorld.xz * 2.2 + 11.0);
+    float patches = dkNoise(vDkWorld.xz * 0.35), clumps = dkNoise(vDkWorld.xz * 2.2 + 11.0);
     vec3 grass = diffuseColor.rgb * (0.72 + 0.5 * patches) * (0.86 + 0.24 * clumps);
     grass = mix(grass, grass * vec3(1.18, 1.1, 0.74), smoothstep(0.6, 0.88, patches) * 0.7);
     grass = mix(grass, grass * vec3(0.8, 0.92, 0.86), smoothstep(0.45, 0.2, clumps) * 0.5);
-    float strata = dkNoise(vec2((vDkWorld.x + vDkWorld.z) * 1.4, vDkWorld.y * 9.0));
-    vec3 rock = diffuseColor.rgb * (0.78 + 0.36 * strata);
-    diffuseColor.rgb = mix(rock, grass, top); }`,
+    float strata = dkHash(vec2(floor(vDkWorld.y * 9.0), floor((vDkWorld.x + vDkWorld.z) * 1.4)));
+    diffuseColor.rgb = mix(diffuseColor.rgb * (0.78 + 0.36 * strata), grass, top); }`,
 };
 const ROUGHNESS_BODY: Partial<Record<SurfaceKind, string>> = {
   slate: `roughnessFactor = clamp(roughnessFactor - 0.12 * dkHash(floor(vDkWorld.xy * 8.0)), 0.0, 1.0);`,
@@ -69,6 +84,6 @@ export function applySurface<M extends THREE.MeshStandardMaterial>(material: M, 
       .replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>\n${ROUGHNESS_BODY[kind] ?? ""}`);
   };
   // The default key is onBeforeCompile's source text, which is identical for every kind; callers may override it.
-  material.customProgramCacheKey = () => `dk-surface-v1:${kind}`;
+  material.customProgramCacheKey = () => `dk-surface-v2:${kind}`;
   return material;
 }
