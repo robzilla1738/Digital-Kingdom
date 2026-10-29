@@ -13,22 +13,6 @@ export function hatchTexture(): THREE.CanvasTexture {
   hatch.colorSpace = THREE.SRGBColorSpace; return hatch;
 }
 
-/** Dusk sky with a soft vignette, drawn as the scene background so the canvas stays opaque (a transparent
- * canvas must be re-blended with the page on every frame, which is costly on software renderers). */
-let sky: THREE.CanvasTexture | null = null;
-export function skyTexture(): THREE.CanvasTexture {
-  if (sky) return sky;
-  const c = document.createElement("canvas"); c.width = 256; c.height = 256;
-  const ctx = c.getContext("2d")!;
-  const base = ctx.createRadialGradient(128, -40, 10, 128, -40, 340);
-  base.addColorStop(0, "#2b3a52"); base.addColorStop(0.45, "#18212f"); base.addColorStop(1, "#0d1118");
-  ctx.fillStyle = base; ctx.fillRect(0, 0, 256, 256);
-  const vignette = ctx.createRadialGradient(128, 115, 70, 128, 115, 190);
-  vignette.addColorStop(0, "rgba(5,7,11,0)"); vignette.addColorStop(1, "rgba(5,7,11,0.55)");
-  ctx.fillStyle = vignette; ctx.fillRect(0, 0, 256, 256);
-  sky = new THREE.CanvasTexture(c); sky.colorSpace = THREE.SRGBColorSpace; return sky;
-}
-
 /** Procedural surface detail, computed in world space so the shared UV-less geometry, its digests and
  * its triangle counts stay unchanged. Deterministic and status-independent: it only modulates the baked
  * vertex colour (masonry courses, roof slates, flagstones, grass and rock strata), never hue by state. Fades out with

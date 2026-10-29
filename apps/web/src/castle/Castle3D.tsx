@@ -8,7 +8,7 @@ import { CastleModule } from "./modules.tsx";
 import { InteriorMarkers } from "./InteriorMarkers.tsx";
 import { ComparisonBadges, ComparisonPanel, useNarrowLayout, useWorldComparison } from "./ComparisonOverlay.tsx";
 import { Environment } from "./Environment.tsx";
-import { hatchTexture, skyTexture } from "./materials.ts";
+import { hatchTexture } from "./materials.ts";
 import { EdgeChooser, type EdgeChoice } from "./EdgeChooser.tsx";
 import { overlappingEdges, pointerWasDrag, type ScreenPoint } from "./edgePicking.ts";
 import { sampleFrameBudget, type FrameBudget } from "./frameBudget.ts";
@@ -99,7 +99,7 @@ export function Castle3D() {
         gl={{ antialias: quality !== "low", powerPreference: "default", preserveDrawingBuffer: false }}
         onCreated={({ gl }) => { gl.toneMapping = THREE.AgXToneMapping; gl.toneMappingExposure = 1.02; gl.shadowMap.type = THREE.PCFSoftShadowMap; gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; }}
         onPointerMissed={e => { if (e.type === "click") dispatch({ type: "select", selection: null }); }}>
-        <primitive attach="background" object={skyTexture()} />
+        <Sky />
         <Rig scene={scene} command={cmd} groups={groups} onLevel={setLevel} initialRooms={initialRooms} />
         <Lights scene={scene} quality={quality} />
         <SceneLifecycle quality={quality} onSlow={() => { if (quality !== "low") { setQuality(quality === "high" ? "medium" : "low"); setReduced(true); } }} />
@@ -248,6 +248,21 @@ function Rig({ scene, command, groups, onLevel, initialRooms }: { scene: Compile
   return <OrbitControls ref={ctl} makeDefault enableDamping={false} rotateSpeed={0.6} zoomSpeed={0.8} minPolarAngle={THREE.MathUtils.degToRad(25)} maxPolarAngle={THREE.MathUtils.degToRad(65)} minZoom={1} maxZoom={140}
     onStart={() => { gl.domElement.dataset.cameraActive = "true"; if (tween.current?.focusRevision) dispatch({ type: "focusHandled", revision: tween.current.focusRevision }); tween.current = null; manual.current = true; }} onEnd={() => { gl.domElement.dataset.cameraActive = "false"; }} onChange={() => { const c = ctl.current; if (!c) return;
       const x = THREE.MathUtils.clamp(c.target.x, b.minX - 5, b.maxX + 5), z = THREE.MathUtils.clamp(c.target.z, b.minZ - 5, b.maxZ + 5); const delta = new THREE.Vector3(x - c.target.x, 0, z - c.target.z); c.target.add(delta); camera.position.add(delta); invalidate(); }} />;
+}
+/** Dusk sky with a soft vignette, drawn as one full-screen gradient quad behind everything. No texture: a
+ * canvas-backed background texture is re-uploaded by every renderer and retained DOM across project switches. */
+const SKY_VERTEX = `varying vec2 vUv; void main() { vUv = position.xy * 0.5 + 0.5; gl_Position = vec4(position.xy, 0.9999, 1.0); }`;
+const SKY_FRAGMENT = `varying vec2 vUv; void main() {
+  float d = distance(vUv, vec2(0.5, 1.15));
+  vec3 c = mix(vec3(0.169, 0.227, 0.322), vec3(0.094, 0.129, 0.184), smoothstep(0.0, 0.6, d));
+  c = mix(c, vec3(0.051, 0.067, 0.094), smoothstep(0.6, 1.25, d));
+  c *= 1.0 - 0.55 * smoothstep(0.35, 0.85, distance(vUv, vec2(0.5, 0.45)));
+  gl_FragColor = vec4(c, 1.0); }`;
+function Sky() {
+  return <mesh frustumCulled={false} renderOrder={-1} raycast={() => null}>
+    <planeGeometry args={[2, 2]} />
+    <shaderMaterial vertexShader={SKY_VERTEX} fragmentShader={SKY_FRAGMENT} depthWrite={false} depthTest={false} />
+  </mesh>;
 }
 function Lights({ scene, quality }: { scene: CompiledScene; quality: DetailLevel }) {
   const cx = (scene.bounds.minX + scene.bounds.maxX) / 2, cz = (scene.bounds.minZ + scene.bounds.maxZ) / 2;

@@ -22,7 +22,7 @@
       },
       {
         "path": "apps/web/src/castle/materials.ts",
-        "sha256": "0be8d0437276eeabaabb30766cc2167454141c46a71500cd44a9aea312981c77"
+        "sha256": "8b6a25168b3672c165aa4c8d2189f3238851066e99eda0fd7bd8cc5d2f3aeb8b"
       },
       {
         "path": "packages/contracts/src/catalog.ts",
@@ -37,7 +37,7 @@
         "sha256": "fc8b71170d02331c2931a3919e7126c4b3cbf19b341e2465873b601b9c60c81b"
       }
     ],
-    "content_hash": "sha256:b4d1a95958020deadfaa5dd65933732c2357afdad7f44525d3fa7af00c2aef81",
+    "content_hash": "sha256:4cf749c76657e22266266763571eae16bf2e31473ec696e04ff34aa5c320eeca",
     "hash_method": "SHA-256 over UTF-8 path + NUL + raw file bytes + NUL, in editable_source_paths order. Shared source content hash applies to all ten procedural modules.",
     "ownership": "Repository-owned implementation; no paid or externally generated asset pipeline."
   },
@@ -2063,5 +2063,5 @@
     "visual": "Synthetic three-module and ten-module sheets are exposed by ?moduleSheet=prototype and ?moduleSheet=all; screenshots and release-gate results recorded separately. This manifest does not claim human approval."
   },
   "materials_sha256": "sha256:8833af5e7fb1fb5c8100b064ca8f1ca73e74d29aaacafb17637efa43a816a01e",
-  "manifest_sha256": "sha256:a9ead009ed3cd5fee2a7353bc4339d88aabf5259ba31c91e51a1b46ddbd7fdeb"
+  "manifest_sha256": "sha256:804675a3edd98dc4ad04af30284686437e2c8e36e3826d75901f8b28e8fb4c1d"
 }
